@@ -85,10 +85,6 @@ Exit code that was returned from Code Analyzer’s execution. If available, help
 ## Development
 Code Analyzer Translator has been developed using Typescript. `action.yml` file in the home directory defines the input parameters. Typescript action is defined under `src` directory, where `src/main.ts` is the starting point.
 
-## Contributing
-
-External contributions are welcome.
-
 ### Build steps
 
 > Make sure you have Node LTS installed.
