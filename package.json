@@ -1,0 +1,43 @@
+{
+  "name": "code-analyzer-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "jest --coverage",
+    "lint": "npm run lint --workspaces --if-present",
+    "package": "npm run package --workspaces --if-present",
+    "all": "npm run build && npm run test && npm run lint && npm run package",
+    "clean": "npm run clean --workspaces",
+    "postclean": "rimraf coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "rimraf": "*"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "coverageThreshold":  {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    },
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "collectCoverageFrom": [
+      "packages/**/src/**/*.ts",
+      "!packages/**/src/**/index.ts"
+    ]
+  }
+}
