@@ -54,7 +54,8 @@
       "/dist/"
     ],
     "collectCoverageFrom": [
-      "./src/**"
+      "src/**/*.ts",
+      "!src/index.ts"
     ]
   }
 }
