@@ -11,9 +11,18 @@ jobs:
         if: github.base_ref == 'dev'
         run: |
           title="${{ github.event.pull_request.title }}"
-          if [[ "$title" =~ ^(FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*[:-]+.+ ]]; then
+          if [[ "$title" =~ ^(FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
               echo "Valid PR title: '$title'"
           else
               echo "::error::Invalid PR title: '$title'. Please following the format: FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
               exit 1
           fi
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run all
