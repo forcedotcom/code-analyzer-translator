@@ -1,4 +1,5 @@
 export enum SeverityLevel {
+    Critical = 0, // Only used in the event of an engine failure
     High = 1,
     Moderate = 2,
     Low = 3

@@ -1,19 +1,19 @@
 {
   "name": "@salesforce/code-analyzer-core",
   "description": "Core Package for the Salesforce Code Analyzer",
-  "version": "0.1.0-alpha",
+  "version": "0.1.1",
   "author": "The Salesforce Code Analyzer Team",
   "license": "BSD-3-Clause license",
   "homepage": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview",
   "repository": {
     "type": "git",
-    "url": "https://github.com/forcedotcom/code-analyzer-core.git",
+    "url": "git+https://github.com/forcedotcom/code-analyzer-core.git",
     "directory": "packages/code-analyzer-core"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@salesforce/code-analyzer-engine-api": "0.1.0-alpha",
+    "@salesforce/code-analyzer-engine-api": "0.1.1",
     "@types/node": "^20.0.0"
   },
   "devDependencies": {

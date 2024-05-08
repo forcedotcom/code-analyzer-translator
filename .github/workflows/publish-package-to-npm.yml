@@ -1,0 +1,49 @@
+name: publish-package-to-npm
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to be published
+        type: string
+        required: true
+      version:
+        description: Version to be published
+        type: string
+        required: true
+      dryrun:
+        description: Add --dry-run to npm publish step? (Uncheck to actually publish)
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./packages/${{inputs.package}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify we are using the correct package.json file
+        run: |
+          [[ -f package.json ]] || (echo "::error:: ./packages/${{inputs.package}}/package.json does not exist." && exit 1)
+          PACKAGE_VERSION=`cat package.json | jq '.version' | xargs`
+          [[ ${{ inputs.version }} == ${PACKAGE_VERSION} ]] || (echo "::error:: Input version ${{ inputs.version }} does not match package.json version ${PACKAGE_VERSION}" && exit 1)
+          PACKAGE_NAME=`cat package.json | jq '.name' | xargs`
+          [[ "@salesforce/${{ inputs.package }}" == ${PACKAGE_NAME} ]] || (echo "::error:: Input package "@salesforce/${{ inputs.package }}" does not match package.json name ${PACKAGE_NAME}" && exit 1)
+      - name: Build and test
+        run: |
+          npm install
+          npm run build
+          npm run test
+      - name: publish-to-npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          if [ "${{inputs.dryrun}}" == "true" ]; then
+            npm publish --tag latest-alpha --access public --verbose --dry-run
+          else
+            npm publish --tag latest-alpha --access public --verbose
+          fi
