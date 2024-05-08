@@ -4,8 +4,8 @@ export interface CodeLocation {
     getFile(): string
     getStartLine(): number
     getStartColumn(): number
-    getEndLine(): number
-    getEndColumn(): number
+    getEndLine(): number | null
+    getEndColumn(): number | null
 }
 
 export interface Violation {

@@ -7,7 +7,7 @@
   "homepage": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview",
   "repository": {
     "type": "git",
-    "url": "https://github.com/forcedotcom/code-analyzer-core.git",
+    "url": "git+https://github.com/forcedotcom/code-analyzer-core.git",
     "directory": "packages/code-analyzer-core"
   },
   "main": "dist/index.js",
