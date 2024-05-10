@@ -1,5 +1,7 @@
 import { Engine } from "./engines"
 
+export const ENGINE_API_VERSION: number = 1.0;
+
 export type ConfigObject = {
     [key: string]: ConfigValue
 }
@@ -12,12 +14,13 @@ export type ConfigValue =
     | ConfigObject;
 
 export interface EnginePlugin  {
-    getPluginVersion(): number
+    getApiVersion(): number
+    getAvailableEngineNames(): string[]
 }
 
 export abstract class EnginePluginV1 implements EnginePlugin {
-    public getPluginVersion(): number {
-        return 1.0;
+    public getApiVersion(): number {
+        return ENGINE_API_VERSION;
     }
 
     abstract getAvailableEngineNames(): string[]

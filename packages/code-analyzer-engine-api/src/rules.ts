@@ -1,11 +1,13 @@
 export enum SeverityLevel {
-    High = 1,
-    Moderate = 2,
-    Low = 3
+    Critical = 1,
+    High = 2,
+    Moderate = 3,
+    Low = 4,
+    Info = 5
 }
 
 export enum RuleType {
-    Standard= "Standard",
+    Standard = "Standard",
     PathBased = "PathBased",
     UnexpectedError = "UnexpectedError"
 }

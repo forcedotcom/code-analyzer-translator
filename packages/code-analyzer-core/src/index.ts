@@ -1,5 +1,6 @@
 export {
     CodeAnalyzer,
+    CodeAnalyzerConfig,
     RunOptions
 } from "./code-analyzer"
 

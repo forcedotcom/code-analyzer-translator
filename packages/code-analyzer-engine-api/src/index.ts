@@ -2,7 +2,8 @@ export {
     ConfigObject,
     ConfigValue,
     EnginePlugin,
-    EnginePluginV1
+    EnginePluginV1,
+    ENGINE_API_VERSION
 } from "./engine-plugins"
 
 export {
