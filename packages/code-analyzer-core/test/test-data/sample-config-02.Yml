@@ -1,0 +1,11 @@
+rule_settings:
+  stubEngine2:
+    stub2RuleC:
+      severity: 3
+
+engine_settings:
+  stubEngine1:
+    miscSetting1: true
+    miscSetting2:
+      miscSetting2A: 3
+      miscSetting2B: ["hello", "world"]

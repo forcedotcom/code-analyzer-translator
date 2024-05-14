@@ -40,7 +40,8 @@
     "package": "npm pack",
     "all": "npm run build && npm run test && npm run lint && npm run package",
     "clean": "tsc --build tsconfig.build.json --clean",
-    "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz"
+    "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz",
+    "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "jest": {
     "preset": "ts-jest",

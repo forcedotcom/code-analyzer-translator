@@ -11,7 +11,8 @@
     "package": "npm run package --workspaces --if-present",
     "all": "npm run build && npm run test && npm run lint && npm run package",
     "clean": "npm run clean --workspaces",
-    "postclean": "rimraf coverage"
+    "postclean": "rimraf coverage",
+    "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "devDependencies": {
     "jest": "^29.0.0",
@@ -19,8 +20,6 @@
     "rimraf": "*"
   },
   "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
     "coverageThreshold":  {
       "global": {
         "branches": 80,
@@ -29,15 +28,12 @@
         "statements": 80
       }
     },
-    "testMatch": [
-      "**/*.test.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
+    "projects": [
+      "<rootDir>/packages/*"
     ],
     "collectCoverageFrom": [
-      "packages/**/src/**/*.ts",
-      "!packages/**/src/index.ts"
+      "src/**/*.ts",
+      "!src/index.ts"
     ]
   }
 }

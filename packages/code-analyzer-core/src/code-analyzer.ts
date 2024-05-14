@@ -4,25 +4,11 @@ import {Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
+import {CodeAnalyzerConfig} from "./config";
 
 export type RunOptions = {
     filesToInclude: string[]
     entryPoints?: string[]
-}
-
-// Currently we have no configuration abilities implemented. So this is just a placeholder for now.
-export class CodeAnalyzerConfig {
-    public static withDefaults() {
-        return new CodeAnalyzerConfig();
-    }
-
-    private constructor() {
-    }
-
-    public getEngineSpecificConfig(_engineName: string): engApi.ConfigObject {
-        // To be implemented soon
-        return {}
-    }
 }
 
 export class CodeAnalyzer {
@@ -42,7 +28,7 @@ export class CodeAnalyzer {
         const enginePluginV1: engApi.EnginePluginV1 = enginePlugin as engApi.EnginePluginV1;
 
         for (const engineName of getAvailableEngineNamesFromPlugin(enginePluginV1)) {
-            const engConf: engApi.ConfigObject = this.config.getEngineSpecificConfig(engineName);
+            const engConf: engApi.ConfigObject = this.config.getEngineSettingsFor(engineName);
             const engine: engApi.Engine = createEngineFromPlugin(enginePluginV1, engineName, engConf);
             this.addEngineIfValid(engineName, engine);
         }
