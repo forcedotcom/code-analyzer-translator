@@ -12,9 +12,9 @@ import {
 } from "../src";
 
 describe('Tests for v1', () => {
-    it('EnginePluginV1 getPluginVersion should return 1.0', () => {
+    it('EnginePluginV1 getApiVersion should return 1.0', () => {
         const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
-        expect(dummyPlugin.getPluginVersion()).toEqual(1.0);
+        expect(dummyPlugin.getApiVersion()).toEqual(1.0);
     });
 
     it('Engine onEvent should receive events correctly from emitEvent', () => {
