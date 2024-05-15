@@ -6,6 +6,14 @@ import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
 import {SeverityLevel} from "./rules";
 
+const FIELDS = {
+    LOG_FOLDER: 'log_folder',
+    RULE_SETTINGS: 'rule_settings',
+    ENGINE_SETTINGS: 'engine_settings',
+    SEVERITY: 'severity',
+    TAGS: 'tags'
+} as const
+
 export type EngineRuleSettings = {
     severity?: SeverityLevel
     tags?: string[]
@@ -37,11 +45,11 @@ export class CodeAnalyzerConfig {
         }
         const fileContents: string = fs.readFileSync(file, 'utf8');
 
-        const fileExt : string = file.split('.').pop()?.toLowerCase() || "";
+        const fileExt : string = path.extname(file).toLowerCase();
 
-        if (fileExt == 'json') {
+        if (fileExt == '.json') {
             return CodeAnalyzerConfig.fromJsonString(fileContents);
-        }  else if (fileExt == 'yaml' || fileExt == 'yml') {
+        }  else if (fileExt == '.yaml' || fileExt == '.yml') {
             return CodeAnalyzerConfig.fromYamlString(fileContents);
         } else {
             throw new Error(getMessage('ConfigFileExtensionUnsupported', file, 'json,yaml,yml'))
@@ -85,39 +93,39 @@ export class CodeAnalyzerConfig {
 }
 
 function validateAndExtractLogFolderValue(data: object): string {
-    if (!('log_folder' in data)) {
+    if (!(FIELDS.LOG_FOLDER in data)) {
         return DEFAULT_CONFIG.log_folder;
     }
-    const logFolder: string = toAbsolutePath(validateType('string', data['log_folder'], 'log_folder'));
+    const logFolder: string = toAbsolutePath(validateType('string', data[FIELDS.LOG_FOLDER], FIELDS.LOG_FOLDER));
     if (!fs.existsSync(logFolder)) {
-        throw new Error(getMessage('ConfigValueFolderMustExist', 'log_folder', logFolder));
+        throw new Error(getMessage('ConfigValueFolderMustExist', FIELDS.LOG_FOLDER, logFolder));
     } else if (!fs.statSync(logFolder).isDirectory()) {
-        throw new Error(getMessage('ConfigValueMustBeFolder', 'log_folder', logFolder));
+        throw new Error(getMessage('ConfigValueMustBeFolder', FIELDS.LOG_FOLDER, logFolder));
     }
     return logFolder;
 }
 
 function validateAndExtractRuleSettingsValue(data: object): Record<string, Record<string, EngineRuleSettings>> {
-    if (!('rule_settings' in data)) {
+    if (!(FIELDS.RULE_SETTINGS in data)) {
         return DEFAULT_CONFIG.rule_settings;
     }
-    const ruleSettingsObj: object = validateObject(data['rule_settings'], 'rule_settings');
+    const ruleSettingsObj: object = validateObject(data[FIELDS.RULE_SETTINGS], FIELDS.RULE_SETTINGS);
     for (const [engineName, ruleSettingsForEngine] of Object.entries(ruleSettingsObj)) {
-        const ruleSettingsForEngineObj: object = validateObject(ruleSettingsForEngine, `rule_settings.${engineName}`);
+        const ruleSettingsForEngineObj: object = validateObject(ruleSettingsForEngine, `${FIELDS.RULE_SETTINGS}.${engineName}`);
         for (const [ruleName, engineRuleSettings] of Object.entries(ruleSettingsForEngineObj)) {
-            validateEngineRuleSettings(engineRuleSettings, `rule_settings.${engineName}.${ruleName}`);
+            validateEngineRuleSettings(engineRuleSettings, `${FIELDS.RULE_SETTINGS}.${engineName}.${ruleName}`);
         }
     }
-    return data['rule_settings'] as Record<string, Record<string, EngineRuleSettings>>;
+    return data[FIELDS.RULE_SETTINGS] as Record<string, Record<string, EngineRuleSettings>>;
 }
 
 function validateEngineRuleSettings(value: unknown, valueKey: string): void {
     const valueObj: object = validateObject(value, valueKey);
-    if ('severity' in valueObj) {
-        validateSeverityValue(valueObj['severity'], `${valueKey}.severity`);
+    if (FIELDS.SEVERITY in valueObj) {
+        validateSeverityValue(valueObj[FIELDS.SEVERITY], `${valueKey}.${FIELDS.SEVERITY}`);
     }
-    if ('tags' in valueObj ) {
-        validateTagsValue(valueObj['tags'], `${valueKey}.tags`);
+    if (FIELDS.TAGS in valueObj ) {
+        validateTagsValue(valueObj[FIELDS.TAGS], `${valueKey}.${FIELDS.TAGS}`);
     }
 }
 
@@ -148,12 +156,12 @@ function validateTagsValue(value: unknown, valueKey: string): void {
 }
 
 function validateAndExtractEngineSettingsValue(data: object): Record<string, engApi.ConfigObject> {
-    if (!('engine_settings' in data)) {
+    if (!(FIELDS.ENGINE_SETTINGS in data)) {
         return DEFAULT_CONFIG.engine_settings;
     }
-    const engineSettingsObj: object = validateObject(data['engine_settings'], 'engine_settings');
+    const engineSettingsObj: object = validateObject(data[FIELDS.ENGINE_SETTINGS], FIELDS.ENGINE_SETTINGS);
     for (const [engineName, settingsForEngine] of Object.entries(engineSettingsObj)) {
-        validateObject(settingsForEngine, `engine_settings.${engineName}`);
+        validateObject(settingsForEngine, `${FIELDS.ENGINE_SETTINGS}.${engineName}`);
     }
     return engineSettingsObj as Record<string, engApi.ConfigObject>;
 }
