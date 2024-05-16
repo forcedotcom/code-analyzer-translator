@@ -20,7 +20,34 @@ const messageCatalog : { [key: string]: string } = {
         `Failed to create engine with name "%s" since the plugin's createEngine method through an error:\n%s`,
 
     EngineAdded:
-        'Engine with name "%s" was added to Code Analyzer.'
+        'Engine with name "%s" was added to Code Analyzer.',
+
+    ConfigFileDoesNotExist:
+        'The specified configuration file "%s" does not exist.',
+
+    ConfigFileExtensionUnsupported:
+        'The specified configuration file "%s" has an unsupported file extension. Supported extensions are: %s',
+
+    ConfigContentFailedToParse:
+        'Failed to parse the configuration content. Error:\n%s',
+
+    ConfigContentNotAnObject:
+        'The configuration content is invalid since it is of type %s instead of type object.',
+
+    ConfigValueMustBeOfType:
+        'The %s configuration value must be of type %s instead of type %s.',
+
+    ConfigValueNotAValidSeverityLevel:
+        'The %s configuration value must be one of the following: %s. Instead received: %s',
+
+    ConfigValueNotAValidTagsLevel:
+        'The %s configuration value must an array of strings. Instead received: %s',
+
+    ConfigValueFolderMustExist:
+        'The folder specified by the %s configuration value does not exist: %s',
+
+    ConfigValueMustBeFolder:
+        'The %s configuration value is not a folder: %s'
 }
 
 /**

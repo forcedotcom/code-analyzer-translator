@@ -1,6 +1,9 @@
 export {
+    CodeAnalyzerConfig
+} from "./config"
+
+export {
     CodeAnalyzer,
-    CodeAnalyzerConfig,
     RunOptions
 } from "./code-analyzer"
 

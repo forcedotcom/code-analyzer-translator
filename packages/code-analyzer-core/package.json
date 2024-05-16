@@ -14,7 +14,9 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@salesforce/code-analyzer-engine-api": "0.1.1",
-    "@types/node": "^20.0.0"
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.2.0",
@@ -41,7 +43,8 @@
     "package": "npm pack",
     "all": "npm run build && npm run test && npm run lint && npm run package",
     "clean": "tsc --build tsconfig.build.json --clean",
-    "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz"
+    "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz",
+    "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "jest": {
     "preset": "ts-jest",

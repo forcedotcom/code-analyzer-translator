@@ -1,0 +1,194 @@
+import {CodeAnalyzerConfig, SeverityLevel} from "../src";
+import * as os from "node:os";
+import * as path from "node:path";
+import {getMessage} from "../src/messages";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+
+describe("Tests for creating and accessing configuration values", () => {
+    changeWorkingDirectoryToPackageRoot();
+
+    it("When constructing config withDefaults then default values are returned", () => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.withDefaults();
+
+        expect(conf.getLogFolder()).toEqual(os.tmpdir());
+        expect(conf.getRuleSettingsFor("stubEngine1")).toEqual({});
+        expect(conf.getEngineSettingsFor("stubEngine1")).toEqual({});
+        expect(conf.getRuleSettingsFor("stubEngine2")).toEqual({});
+        expect(conf.getEngineSettingsFor("stubEngine2")).toEqual({});
+    });
+
+    it("When configuration file does not exist, then throw an error", () => {
+        const nonExistingFile: string = path.resolve(__dirname, "doesNotExist");
+        expect(() => CodeAnalyzerConfig.fromFile(nonExistingFile)).toThrow(
+            getMessage('ConfigFileDoesNotExist', nonExistingFile));
+    });
+
+    it("When configuration file has unsupported extension, then throw an error", () => {
+        const fileWithBadExtension: string = path.resolve(__dirname, "config.test.ts");
+        expect(() => CodeAnalyzerConfig.fromFile(fileWithBadExtension)).toThrow(
+            getMessage('ConfigFileExtensionUnsupported', fileWithBadExtension, 'json,yaml,yml'));
+        const fileWithNoExtension: string = path.resolve(__dirname, "..", "LICENSE");
+        expect(() => CodeAnalyzerConfig.fromFile(fileWithNoExtension)).toThrow(
+            getMessage('ConfigFileExtensionUnsupported', fileWithNoExtension, 'json,yaml,yml'));
+    });
+
+    it("When constructing config from yaml file then values from file are parsed correctly", () => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-01.yaml'));
+        expect(conf.getLogFolder()).toEqual(path.resolve(__dirname, 'test-data', 'sampleLogFolder'));
+        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({
+            stub1RuleB: {
+                severity: SeverityLevel.Critical
+            },
+            stub1RuleD: {
+                severity: SeverityLevel.Info,
+                tags: ['default', 'CodeStyle']
+            }
+        });
+        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({
+            stub2RuleA: {
+                tags: ['Security']
+            }
+        });
+        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({});
+    });
+
+    it("When constructing config from file with yml extension then it is parsed as a yaml file", () => {
+        // Also note that Yml should work just like yml. Case doesn't matter.
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml'));
+        expect(conf.getLogFolder()).toEqual(os.tmpdir());
+        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({});
+        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({
+            stub2RuleC: {
+                severity: SeverityLevel.Moderate
+            }
+        });
+        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({
+            miscSetting1: true,
+            miscSetting2: {
+                miscSetting2A: 3,
+                miscSetting2B: ["hello", "world"]
+            }
+        });
+        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({});
+    });
+
+    it("When constructing config from json file then values from file are parsed correctly", () => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-03.json'));
+        expect(conf.getLogFolder()).toEqual(path.resolve(__dirname, 'test-data', 'sampleLogFolder'));
+        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({});
+        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({});
+        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({miscSetting: "miscValue"});
+    });
+
+    it("When constructing config from invalid yaml string then we throw an error", () => {
+        try {
+            CodeAnalyzerConfig.fromYamlString('oops: this: should error');
+            fail('Expected an exception to be thrown.')
+        } catch (err) {
+            const errMsg: string = (err as Error).message;
+            expect(errMsg).toContain(getMessage('ConfigContentFailedToParse',''));
+            expect(errMsg).toContain('bad indentation of a mapping entry');
+        }
+    });
+
+    it("When constructing config from invalid json string then we throw an error", () => {
+        try {
+            CodeAnalyzerConfig.fromJsonString('this.Is{NotValidJson');
+            fail('Expected an exception to be thrown.')
+        } catch (err) {
+            const errMsg: string = (err as Error).message;
+            expect(errMsg).toContain(getMessage('ConfigContentFailedToParse',''));
+            expect(errMsg).toContain('Unexpected token');
+        }
+    });
+
+    it("When constructing config from yaml string that isn't an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromYamlString("3")).toThrow(
+            getMessage('ConfigContentNotAnObject','number'));
+        expect(() => CodeAnalyzerConfig.fromYamlString("null")).toThrow(
+            getMessage('ConfigContentNotAnObject','null'));
+    });
+
+    it("When constructing config from json string that isn't an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromJsonString("3")).toThrow(
+            getMessage('ConfigContentNotAnObject','number'));
+        expect(() => CodeAnalyzerConfig.fromJsonString("null")).toThrow(
+            getMessage('ConfigContentNotAnObject','null'));
+    });
+
+    it("When engines value is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({engines: ['oops']})).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines', 'object', 'array'));
+    });
+
+    it("When engines.someEngine is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({engines: {someEngine: 3.2}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.someEngine', 'object', 'number'));
+    });
+
+    it("When rules is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: 3})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules', 'object', 'number'));
+    });
+
+    it("When rules.someEngine is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: null}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules.someEngine', 'object', 'null'));
+    });
+
+    it("When rules.someEngine.someRule is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {someRule: [1,2]}}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules.someEngine.someRule', 'object', 'array'));
+    });
+
+    it("When the severity of a rule not a valid value then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {
+            goodSevRule1: {severity: 3},
+            goodSevRule2: {severity: "High"},
+            badSevRule: {severity: 0}
+        }}})).toThrow(
+            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '0'));
+
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badSevRule: {severity: "oops"}}}})).toThrow(
+            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '"oops"'));
+    });
+
+    it("When the tags of a rule is not a string array then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {
+                    goodTagsRule1: {tags: ['default']},
+                    badTagsRule: {tags: 'oops'},
+                    goodTagsRule2: {tags: ['helloWorld', 'great']}
+                }}})).toThrow(
+            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', '"oops"'));
+
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
+            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', 'null'));
+    });
+
+    it("When tags is an empty array, then use the empty array as provided", () => {
+        const someEngineRuleSettings: object = {
+            someRule1: {tags: []}, // Should be accepted
+            someRule2: {severity: 4, tags: ['Performance']}
+        };
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rules: {someEngine: someEngineRuleSettings}});
+        expect(conf.getRuleSettingsFor('someEngine')).toEqual(someEngineRuleSettings);
+    });
+
+    it("When log_folder does not exist, then throw an error", () => {
+        const nonExistingFolder: string = path.resolve(__dirname, "doesNotExist");
+        expect(() => CodeAnalyzerConfig.fromObject({log_folder: nonExistingFolder})).toThrow(
+            getMessage('ConfigValueFolderMustExist', 'log_folder', nonExistingFolder)
+        );
+    });
+
+    it("When log_folder is a file and not a folder, then throw an error", () => {
+        const notAFolder: string = path.resolve(__dirname, "config.test.ts");
+        expect(() => CodeAnalyzerConfig.fromObject({log_folder: notAFolder})).toThrow(
+            getMessage('ConfigValueMustBeFolder', 'log_folder', notAFolder)
+        );
+    });
+});

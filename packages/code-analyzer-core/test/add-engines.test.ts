@@ -1,8 +1,12 @@
 import {CodeAnalyzer, CodeAnalyzerConfig, EventType, LogEvent, LogLevel} from "../src";
 import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import path from "node:path";
 
 describe("Tests for adding engines to Code Analyzer", () => {
+    changeWorkingDirectoryToPackageRoot();
+
     let codeAnalyzer: CodeAnalyzer;
     let logEvents: LogEvent[];
 
@@ -10,13 +14,49 @@ describe("Tests for adding engines to Code Analyzer", () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         logEvents = [];
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
-    })
+    });
 
     it('When adding engine plugin then all its engines are correctly added', () => {
-        codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+        const subEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
+        codeAnalyzer.addEnginePlugin(subEnginePlugin);
 
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
-    })
+        expect(subEnginePlugin.callHistoryForCreateEngine).toEqual([
+            {
+                engineName: "stubEngine1",
+                config: {}
+            },
+            {
+                engineName: "stubEngine2",
+                config: {}
+            }
+        ]);
+    });
+
+    it('When adding engine plugin using non-default config then  engines are correctly added with engine specific configurations', () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml')));
+
+        const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
+        codeAnalyzer.addEnginePlugin(stubEnginePlugin);
+
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
+        expect(stubEnginePlugin.callHistoryForCreateEngine).toEqual([
+            {
+                engineName: "stubEngine1",
+                config: {
+                    miscSetting1: true,
+                    miscSetting2: {
+                        miscSetting2A: 3,
+                        miscSetting2B: ["hello", "world"]
+                    }
+                }
+            },
+            {
+                engineName: "stubEngine2",
+                config: {}
+            }
+        ]);
+    });
 
     it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', () => {
         codeAnalyzer.addEnginePlugin(new stubs.FutureEnginePlugin());
