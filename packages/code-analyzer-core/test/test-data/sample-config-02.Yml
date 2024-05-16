@@ -1,9 +1,9 @@
-rule_settings:
+rules:
   stubEngine2:
     stub2RuleC:
       severity: 3
 
-engine_settings:
+engines:
   stubEngine1:
     miscSetting1: true
     miscSetting2:

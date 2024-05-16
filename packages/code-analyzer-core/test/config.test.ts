@@ -118,55 +118,55 @@ describe("Tests for creating and accessing configuration values", () => {
             getMessage('ConfigContentNotAnObject','null'));
     });
 
-    it("When engine_settings is not an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({engine_settings: ['oops']})).toThrow(
-            getMessage('ConfigValueMustBeOfType','engine_settings', 'object', 'array'));
+    it("When engines value is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({engines: ['oops']})).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines', 'object', 'array'));
     });
 
-    it("When engine_settings.someEngine is not an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({engine_settings: {someEngine: 3.2}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','engine_settings.someEngine', 'object', 'number'));
+    it("When engines.someEngine is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({engines: {someEngine: 3.2}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.someEngine', 'object', 'number'));
     });
 
-    it("When rule_settings is not an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: 3})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rule_settings', 'object', 'number'));
+    it("When rules is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: 3})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules', 'object', 'number'));
     });
 
-    it("When rule_settings.someEngine is not an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: null}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rule_settings.someEngine', 'object', 'null'));
+    it("When rules.someEngine is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: null}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules.someEngine', 'object', 'null'));
     });
 
-    it("When rule_settings.someEngine.someRule is not an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: {someRule: [1,2]}}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rule_settings.someEngine.someRule', 'object', 'array'));
+    it("When rules.someEngine.someRule is not an object then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {someRule: [1,2]}}})).toThrow(
+            getMessage('ConfigValueMustBeOfType','rules.someEngine.someRule', 'object', 'array'));
     });
 
     it("When the severity of a rule not a valid value then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {
             goodSevRule1: {severity: 3},
             goodSevRule2: {severity: "High"},
             badSevRule: {severity: 0}
         }}})).toThrow(
-            getMessage('ConfigValueNotAValidSeverityLevel','rule_settings.someEngine.badSevRule.severity',
+            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
                 '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '0'));
 
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: {badSevRule: {severity: "oops"}}}})).toThrow(
-            getMessage('ConfigValueNotAValidSeverityLevel','rule_settings.someEngine.badSevRule.severity',
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badSevRule: {severity: "oops"}}}})).toThrow(
+            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
                 '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '"oops"'));
     });
 
     it("When the tags of a rule is not a string array then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {
                     goodTagsRule1: {tags: ['default']},
                     badTagsRule: {tags: 'oops'},
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(
-            getMessage('ConfigValueNotAValidTagsLevel','rule_settings.someEngine.badTagsRule.tags', '"oops"'));
+            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', '"oops"'));
 
-        expect(() => CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
-            getMessage('ConfigValueNotAValidTagsLevel','rule_settings.someEngine.badTagsRule.tags', 'null'));
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
+            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', 'null'));
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
@@ -174,7 +174,7 @@ describe("Tests for creating and accessing configuration values", () => {
             someRule1: {tags: []}, // Should be accepted
             someRule2: {severity: 4, tags: ['Performance']}
         };
-        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rule_settings: {someEngine: someEngineRuleSettings}});
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rules: {someEngine: someEngineRuleSettings}});
         expect(conf.getRuleSettingsFor('someEngine')).toEqual(someEngineRuleSettings);
     });
 

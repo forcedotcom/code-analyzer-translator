@@ -1,6 +1,6 @@
 {
   "log_folder": "test/test-data/sampleLogFolder",
-  "engine_settings": {
+  "engines": {
     "stubEngine2": {
       "miscSetting": "miscValue"
     }

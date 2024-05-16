@@ -8,8 +8,8 @@ import {SeverityLevel} from "./rules";
 
 const FIELDS = {
     LOG_FOLDER: 'log_folder',
-    RULE_SETTINGS: 'rule_settings',
-    ENGINE_SETTINGS: 'engine_settings',
+    RULES: 'rules',
+    ENGINES: 'engines',
     SEVERITY: 'severity',
     TAGS: 'tags'
 } as const
@@ -21,14 +21,14 @@ export type EngineRuleSettings = {
 
 type TopLevelConfig = {
     log_folder: string
-    rule_settings: Record<string, Record<string,EngineRuleSettings>>
-    engine_settings: Record<string, engApi.ConfigObject>
+    rules: Record<string, Record<string,EngineRuleSettings>>
+    engines: Record<string, engApi.ConfigObject>
 }
 
 const DEFAULT_CONFIG: TopLevelConfig = {
     log_folder: os.tmpdir(),
-    rule_settings: {},
-    engine_settings: {}
+    rules: {},
+    engines: {}
 };
 
 export class CodeAnalyzerConfig {
@@ -69,8 +69,8 @@ export class CodeAnalyzerConfig {
     public static fromObject(data: object): CodeAnalyzerConfig {
         const config: TopLevelConfig = {
             log_folder: validateAndExtractLogFolderValue(data),
-            rule_settings: validateAndExtractRuleSettingsValue(data),
-            engine_settings: validateAndExtractEngineSettingsValue(data)
+            rules: validateAndExtractRuleSettingsValue(data),
+            engines: validateAndExtractEngineSettingsValue(data)
         }
         return new CodeAnalyzerConfig(config);
     }
@@ -84,11 +84,11 @@ export class CodeAnalyzerConfig {
     }
 
     public getRuleSettingsFor(engineName: string): EngineRuleSettings {
-        return this.config.rule_settings[engineName] || {};
+        return this.config.rules[engineName] || {};
     }
 
     public getEngineSettingsFor(engineName: string): engApi.ConfigObject {
-        return this.config.engine_settings[engineName] || {};
+        return this.config.engines[engineName] || {};
     }
 }
 
@@ -106,17 +106,17 @@ function validateAndExtractLogFolderValue(data: object): string {
 }
 
 function validateAndExtractRuleSettingsValue(data: object): Record<string, Record<string, EngineRuleSettings>> {
-    if (!(FIELDS.RULE_SETTINGS in data)) {
-        return DEFAULT_CONFIG.rule_settings;
+    if (!(FIELDS.RULES in data)) {
+        return DEFAULT_CONFIG.rules;
     }
-    const ruleSettingsObj: object = validateObject(data[FIELDS.RULE_SETTINGS], FIELDS.RULE_SETTINGS);
+    const ruleSettingsObj: object = validateObject(data[FIELDS.RULES], FIELDS.RULES);
     for (const [engineName, ruleSettingsForEngine] of Object.entries(ruleSettingsObj)) {
-        const ruleSettingsForEngineObj: object = validateObject(ruleSettingsForEngine, `${FIELDS.RULE_SETTINGS}.${engineName}`);
+        const ruleSettingsForEngineObj: object = validateObject(ruleSettingsForEngine, `${FIELDS.RULES}.${engineName}`);
         for (const [ruleName, engineRuleSettings] of Object.entries(ruleSettingsForEngineObj)) {
-            validateEngineRuleSettings(engineRuleSettings, `${FIELDS.RULE_SETTINGS}.${engineName}.${ruleName}`);
+            validateEngineRuleSettings(engineRuleSettings, `${FIELDS.RULES}.${engineName}.${ruleName}`);
         }
     }
-    return data[FIELDS.RULE_SETTINGS] as Record<string, Record<string, EngineRuleSettings>>;
+    return data[FIELDS.RULES] as Record<string, Record<string, EngineRuleSettings>>;
 }
 
 function validateEngineRuleSettings(value: unknown, valueKey: string): void {
@@ -156,12 +156,12 @@ function validateTagsValue(value: unknown, valueKey: string): void {
 }
 
 function validateAndExtractEngineSettingsValue(data: object): Record<string, engApi.ConfigObject> {
-    if (!(FIELDS.ENGINE_SETTINGS in data)) {
-        return DEFAULT_CONFIG.engine_settings;
+    if (!(FIELDS.ENGINES in data)) {
+        return DEFAULT_CONFIG.engines;
     }
-    const engineSettingsObj: object = validateObject(data[FIELDS.ENGINE_SETTINGS], FIELDS.ENGINE_SETTINGS);
+    const engineSettingsObj: object = validateObject(data[FIELDS.ENGINES], FIELDS.ENGINES);
     for (const [engineName, settingsForEngine] of Object.entries(engineSettingsObj)) {
-        validateObject(settingsForEngine, `${FIELDS.ENGINE_SETTINGS}.${engineName}`);
+        validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
     }
     return engineSettingsObj as Record<string, engApi.ConfigObject>;
 }
