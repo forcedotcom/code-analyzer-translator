@@ -11,10 +11,10 @@ describe("Tests for creating and accessing configuration values", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.withDefaults();
 
         expect(conf.getLogFolder()).toEqual(os.tmpdir());
-        expect(conf.getRuleSettingsFor("stubEngine1")).toEqual({});
-        expect(conf.getEngineSettingsFor("stubEngine1")).toEqual({});
-        expect(conf.getRuleSettingsFor("stubEngine2")).toEqual({});
-        expect(conf.getEngineSettingsFor("stubEngine2")).toEqual({});
+        expect(conf.getRuleOverridesFor("stubEngine1")).toEqual({});
+        expect(conf.getEngineConfigFor("stubEngine1")).toEqual({});
+        expect(conf.getRuleOverridesFor("stubEngine2")).toEqual({});
+        expect(conf.getEngineConfigFor("stubEngine2")).toEqual({});
     });
 
     it("When configuration file does not exist, then throw an error", () => {
@@ -35,7 +35,7 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When constructing config from yaml file then values from file are parsed correctly", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-01.yaml'));
         expect(conf.getLogFolder()).toEqual(path.resolve(__dirname, 'test-data', 'sampleLogFolder'));
-        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({
+        expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({
             stub1RuleB: {
                 severity: SeverityLevel.Critical
             },
@@ -44,42 +44,42 @@ describe("Tests for creating and accessing configuration values", () => {
                 tags: ['default', 'CodeStyle']
             }
         });
-        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({
+        expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({
             stub2RuleA: {
-                tags: ['Security']
+                tags: ['Security', "SomeNewTag"]
             }
         });
-        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({});
-        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({});
+        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({});
     });
 
     it("When constructing config from file with yml extension then it is parsed as a yaml file", () => {
         // Also note that Yml should work just like yml. Case doesn't matter.
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml'));
         expect(conf.getLogFolder()).toEqual(os.tmpdir());
-        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({});
-        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({
+        expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({});
+        expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({
             stub2RuleC: {
                 severity: SeverityLevel.Moderate
             }
         });
-        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({
+        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({
             miscSetting1: true,
             miscSetting2: {
                 miscSetting2A: 3,
                 miscSetting2B: ["hello", "world"]
             }
         });
-        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({});
+        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({});
     });
 
     it("When constructing config from json file then values from file are parsed correctly", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-03.json'));
         expect(conf.getLogFolder()).toEqual(path.resolve(__dirname, 'test-data', 'sampleLogFolder'));
-        expect(conf.getRuleSettingsFor('stubEngine1')).toEqual({});
-        expect(conf.getRuleSettingsFor('stubEngine2')).toEqual({});
-        expect(conf.getEngineSettingsFor('stubEngine1')).toEqual({});
-        expect(conf.getEngineSettingsFor('stubEngine2')).toEqual({miscSetting: "miscValue"});
+        expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({});
+        expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({});
+        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({miscSetting: "miscValue"});
     });
 
     it("When constructing config from invalid yaml string then we throw an error", () => {
@@ -170,12 +170,12 @@ describe("Tests for creating and accessing configuration values", () => {
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
-        const someEngineRuleSettings: object = {
+        const someRuleOverrides: object = {
             someRule1: {tags: []}, // Should be accepted
             someRule2: {severity: 4, tags: ['Performance']}
         };
-        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rules: {someEngine: someEngineRuleSettings}});
-        expect(conf.getRuleSettingsFor('someEngine')).toEqual(someEngineRuleSettings);
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rules: {someEngine: someRuleOverrides}});
+        expect(conf.getRuleOverridesFor('someEngine')).toEqual(someRuleOverrides);
     });
 
     it("When log_folder does not exist, then throw an error", () => {

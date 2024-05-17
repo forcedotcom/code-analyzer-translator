@@ -75,12 +75,17 @@ export class RuleImpl implements Rule {
     matchesRuleSelector(ruleSelector: string): boolean {
         const partsToMatch: string[] = ruleSelector.split(':');
         for (const selectorPart of partsToMatch) {
+            const sevNumber: number = this.getSeverityLevel().valueOf();
+            const sevName: string = SeverityLevel[sevNumber];
+
+            const selectorPartLower = selectorPart.toLowerCase();
             const partMatched =
-                selectorPart == "all"
-                || this.getEngineName() == selectorPart
-                || this.getName() == selectorPart
-                || this.getTags().includes(selectorPart)
-                || String(this.getSeverityLevel().valueOf()) == selectorPart;
+                selectorPartLower == "all"
+                || this.getEngineName().toLowerCase() == selectorPartLower
+                || this.getName().toLowerCase() == selectorPartLower
+                || this.getTags().map(t => t.toLowerCase()).includes(selectorPartLower)
+                || String(sevNumber) == selectorPart
+                || sevName.toLowerCase() == selectorPartLower;
             if (!partMatched) return false;
         }
         return true;

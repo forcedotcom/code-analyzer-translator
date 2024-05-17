@@ -5,9 +5,9 @@ rules:
     stub1RuleB:
       severity: 1
     stub1RuleD:
-      severity: 5
+      severity: "Info"
       tags: ["default", "CodeStyle"]
 
   stubEngine2:
     stub2RuleA:
-      tags: ["Security"]
+      tags: ["Security", "SomeNewTag"]

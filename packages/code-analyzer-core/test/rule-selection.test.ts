@@ -10,16 +10,24 @@ import {
 } from "../src";
 import { SeverityLevel as EngApi_SeverityLevel } from "@salesforce/code-analyzer-engine-api"
 import {StubEnginePlugin} from "./stubs";
+import path from "node:path";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
 describe('Tests for selecting rules', () => {
+    changeWorkingDirectoryToPackageRoot();
+
     let codeAnalyzer: CodeAnalyzer;
     let logEvents: LogEvent[];
 
-    beforeEach(() => {
-        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+    function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) {
         codeAnalyzer.addEnginePlugin(new StubEnginePlugin());
-        logEvents = [];
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+    }
+
+    beforeEach(() => {
+        logEvents = [];
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        setupCodeAnalyzer(codeAnalyzer);
     })
 
     it('When no rule selectors are provided then default tag is used', () => {
@@ -32,8 +40,8 @@ describe('Tests for selecting rules', () => {
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleA', 'stub2RuleC']);
 
         // Sanity check one of the rules in detail:
-        const selectRulesForStub1: Rule[] = selection.getRulesFor('stubEngine1');
-        const stub1RuleB = selectRulesForStub1[1];
+        const selectedRulesForStubEngine1: Rule[] = selection.getRulesFor('stubEngine1');
+        const stub1RuleB = selectedRulesForStubEngine1[1];
         expect(stub1RuleB.getEngineName()).toEqual('stubEngine1');
         expect(stub1RuleB.getDescription()).toEqual('Some description for stub1RuleB');
         expect(stub1RuleB.getName()).toEqual('stub1RuleB');
@@ -138,6 +146,77 @@ describe('Tests for selecting rules', () => {
         expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleC']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleC']);
+    });
+
+    it('When selecting rules based on severity names instead of severity number, then we correctly return the rules', () => {
+        const selection: RuleSelection = codeAnalyzer.selectRules('High', 'default:Low');
+
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA','stub1RuleB']);
+        expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleC']);
+    });
+
+    it('When selector is the wrong case, then we still accept the selector since we treat selection with case insensitivity', () => {
+        const selection1: RuleSelection = codeAnalyzer.selectRules('DEFault:higH', 'perFORMance');
+
+        expect(selection1.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(ruleNamesFor(selection1, 'stubEngine1')).toEqual(['stub1RuleB','stub1RuleC','stub1RuleE']);
+        expect(ruleNamesFor(selection1, 'stubEngine2')).toEqual(['stub2RuleB','stub2RuleC']);
+
+        expect(codeAnalyzer.selectRules('Stub1RulEd')).toEqual(codeAnalyzer.selectRules('stub1RuleD'));
+        expect(codeAnalyzer.selectRules('aLL')).toEqual(codeAnalyzer.selectRules('all'));
+    });
+
+    it('When config contains rule overrides for the selected rules, then the rule selection contains these overrides', () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
+        setupCodeAnalyzer(codeAnalyzer);
+
+        const selection: RuleSelection = codeAnalyzer.selectRules();
+
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(selection.getCount()).toEqual(5);
+
+        // sample-config-01.yaml makes stub1RuleD is now default and stub2RuleA no longer default
+        expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleB', 'stub1RuleC', 'stub1RuleD']);
+        expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleC']);
+
+        // sample-config-01.yaml stub1RuleB have changed severity
+        const selectedRulesForStubEngine1: Rule[] = selection.getRulesFor('stubEngine1');
+        const stub1RuleB = selectedRulesForStubEngine1[1];
+        expect(stub1RuleB.getEngineName()).toEqual('stubEngine1');
+        expect(stub1RuleB.getName()).toEqual('stub1RuleB');
+        expect(stub1RuleB.getResourceUrls()).toEqual(['https://example.com/stub1RuleB']);
+        expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.Critical); // This changed
+        expect(stub1RuleB.getTags()).toEqual(['default', 'Security']);
+        expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
+    });
+
+    it('When config contains rule overrides, then we can select based on the new tags', () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
+        setupCodeAnalyzer(codeAnalyzer);
+
+        const selection: RuleSelection = codeAnalyzer.selectRules('SomeNewTag');
+        expect(ruleNamesFor(selection, 'stubEngine1')).toEqual([]);
+        expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleA']);
+
+        // sample-config-01.yaml stub2RuleA have changed tags
+        const selectedRulesForStubEngine2: Rule[] = selection.getRulesFor('stubEngine2');
+        const stub2RuleA = selectedRulesForStubEngine2[0];
+        expect(stub2RuleA.getEngineName()).toEqual('stubEngine2');
+        expect(stub2RuleA.getName()).toEqual('stub2RuleA');
+        expect(stub2RuleA.getResourceUrls()).toEqual(['https://example.com/stub2RuleA']);
+        expect(stub2RuleA.getSeverityLevel()).toEqual(SeverityLevel.Moderate);
+        expect(stub2RuleA.getTags()).toEqual(['Security', 'SomeNewTag']); // This changed
+        expect(stub2RuleA.getType()).toEqual(RuleType.PathBased);
+    });
+
+    it('When config contains severity overrides, then we can select based on the severity values', () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
+        setupCodeAnalyzer(codeAnalyzer);
+
+        const selection: RuleSelection = codeAnalyzer.selectRules('5');
+        expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleD']);
+        expect(ruleNamesFor(selection, 'stubEngine2')).toEqual([]);
     });
 });
 

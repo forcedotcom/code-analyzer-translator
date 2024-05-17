@@ -12,16 +12,16 @@ const FIELDS = {
     ENGINES: 'engines',
     SEVERITY: 'severity',
     TAGS: 'tags'
-} as const
+} as const;
 
-export type EngineRuleSettings = {
+export type RuleOverride = {
     severity?: SeverityLevel
     tags?: string[]
 }
 
 type TopLevelConfig = {
     log_folder: string
-    rules: Record<string, Record<string,EngineRuleSettings>>
+    rules: Record<string, Record<string, RuleOverride>>
     engines: Record<string, engApi.ConfigObject>
 }
 
@@ -68,9 +68,9 @@ export class CodeAnalyzerConfig {
 
     public static fromObject(data: object): CodeAnalyzerConfig {
         const config: TopLevelConfig = {
-            log_folder: validateAndExtractLogFolderValue(data),
-            rules: validateAndExtractRuleSettingsValue(data),
-            engines: validateAndExtractEngineSettingsValue(data)
+            log_folder: extractLogFolderValue(data),
+            rules: extractRulesValue(data),
+            engines: extractEnginesValue(data)
         }
         return new CodeAnalyzerConfig(config);
     }
@@ -83,16 +83,20 @@ export class CodeAnalyzerConfig {
         return this.config.log_folder;
     }
 
-    public getRuleSettingsFor(engineName: string): EngineRuleSettings {
+    public getRuleOverridesFor(engineName: string): Record<string, RuleOverride> {
         return this.config.rules[engineName] || {};
     }
 
-    public getEngineSettingsFor(engineName: string): engApi.ConfigObject {
+    public getRuleOverrideFor(engineName: string, ruleName: string): RuleOverride {
+        return this.getRuleOverridesFor(engineName)[ruleName] || {};
+    }
+
+    public getEngineConfigFor(engineName: string): engApi.ConfigObject {
         return this.config.engines[engineName] || {};
     }
 }
 
-function validateAndExtractLogFolderValue(data: object): string {
+function extractLogFolderValue(data: object): string {
     if (!(FIELDS.LOG_FOLDER in data)) {
         return DEFAULT_CONFIG.log_folder;
     }
@@ -105,31 +109,44 @@ function validateAndExtractLogFolderValue(data: object): string {
     return logFolder;
 }
 
-function validateAndExtractRuleSettingsValue(data: object): Record<string, Record<string, EngineRuleSettings>> {
+function extractRulesValue(data: object): Record<string, Record<string, RuleOverride>> {
     if (!(FIELDS.RULES in data)) {
         return DEFAULT_CONFIG.rules;
     }
-    const ruleSettingsObj: object = validateObject(data[FIELDS.RULES], FIELDS.RULES);
-    for (const [engineName, ruleSettingsForEngine] of Object.entries(ruleSettingsObj)) {
-        const ruleSettingsForEngineObj: object = validateObject(ruleSettingsForEngine, `${FIELDS.RULES}.${engineName}`);
-        for (const [ruleName, engineRuleSettings] of Object.entries(ruleSettingsForEngineObj)) {
-            validateEngineRuleSettings(engineRuleSettings, `${FIELDS.RULES}.${engineName}.${ruleName}`);
-        }
+    const extractedValue: Record<string, Record<string, RuleOverride>> = {};
+    const rulesObj: object = validateObject(data[FIELDS.RULES], FIELDS.RULES);
+    for (const engineName of Object.keys(rulesObj)) {
+        extractedValue[engineName] = extractRuleOverridesFor(rulesObj, engineName);
     }
-    return data[FIELDS.RULES] as Record<string, Record<string, EngineRuleSettings>>;
+    return extractedValue;
 }
 
-function validateEngineRuleSettings(value: unknown, valueKey: string): void {
-    const valueObj: object = validateObject(value, valueKey);
-    if (FIELDS.SEVERITY in valueObj) {
-        validateSeverityValue(valueObj[FIELDS.SEVERITY], `${valueKey}.${FIELDS.SEVERITY}`);
+function extractRuleOverridesFor(rulesObj: object, engineName: string): Record<string, RuleOverride> {
+    const extractedValue: Record<string, RuleOverride> = {};
+    const ruleOverridesObj: object = validateObject(rulesObj[engineName as keyof typeof rulesObj],
+        `${FIELDS.RULES}.${engineName}`);
+    for (const ruleName of Object.keys(ruleOverridesObj)) {
+        extractedValue[ruleName] = extractRuleOverrideFor(ruleOverridesObj, engineName, ruleName);
     }
-    if (FIELDS.TAGS in valueObj ) {
-        validateTagsValue(valueObj[FIELDS.TAGS], `${valueKey}.${FIELDS.TAGS}`);
-    }
+    return extractedValue;
 }
 
-function validateObject(value: unknown, valueKey: string) {
+function extractRuleOverrideFor(ruleOverridesObj: object, engineName: string, ruleName: string): RuleOverride {
+    const extractedValue: RuleOverride = {};
+    const ruleOverrideObj: object = validateObject(ruleOverridesObj[ruleName as keyof typeof ruleOverridesObj],
+        `${FIELDS.RULES}.${engineName}.${ruleName}`);
+    if (FIELDS.SEVERITY in ruleOverrideObj) {
+        extractedValue.severity = validateSeverityValue(ruleOverrideObj[FIELDS.SEVERITY],
+            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.SEVERITY}`);
+    }
+    if (FIELDS.TAGS in ruleOverrideObj ) {
+        extractedValue.tags = validateTagsValue(ruleOverrideObj[FIELDS.TAGS],
+            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`);
+    }
+    return extractedValue;
+}
+
+function validateObject(value: unknown, valueKey: string): object {
     return validateType<object>('object', value, valueKey);
 }
 
@@ -140,22 +157,29 @@ function validateType<T>(expectedType: string, value: unknown, valueKey: string)
     return value as T;
 }
 
-function validateSeverityValue(value: unknown, valueKey: string): void {
+function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel {
     // Note that Object.values(SeverityLevel) returns [1,2,3,4,5,"Critical","High","Moderate","Low","Info"]
     if ((typeof value !== 'string' && typeof value !== 'number')
         || !Object.values(SeverityLevel).includes(value as string | number)) {
         throw new Error(getMessage('ConfigValueNotAValidSeverityLevel', valueKey,
             JSON.stringify(Object.values(SeverityLevel)), JSON.stringify(value)));
     }
+    if (typeof value === 'string') {
+        // We can't type cast to enum from a string, so instead we choose the enum based on the string as a key.
+        value = SeverityLevel[value as keyof typeof SeverityLevel];
+    }
+    // We can type cast to enum safely from a number
+    return value as SeverityLevel;
 }
 
-function validateTagsValue(value: unknown, valueKey: string): void {
+function validateTagsValue(value: unknown, valueKey: string): string[] {
     if (!Array.isArray(value) || !value.every(item => typeof item === 'string')) {
         throw new Error(getMessage('ConfigValueNotAValidTagsLevel', valueKey, JSON.stringify(value)));
     }
+    return value as string[];
 }
 
-function validateAndExtractEngineSettingsValue(data: object): Record<string, engApi.ConfigObject> {
+function extractEnginesValue(data: object): Record<string, engApi.ConfigObject> {
     if (!(FIELDS.ENGINES in data)) {
         return DEFAULT_CONFIG.engines;
     }
