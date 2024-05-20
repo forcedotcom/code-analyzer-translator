@@ -4,7 +4,7 @@ import {Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
-import {CodeAnalyzerConfig} from "./config";
+import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
 
 export type RunOptions = {
     filesToInclude: string[]
@@ -28,7 +28,7 @@ export class CodeAnalyzer {
         const enginePluginV1: engApi.EnginePluginV1 = enginePlugin as engApi.EnginePluginV1;
 
         for (const engineName of getAvailableEngineNamesFromPlugin(enginePluginV1)) {
-            const engConf: engApi.ConfigObject = this.config.getEngineSettingsFor(engineName);
+            const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
             const engine: engApi.Engine = createEngineFromPlugin(enginePluginV1, engineName, engConf);
             this.addEngineIfValid(engineName, engine);
         }
@@ -93,11 +93,27 @@ export class CodeAnalyzer {
     private getAllRules(): RuleImpl[] {
         const allRules: RuleImpl[] = [];
         for (const [engineName, engine] of this.engines) {
-            for (const ruleDescription of engine.describeRules()) {
+            for (let ruleDescription of engine.describeRules()) {
+                ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
                 allRules.push(new RuleImpl(engineName, ruleDescription))
             }
         }
         return allRules;
+    }
+
+    private updateRuleDescriptionWithOverrides(engineName: string, ruleDescription: engApi.RuleDescription): engApi.RuleDescription {
+        const ruleOverride: RuleOverride = this.config.getRuleOverrideFor(engineName, ruleDescription.name);
+        if (ruleOverride.severity) {
+            this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.SEVERITY,
+                ruleDescription.name, engineName, ruleDescription.severityLevel, ruleOverride.severity));
+            ruleDescription.severityLevel = ruleOverride.severity;
+        }
+        if (ruleOverride.tags) {
+            this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.TAGS,
+                ruleDescription.name, engineName, JSON.stringify(ruleDescription.tags), JSON.stringify(ruleOverride.tags)));
+            ruleDescription.tags = ruleOverride.tags;
+        }
+        return ruleDescription;
     }
 }
 

@@ -47,7 +47,10 @@ const messageCatalog : { [key: string]: string } = {
         'The folder specified by the %s configuration value does not exist: %s',
 
     ConfigValueMustBeFolder:
-        'The %s configuration value is not a folder: %s'
+        'The %s configuration value is not a folder: %s',
+
+    RulePropertyOverridden:
+        'The %s value of rule "%s" of engine "%s" was overridden according to the specified configuration. The old value of %s was replaced with the new value of %s.'
 }
 
 /**
