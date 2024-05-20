@@ -73,19 +73,18 @@ export class RuleImpl implements Rule {
     }
 
     matchesRuleSelector(ruleSelector: string): boolean {
-        const partsToMatch: string[] = ruleSelector.split(':');
-        for (const selectorPart of partsToMatch) {
-            const sevNumber: number = this.getSeverityLevel().valueOf();
-            const sevName: string = SeverityLevel[sevNumber];
-
-            const selectorPartLower = selectorPart.toLowerCase();
-            const partMatched =
-                selectorPartLower == "all"
-                || this.getEngineName().toLowerCase() == selectorPartLower
-                || this.getName().toLowerCase() == selectorPartLower
-                || this.getTags().map(t => t.toLowerCase()).includes(selectorPartLower)
-                || String(sevNumber) == selectorPart
-                || sevName.toLowerCase() == selectorPartLower;
+        const sevNumber: number = this.getSeverityLevel().valueOf();
+        const sevName: string = SeverityLevel[sevNumber];
+        const selectables: string[] = [
+            "all",
+            this.getEngineName().toLowerCase(),
+            this.getName().toLowerCase(),
+            sevName.toLowerCase(),
+            String(sevNumber),
+            ...this.getTags().map(t => t.toLowerCase())
+        ]
+        for (const selectorPart of ruleSelector.toLowerCase().split(':')) {
+            const partMatched: boolean = selectables.some(s => s == selectorPart);
             if (!partMatched) return false;
         }
         return true;

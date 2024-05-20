@@ -4,7 +4,7 @@ import {Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
-import {CodeAnalyzerConfig, RuleOverride} from "./config";
+import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
 
 export type RunOptions = {
     filesToInclude: string[]
@@ -103,8 +103,16 @@ export class CodeAnalyzer {
 
     private updateRuleDescriptionWithOverrides(engineName: string, ruleDescription: engApi.RuleDescription): engApi.RuleDescription {
         const ruleOverride: RuleOverride = this.config.getRuleOverrideFor(engineName, ruleDescription.name);
-        ruleDescription.severityLevel = ruleOverride.severity || ruleDescription.severityLevel;
-        ruleDescription.tags = ruleOverride.tags || ruleDescription.tags;
+        if (ruleOverride.severity) {
+            this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.SEVERITY,
+                ruleDescription.name, engineName, ruleDescription.severityLevel, ruleOverride.severity));
+            ruleDescription.severityLevel = ruleOverride.severity;
+        }
+        if (ruleOverride.tags) {
+            this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.TAGS,
+                ruleDescription.name, engineName, JSON.stringify(ruleDescription.tags), JSON.stringify(ruleOverride.tags)));
+            ruleDescription.tags = ruleOverride.tags;
+        }
         return ruleDescription;
     }
 }

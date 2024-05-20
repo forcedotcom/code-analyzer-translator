@@ -6,7 +6,7 @@ import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
 import {SeverityLevel} from "./rules";
 
-const FIELDS = {
+export const FIELDS = {
     LOG_FOLDER: 'log_folder',
     RULES: 'rules',
     ENGINES: 'engines',
