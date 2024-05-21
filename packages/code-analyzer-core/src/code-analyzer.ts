@@ -1,10 +1,12 @@
 import {RuleImpl, RuleSelection, RuleSelectionImpl} from "./rules"
-import {RunResults} from "./results"
+import {RunResults, RunResultsImpl} from "./results"
 import {Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
+import {toAbsolutePath} from "./utils";
+import fs from "node:fs";
 
 export type RunOptions = {
     filesToInclude: string[]
@@ -50,8 +52,18 @@ export class CodeAnalyzer {
         return ruleSelection;
     }
 
-    public run(_ruleSelection: RuleSelection, _runOptions: RunOptions): RunResults {
-        throw new Error("not yet implemented");
+    public run(ruleSelection: RuleSelection, runOptions: RunOptions): RunResults {
+        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
+        this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
+
+        for (const engineName of ruleSelection.getEngineNames()) {
+            const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
+            this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
+            const engine: engApi.Engine = this.getEngine(engineName);
+            engine.runRules(rulesToRun, engineRunOptions);
+        }
+
+        return new RunResultsImpl();
     }
 
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
@@ -115,6 +127,11 @@ export class CodeAnalyzer {
         }
         return ruleDescription;
     }
+
+    private getEngine(engineName: string): engApi.Engine {
+        // This line should never return undefined, so we are safe to directly cast to engApi.Engine
+        return this.engines.get(engineName) as engApi.Engine;
+    }
 }
 
 function getAvailableEngineNamesFromPlugin(enginePlugin: engApi.EnginePluginV1): string[] {
@@ -131,4 +148,76 @@ function createEngineFromPlugin(enginePlugin: engApi.EnginePluginV1, engineName:
     } catch (err) {
         throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message), {cause: err})
     }
+}
+
+function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
+    if(!runOptions.filesToInclude || runOptions.filesToInclude.length == 0) {
+        throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
+    }
+    const engineRunOptions: engApi.RunOptions = {
+        filesToInclude: runOptions.filesToInclude.map(validateFileOrFolder)
+    };
+
+    if (runOptions.entryPoints && runOptions.entryPoints.length > 0) {
+        engineRunOptions.entryPoints = runOptions.entryPoints.flatMap(extractEngineEntryPoints)
+    }
+    validateEntryPointsLiveUnderFilesToInclude(engineRunOptions);
+    return engineRunOptions;
+}
+
+function validateFileOrFolder(fileOrFolder: string): string {
+    const absFileOrFolder: string = toAbsolutePath(fileOrFolder);
+    if (!fs.existsSync(fileOrFolder)) {
+        throw new Error(getMessage('FileOrFolderDoesNotExist', absFileOrFolder));
+    }
+    return absFileOrFolder;
+}
+
+function validateEntryPointFile(file: string, entryPointStr: string): string {
+    const absFile: string = toAbsolutePath(file);
+    if (!fs.existsSync(absFile)) {
+        throw new Error(getMessage('EntryPointFileDoesNotExist', entryPointStr, absFile));
+    } else if (fs.statSync(absFile).isDirectory()) {
+        throw new Error(getMessage('EntryPointWithMethodMustNotBeFolder', entryPointStr, absFile));
+    }
+    return absFile;
+}
+
+function extractEngineEntryPoints(entryPointStr: string): engApi.EntryPoint[] {
+    const parts: string[] = entryPointStr.split('#');
+    if (parts.length == 1) {
+        return [{
+            file: validateFileOrFolder(entryPointStr)
+        }];
+    } else if (parts.length > 2) {
+        throw new Error(getMessage('InvalidEntryPoint', entryPointStr));
+    }
+
+    const entryPointFile: string = validateEntryPointFile(parts[0], entryPointStr);
+    const VALID_METHOD_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_]*$/;
+    const TRAILING_SPACES_AND_SEMICOLONS_REGEX = /\s+;*$/;
+    const methodNames: string = parts[1].replace(TRAILING_SPACES_AND_SEMICOLONS_REGEX, '');
+    return methodNames.split(";").map(methodName => {
+        if (! VALID_METHOD_NAME_REGEX.test(methodName) ) {
+            throw new Error(getMessage('InvalidEntryPoint', entryPointStr));
+        }
+        return { file: entryPointFile, methodName: methodName };
+    });
+}
+
+function validateEntryPointsLiveUnderFilesToInclude(engineRunOptions: engApi.RunOptions) {
+    if (!engineRunOptions.entryPoints) {
+        return;
+    }
+    for (const engineEntryPoint of engineRunOptions.entryPoints) {
+        if (!fileIsUnderneath(engineEntryPoint.file, engineRunOptions.filesToInclude)) {
+            throw new Error(getMessage('EntryPointMustBeUnderFilesToInclude', engineEntryPoint.file,
+                JSON.stringify(engineRunOptions.filesToInclude)));
+        }
+    }
+}
+
+function fileIsUnderneath(entryPointFile: string, filesOrFolders: string[]): boolean {
+    return filesOrFolders.some(fileOrFolder => fileOrFolder == entryPointFile ||
+        (fs.statSync(fileOrFolder).isDirectory() && entryPointFile.startsWith(fileOrFolder)));
 }

@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import * as os from "node:os";
 import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
+import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
 
 export const FIELDS = {
@@ -201,11 +202,6 @@ function parseAndValidate(parseFcn: () => unknown): object {
         throw new Error(getMessage('ConfigContentNotAnObject', typeOf(data)));
     }
     return data as object;
-}
-
-function toAbsolutePath(fileOrFolder: string): string {
-    // Convert slashes to platform specific slashes and then convert to absolute path
-    return path.resolve(fileOrFolder.replace(/[\\/]/g, path.sep));
 }
 
 function typeOf(value: unknown) {

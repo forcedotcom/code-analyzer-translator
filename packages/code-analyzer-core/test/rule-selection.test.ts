@@ -1,8 +1,6 @@
 import {
     CodeAnalyzer,
     CodeAnalyzerConfig,
-    EventType,
-    LogEvent,
     Rule,
     RuleSelection,
     RuleType,
@@ -17,15 +15,12 @@ describe('Tests for selecting rules', () => {
     changeWorkingDirectoryToPackageRoot();
 
     let codeAnalyzer: CodeAnalyzer;
-    let logEvents: LogEvent[];
 
     function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) {
         codeAnalyzer.addEnginePlugin(new StubEnginePlugin());
-        codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
     }
 
     beforeEach(() => {
-        logEvents = [];
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         setupCodeAnalyzer(codeAnalyzer);
     })

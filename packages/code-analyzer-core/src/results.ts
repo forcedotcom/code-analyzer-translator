@@ -32,3 +32,28 @@ export interface RunResults {
     getViolationsFromEngine(engineName: string): EngineRunResults
     toFormattedOutput(formatter: OutputFormatter): string
 }
+
+
+/******* IMPLEMENTATIONS: **************************************************************************/
+
+export class RunResultsImpl implements RunResults {
+    getAllViolations(): Violation[] {
+        return [];
+    }
+
+    getTotalViolationCount(): number {
+        return 0;
+    }
+
+    getViolationCountOfSeverity(_severity: SeverityLevel): number {
+        return 0;
+    }
+
+    getViolationsFromEngine(_engineName: string): EngineRunResults {
+        throw new Error("Unimplemented");
+    }
+
+    toFormattedOutput(_formatter: OutputFormatter): string {
+        return "";
+    }
+}

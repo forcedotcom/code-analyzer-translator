@@ -50,7 +50,31 @@ const messageCatalog : { [key: string]: string } = {
         'The %s configuration value is not a folder: %s',
 
     RulePropertyOverridden:
-        'The %s value of rule "%s" of engine "%s" was overridden according to the specified configuration. The old value of %s was replaced with the new value of %s.'
+        'The %s value of rule "%s" of engine "%s" was overridden according to the specified configuration. The old value of %s was replaced with the new value of %s.',
+
+    FileOrFolderDoesNotExist:
+        'The file or folder "%s" does not exist.',
+
+    AtLeastOneFileOrFolderMustBeIncluded:
+        'At least one file or folder must be included.',
+
+    EntryPointFileDoesNotExist:
+        'The value "%s" is not a valid entry point since the file "%s" does not exist.',
+
+    EntryPointWithMethodMustNotBeFolder:
+        'The value "%s" is not a valid entry point since "%s" is a folder instead of a file.',
+
+    InvalidEntryPoint:
+        `The value "%s" is not a valid entry point. Expected value to be of the format "<fileOrFolder>", "<file>#<methodName>", or "<file>#<methodName1>;<methodName2>;...".`,
+
+    EntryPointMustBeUnderFilesToInclude:
+        'The specified entry point of "%s" does not that exists underneath any of the specified paths: %s',
+
+    RunningWithRunOptions:
+        'Running with the following run options: %s',
+
+    RunningEngineWithRules:
+        'Running engine "%s" with the following rules: %s',
 }
 
 /**
