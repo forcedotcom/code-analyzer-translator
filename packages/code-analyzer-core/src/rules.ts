@@ -1,4 +1,5 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
+import {getMessage} from "./messages";
 
 export enum SeverityLevel {
     Critical = 1,
@@ -28,6 +29,7 @@ export interface RuleSelection {
     getCount(): number
     getEngineNames(): string[]
     getRulesFor(engineName: string): Rule[]
+    getRule(engineName: string, ruleName: string): Rule
 }
 
 
@@ -116,5 +118,14 @@ export class RuleSelectionImpl implements RuleSelection {
 
     getRulesFor(engineName: string): Rule[] {
         return this.ruleMap.get(engineName) || [];
+    }
+
+    getRule(engineName: string, ruleName: string): Rule {
+        for (const rule of this.getRulesFor(engineName)) {
+            if (rule.getName() == ruleName) {
+                return rule;
+            }
+        }
+        throw new Error(getMessage('RuleDoesNotExistInSelection', ruleName, engineName));
     }
 }

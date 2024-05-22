@@ -1,5 +1,5 @@
 import {RuleImpl, RuleSelection, RuleSelectionImpl} from "./rules"
-import {RunResults, RunResultsImpl} from "./results"
+import {EngineRunResultsImpl, RunResults, RunResultsImpl} from "./results"
 import {Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
@@ -56,14 +56,17 @@ export class CodeAnalyzer {
         const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
+        const runResults: RunResultsImpl = new RunResultsImpl();
         for (const engineName of ruleSelection.getEngineNames()) {
             const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
             this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
             const engine: engApi.Engine = this.getEngine(engineName);
-            engine.runRules(rulesToRun, engineRunOptions);
+            const apiEngineRunResults: engApi.EngineRunResults = engine.runRules(rulesToRun, engineRunOptions);
+            validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
+            runResults.addEngineRunResults(new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection));
         }
 
-        return new RunResultsImpl();
+        return runResults;
     }
 
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
@@ -220,4 +223,82 @@ function validateEntryPointsLiveUnderFilesToInclude(engineRunOptions: engApi.Run
 function fileIsUnderneath(entryPointFile: string, filesOrFolders: string[]): boolean {
     return filesOrFolders.some(fileOrFolder => fileOrFolder == entryPointFile ||
         (fs.statSync(fileOrFolder).isDirectory() && entryPointFile.startsWith(fileOrFolder)));
+}
+
+function validateEngineRunResults(engineName: string, apiEngineRunResults: engApi.EngineRunResults, ruleSelection: RuleSelection): void {
+    for (const violation of apiEngineRunResults.violations) {
+        validateViolationRuleName(violation, engineName, ruleSelection);
+        validateViolationPrimaryLocationIndex(violation, engineName);
+        validateViolationCodeLocations(violation, engineName);
+    }
+}
+
+function validateViolationRuleName(violation: engApi.Violation, engineName: string, ruleSelection: RuleSelection) {
+    try {
+        ruleSelection.getRule(engineName, violation.ruleName);
+    } catch (error) {
+        throw new Error(getMessage('EngineReturnedViolationForUnselectedRule', engineName, violation.ruleName), {cause: error});
+    }
+}
+
+function validateViolationPrimaryLocationIndex(violation: engApi.Violation, engineName: string) {
+    if (!isIntegerBetween(violation.primaryLocationIndex, 0, violation.codeLocations.length-1)) {
+        throw new Error(getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex',
+            engineName, violation.ruleName, violation.primaryLocationIndex, violation.codeLocations.length));
+    }
+}
+
+function validateViolationCodeLocations(violation: engApi.Violation, engineName: string) {
+    for (const codeLocation of violation.codeLocations) {
+        const absFile: string = toAbsolutePath(codeLocation.file);
+        fs.existsSync(absFile)
+
+        if (!fs.existsSync(absFile)) {
+            throw new Error(getMessage('EngineReturnedViolationWithCodeLocationFileThatDoesNotExist',
+                engineName, violation.ruleName, absFile));
+        }
+
+        if (!fs.statSync(absFile).isFile()) {
+            throw new Error(getMessage('EngineReturnedViolationWithCodeLocationFileAsFolder',
+                engineName, violation.ruleName, absFile));
+        }
+
+        if (!isValidLineOrColumn(codeLocation.startLine)) {
+            throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
+                engineName, violation.ruleName, 'startLine', codeLocation.startLine));
+        }
+
+        if (!isValidLineOrColumn(codeLocation.startColumn)) {
+            throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
+                engineName, violation.ruleName, 'startColumn', codeLocation.startColumn));
+        }
+
+        if (codeLocation.endLine !== undefined) {
+            if (!isValidLineOrColumn(codeLocation.endLine)) {
+                throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
+                    engineName, violation.ruleName, 'endLine', codeLocation.endLine));
+            } else if (codeLocation.endLine < codeLocation.startLine) {
+                throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithEndLineBeforeStartLine',
+                    engineName, violation.ruleName, codeLocation.endLine, codeLocation.startLine));
+            }
+
+            if (codeLocation.endColumn !== undefined) {
+                if (!isValidLineOrColumn(codeLocation.endColumn)) {
+                    throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
+                        engineName, violation.ruleName, 'endColumn', codeLocation.endColumn));
+                } else if (codeLocation.endLine == codeLocation.startLine && codeLocation.endColumn < codeLocation.startColumn) {
+                    throw new Error(getMessage('EngineReturnedViolationWithCodeLocationWithEndColumnBeforeStartColumnOnSameLine',
+                        engineName, violation.ruleName, codeLocation.endColumn, codeLocation.startColumn));
+                }
+            }
+        }
+    }
+}
+
+function isValidLineOrColumn(value: number) {
+    return isIntegerBetween(value, 1, Number.MAX_VALUE);
+}
+
+function isIntegerBetween(value: number, leftBound: number, rightBound: number): boolean {
+    return value >= leftBound && value <= rightBound && Number.isInteger(value);
 }

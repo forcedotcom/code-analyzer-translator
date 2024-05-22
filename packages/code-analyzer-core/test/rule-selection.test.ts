@@ -10,6 +10,7 @@ import { SeverityLevel as EngApi_SeverityLevel } from "@salesforce/code-analyzer
 import {StubEnginePlugin} from "./stubs";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {getMessage} from "../src/messages";
 
 describe('Tests for selecting rules', () => {
     changeWorkingDirectoryToPackageRoot();
@@ -44,6 +45,9 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.High);
         expect(stub1RuleB.getTags()).toEqual(['default', 'Security']);
         expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
+
+        // Sanity check we can directly get one of the rules from the selection
+        expect(selection.getRule('stubEngine1', 'stub1RuleB')).toEqual(stub1RuleB);
     });
 
     it('When all is provide then all is returned', () => {
@@ -212,6 +216,15 @@ describe('Tests for selecting rules', () => {
         const selection: RuleSelection = codeAnalyzer.selectRules('5');
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleD']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual([]);
+    });
+
+    it('When attempting to get a rule that does not exist in the selection, then error', () => {
+        const selection: RuleSelection = codeAnalyzer.selectRules();
+
+        expect(() => selection.getRule('stubEngine1', 'doesNotExist')).toThrow(
+            getMessage('RuleDoesNotExistInSelection', 'doesNotExist', 'stubEngine1'));
+        expect(() => selection.getRule('oopsEngine', 'stub1RuleD')).toThrow(
+            getMessage('RuleDoesNotExistInSelection', 'stub1RuleD', 'oopsEngine'));
     });
 });
 

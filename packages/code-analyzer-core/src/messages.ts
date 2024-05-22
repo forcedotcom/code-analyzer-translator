@@ -75,6 +75,34 @@ const messageCatalog : { [key: string]: string } = {
 
     RunningEngineWithRules:
         'Running engine "%s" with the following rules: %s',
+
+    RuleDoesNotExistInSelection:
+        'No rule with name "%s" and engine "%s" exists among the selected rules.',
+
+    EngineRunResultsMissing:
+        'Could to get results for engine "%s" since they are missing from the overall run results. Most likely the engine did not run.',
+
+    EngineReturnedViolationForUnselectedRule:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" which was not selected.',
+
+    EngineReturnedViolationWithInvalidPrimaryLocationIndex:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains an out of bounds primary location index value of %d. Expected a non-negative integer that is less than %d.',
+
+    EngineReturnedViolationWithCodeLocationFileThatDoesNotExist:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with a file that does not exist: %s',
+
+    EngineReturnedViolationWithCodeLocationFileAsFolder:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with a folder instead of a file: %s',
+
+    EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with an invalid %s value: %d',
+
+    EngineReturnedViolationWithCodeLocationWithEndLineBeforeStartLine:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with the endLine %d before the startLine %d.',
+
+    EngineReturnedViolationWithCodeLocationWithEndColumnBeforeStartColumnOnSameLine:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with the endLine equal to the startLine and the endColumn %d before the startColumn %d.',
+
 }
 
 /**
