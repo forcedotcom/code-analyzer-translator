@@ -1,34 +1,52 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
+import {
+    ConfigObject,
+    Engine,
+    EngineRunResults,
+    RuleDescription,
+    RunOptions
+} from "@salesforce/code-analyzer-engine-api";
 
 /**
  * StubEnginePlugin - A plugin stub with preconfigured outputs to help with testing
  */
 export class StubEnginePlugin extends engApi.EnginePluginV1 {
-    readonly callHistoryForCreateEngine: {engineName: string, config: engApi.ConfigObject}[] = [];
+    private readonly createdEngines: Map<string, engApi.Engine> = new Map();
 
     getAvailableEngineNames(): string[] {
         return ["stubEngine1", "stubEngine2"];
     }
 
     createEngine(engineName: string, config: engApi.ConfigObject): engApi.Engine {
-        this.callHistoryForCreateEngine.push({engineName, config});
         if (engineName == "stubEngine1") {
-            return new StubEngine1(config);
+            this.createdEngines.set(engineName, new StubEngine1(config));
         } else if (engineName == "stubEngine2") {
-            return new StubEngine2(config);
+            this.createdEngines.set(engineName, new StubEngine2(config));
         } else {
             throw new Error(`Unsupported engine name: ${engineName}`)
         }
+        return this.getCreatedEngine(engineName);
+    }
+
+    getCreatedEngine(engineName: string): engApi.Engine {
+        if (this.createdEngines.has(engineName)) {
+            return this.createdEngines.get(engineName) as engApi.Engine;
+        }
+        throw new Error(`Engine with name ${engineName} has not yet been created`);
     }
 }
 
 /**
  * StubEngine1 - A sample engine stub with preconfigured outputs to help with testing
  */
-class StubEngine1 extends engApi.Engine {
-    constructor(_config: engApi.ConfigObject) {
-        // Will use the config soon but not yet.
+export class StubEngine1 extends engApi.Engine {
+    readonly config: engApi.ConfigObject;
+    readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
+    resultsToReturn: engApi.EngineRunResults = { violations: [] }
+
+    constructor(config: engApi.ConfigObject) {
         super();
+        this.config = config;
     }
 
     getName(): string {
@@ -81,17 +99,22 @@ class StubEngine1 extends engApi.Engine {
     }
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
-        return { violations: [] };
+        this.runRulesCallHistory.push({ruleNames, runOptions});
+        return this.resultsToReturn;
     }
 }
 
 /**
  * StubEngine2 - A sample engine stub with preconfigured outputs to help with testing
  */
-class StubEngine2 extends engApi.Engine {
-    constructor(_config: engApi.ConfigObject) {
-        // Will use the config soon but not yet.
+export class StubEngine2 extends engApi.Engine {
+    readonly config: engApi.ConfigObject;
+    readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
+    resultsToReturn: engApi.EngineRunResults = { violations: [] }
+
+    constructor(config: engApi.ConfigObject) {
         super();
+        this.config = config;
     }
 
     getName(): string {
@@ -128,7 +151,8 @@ class StubEngine2 extends engApi.Engine {
     }
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
-        return { violations: [] };
+        this.runRulesCallHistory.push({ruleNames, runOptions});
+        return this.resultsToReturn;
     }
 }
 
@@ -161,7 +185,7 @@ class FutureEngine extends engApi.Engine {
         return [];
     }
 
-    runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
         return { violations: [] };
     }
 }
@@ -208,7 +232,7 @@ class InvalidEngine extends engApi.Engine {
         return [];
     }
 
-    runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
         return { violations: [] };
     }
 }
@@ -236,5 +260,52 @@ export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
 
     createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
         throw new Error('SomeErrorFromCreateEngine');
+    }
+}
+
+/**
+ * RepeatedRuleNameEnginePlugin - A plugin that returns an engine that returns multiple rules with the same name
+ */
+export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
+    getAvailableEngineNames(): string[] {
+        return ['repeatedRuleNameEngine'];
+    }
+
+    createEngine(_engineName: string, _config: ConfigObject): Engine {
+        return new RepeatedRuleNameEngine();
+    }
+}
+
+/**
+ * RepeatedRuleNameEngine - An engine that returns multiple rules with the same name
+ */
+class RepeatedRuleNameEngine extends engApi.Engine {
+    getName(): string {
+        return 'repeatedRuleNameEngine';
+    }
+
+    describeRules(): RuleDescription[] {
+        return [
+            {
+                name: "repeatedRule",
+                severityLevel: engApi.SeverityLevel.Moderate,
+                type: engApi.RuleType.PathBased,
+                tags: ["default", "Security"],
+                description: "Some description 1",
+                resourceUrls: ["https://example.com/repeatedRule1"]
+            },
+            {
+                name: "repeatedRule", // Same name as above
+                severityLevel: engApi.SeverityLevel.Low,
+                type: engApi.RuleType.Standard,
+                tags: ["Performance", "Custom"],
+                description: "Some description 2",
+                resourceUrls: ["https://example.com/repeatedRule2"]
+            }
+        ];
+    }
+
+    runRules(_ruleNames: string[], _runOptions: RunOptions): EngineRunResults {
+        return { violations: [] };
     }
 }

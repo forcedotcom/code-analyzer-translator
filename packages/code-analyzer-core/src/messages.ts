@@ -50,7 +50,62 @@ const messageCatalog : { [key: string]: string } = {
         'The %s configuration value is not a folder: %s',
 
     RulePropertyOverridden:
-        'The %s value of rule "%s" of engine "%s" was overridden according to the specified configuration. The old value of %s was replaced with the new value of %s.'
+        'The %s value of rule "%s" of engine "%s" was overridden according to the specified configuration. The old value of %s was replaced with the new value of %s.',
+
+    FileOrFolderDoesNotExist:
+        'The file or folder "%s" does not exist.',
+
+    AtLeastOneFileOrFolderMustBeIncluded:
+        'At least one file or folder must be included.',
+
+    EntryPointFileDoesNotExist:
+        'The value "%s" is not a valid entry point since the file "%s" does not exist.',
+
+    EntryPointWithMethodMustNotBeFolder:
+        'The value "%s" is not a valid entry point since "%s" is a folder instead of a file.',
+
+    InvalidEntryPoint:
+        `The value "%s" is not a valid entry point. Expected value to be of the format "<fileOrFolder>", "<file>#<methodName>", or "<file>#<methodName1>;<methodName2>;...".`,
+
+    EntryPointMustBeUnderFilesToInclude:
+        'The specified entry point of "%s" does not that exists underneath any of the specified paths: %s',
+
+    RunningWithRunOptions:
+        'Running with the following run options: %s',
+
+    RunningEngineWithRules:
+        'Running engine "%s" with the following rules: %s',
+
+    RuleDoesNotExistInSelection:
+        'No rule with name "%s" and engine "%s" exists among the selected rules.',
+
+    EngineRunResultsMissing:
+        'Could to get results for engine "%s" since they are missing from the overall run results. Most likely the engine did not run.',
+
+    EngineReturnedMultipleRulesWithSameName:
+        'Engine failure. The engine "%s" returned more than one rule with the name "%s".',
+
+    EngineReturnedViolationForUnselectedRule:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" which was not selected.',
+
+    EngineReturnedViolationWithInvalidPrimaryLocationIndex:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains an out of bounds primary location index value of %d. Expected a non-negative integer that is less than %d.',
+
+    EngineReturnedViolationWithCodeLocationFileThatDoesNotExist:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with a file that does not exist: %s',
+
+    EngineReturnedViolationWithCodeLocationFileAsFolder:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with a folder instead of a file: %s',
+
+    EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with an invalid %s value: %d',
+
+    EngineReturnedViolationWithCodeLocationWithEndLineBeforeStartLine:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with the endLine %d before the startLine %d.',
+
+    EngineReturnedViolationWithCodeLocationWithEndColumnBeforeStartColumnOnSameLine:
+        'Engine failure. The engine "%s" returned a violation for rule "%s" that contains a code location with the endLine equal to the startLine and the endColumn %d before the startColumn %d.',
+
 }
 
 /**

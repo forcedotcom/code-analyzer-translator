@@ -3,6 +3,7 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
+import {StubEngine1, StubEngine2} from "./stubs";
 
 describe("Tests for adding engines to Code Analyzer", () => {
     changeWorkingDirectoryToPackageRoot();
@@ -17,45 +18,37 @@ describe("Tests for adding engines to Code Analyzer", () => {
     });
 
     it('When adding engine plugin then all its engines are correctly added', () => {
-        const subEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
-        codeAnalyzer.addEnginePlugin(subEnginePlugin);
+        const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
+        codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
-        expect(subEnginePlugin.callHistoryForCreateEngine).toEqual([
-            {
-                engineName: "stubEngine1",
-                config: {}
-            },
-            {
-                engineName: "stubEngine2",
-                config: {}
-            }
-        ]);
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"]);
+        const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
+        expect(stubEngine1.getName()).toEqual('stubEngine1');
+        expect(stubEngine1.config).toEqual({});
+        const stubEngine2: StubEngine2 = stubEnginePlugin.getCreatedEngine('stubEngine2') as StubEngine2;
+        expect(stubEngine2.getName()).toEqual('stubEngine2');
+        expect(stubEngine2.config).toEqual({});
     });
 
-    it('When adding engine plugin using non-default config then  engines are correctly added with engine specific configurations', () => {
+    it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml')));
 
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
-        expect(stubEnginePlugin.callHistoryForCreateEngine).toEqual([
-            {
-                engineName: "stubEngine1",
-                config: {
-                    miscSetting1: true,
-                    miscSetting2: {
-                        miscSetting2A: 3,
-                        miscSetting2B: ["hello", "world"]
-                    }
-                }
-            },
-            {
-                engineName: "stubEngine2",
-                config: {}
+        const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
+        expect(stubEngine1.getName()).toEqual('stubEngine1');
+        expect(stubEngine1.config).toEqual({
+            miscSetting1: true,
+            miscSetting2: {
+                miscSetting2A: 3,
+                miscSetting2B: ["hello", "world"]
             }
-        ]);
+        });
+        const stubEngine2: StubEngine2 = stubEnginePlugin.getCreatedEngine('stubEngine2') as StubEngine2;
+        expect(stubEngine2.getName()).toEqual('stubEngine2');
+        expect(stubEngine2.config).toEqual({});
     });
 
     it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', () => {
