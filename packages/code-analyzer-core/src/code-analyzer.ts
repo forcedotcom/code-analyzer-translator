@@ -108,7 +108,9 @@ export class CodeAnalyzer {
     private getAllRules(): RuleImpl[] {
         const allRules: RuleImpl[] = [];
         for (const [engineName, engine] of this.engines) {
-            for (let ruleDescription of engine.describeRules()) {
+            const ruleDescriptions: engApi.RuleDescription[] = engine.describeRules();
+            validateRuleDescriptions(ruleDescriptions, engineName);
+            for (let ruleDescription of ruleDescriptions) {
                 ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
                 allRules.push(new RuleImpl(engineName, ruleDescription))
             }
@@ -150,6 +152,16 @@ function createEngineFromPlugin(enginePlugin: engApi.EnginePluginV1, engineName:
         return enginePlugin.createEngine(engineName, config);
     } catch (err) {
         throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message), {cause: err})
+    }
+}
+
+function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], engineName: string): void {
+    const ruleNamesSeen: Set<string> = new Set();
+    for (const ruleDescription of ruleDescriptions) {
+        if (ruleNamesSeen.has(ruleDescription.name)) {
+            throw new Error(getMessage('EngineReturnedMultipleRulesWithSameName', engineName, ruleDescription.name));
+        }
+        ruleNamesSeen.add(ruleDescription.name);
     }
 }
 

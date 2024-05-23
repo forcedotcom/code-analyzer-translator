@@ -1,4 +1,11 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
+import {
+    ConfigObject,
+    Engine,
+    EngineRunResults,
+    RuleDescription,
+    RunOptions
+} from "@salesforce/code-analyzer-engine-api";
 
 /**
  * StubEnginePlugin - A plugin stub with preconfigured outputs to help with testing
@@ -253,5 +260,52 @@ export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
 
     createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
         throw new Error('SomeErrorFromCreateEngine');
+    }
+}
+
+/**
+ * RepeatedRuleNameEnginePlugin - A plugin that returns an engine that returns multiple rules with the same name
+ */
+export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
+    getAvailableEngineNames(): string[] {
+        return ['repeatedRuleNameEngine'];
+    }
+
+    createEngine(_engineName: string, _config: ConfigObject): Engine {
+        return new RepeatedRuleNameEngine();
+    }
+}
+
+/**
+ * RepeatedRuleNameEngine - An engine that returns multiple rules with the same name
+ */
+class RepeatedRuleNameEngine extends engApi.Engine {
+    getName(): string {
+        return 'repeatedRuleNameEngine';
+    }
+
+    describeRules(): RuleDescription[] {
+        return [
+            {
+                name: "repeatedRule",
+                severityLevel: engApi.SeverityLevel.Moderate,
+                type: engApi.RuleType.PathBased,
+                tags: ["default", "Security"],
+                description: "Some description 1",
+                resourceUrls: ["https://example.com/repeatedRule1"]
+            },
+            {
+                name: "repeatedRule", // Same name as above
+                severityLevel: engApi.SeverityLevel.Low,
+                type: engApi.RuleType.Standard,
+                tags: ["Performance", "Custom"],
+                description: "Some description 2",
+                resourceUrls: ["https://example.com/repeatedRule2"]
+            }
+        ];
+    }
+
+    runRules(_ruleNames: string[], _runOptions: RunOptions): EngineRunResults {
+        return { violations: [] };
     }
 }

@@ -82,6 +82,9 @@ const messageCatalog : { [key: string]: string } = {
     EngineRunResultsMissing:
         'Could to get results for engine "%s" since they are missing from the overall run results. Most likely the engine did not run.',
 
+    EngineReturnedMultipleRulesWithSameName:
+        'Engine failure. The engine "%s" returned more than one rule with the name "%s".',
+
     EngineReturnedViolationForUnselectedRule:
         'Engine failure. The engine "%s" returned a violation for rule "%s" which was not selected.',
 

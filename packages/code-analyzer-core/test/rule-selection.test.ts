@@ -7,7 +7,7 @@ import {
     SeverityLevel
 } from "../src";
 import { SeverityLevel as EngApi_SeverityLevel } from "@salesforce/code-analyzer-engine-api"
-import {StubEnginePlugin} from "./stubs";
+import {RepeatedRuleNameEnginePlugin, StubEnginePlugin} from "./stubs";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {getMessage} from "../src/messages";
@@ -225,6 +225,13 @@ describe('Tests for selecting rules', () => {
             getMessage('RuleDoesNotExistInSelection', 'doesNotExist', 'stubEngine1'));
         expect(() => selection.getRule('oopsEngine', 'stub1RuleD')).toThrow(
             getMessage('RuleDoesNotExistInSelection', 'stub1RuleD', 'oopsEngine'));
+    });
+
+    it('When an engine returns multiple rules with the same name, then error', () => {
+        codeAnalyzer.addEnginePlugin(new RepeatedRuleNameEnginePlugin());
+
+        expect(() => codeAnalyzer.selectRules()).toThrow(
+            getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 });
 
