@@ -1,17 +1,10 @@
 import {
-    CodeAnalyzer,
-    CodeAnalyzerConfig, CodeLocation,
-    EventType,
-    LogEvent,
-    RuleSelection,
-    RunOptions,
-    RunResults,
-    SeverityLevel,
-    Violation
+    CodeAnalyzer, CodeAnalyzerConfig, CodeLocation, EngineLogEvent, EngineProgressEvent, EngineResultsEvent,
+    EventType, LogEvent, LogLevel, RuleSelection, RunOptions, RunResults, SeverityLevel, Violation
 } from "../src";
 import {StubEngine1, StubEngine2, StubEnginePlugin} from "./stubs";
 import {getMessage} from "../src/messages";
-import {toAbsolutePath} from "../src/utils";
+import {Clock, toAbsolutePath} from "../src/utils";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
@@ -74,6 +67,7 @@ const SAMPLE_STUB2RULEC_VIOLATION: engApi.Violation = {
 describe("Tests for the run method of CodeAnalyzer", () => {
     changeWorkingDirectoryToPackageRoot();
 
+    let sampleTimestamp: Date;
     let codeAnalyzer: CodeAnalyzer;
     let stubEngine1: StubEngine1;
     let stubEngine2: StubEngine2;
@@ -84,7 +78,9 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     beforeEach(() => {
         logEvents = [];
+        sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        codeAnalyzer.setClock(new FixedClock(sampleTimestamp));
         const stubPlugin: StubEnginePlugin = new StubEnginePlugin();
         codeAnalyzer.addEnginePlugin(stubPlugin);
         stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as StubEngine1;
@@ -527,6 +523,63 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getCodeLocations()[0].getEndLine()).toBeUndefined();
         expect(violations[0].getCodeLocations()[0].getEndColumn()).toBeUndefined();
     });
+
+    it("When running engines, then events are wired up and emitted correctly from the engines", () => {
+        const engineLogEvents: EngineLogEvent[] = [];
+        const engineProgressEvents: EngineProgressEvent[] = [];
+        const engineResultsEvents: EngineResultsEvent[] = [];
+        codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
+        codeAnalyzer.onEvent(EventType.EngineProgressEvent, (event: EngineProgressEvent) => engineProgressEvents.push(event));
+        codeAnalyzer.onEvent(EventType.EngineResultsEvent, (event: EngineResultsEvent) => engineResultsEvents.push(event));
+        const runResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+
+        expect(engineLogEvents).toHaveLength(2);
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine1",
+            logLevel: LogLevel.Fine,
+            message: "someMiscFineMessageFromStubEngine1"
+        });
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine2",
+            logLevel: LogLevel.Info,
+            message: "someMiscInfoMessageFromStubEngine2"
+        });
+
+
+        expect(engineProgressEvents).toHaveLength(6);
+        for (const expectedPercentComplete of [0, 50, 100]) {
+            expect(engineProgressEvents).toContainEqual({
+                type: EventType.EngineProgressEvent,
+                timestamp: sampleTimestamp,
+                engineName: "stubEngine1",
+                percentComplete: expectedPercentComplete
+            });
+        }
+        for (const expectedPercentComplete of [5, 63, 100]) {
+            expect(engineProgressEvents).toContainEqual({
+                type: EventType.EngineProgressEvent,
+                timestamp: sampleTimestamp,
+                engineName: "stubEngine2",
+                percentComplete: expectedPercentComplete
+            });
+        }
+
+        expect(engineResultsEvents).toHaveLength(2);
+        expect(engineResultsEvents).toContainEqual({
+            type: EventType.EngineResultsEvent,
+            timestamp: sampleTimestamp,
+            results: runResults.getEngineRunResults("stubEngine1")
+        })
+        expect(engineResultsEvents).toContainEqual({
+            type: EventType.EngineResultsEvent,
+            timestamp: sampleTimestamp,
+            results: runResults.getEngineRunResults("stubEngine2")
+        })
+    });
 });
 
 function getAllSeverityLevels(): SeverityLevel[] {
@@ -553,4 +606,16 @@ function deepCopyOfCodeLocation(codeLocation: engApi.CodeLocation): engApi.CodeL
     return {
         ...codeLocation
     };
+}
+
+class FixedClock implements Clock {
+    private readonly fixedTimestamp: Date;
+
+    constructor(fixedTimestamp: Date) {
+        this.fixedTimestamp = fixedTimestamp;
+    }
+
+    now(): Date {
+        return this.fixedTimestamp;
+    }
 }

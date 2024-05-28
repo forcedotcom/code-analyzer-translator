@@ -1,11 +1,11 @@
 import {RuleImpl, RuleSelection, RuleSelectionImpl} from "./rules"
-import {EngineRunResultsImpl, RunResults, RunResultsImpl} from "./results"
-import {Event, EventType, LogLevel} from "./events"
+import {EngineRunResults, EngineRunResultsImpl, RunResults, RunResultsImpl} from "./results"
+import {EngineLogEvent, EngineProgressEvent, EngineResultsEvent, Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
-import {toAbsolutePath} from "./utils";
+import {Clock, RealClock, toAbsolutePath} from "./utils";
 import fs from "node:fs";
 
 export type RunOptions = {
@@ -15,11 +15,17 @@ export type RunOptions = {
 
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
+    private clock: Clock = new RealClock();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
 
     constructor(config: CodeAnalyzerConfig) {
         this.config = config;
+    }
+
+    // For testing purposes only
+    setClock(clock: Clock) {
+        this.clock = clock;
     }
 
     public addEnginePlugin(enginePlugin: engApi.EnginePlugin): void {
@@ -63,7 +69,13 @@ export class CodeAnalyzer {
             const engine: engApi.Engine = this.getEngine(engineName);
             const apiEngineRunResults: engApi.EngineRunResults = engine.runRules(rulesToRun, engineRunOptions);
             validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
-            runResults.addEngineRunResults(new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection));
+            const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
+            runResults.addEngineRunResults(engineRunResults);
+            this.emitEvent<EngineResultsEvent>({
+                type: EventType.EngineResultsEvent,
+                timestamp: this.clock.now(),
+                results: engineRunResults
+            });
         }
 
         return runResults;
@@ -80,7 +92,7 @@ export class CodeAnalyzer {
     private emitLogEvent(logLevel: LogLevel, message: string): void {
         this.emitEvent({
             type: EventType.LogEvent,
-            timestamp: new Date(),
+            timestamp: this.clock.now(),
             logLevel: logLevel,
             message: message
         })
@@ -103,6 +115,28 @@ export class CodeAnalyzer {
         }
         this.engines.set(engineName, engine);
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));
+        this.listenToEngineEvents(engine);
+    }
+
+    private listenToEngineEvents(engine: engApi.Engine) {
+        engine.onEvent(engApi.EventType.LogEvent, (event: engApi.LogEvent) => {
+            this.emitEvent<EngineLogEvent>({
+                type: EventType.EngineLogEvent,
+                timestamp: this.clock.now(),
+                engineName: engine.getName(),
+                logLevel: event.logLevel,
+                message: event.message
+            });
+        });
+
+        engine.onEvent(engApi.EventType.ProgressEvent, (event: engApi.ProgressEvent) => {
+            this.emitEvent<EngineProgressEvent>({
+                type: EventType.EngineProgressEvent,
+                timestamp: this.clock.now(),
+                engineName: engine.getName(),
+                percentComplete: event.percentComplete
+            });
+        });
     }
 
     private getAllRules(): RuleImpl[] {

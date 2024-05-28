@@ -2,6 +2,7 @@ import { EngineRunResults } from "./results"
 
 export enum EventType {
     LogEvent = "LogEvent",
+    EngineLogEvent = "EngineLogEvent",
     EngineProgressEvent = "EngineProgressEvent",
     EngineResultsEvent = "EngineResultsEvent"
 }
@@ -21,6 +22,14 @@ export type LogEvent = {
     message: string
 }
 
+export type EngineLogEvent = {
+    type: EventType.EngineLogEvent,
+    timestamp: Date,
+    engineName: string
+    logLevel: LogLevel,
+    message: string
+}
+
 export type EngineProgressEvent = {
     type: EventType.EngineProgressEvent,
     timestamp: Date,
@@ -34,4 +43,4 @@ export type EngineResultsEvent = {
     results: EngineRunResults
 }
 
-export type Event = LogEvent | EngineProgressEvent | EngineResultsEvent;
+export type Event = LogEvent | EngineLogEvent | EngineProgressEvent | EngineResultsEvent;
