@@ -8,6 +8,7 @@ export {
 } from "./code-analyzer"
 
 export {
+    EngineLogEvent,
     EngineProgressEvent,
     EngineResultsEvent,
     Event,

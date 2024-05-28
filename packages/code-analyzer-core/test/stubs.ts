@@ -3,9 +3,10 @@ import {
     ConfigObject,
     Engine,
     EngineRunResults,
+    LogLevel,
     RuleDescription,
     RunOptions
-} from "@salesforce/code-analyzer-engine-api";
+} from "@salesforce/code-analyzer-engine-api"
 
 /**
  * StubEnginePlugin - A plugin stub with preconfigured outputs to help with testing
@@ -100,6 +101,23 @@ export class StubEngine1 extends engApi.Engine {
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
         this.runRulesCallHistory.push({ruleNames, runOptions});
+        this.emitEvent<engApi.ProgressEvent>({
+            type: engApi.EventType.ProgressEvent,
+            percentComplete: 0
+        });
+        this.emitEvent<engApi.LogEvent>({
+            type: engApi.EventType.LogEvent,
+            message: "someMiscFineMessageFromStubEngine1",
+            logLevel: LogLevel.Fine
+        });
+        this.emitEvent<engApi.ProgressEvent>({
+            type: engApi.EventType.ProgressEvent,
+            percentComplete: 50
+        });
+        this.emitEvent<engApi.ProgressEvent>({
+            type: engApi.EventType.ProgressEvent,
+            percentComplete: 100
+        });
         return this.resultsToReturn;
     }
 }
@@ -152,6 +170,19 @@ export class StubEngine2 extends engApi.Engine {
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
         this.runRulesCallHistory.push({ruleNames, runOptions});
+        this.emitEvent<engApi.LogEvent>({
+            type: engApi.EventType.LogEvent,
+            message: "someMiscInfoMessageFromStubEngine2",
+            logLevel: LogLevel.Info
+        });
+        this.emitEvent<engApi.ProgressEvent>({
+            type: engApi.EventType.ProgressEvent,
+            percentComplete: 5
+        });
+        this.emitEvent<engApi.ProgressEvent>({
+            type: engApi.EventType.ProgressEvent,
+            percentComplete: 63
+        });
         return this.resultsToReturn;
     }
 }
