@@ -282,8 +282,8 @@ export class ThrowingPlugin1 extends engApi.EnginePluginV1 {
 }
 
 /**
-* ThrowingPlugin2 - A plugin that throws an exception during a call to createEngine
-*/
+ * ThrowingPlugin2 - A plugin that throws an exception during a call to createEngine
+ */
 export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
     getAvailableEngineNames(): string[] {
         return ['someEngine'];
