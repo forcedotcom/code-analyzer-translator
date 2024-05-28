@@ -64,6 +64,10 @@ export class CodeAnalyzer {
 
         const runResults: RunResultsImpl = new RunResultsImpl();
         for (const engineName of ruleSelection.getEngineNames()) {
+            this.emitEvent<EngineProgressEvent>({
+                type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 0
+            });
+
             const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
             this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
             const engine: engApi.Engine = this.getEngine(engineName);
@@ -71,10 +75,12 @@ export class CodeAnalyzer {
             validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
             const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
             runResults.addEngineRunResults(engineRunResults);
+
+            this.emitEvent<EngineProgressEvent>({
+                type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 100
+            });
             this.emitEvent<EngineResultsEvent>({
-                type: EventType.EngineResultsEvent,
-                timestamp: this.clock.now(),
-                results: engineRunResults
+                type: EventType.EngineResultsEvent, timestamp: this.clock.now(), results: engineRunResults
             });
         }
 

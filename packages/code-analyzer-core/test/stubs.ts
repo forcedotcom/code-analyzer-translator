@@ -100,6 +100,7 @@ export class StubEngine1 extends engApi.Engine {
     }
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+        this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitEvent<engApi.ProgressEvent>({
             type: engApi.EventType.ProgressEvent,
             percentComplete: 0
@@ -113,7 +114,6 @@ export class StubEngine1 extends engApi.Engine {
             type: engApi.EventType.ProgressEvent,
             percentComplete: 50
         });
-        this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitEvent<engApi.ProgressEvent>({
             type: engApi.EventType.ProgressEvent,
             percentComplete: 100
@@ -169,6 +169,7 @@ export class StubEngine2 extends engApi.Engine {
     }
 
     runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+        this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitEvent<engApi.LogEvent>({
             type: engApi.EventType.LogEvent,
             message: "someMiscInfoMessageFromStubEngine2",
@@ -181,11 +182,6 @@ export class StubEngine2 extends engApi.Engine {
         this.emitEvent<engApi.ProgressEvent>({
             type: engApi.EventType.ProgressEvent,
             percentComplete: 63
-        });
-        this.runRulesCallHistory.push({ruleNames, runOptions});
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 100
         });
         return this.resultsToReturn;
     }

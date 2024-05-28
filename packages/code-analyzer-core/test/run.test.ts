@@ -549,18 +549,18 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             message: "someMiscInfoMessageFromStubEngine2"
         });
 
-
-        expect(engineProgressEvents).toHaveLength(6);
-        for (const expectedPercentComplete of [0, 50, 100]) {
-            expect(engineProgressEvents).toContainEqual({
+        expect(engineProgressEvents).toHaveLength(9);
+        let i = 0; // Using this to ensure the order of events
+        for (const expectedPercentComplete of [0, 0, 50, 100, 100]) { // Core and stubEngine1 both give us 0 and 100
+            expect(engineProgressEvents[i++]).toEqual({
                 type: EventType.EngineProgressEvent,
                 timestamp: sampleTimestamp,
                 engineName: "stubEngine1",
                 percentComplete: expectedPercentComplete
             });
         }
-        for (const expectedPercentComplete of [5, 63, 100]) {
-            expect(engineProgressEvents).toContainEqual({
+        for (const expectedPercentComplete of [0, 5, 63, 100]) { // Only Core gives us 0 and 100
+            expect(engineProgressEvents[i++]).toEqual({
                 type: EventType.EngineProgressEvent,
                 timestamp: sampleTimestamp,
                 engineName: "stubEngine2",
