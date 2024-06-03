@@ -2,75 +2,24 @@ import {
     CodeAnalyzer, CodeAnalyzerConfig, CodeLocation, EngineLogEvent, EngineProgressEvent, EngineResultsEvent,
     EventType, LogEvent, LogLevel, RuleSelection, RunOptions, RunResults, SeverityLevel, Violation
 } from "../src";
-import {StubEngine1, StubEngine2, StubEnginePlugin} from "./stubs";
+import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
-import {Clock, toAbsolutePath} from "../src/utils";
+import {toAbsolutePath} from "../src/utils";
 import path from "node:path";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 
 const SAMPLE_RUN_OPTIONS: RunOptions = {
     filesToInclude: ['test']
 };
-const SAMPLE_STUB1RULEA_VIOLATION: engApi.Violation = {
-    ruleName: 'stub1RuleA',
-    message: 'SomeViolationMessage1',
-    codeLocations: [
-        {
-            file: 'test/config.test.ts',
-            startLine: 3,
-            startColumn: 6,
-            endLine: 11,
-            endColumn: 8
-        }
-    ],
-    primaryLocationIndex: 0
-}
-const SAMPLE_STUB1RULEC_VIOLATION: engApi.Violation = {
-    ruleName: 'stub1RuleC',
-    message: 'SomeViolationMessage2',
-    codeLocations: [
-        {
-            file: 'test/run.test.ts',
-            startLine: 21,
-            startColumn: 7,
-            endLine: 25,
-            endColumn: 4
-        }
-    ],
-    primaryLocationIndex: 0
-};
-const SAMPLE_STUB2RULEC_VIOLATION: engApi.Violation = {
-    ruleName: 'stub2RuleC',
-    message: 'SomeViolationMessage3',
-    codeLocations: [
-        {
-            file: 'test/stubs.ts',
-            startLine: 4,
-            startColumn: 13
-        },
-        {
-            file: 'test/test-helpers.ts',
-            startLine: 9,
-            startColumn: 1
-        },
-        {
-            file: 'test/stubs.ts',
-            startLine: 76,
-            startColumn: 8
-        }
-    ],
-    primaryLocationIndex: 2
-};
-
 
 describe("Tests for the run method of CodeAnalyzer", () => {
     changeWorkingDirectoryToPackageRoot();
 
     let sampleTimestamp: Date;
     let codeAnalyzer: CodeAnalyzer;
-    let stubEngine1: StubEngine1;
-    let stubEngine2: StubEngine2;
+    let stubEngine1: stubs.StubEngine1;
+    let stubEngine2: stubs.StubEngine2;
     let logEvents: LogEvent[];
     let selection: RuleSelection;
     const expectedStubEngine1RuleNames: string[] = ['stub1RuleA', 'stub1RuleB', 'stub1RuleC'];
@@ -81,10 +30,10 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer.setClock(new FixedClock(sampleTimestamp));
-        const stubPlugin: StubEnginePlugin = new StubEnginePlugin();
+        const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         codeAnalyzer.addEnginePlugin(stubPlugin);
-        stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as StubEngine1;
-        stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as StubEngine2;
+        stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
+        stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
         selection = codeAnalyzer.selectRules();
     })
@@ -332,10 +281,10 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When an engines return violations, then they are correctly included in the run results", () => {
         stubEngine1.resultsToReturn = {
-            violations: [SAMPLE_STUB1RULEA_VIOLATION, SAMPLE_STUB1RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleC()]
         };
         stubEngine2.resultsToReturn = {
-            violations: [SAMPLE_STUB2RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub2RuleC()]
         };
         const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
@@ -394,7 +343,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When an engine returns a violation for a rule that was not actually selected, then an error is thrown", () => {
         stubEngine1.resultsToReturn = {
-            violations: [SAMPLE_STUB1RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub1RuleC()]
         };
         selection = codeAnalyzer.selectRules('stub1RuleA');
         expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
@@ -402,7 +351,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is too large, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 1;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
@@ -412,7 +361,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is negative, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.primaryLocationIndex = -2;
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -422,7 +371,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is not an integer, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 0.5;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
@@ -432,7 +381,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location file that does not exist, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/doesNotExist';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -443,7 +392,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location file that is a folder, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/test-data';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -455,7 +404,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
 
     function testInvalidLineOrColumnScenario(startLine: number, startColumn: number, endLine: number, endColumn: number, expectedBadField: string, expectedBadValue: number): void {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = startLine;
         badViolation.codeLocations[0].startColumn = startColumn;
         badViolation.codeLocations[0].endLine = endLine;
@@ -478,7 +427,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with a endLine before a startLine, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].endLine = 2;
         stubEngine1.resultsToReturn = {
@@ -491,7 +440,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with equal startLine and endLine with an endColumn before a startColumn, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].startColumn = 5;
         badViolation.codeLocations[0].endLine = 4;
@@ -506,7 +455,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with an endColumn but no endLine, then the endColumn is simply not used", () => {
-        const malformedViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const malformedViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         malformedViolation.codeLocations[0].startLine = 4;
         malformedViolation.codeLocations[0].startColumn = 5;
         malformedViolation.codeLocations[0].endLine = undefined;
@@ -593,29 +542,4 @@ function assertCodeLocation(codeLocation: CodeLocation, file: string, startLine:
     expect(codeLocation.getStartColumn()).toEqual(startColumn);
     expect(codeLocation.getEndLine()).toEqual(endLine);
     expect(codeLocation.getEndColumn()).toEqual(endColumn);
-}
-
-function deepCopyOfViolation(violation: engApi.Violation): engApi.Violation {
-    return {
-        ...violation,
-        codeLocations: violation.codeLocations.map(deepCopyOfCodeLocation)
-    };
-}
-
-function deepCopyOfCodeLocation(codeLocation: engApi.CodeLocation): engApi.CodeLocation {
-    return {
-        ...codeLocation
-    };
-}
-
-class FixedClock implements Clock {
-    private readonly fixedTimestamp: Date;
-
-    constructor(fixedTimestamp: Date) {
-        this.fixedTimestamp = fixedTimestamp;
-    }
-
-    now(): Date {
-        return this.fixedTimestamp;
-    }
 }

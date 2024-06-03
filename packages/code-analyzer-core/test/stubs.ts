@@ -187,6 +187,82 @@ export class StubEngine2 extends engApi.Engine {
     }
 }
 
+
+export function getSampleViolationForStub1RuleA(): engApi.Violation {
+    return {
+        ruleName: 'stub1RuleA',
+        message: 'SomeViolationMessage1',
+        codeLocations: [
+            {
+                file: 'test/config.test.ts',
+                startLine: 3,
+                startColumn: 6,
+                endLine: 11,
+                endColumn: 8
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+}
+
+export function getSampleViolationForStub1RuleC(): engApi.Violation {
+    return {
+        ruleName: 'stub1RuleC',
+        message: 'SomeViolationMessage2',
+        codeLocations: [
+            {
+                file: 'test/run.test.ts',
+                startLine: 21,
+                startColumn: 7,
+                endLine: 25,
+                endColumn: 4
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+}
+
+export function getSampleViolationForStub1RuleE(): engApi.Violation {
+    return {
+        ruleName: 'stub1RuleE',
+        message: 'Some Violation that contains\na new line in `it` and "various" \'quotes\'. Also it has <brackets> that may need to be {escaped}.',
+        codeLocations: [
+            {
+                file: 'test/run.test.ts',
+                startLine: 56,
+                startColumn: 4
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+}
+
+export function getSampleViolationForStub2RuleC(): engApi.Violation {
+    return {
+        ruleName: 'stub2RuleC',
+        message: 'SomeViolationMessage3',
+        codeLocations: [
+            {
+                file: 'test/stubs.ts',
+                startLine: 4,
+                startColumn: 13
+            },
+            {
+                file: 'test/test-helpers.ts',
+                startLine: 9,
+                startColumn: 1
+            },
+            {
+                file: 'test/stubs.ts',
+                startLine: 76,
+                startColumn: 8
+            }
+        ],
+        primaryLocationIndex: 2
+    };
+}
+
+
 /**
  * FutureEnginePlugin - A plugin to help with testing forward compatibility
  */

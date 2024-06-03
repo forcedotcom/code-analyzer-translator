@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results totalViolationCount="4" sev1ViolationCount="0" sev2ViolationCount="1" sev3ViolationCount="2" sev4ViolationCount="1" sev5ViolationCount="0">
+  <violations>
+    <violation index="1" rule="stub1RuleA" engine="stubEngine1" severity="4" type="Standard">
+      <file>{{TEST_FOLDER_PLACEHOLDER}}config.test.ts</file>
+      <line>3</line>
+      <column>6</column>
+      <endLine>11</endLine>
+      <endColumn>8</endColumn>
+      <message>SomeViolationMessage1</message>
+      <resourceUrls>https://example.com/stub1RuleA</resourceUrls>
+    </violation>
+    <violation index="2" rule="stub1RuleC" engine="stubEngine1" severity="3" type="Standard">
+      <file>{{TEST_FOLDER_PLACEHOLDER}}run.test.ts</file>
+      <line>21</line>
+      <column>7</column>
+      <endLine>25</endLine>
+      <endColumn>4</endColumn>
+      <message>SomeViolationMessage2</message>
+      <resourceUrls>https://example.com/stub1RuleC</resourceUrls>
+    </violation>
+    <violation index="3" rule="stub1RuleE" engine="stubEngine1" severity="3" type="Standard">
+      <file>{{TEST_FOLDER_PLACEHOLDER}}run.test.ts</file>
+      <line>56</line>
+      <column>4</column>
+      <message>Some Violation that contains
+a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may need to be {escaped}.</message>
+      <resourceUrls>https://example.com/stub1RuleE,https://example.com/stub1RuleE_2</resourceUrls>
+    </violation>
+    <violation index="4" rule="stub2RuleC" engine="stubEngine2" severity="2" type="PathBased">
+      <file>{{TEST_FOLDER_PLACEHOLDER}}stubs.ts</file>
+      <line>76</line>
+      <column>8</column>
+      <path>{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:4:13,{{TEST_FOLDER_PLACEHOLDER}}test-helpers.ts:9:1,{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:76:8</path>
+      <message>SomeViolationMessage3</message>
+    </violation>
+  </violations>
+</results>

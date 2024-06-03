@@ -1,0 +1,63 @@
+{
+  "totalViolationCount": 4,
+  "sev1ViolationCount": 0,
+  "sev2ViolationCount": 1,
+  "sev3ViolationCount": 2,
+  "sev4ViolationCount": 1,
+  "sev5ViolationCount": 0,
+  "violations": [
+    {
+      "index": 1,
+      "rule": "stub1RuleA",
+      "engine": "stubEngine1",
+      "severity": 4,
+      "type": "Standard",
+      "file": "{{TEST_FOLDER_PLACEHOLDER}}config.test.ts",
+      "line": 3,
+      "column": 6,
+      "endLine": 11,
+      "endColumn": 8,
+      "message": "SomeViolationMessage1",
+      "resourceUrls": "https://example.com/stub1RuleA"
+    },
+    {
+      "index": 2,
+      "rule": "stub1RuleC",
+      "engine": "stubEngine1",
+      "severity": 3,
+      "type": "Standard",
+      "file": "{{TEST_FOLDER_PLACEHOLDER}}run.test.ts",
+      "line": 21,
+      "column": 7,
+      "endLine": 25,
+      "endColumn": 4,
+      "message": "SomeViolationMessage2",
+      "resourceUrls": "https://example.com/stub1RuleC"
+    },
+    {
+      "index": 3,
+      "rule": "stub1RuleE",
+      "engine": "stubEngine1",
+      "severity": 3,
+      "type": "Standard",
+      "file": "{{TEST_FOLDER_PLACEHOLDER}}run.test.ts",
+      "line": 56,
+      "column": 4,
+      "message": "Some Violation that contains\na new line in `it` and \"various\" 'quotes'. Also it has <brackets> that may need to be {escaped}.",
+      "resourceUrls": "https://example.com/stub1RuleE,https://example.com/stub1RuleE_2"
+    },
+    {
+      "index": 4,
+      "rule": "stub2RuleC",
+      "engine": "stubEngine2",
+      "severity": 2,
+      "type": "PathBased",
+      "file": "{{TEST_FOLDER_PLACEHOLDER}}stubs.ts",
+      "line": 76,
+      "column": 8,
+      "message": "SomeViolationMessage3",
+      "resourceUrls": "",
+      "path": "{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:4:13,{{TEST_FOLDER_PLACEHOLDER}}test-helpers.ts:9:1,{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:76:8"
+    }
+  ]
+}

@@ -18,9 +18,13 @@ export {
 } from "./events"
 
 export {
+    OutputFormat,
+    OutputFormatter
+} from "./output-format"
+
+export {
     CodeLocation,
     EngineRunResults,
-    OutputFormatter,
     RunResults,
     Violation
 } from "./results"

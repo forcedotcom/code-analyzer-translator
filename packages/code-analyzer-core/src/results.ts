@@ -2,6 +2,7 @@ import {Rule, RuleSelection, SeverityLevel} from "./rules"
 import * as engApi from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils";
+import {OutputFormat, OutputFormatter} from "./output-format";
 
 export interface CodeLocation {
     getFile(): string
@@ -25,17 +26,13 @@ export interface EngineRunResults {
     getViolations(): Violation[]
 }
 
-export interface OutputFormatter {
-    format(results: RunResults): string
-}
-
 export interface RunResults {
     getViolationCount(): number
     getViolationCountOfSeverity(severity: SeverityLevel): number
     getViolations(): Violation[]
     getEngineNames(): string[]
     getEngineRunResults(engineName: string): EngineRunResults
-    toFormattedOutput(formatter: OutputFormatter): string
+    toFormattedOutput(format: OutputFormat): string
 }
 
 
@@ -160,8 +157,8 @@ export class RunResultsImpl implements RunResults {
         return engineRunResults;
     }
 
-    toFormattedOutput(_formatter: OutputFormatter): string {
-        return "TO_BE_IMPLEMENTED_SOON";
+    toFormattedOutput(format: OutputFormat): string {
+        return OutputFormatter.forFormat(format).format(this);
     }
 
     addEngineRunResults(engineRunResults: EngineRunResults): void {
