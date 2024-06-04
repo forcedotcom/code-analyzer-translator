@@ -41,7 +41,7 @@ describe("Tests for creating and accessing configuration values", () => {
             },
             stub1RuleD: {
                 severity: SeverityLevel.Info,
-                tags: ['default', 'CodeStyle']
+                tags: ['Recommended', 'CodeStyle']
             }
         });
         expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({
@@ -159,7 +159,7 @@ describe("Tests for creating and accessing configuration values", () => {
 
     it("When the tags of a rule is not a string array then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {
-                    goodTagsRule1: {tags: ['default']},
+                    goodTagsRule1: {tags: ['Recommended']},
                     badTagsRule: {tags: 'oops'},
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(

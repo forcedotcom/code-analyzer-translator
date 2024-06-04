@@ -6,7 +6,7 @@ rules:
       severity: 1
     stub1RuleD:
       severity: "Info"
-      tags: ["default", "CodeStyle"]
+      tags: ["Recommended", "CodeStyle"]
 
   stubEngine2:
     stub2RuleA:

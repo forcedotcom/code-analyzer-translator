@@ -215,7 +215,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When no rules are selected for an engine, then when running, that engine is skipped", () => {
-        selection = codeAnalyzer.selectRules('stubEngine1:default');
+        selection = codeAnalyzer.selectRules('stubEngine1:Recommended');
         codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         const expectedEngineRunOptions: engApi.RunOptions = {

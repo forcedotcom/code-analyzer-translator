@@ -47,7 +47,7 @@ export class CodeAnalyzer {
     }
 
     public selectRules(...selectors: string[]): RuleSelection {
-        selectors = selectors.length > 0 ? selectors : ['default'];
+        selectors = selectors.length > 0 ? selectors : ['Recommended'];
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
         for (const rule of this.getAllRules()) {
