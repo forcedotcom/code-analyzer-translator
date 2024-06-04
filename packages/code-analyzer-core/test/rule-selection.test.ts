@@ -206,7 +206,7 @@ describe('Tests for selecting rules', () => {
         expect(stub2RuleA.getResourceUrls()).toEqual(['https://example.com/stub2RuleA']);
         expect(stub2RuleA.getSeverityLevel()).toEqual(SeverityLevel.Moderate);
         expect(stub2RuleA.getTags()).toEqual(['Security', 'SomeNewTag']); // This changed
-        expect(stub2RuleA.getType()).toEqual(RuleType.PathBased);
+        expect(stub2RuleA.getType()).toEqual(RuleType.DataFlow);
     });
 
     it('When config contains severity overrides, then we can select based on the severity values', () => {

@@ -1,9 +1,12 @@
 {
-  "totalViolationCount": 0,
-  "sev1ViolationCount": 0,
-  "sev2ViolationCount": 0,
-  "sev3ViolationCount": 0,
-  "sev4ViolationCount": 0,
-  "sev5ViolationCount": 0,
+  "runDir": "{{RUNDIR}}",
+  "violationCounts": {
+    "total": 0,
+    "sev1": 0,
+    "sev2": 0,
+    "sev3": 0,
+    "sev4": 0,
+    "sev5": 0
+  },
   "violations": []
 }

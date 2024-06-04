@@ -144,7 +144,7 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleA",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.PathBased,
+                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "Security"],
                 description: "Some description for stub2RuleA",
                 resourceUrls: ["https://example.com/stub2RuleA"]
@@ -152,7 +152,7 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleB",
                 severityLevel: engApi.SeverityLevel.Low,
-                type: engApi.RuleType.PathBased,
+                type: engApi.RuleType.DataFlow,
                 tags: ["Performance", "Custom"],
                 description: "Some description for stub2RuleB",
                 resourceUrls: ["https://example.com/stub2RuleB"]
@@ -160,7 +160,7 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleC",
                 severityLevel: engApi.SeverityLevel.High,
-                type: engApi.RuleType.PathBased,
+                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "BestPractice"],
                 description: "Some description for stub2RuleC",
                 resourceUrls: [] // Purposely putting in nothing here
@@ -396,7 +396,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
             {
                 name: "repeatedRule",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.PathBased,
+                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "Security"],
                 description: "Some description 1",
                 resourceUrls: ["https://example.com/repeatedRule1"]

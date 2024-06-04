@@ -41,7 +41,7 @@ describe("Tests for the JSON output format", () => {
     it("When an empty result is provided, we create a json text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.JSON);
-        let expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 
@@ -86,11 +86,15 @@ describe("Other misc output formatting tests", () => {
     });
 });
 
-function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeBackslashes = false): string {
-    const rawFileContents: string = fs.readFileSync(path.resolve('test','test-data','expectedOutputFiles',expectedOutputFileName), 'utf-8');
-    let testFolderPlaceholder: string = path.resolve('test') + path.sep;
+function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeBackslashes: boolean = false): string {
+    const contents: string = fs.readFileSync(path.resolve('test','test-data','expectedOutputFiles',expectedOutputFileName), 'utf-8');
+    let pathSepVar: string = path.sep;
+    let runDirVar: string = process.cwd() + path.sep;
     if (escapeBackslashes) {
-        testFolderPlaceholder = testFolderPlaceholder.replaceAll('\\','\\\\');
+        pathSepVar = pathSepVar.replaceAll('\\','\\\\');
+        runDirVar = runDirVar.replaceAll('\\','\\\\');
     }
-    return rawFileContents.replaceAll('{{TEST_FOLDER_PLACEHOLDER}}', testFolderPlaceholder).replaceAll('\r','');
+    return contents.replaceAll('{{PATHSEP}}', pathSepVar)
+        .replaceAll('{{RUNDIR}}', runDirVar)
+        .replaceAll('\r',''); // fix for windows
 }

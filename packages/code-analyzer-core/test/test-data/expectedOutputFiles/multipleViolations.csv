@@ -1,6 +1,6 @@
-"index","rule","engine","severity","type","file","line","column","endLine","endColumn","path","message","resourceUrls"
-1,"stub1RuleA","stubEngine1",4,"Standard","{{TEST_FOLDER_PLACEHOLDER}}config.test.ts",3,6,11,8,,"SomeViolationMessage1","https://example.com/stub1RuleA"
-2,"stub1RuleC","stubEngine1",3,"Standard","{{TEST_FOLDER_PLACEHOLDER}}run.test.ts",21,7,25,4,,"SomeViolationMessage2","https://example.com/stub1RuleC"
-3,"stub1RuleE","stubEngine1",3,"Standard","{{TEST_FOLDER_PLACEHOLDER}}run.test.ts",56,4,,,,"Some Violation that contains
+"id","rule","engine","severity","type","tags","file","line","column","endLine","endColumn","pathLocations","message","resources"
+1,"stub1RuleA","stubEngine1",4,"Standard","Recommended,CodeStyle","test{{PATHSEP}}config.test.ts",3,6,11,8,,"SomeViolationMessage1","https://example.com/stub1RuleA"
+2,"stub1RuleC","stubEngine1",3,"Standard","Recommended,Performance,Custom","test{{PATHSEP}}run.test.ts",21,7,25,4,,"SomeViolationMessage2","https://example.com/stub1RuleC"
+3,"stub1RuleE","stubEngine1",3,"Standard","Performance","test{{PATHSEP}}run.test.ts",56,4,,,,"Some Violation that contains
 a new line in `it` and ""various"" 'quotes'. Also it has <brackets> that may need to be {escaped}.","https://example.com/stub1RuleE,https://example.com/stub1RuleE_2"
-4,"stub2RuleC","stubEngine2",2,"PathBased","{{TEST_FOLDER_PLACEHOLDER}}stubs.ts",76,8,,,"{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:4:13,{{TEST_FOLDER_PLACEHOLDER}}test-helpers.ts:9:1,{{TEST_FOLDER_PLACEHOLDER}}stubs.ts:76:8","SomeViolationMessage3",""
+4,"stub2RuleC","stubEngine2",2,"DataFlow","Recommended,BestPractice","test{{PATHSEP}}stubs.ts",76,8,,,"test{{PATHSEP}}stubs.ts:4:13,test{{PATHSEP}}test-helpers.ts:9:1,test{{PATHSEP}}stubs.ts:76:8","SomeViolationMessage3",

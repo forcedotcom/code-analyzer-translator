@@ -3,6 +3,7 @@ import * as engApi from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils";
 import {OutputFormat, OutputFormatter} from "./output-format";
+import path from "node:path";
 
 export interface CodeLocation {
     getFile(): string
@@ -27,6 +28,7 @@ export interface EngineRunResults {
 }
 
 export interface RunResults {
+    getRunDirectory(): string
     getViolationCount(): number
     getViolationCountOfSeverity(severity: SeverityLevel): number
     getViolations(): Violation[]
@@ -121,7 +123,16 @@ export class EngineRunResultsImpl implements EngineRunResults {
 }
 
 export class RunResultsImpl implements RunResults {
+    private readonly runDir: string;
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
+
+    constructor(runDir: string = process.cwd() + path.sep) {
+        this.runDir = runDir;
+    }
+
+    getRunDirectory() {
+        return this.runDir;
+    }
 
     getViolations(): Violation[] {
         return Array.from(this.engineRunResultsMap.values()).flatMap(
