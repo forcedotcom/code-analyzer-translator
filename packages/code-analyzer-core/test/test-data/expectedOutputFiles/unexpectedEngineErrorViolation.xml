@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <runDir>{{RUNDIR}}</runDir>
+  <violationCounts>
+    <total>1</total>
+    <sev1>1</sev1>
+    <sev2>0</sev2>
+    <sev3>0</sev3>
+    <sev4>0</sev4>
+    <sev5>0</sev5>
+  </violationCounts>
+  <violations>
+    <violation id="1">
+      <rule>UnexpectedEngineError</rule>
+      <engine>throwingEngine</engine>
+      <severity>1</severity>
+      <type>UnexpectedError</type>
+      <tags></tags>
+      <message>The engine with name "throwingEngine" threw an unexpected error: SomeErrorMessageFromThrowingEngine</message>
+      <resources></resources>
+    </violation>
+  </violations>
+</results>

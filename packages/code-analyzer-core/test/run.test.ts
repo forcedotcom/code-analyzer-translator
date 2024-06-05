@@ -1,6 +1,20 @@
 import {
-    CodeAnalyzer, CodeAnalyzerConfig, CodeLocation, EngineLogEvent, EngineProgressEvent, EngineResultsEvent,
-    EventType, LogEvent, LogLevel, RuleSelection, RunOptions, RunResults, SeverityLevel, Violation
+    CodeAnalyzer,
+    CodeAnalyzerConfig,
+    CodeLocation,
+    EngineRunResults,
+    EngineLogEvent,
+    EngineProgressEvent,
+    EngineResultsEvent,
+    EventType,
+    LogEvent,
+    LogLevel,
+    RuleSelection,
+    RunOptions,
+    RunResults,
+    SeverityLevel,
+    Violation,
+    RuleType
 } from "../src";
 import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
@@ -8,6 +22,8 @@ import {toAbsolutePath} from "../src/utils";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
+import {UnexpectedEngineErrorRule} from "../src/rules";
+import {UndefinedCodeLocation} from "../src/results";
 
 const SAMPLE_RUN_OPTIONS: RunOptions = {
     filesToInclude: ['test']
@@ -471,6 +487,35 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getCodeLocations()[0].getStartColumn()).toEqual(5);
         expect(violations[0].getCodeLocations()[0].getEndLine()).toBeUndefined();
         expect(violations[0].getCodeLocations()[0].getEndColumn()).toBeUndefined();
+    });
+
+    it("When an engine throws an exception when running, then a result is returned with a Critical violation of type UnexpectedError", () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
+        selection = codeAnalyzer.selectRules();
+        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+
+        expect(overallResults.getRunDirectory()).toEqual(process.cwd() + path.sep);
+        expect(overallResults.getViolationCount()).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(0);
+        expect(overallResults.getEngineNames()).toEqual(['throwingEngine']);
+        const violations: Violation[] = overallResults.getViolations();
+        expect(violations).toHaveLength(1);
+        const engineRunResults: EngineRunResults = overallResults.getEngineRunResults('throwingEngine');
+        expect(engineRunResults.getViolations()).toEqual(violations);
+        expect(violations[0].getRule()).toEqual(new UnexpectedEngineErrorRule('throwingEngine'));
+        expect(violations[0].getRule().getDescription()).toEqual(getMessage('UnexpectedEngineErrorRuleDescription', 'throwingEngine'));
+        expect(violations[0].getRule().getEngineName()).toEqual('throwingEngine');
+        expect(violations[0].getRule().getName()).toEqual('UnexpectedEngineError');
+        expect(violations[0].getRule().getResourceUrls()).toEqual([]);
+        expect(violations[0].getRule().getSeverityLevel()).toEqual(SeverityLevel.Critical);
+        expect(violations[0].getRule().getTags()).toEqual([]);
+        expect(violations[0].getRule().getType()).toEqual(RuleType.UnexpectedError);
+        expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
+        expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
+        expect(violations[0].getMessage()).toEqual(getMessage('UnexpectedEngineErrorViolationMessage',
+            'throwingEngine', 'SomeErrorMessageFromThrowingEngine'));
     });
 
     it("When running engines, then events are wired up and emitted correctly from the engines", () => {

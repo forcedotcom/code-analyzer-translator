@@ -12,6 +12,7 @@ export enum SeverityLevel {
 export enum RuleType {
     Standard= "Standard",
     DataFlow = "DataFlow",
+    Flow = "Flow",
     UnexpectedError = "UnexpectedError"
 }
 
@@ -90,6 +91,42 @@ export class RuleImpl implements Rule {
             if (!partMatched) return false;
         }
         return true;
+    }
+}
+
+export class UnexpectedEngineErrorRule implements Rule {
+    private readonly engineName: string;
+
+    constructor(engineName: string) {
+        this.engineName = engineName;
+    }
+
+    getDescription(): string {
+        return getMessage('UnexpectedEngineErrorRuleDescription', this.engineName);
+    }
+
+    getEngineName(): string {
+        return this.engineName;
+    }
+
+    getName(): string {
+        return "UnexpectedEngineError";
+    }
+
+    getResourceUrls(): string[] {
+        return [];
+    }
+
+    getSeverityLevel(): SeverityLevel {
+        return SeverityLevel.Critical;
+    }
+
+    getTags(): string[] {
+        return [];
+    }
+
+    getType(): RuleType {
+        return RuleType.UnexpectedError;
     }
 }
 

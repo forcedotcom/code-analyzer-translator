@@ -184,28 +184,38 @@ function createViolationOutput(id: number, violation: Violation, runDir: string)
         severity: rule.getSeverityLevel(),
         type: rule.getType(),
         tags: rule.getTags(),
-        file: makeRelativeIfPossible(primaryLocation.getFile(), runDir),
+        file: primaryLocation.getFile() ? makeRelativeIfPossible(primaryLocation.getFile() as string, runDir) : undefined,
         line: primaryLocation.getStartLine(),
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        pathLocations: rule.getType() == RuleType.DataFlow ? codeLocations.map(l => createLocationString(l, runDir)) : undefined,
+        pathLocations: rule.getType() == RuleType.DataFlow ? createPathLocations(codeLocations, runDir) : undefined,
         message: violation.getMessage(),
         resources: violation.getRule().getResourceUrls()
     };
 }
 
-function createLocationString(codeLocation: CodeLocation, runDir: string) {
-    let locationString: string = makeRelativeIfPossible(codeLocation.getFile(), runDir);
-    if (codeLocation.getStartLine()) {
-        locationString += ':' + codeLocation.getStartLine();
-        if (codeLocation.getStartColumn()) {
-            locationString += ':' + codeLocation.getStartColumn();
+function createPathLocations(codeLocations: CodeLocation[], runDir: string): string[] {
+    return codeLocations.map(l => createLocationString(l, runDir)).filter(s => s.length > 0);
+}
+
+function createLocationString(codeLocation: CodeLocation, runDir: string): string {
+    let locationString: string = '';
+    if (codeLocation.getFile()) {
+        locationString += makeRelativeIfPossible(codeLocation.getFile() as string, runDir)
+        if (codeLocation.getStartLine()) {
+            locationString += ':' + codeLocation.getStartLine();
+            if (codeLocation.getStartColumn()) {
+                locationString += ':' + codeLocation.getStartColumn();
+            }
         }
     }
     return locationString;
 }
 
 function makeRelativeIfPossible(file: string, rootDir: string): string {
-    return file.startsWith(rootDir) ? file.substring(rootDir.length) : file;
+    if (file.startsWith(rootDir)) {
+        file = file.substring(rootDir.length);
+    }
+    return file;
 }

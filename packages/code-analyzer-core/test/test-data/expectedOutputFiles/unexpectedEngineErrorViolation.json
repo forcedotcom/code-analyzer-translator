@@ -1,0 +1,23 @@
+{
+  "runDir": "{{RUNDIR}}",
+  "violationCounts": {
+    "total": 1,
+    "sev1": 1,
+    "sev2": 0,
+    "sev3": 0,
+    "sev4": 0,
+    "sev5": 0
+  },
+  "violations": [
+    {
+      "id": 1,
+      "rule": "UnexpectedEngineError",
+      "engine": "throwingEngine",
+      "severity": 1,
+      "type": "UnexpectedError",
+      "tags": [],
+      "message": "The engine with name \"throwingEngine\" threw an unexpected error: SomeErrorMessageFromThrowingEngine",
+      "resources": []
+    }
+  ]
+}

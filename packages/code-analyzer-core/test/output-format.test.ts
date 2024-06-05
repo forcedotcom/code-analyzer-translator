@@ -30,9 +30,16 @@ describe("Tests for the CSV output format", () => {
         expect(formattedText).toEqual(expectedText);
     });
 
-    it("When results contain multiple violations , we create csv text correctly", () => {
+    it("When results contain multiple violations, we create csv text correctly", () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.CSV);
         const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.csv');
+        expect(formattedText).toEqual(expectedText);
+    });
+
+    it("When results contain violation of type UnexpectedError, we create csv text correctly", () => {
+        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.CSV);
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.csv');
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -50,6 +57,13 @@ describe("Tests for the JSON output format", () => {
         const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.json', true);
         expect(formattedText).toEqual(expectedText);
     });
+
+    it("When results contain violation of type UnexpectedError, we create json text correctly", () => {
+        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.json');
+        expect(formattedText).toEqual(expectedText);
+    });
 });
 
 describe("Tests for the XML output format", () => {
@@ -63,6 +77,13 @@ describe("Tests for the XML output format", () => {
     it("When results contain multiple violations , we create xml text correctly", () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.XML);
         const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.xml');
+        expect(formattedText).toEqual(expectedText);
+    });
+
+    it("When results contain violation of type UnexpectedError, we create xml text correctly", () => {
+        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.XML);
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.xml');
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -97,4 +118,10 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
         .replaceAll('{{RUNDIR}}', runDirVar)
         .replaceAll('\r',''); // fix for windows
+}
+
+function createResultsWithUnexpectedError(): RunResults {
+    const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+    codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
+    return codeAnalyzer.run(codeAnalyzer.selectRules(), {filesToInclude: ['test']});
 }

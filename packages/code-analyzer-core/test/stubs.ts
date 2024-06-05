@@ -371,6 +371,36 @@ export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
 }
 
 /**
+ * ThrowingEnginePlugin - A plugin that returns an engine that throws an error when ran
+ */
+export class ThrowingEnginePlugin extends engApi.EnginePluginV1 {
+    getAvailableEngineNames(): string[] {
+        return ['throwingEngine'];
+    }
+
+    createEngine(_engineName: string, config: engApi.ConfigObject): engApi.Engine {
+        return new ThrowingEngine(config);
+    }
+}
+
+/**
+ * ThrowingEngine - An engine that throws an error when ran
+ */
+class ThrowingEngine extends StubEngine1 {
+    constructor(config: engApi.ConfigObject) {
+        super(config);
+    }
+
+    getName(): string {
+        return "throwingEngine";
+    }
+
+    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
+        throw new Error('SomeErrorMessageFromThrowingEngine');
+    }
+}
+
+/**
  * RepeatedRuleNameEnginePlugin - A plugin that returns an engine that returns multiple rules with the same name
  */
 export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
