@@ -61,7 +61,7 @@ describe("Tests for the JSON output format", () => {
     it("When results contain violation of type UnexpectedError, we create json text correctly", () => {
         const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.json');
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 });

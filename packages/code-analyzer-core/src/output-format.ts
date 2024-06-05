@@ -189,7 +189,7 @@ function createViolationOutput(id: number, violation: Violation, runDir: string)
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        pathLocations: rule.getType() == RuleType.DataFlow ? createPathLocations(codeLocations, runDir) : undefined,
+        pathLocations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createPathLocations(codeLocations, runDir) : undefined,
         message: violation.getMessage(),
         resources: violation.getRule().getResourceUrls()
     };
@@ -202,7 +202,7 @@ function createPathLocations(codeLocations: CodeLocation[], runDir: string): str
 function createLocationString(codeLocation: CodeLocation, runDir: string): string {
     let locationString: string = '';
     if (codeLocation.getFile()) {
-        locationString += makeRelativeIfPossible(codeLocation.getFile() as string, runDir)
+        locationString += makeRelativeIfPossible(codeLocation.getFile() as string, runDir);
         if (codeLocation.getStartLine()) {
             locationString += ':' + codeLocation.getStartLine();
             if (codeLocation.getStartColumn()) {
