@@ -1,12 +1,14 @@
-import {Rule, RuleSelection, SeverityLevel} from "./rules"
+import {Rule, RuleSelection, SeverityLevel, UnexpectedEngineErrorRule} from "./rules"
 import * as engApi from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils";
+import {OutputFormat, OutputFormatter} from "./output-format";
+import path from "node:path";
 
 export interface CodeLocation {
-    getFile(): string
-    getStartLine(): number
-    getStartColumn(): number
+    getFile(): string | undefined
+    getStartLine(): number | undefined
+    getStartColumn(): number | undefined
     getEndLine(): number | undefined
     getEndColumn(): number | undefined
 }
@@ -25,17 +27,14 @@ export interface EngineRunResults {
     getViolations(): Violation[]
 }
 
-export interface OutputFormatter {
-    format(results: RunResults): string
-}
-
 export interface RunResults {
+    getRunDirectory(): string
     getViolationCount(): number
     getViolationCountOfSeverity(severity: SeverityLevel): number
     getViolations(): Violation[]
     getEngineNames(): string[]
     getEngineRunResults(engineName: string): EngineRunResults
-    toFormattedOutput(formatter: OutputFormatter): string
+    toFormattedOutput(format: OutputFormat): string
 }
 
 
@@ -68,6 +67,30 @@ export class CodeLocationImpl implements CodeLocation {
     }
 }
 
+export class UndefinedCodeLocation implements CodeLocation {
+    static readonly INSTANCE: UndefinedCodeLocation = new UndefinedCodeLocation();
+
+    getFile(): undefined {
+        return undefined;
+    }
+
+    getStartLine(): undefined {
+        return undefined;
+    }
+
+    getStartColumn(): undefined {
+        return undefined;
+    }
+
+    getEndLine(): undefined {
+        return undefined;
+    }
+
+    getEndColumn(): undefined {
+        return undefined;
+    }
+}
+
 export class ViolationImpl implements Violation {
     private readonly apiViolation: engApi.Violation;
     private readonly rule: Rule;
@@ -91,6 +114,34 @@ export class ViolationImpl implements Violation {
 
     getPrimaryLocationIndex(): number {
         return this.apiViolation.primaryLocationIndex;
+    }
+}
+
+export class UnexpectedEngineErrorViolation implements Violation {
+    private readonly engineName: string;
+    private readonly error: Error;
+    private readonly rule: Rule;
+
+    constructor(engineName: string, error: Error) {
+        this.engineName = engineName;
+        this.error = error;
+        this.rule = new UnexpectedEngineErrorRule(engineName);
+    }
+
+    getRule(): Rule {
+        return this.rule;
+    }
+
+    getMessage(): string {
+        return getMessage('UnexpectedEngineErrorViolationMessage', this.engineName, this.error.message);
+    }
+
+    getCodeLocations(): CodeLocation[] {
+        return [UndefinedCodeLocation.INSTANCE];
+    }
+
+    getPrimaryLocationIndex(): number {
+        return 0;
     }
 }
 
@@ -123,8 +174,43 @@ export class EngineRunResultsImpl implements EngineRunResults {
     }
 }
 
+export class UnexpectedErrorEngineRunResults implements EngineRunResults {
+    private readonly engineName: string;
+    private readonly violation: Violation;
+
+    constructor(engineName: string, error: Error) {
+        this.engineName = engineName;
+        this.violation = new UnexpectedEngineErrorViolation(engineName, error);
+    }
+
+    getEngineName(): string {
+        return this.engineName;
+    }
+
+    getViolationCount(): number {
+        return 1;
+    }
+
+    getViolationCountOfSeverity(severity: SeverityLevel): number {
+        return severity == SeverityLevel.Critical ? 1 : 0;
+    }
+
+    getViolations(): Violation[] {
+        return [this.violation];
+    }
+}
+
 export class RunResultsImpl implements RunResults {
+    private readonly runDir: string;
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
+
+    constructor(runDir: string = process.cwd() + path.sep) {
+        this.runDir = runDir;
+    }
+
+    getRunDirectory() {
+        return this.runDir;
+    }
 
     getViolations(): Violation[] {
         return Array.from(this.engineRunResultsMap.values()).flatMap(
@@ -160,8 +246,8 @@ export class RunResultsImpl implements RunResults {
         return engineRunResults;
     }
 
-    toFormattedOutput(_formatter: OutputFormatter): string {
-        return "TO_BE_IMPLEMENTED_SOON";
+    toFormattedOutput(format: OutputFormat): string {
+        return OutputFormatter.forFormat(format).format(this);
     }
 
     addEngineRunResults(engineRunResults: EngineRunResults): void {

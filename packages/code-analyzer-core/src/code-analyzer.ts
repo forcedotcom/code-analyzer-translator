@@ -1,5 +1,11 @@
 import {RuleImpl, RuleSelection, RuleSelectionImpl} from "./rules"
-import {EngineRunResults, EngineRunResultsImpl, RunResults, RunResultsImpl} from "./results"
+import {
+    EngineRunResults,
+    EngineRunResultsImpl,
+    RunResults,
+    RunResultsImpl,
+    UnexpectedErrorEngineRunResults
+} from "./results"
 import {EngineLogEvent, EngineProgressEvent, EngineResultsEvent, Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
@@ -47,7 +53,7 @@ export class CodeAnalyzer {
     }
 
     public selectRules(...selectors: string[]): RuleSelection {
-        selectors = selectors.length > 0 ? selectors : ['default'];
+        selectors = selectors.length > 0 ? selectors : ['Recommended'];
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
         for (const rule of this.getAllRules()) {
@@ -68,12 +74,7 @@ export class CodeAnalyzer {
                 type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 0
             });
 
-            const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
-            this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
-            const engine: engApi.Engine = this.getEngine(engineName);
-            const apiEngineRunResults: engApi.EngineRunResults = engine.runRules(rulesToRun, engineRunOptions);
-            validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
-            const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
+            const engineRunResults: EngineRunResults = this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions);
             runResults.addEngineRunResults(engineRunResults);
 
             this.emitEvent<EngineProgressEvent>({
@@ -89,6 +90,22 @@ export class CodeAnalyzer {
 
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
         this.eventEmitter.on(eventType, callback);
+    }
+
+    private runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): EngineRunResults {
+        const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
+        this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
+        const engine: engApi.Engine = this.getEngine(engineName);
+
+        let apiEngineRunResults: engApi.EngineRunResults;
+        try {
+            apiEngineRunResults = engine.runRules(rulesToRun, engineRunOptions);
+        } catch (error) {
+            return new UnexpectedErrorEngineRunResults(engineName, error as Error);
+        }
+
+        validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
+        return new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
     }
 
     private emitEvent<T extends Event>(event: T): void {

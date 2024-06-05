@@ -13,11 +13,17 @@ const messageCatalog : { [key: string]: string } = {
     EngineValidationFailed:
         'Failed to add engine with name "%s" because it failed validation:\n%s',
 
+    UnexpectedEngineErrorRuleDescription:
+        'This rule reports a violation when an unexpected error occurs from engine "%s".',
+
+    UnexpectedEngineErrorViolationMessage:
+        'The engine with name "%s" threw an unexpected error: %s',
+
     PluginErrorFromGetAvailableEngineNames:
-        `Failed to add engine plugin since the plugin's getAvailableNames method through an error:\n%s`,
+        `Failed to add engine plugin since the plugin's getAvailableNames method threw an error:\n%s`,
 
     PluginErrorFromCreateEngine:
-        `Failed to create engine with name "%s" since the plugin's createEngine method through an error:\n%s`,
+        `Failed to create engine with name "%s" since the plugin's createEngine method threw an error:\n%s`,
 
     EngineAdded:
         'Engine with name "%s" was added to Code Analyzer.',

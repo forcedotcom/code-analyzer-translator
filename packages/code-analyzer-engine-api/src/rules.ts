@@ -8,7 +8,8 @@ export enum SeverityLevel {
 
 export enum RuleType {
     Standard = "Standard",
-    PathBased = "PathBased",
+    DataFlow = "DataFlow",
+    Flow = "Flow",
     UnexpectedError = "UnexpectedError"
 }
 

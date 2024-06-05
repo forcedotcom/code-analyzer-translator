@@ -26,9 +26,9 @@ describe('Tests for selecting rules', () => {
         setupCodeAnalyzer(codeAnalyzer);
     })
 
-    it('When no rule selectors are provided then default tag is used', () => {
+    it('When no rule selectors are provided then the Recommended tag is used', () => {
         const selection: RuleSelection = codeAnalyzer.selectRules();
-        expect(selection).toEqual(codeAnalyzer.selectRules('default'));
+        expect(selection).toEqual(codeAnalyzer.selectRules('Recommended'));
 
         expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(selection.getCount()).toEqual(5);
@@ -43,7 +43,7 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getName()).toEqual('stub1RuleB');
         expect(stub1RuleB.getResourceUrls()).toEqual(['https://example.com/stub1RuleB']);
         expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.High);
-        expect(stub1RuleB.getTags()).toEqual(['default', 'Security']);
+        expect(stub1RuleB.getTags()).toEqual(['Recommended', 'Security']);
         expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
 
         // Sanity check we can directly get one of the rules from the selection
@@ -99,7 +99,7 @@ describe('Tests for selecting rules', () => {
         expect(ruleNamesFor(selection1,'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleD'])
         expect(ruleNamesFor(selection1,'stubEngine2')).toEqual([])
 
-        const selection2: RuleSelection = codeAnalyzer.selectRules('stubEngine2:default')
+        const selection2: RuleSelection = codeAnalyzer.selectRules('stubEngine2:Recommended')
         expect(ruleNamesFor(selection2,'stubEngine1')).toEqual([])
         expect(ruleNamesFor(selection2,'stubEngine2')).toEqual(['stub2RuleA', 'stub2RuleC'])
 
@@ -107,7 +107,7 @@ describe('Tests for selecting rules', () => {
         expect(ruleNamesFor(selection3,'stubEngine1')).toEqual(['stub1RuleC'])
         expect(ruleNamesFor(selection3,'stubEngine2')).toEqual([])
 
-        const selection4: RuleSelection = codeAnalyzer.selectRules('default:2')
+        const selection4: RuleSelection = codeAnalyzer.selectRules('Recommended:2')
         expect(ruleNamesFor(selection4,'stubEngine1')).toEqual(['stub1RuleB'])
         expect(ruleNamesFor(selection4,'stubEngine2')).toEqual(['stub2RuleC'])
 
@@ -140,7 +140,7 @@ describe('Tests for selecting rules', () => {
     });
 
     it('When colons are used and multiple selectors are provided then we get correct union and intersection behavior', () => {
-        const selection: RuleSelection = codeAnalyzer.selectRules('default:Performance', 'stubEngine2:2', 'stubEngine2:DoesNotExist');
+        const selection: RuleSelection = codeAnalyzer.selectRules('Recommended:Performance', 'stubEngine2:2', 'stubEngine2:DoesNotExist');
 
         expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleC']);
@@ -148,7 +148,7 @@ describe('Tests for selecting rules', () => {
     });
 
     it('When selecting rules based on severity names instead of severity number, then we correctly return the rules', () => {
-        const selection: RuleSelection = codeAnalyzer.selectRules('High', 'default:Low');
+        const selection: RuleSelection = codeAnalyzer.selectRules('High', 'Recommended:Low');
 
         expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA','stub1RuleB']);
@@ -156,7 +156,7 @@ describe('Tests for selecting rules', () => {
     });
 
     it('When selector is the wrong case, then we still accept the selector since we treat selection with case insensitivity', () => {
-        const selection1: RuleSelection = codeAnalyzer.selectRules('DEFault:higH', 'perFORMance');
+        const selection1: RuleSelection = codeAnalyzer.selectRules('RecOmmended:higH', 'perFORMance');
 
         expect(selection1.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(ruleNamesFor(selection1, 'stubEngine1')).toEqual(['stub1RuleB','stub1RuleC','stub1RuleE']);
@@ -175,7 +175,7 @@ describe('Tests for selecting rules', () => {
         expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(selection.getCount()).toEqual(5);
 
-        // sample-config-01.yaml makes stub1RuleD is now default and stub2RuleA no longer default
+        // sample-config-01.yaml makes stub1RuleD is now Recommended and stub2RuleA no longer Recommended
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleB', 'stub1RuleC', 'stub1RuleD']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleC']);
 
@@ -186,7 +186,7 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getName()).toEqual('stub1RuleB');
         expect(stub1RuleB.getResourceUrls()).toEqual(['https://example.com/stub1RuleB']);
         expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.Critical); // This changed
-        expect(stub1RuleB.getTags()).toEqual(['default', 'Security']);
+        expect(stub1RuleB.getTags()).toEqual(['Recommended', 'Security']);
         expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
     });
 
@@ -206,7 +206,7 @@ describe('Tests for selecting rules', () => {
         expect(stub2RuleA.getResourceUrls()).toEqual(['https://example.com/stub2RuleA']);
         expect(stub2RuleA.getSeverityLevel()).toEqual(SeverityLevel.Moderate);
         expect(stub2RuleA.getTags()).toEqual(['Security', 'SomeNewTag']); // This changed
-        expect(stub2RuleA.getType()).toEqual(RuleType.PathBased);
+        expect(stub2RuleA.getType()).toEqual(RuleType.DataFlow);
     });
 
     it('When config contains severity overrides, then we can select based on the severity values', () => {

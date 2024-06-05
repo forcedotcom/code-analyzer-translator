@@ -1,0 +1,93 @@
+{
+  "runDir": "{{RUNDIR}}",
+  "violationCounts": {
+    "total": 4,
+    "sev1": 0,
+    "sev2": 1,
+    "sev3": 2,
+    "sev4": 1,
+    "sev5": 0
+  },
+  "violations": [
+    {
+      "id": 1,
+      "rule": "stub1RuleA",
+      "engine": "stubEngine1",
+      "severity": 4,
+      "type": "Standard",
+      "tags": [
+        "Recommended",
+        "CodeStyle"
+      ],
+      "file": "test{{PATHSEP}}config.test.ts",
+      "line": 3,
+      "column": 6,
+      "endLine": 11,
+      "endColumn": 8,
+      "message": "SomeViolationMessage1",
+      "resources": [
+        "https://example.com/stub1RuleA"
+      ]
+    },
+    {
+      "id": 2,
+      "rule": "stub1RuleC",
+      "engine": "stubEngine1",
+      "severity": 3,
+      "type": "Standard",
+      "tags": [
+        "Recommended",
+        "Performance",
+        "Custom"
+      ],
+      "file": "test{{PATHSEP}}run.test.ts",
+      "line": 21,
+      "column": 7,
+      "endLine": 25,
+      "endColumn": 4,
+      "message": "SomeViolationMessage2",
+      "resources": [
+        "https://example.com/stub1RuleC"
+      ]
+    },
+    {
+      "id": 3,
+      "rule": "stub1RuleE",
+      "engine": "stubEngine1",
+      "severity": 3,
+      "type": "Standard",
+      "tags": [
+        "Performance"
+      ],
+      "file": "test{{PATHSEP}}run.test.ts",
+      "line": 56,
+      "column": 4,
+      "message": "Some Violation that contains\na new line in `it` and \"various\" 'quotes'. Also it has <brackets> that may need to be {escaped}.",
+      "resources": [
+        "https://example.com/stub1RuleE",
+        "https://example.com/stub1RuleE_2"
+      ]
+    },
+    {
+      "id": 4,
+      "rule": "stub2RuleC",
+      "engine": "stubEngine2",
+      "severity": 2,
+      "type": "DataFlow",
+      "tags": [
+        "Recommended",
+        "BestPractice"
+      ],
+      "file": "test{{PATHSEP}}stubs.ts",
+      "line": 76,
+      "column": 8,
+      "pathLocations": [
+        "test{{PATHSEP}}stubs.ts:4:13",
+        "test{{PATHSEP}}test-helpers.ts:9:1",
+        "test{{PATHSEP}}stubs.ts:76:8"
+      ],
+      "message": "SomeViolationMessage3",
+      "resources": []
+    }
+  ]
+}

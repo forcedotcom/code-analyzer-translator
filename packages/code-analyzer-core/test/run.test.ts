@@ -1,76 +1,41 @@
 import {
-    CodeAnalyzer, CodeAnalyzerConfig, CodeLocation, EngineLogEvent, EngineProgressEvent, EngineResultsEvent,
-    EventType, LogEvent, LogLevel, RuleSelection, RunOptions, RunResults, SeverityLevel, Violation
+    CodeAnalyzer,
+    CodeAnalyzerConfig,
+    CodeLocation,
+    EngineRunResults,
+    EngineLogEvent,
+    EngineProgressEvent,
+    EngineResultsEvent,
+    EventType,
+    LogEvent,
+    LogLevel,
+    RuleSelection,
+    RunOptions,
+    RunResults,
+    SeverityLevel,
+    Violation,
+    RuleType
 } from "../src";
-import {StubEngine1, StubEngine2, StubEnginePlugin} from "./stubs";
+import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
-import {Clock, toAbsolutePath} from "../src/utils";
+import {toAbsolutePath} from "../src/utils";
 import path from "node:path";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
+import {UnexpectedEngineErrorRule} from "../src/rules";
+import {UndefinedCodeLocation} from "../src/results";
 
 const SAMPLE_RUN_OPTIONS: RunOptions = {
     filesToInclude: ['test']
 };
-const SAMPLE_STUB1RULEA_VIOLATION: engApi.Violation = {
-    ruleName: 'stub1RuleA',
-    message: 'SomeViolationMessage1',
-    codeLocations: [
-        {
-            file: 'test/config.test.ts',
-            startLine: 3,
-            startColumn: 6,
-            endLine: 11,
-            endColumn: 8
-        }
-    ],
-    primaryLocationIndex: 0
-}
-const SAMPLE_STUB1RULEC_VIOLATION: engApi.Violation = {
-    ruleName: 'stub1RuleC',
-    message: 'SomeViolationMessage2',
-    codeLocations: [
-        {
-            file: 'test/run.test.ts',
-            startLine: 21,
-            startColumn: 7,
-            endLine: 25,
-            endColumn: 4
-        }
-    ],
-    primaryLocationIndex: 0
-};
-const SAMPLE_STUB2RULEC_VIOLATION: engApi.Violation = {
-    ruleName: 'stub2RuleC',
-    message: 'SomeViolationMessage3',
-    codeLocations: [
-        {
-            file: 'test/stubs.ts',
-            startLine: 4,
-            startColumn: 13
-        },
-        {
-            file: 'test/test-helpers.ts',
-            startLine: 9,
-            startColumn: 1
-        },
-        {
-            file: 'test/stubs.ts',
-            startLine: 76,
-            startColumn: 8
-        }
-    ],
-    primaryLocationIndex: 2
-};
-
 
 describe("Tests for the run method of CodeAnalyzer", () => {
     changeWorkingDirectoryToPackageRoot();
 
     let sampleTimestamp: Date;
     let codeAnalyzer: CodeAnalyzer;
-    let stubEngine1: StubEngine1;
-    let stubEngine2: StubEngine2;
+    let stubEngine1: stubs.StubEngine1;
+    let stubEngine2: stubs.StubEngine2;
     let logEvents: LogEvent[];
     let selection: RuleSelection;
     const expectedStubEngine1RuleNames: string[] = ['stub1RuleA', 'stub1RuleB', 'stub1RuleC'];
@@ -81,10 +46,10 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer.setClock(new FixedClock(sampleTimestamp));
-        const stubPlugin: StubEnginePlugin = new StubEnginePlugin();
+        const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         codeAnalyzer.addEnginePlugin(stubPlugin);
-        stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as StubEngine1;
-        stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as StubEngine2;
+        stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
+        stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
         selection = codeAnalyzer.selectRules();
     })
@@ -266,7 +231,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When no rules are selected for an engine, then when running, that engine is skipped", () => {
-        selection = codeAnalyzer.selectRules('stubEngine1:default');
+        selection = codeAnalyzer.selectRules('stubEngine1:Recommended');
         codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         const expectedEngineRunOptions: engApi.RunOptions = {
@@ -332,10 +297,10 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When an engines return violations, then they are correctly included in the run results", () => {
         stubEngine1.resultsToReturn = {
-            violations: [SAMPLE_STUB1RULEA_VIOLATION, SAMPLE_STUB1RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleC()]
         };
         stubEngine2.resultsToReturn = {
-            violations: [SAMPLE_STUB2RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub2RuleC()]
         };
         const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
@@ -394,7 +359,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When an engine returns a violation for a rule that was not actually selected, then an error is thrown", () => {
         stubEngine1.resultsToReturn = {
-            violations: [SAMPLE_STUB1RULEC_VIOLATION]
+            violations: [stubs.getSampleViolationForStub1RuleC()]
         };
         selection = codeAnalyzer.selectRules('stub1RuleA');
         expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
@@ -402,7 +367,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is too large, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 1;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
@@ -412,7 +377,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is negative, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.primaryLocationIndex = -2;
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -422,7 +387,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a violation that has a primary location index that is not an integer, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 0.5;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
@@ -432,7 +397,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location file that does not exist, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/doesNotExist';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -443,7 +408,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location file that is a folder, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB2RULEC_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/test-data';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
@@ -455,7 +420,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
 
     function testInvalidLineOrColumnScenario(startLine: number, startColumn: number, endLine: number, endColumn: number, expectedBadField: string, expectedBadValue: number): void {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = startLine;
         badViolation.codeLocations[0].startColumn = startColumn;
         badViolation.codeLocations[0].endLine = endLine;
@@ -478,7 +443,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with a endLine before a startLine, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].endLine = 2;
         stubEngine1.resultsToReturn = {
@@ -491,7 +456,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with equal startLine and endLine with an endColumn before a startColumn, then an error is thrown", () => {
-        const badViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].startColumn = 5;
         badViolation.codeLocations[0].endLine = 4;
@@ -506,7 +471,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine returns a code location with an endColumn but no endLine, then the endColumn is simply not used", () => {
-        const malformedViolation: engApi.Violation = deepCopyOfViolation(SAMPLE_STUB1RULEA_VIOLATION);
+        const malformedViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         malformedViolation.codeLocations[0].startLine = 4;
         malformedViolation.codeLocations[0].startColumn = 5;
         malformedViolation.codeLocations[0].endLine = undefined;
@@ -522,6 +487,35 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getCodeLocations()[0].getStartColumn()).toEqual(5);
         expect(violations[0].getCodeLocations()[0].getEndLine()).toBeUndefined();
         expect(violations[0].getCodeLocations()[0].getEndColumn()).toBeUndefined();
+    });
+
+    it("When an engine throws an exception when running, then a result is returned with a Critical violation of type UnexpectedError", () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
+        selection = codeAnalyzer.selectRules();
+        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+
+        expect(overallResults.getRunDirectory()).toEqual(process.cwd() + path.sep);
+        expect(overallResults.getViolationCount()).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(0);
+        expect(overallResults.getEngineNames()).toEqual(['throwingEngine']);
+        const violations: Violation[] = overallResults.getViolations();
+        expect(violations).toHaveLength(1);
+        const engineRunResults: EngineRunResults = overallResults.getEngineRunResults('throwingEngine');
+        expect(engineRunResults.getViolations()).toEqual(violations);
+        expect(violations[0].getRule()).toEqual(new UnexpectedEngineErrorRule('throwingEngine'));
+        expect(violations[0].getRule().getDescription()).toEqual(getMessage('UnexpectedEngineErrorRuleDescription', 'throwingEngine'));
+        expect(violations[0].getRule().getEngineName()).toEqual('throwingEngine');
+        expect(violations[0].getRule().getName()).toEqual('UnexpectedEngineError');
+        expect(violations[0].getRule().getResourceUrls()).toEqual([]);
+        expect(violations[0].getRule().getSeverityLevel()).toEqual(SeverityLevel.Critical);
+        expect(violations[0].getRule().getTags()).toEqual([]);
+        expect(violations[0].getRule().getType()).toEqual(RuleType.UnexpectedError);
+        expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
+        expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
+        expect(violations[0].getMessage()).toEqual(getMessage('UnexpectedEngineErrorViolationMessage',
+            'throwingEngine', 'SomeErrorMessageFromThrowingEngine'));
     });
 
     it("When running engines, then events are wired up and emitted correctly from the engines", () => {
@@ -593,29 +587,4 @@ function assertCodeLocation(codeLocation: CodeLocation, file: string, startLine:
     expect(codeLocation.getStartColumn()).toEqual(startColumn);
     expect(codeLocation.getEndLine()).toEqual(endLine);
     expect(codeLocation.getEndColumn()).toEqual(endColumn);
-}
-
-function deepCopyOfViolation(violation: engApi.Violation): engApi.Violation {
-    return {
-        ...violation,
-        codeLocations: violation.codeLocations.map(deepCopyOfCodeLocation)
-    };
-}
-
-function deepCopyOfCodeLocation(codeLocation: engApi.CodeLocation): engApi.CodeLocation {
-    return {
-        ...codeLocation
-    };
-}
-
-class FixedClock implements Clock {
-    private readonly fixedTimestamp: Date;
-
-    constructor(fixedTimestamp: Date) {
-        this.fixedTimestamp = fixedTimestamp;
-    }
-
-    now(): Date {
-        return this.fixedTimestamp;
-    }
 }

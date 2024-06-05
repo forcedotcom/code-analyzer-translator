@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <runDir>{{RUNDIR}}</runDir>
+  <violationCounts>
+    <total>4</total>
+    <sev1>0</sev1>
+    <sev2>1</sev2>
+    <sev3>2</sev3>
+    <sev4>1</sev4>
+    <sev5>0</sev5>
+  </violationCounts>
+  <violations>
+    <violation id="1">
+      <rule>stub1RuleA</rule>
+      <engine>stubEngine1</engine>
+      <severity>4</severity>
+      <type>Standard</type>
+      <tags>
+        <tag>Recommended</tag>
+        <tag>CodeStyle</tag>
+      </tags>
+      <file>test{{PATHSEP}}config.test.ts</file>
+      <line>3</line>
+      <column>6</column>
+      <endLine>11</endLine>
+      <endColumn>8</endColumn>
+      <message>SomeViolationMessage1</message>
+      <resources>
+        <resource>https://example.com/stub1RuleA</resource>
+      </resources>
+    </violation>
+    <violation id="2">
+      <rule>stub1RuleC</rule>
+      <engine>stubEngine1</engine>
+      <severity>3</severity>
+      <type>Standard</type>
+      <tags>
+        <tag>Recommended</tag>
+        <tag>Performance</tag>
+        <tag>Custom</tag>
+      </tags>
+      <file>test{{PATHSEP}}run.test.ts</file>
+      <line>21</line>
+      <column>7</column>
+      <endLine>25</endLine>
+      <endColumn>4</endColumn>
+      <message>SomeViolationMessage2</message>
+      <resources>
+        <resource>https://example.com/stub1RuleC</resource>
+      </resources>
+    </violation>
+    <violation id="3">
+      <rule>stub1RuleE</rule>
+      <engine>stubEngine1</engine>
+      <severity>3</severity>
+      <type>Standard</type>
+      <tags>
+        <tag>Performance</tag>
+      </tags>
+      <file>test{{PATHSEP}}run.test.ts</file>
+      <line>56</line>
+      <column>4</column>
+      <message>Some Violation that contains
+a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may need to be {escaped}.</message>
+      <resources>
+        <resource>https://example.com/stub1RuleE</resource>
+        <resource>https://example.com/stub1RuleE_2</resource>
+      </resources>
+    </violation>
+    <violation id="4">
+      <rule>stub2RuleC</rule>
+      <engine>stubEngine2</engine>
+      <severity>2</severity>
+      <type>DataFlow</type>
+      <tags>
+        <tag>Recommended</tag>
+        <tag>BestPractice</tag>
+      </tags>
+      <file>test{{PATHSEP}}stubs.ts</file>
+      <line>76</line>
+      <column>8</column>
+      <pathLocations>
+        <pathLocation>test{{PATHSEP}}stubs.ts:4:13</pathLocation>
+        <pathLocation>test{{PATHSEP}}test-helpers.ts:9:1</pathLocation>
+        <pathLocation>test{{PATHSEP}}stubs.ts:76:8</pathLocation>
+      </pathLocations>
+      <message>SomeViolationMessage3</message>
+      <resources></resources>
+    </violation>
+  </violations>
+</results>

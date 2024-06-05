@@ -1,0 +1,2 @@
+"id","rule","engine","severity","type","tags","file","line","column","endLine","endColumn","pathLocations","message","resources"
+1,"UnexpectedEngineError","throwingEngine",1,"UnexpectedError",,,,,,,,"The engine with name ""throwingEngine"" threw an unexpected error: SomeErrorMessageFromThrowingEngine",
