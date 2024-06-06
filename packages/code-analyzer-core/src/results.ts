@@ -18,6 +18,7 @@ export interface Violation {
     getMessage(): string
     getCodeLocations(): CodeLocation[]
     getPrimaryLocationIndex(): number
+    getResourceUrls(): string[]
 }
 
 export interface EngineRunResults {
@@ -115,6 +116,13 @@ export class ViolationImpl implements Violation {
     getPrimaryLocationIndex(): number {
         return this.apiViolation.primaryLocationIndex;
     }
+
+    getResourceUrls(): string[] {
+        // Returns the urls from the rule and then appends any urls from the violation that are not already from the rule.
+        const urls: string[] = this.rule.getResourceUrls();
+        return !this.apiViolation.resourceUrls ? urls :
+            [...urls, ...this.apiViolation.resourceUrls.filter(url => !urls.includes(url))];
+    }
 }
 
 export class UnexpectedEngineErrorViolation implements Violation {
@@ -142,6 +150,10 @@ export class UnexpectedEngineErrorViolation implements Violation {
 
     getPrimaryLocationIndex(): number {
         return 0;
+    }
+
+    getResourceUrls(): string[] {
+        return [];
     }
 }
 

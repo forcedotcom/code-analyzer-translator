@@ -328,12 +328,18 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(engine1Violation1CodeLocations).toHaveLength(1);
         assertCodeLocation(engine1Violation1CodeLocations[0], path.resolve('test', 'config.test.ts'), 3, 6, 11, 8);
         expect(engine1Violations[0].getPrimaryLocationIndex()).toEqual(0);
+        expect(engine1Violations[0].getResourceUrls()).toEqual(["https://example.com/stub1RuleA"]);
         expect(engine1Violations[1].getRule()).toEqual(selection.getRule('stubEngine1', 'stub1RuleC'));
         expect(engine1Violations[1].getMessage()).toEqual('SomeViolationMessage2');
         const engine1Violation2CodeLocations: CodeLocation[] = engine1Violations[1].getCodeLocations();
         expect(engine1Violation2CodeLocations).toHaveLength(1);
         assertCodeLocation(engine1Violation2CodeLocations[0], path.resolve('test', 'run.test.ts'), 21, 7, 25, 4);
         expect(engine1Violations[1].getPrimaryLocationIndex()).toEqual(0);
+        expect(engine1Violations[1].getResourceUrls()).toEqual([
+            "https://example.com/stub1RuleC",
+            "https://example.com/aViolationSpecificUrl1",
+            "https://example.com/violationSpecificUrl2"
+        ]);
 
         const engine2Results = overallResults.getEngineRunResults('stubEngine2');
         expect(engine2Results.getEngineName()).toEqual('stubEngine2');
@@ -353,6 +359,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         assertCodeLocation(engine2Violation1CodeLocations[1], path.resolve('test', 'test-helpers.ts'), 9, 1);
         assertCodeLocation(engine2Violation1CodeLocations[2], path.resolve('test', 'stubs.ts'), 76, 8);
         expect(engine2Violations[0].getPrimaryLocationIndex()).toEqual(2);
+        expect(engine2Violations[0].getResourceUrls()).toEqual([]);
 
         expect(overallResults.getViolations()).toEqual([...engine1Violations,...engine2Violations]);
     });
