@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "lint": "npm run lint --workspaces --if-present",
     "package": "npm run package --workspaces --if-present",
     "all": "npm run build && npm run test && npm run lint && npm run package",
@@ -16,6 +16,7 @@
     "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "jest": "^29.0.0",
     "ts-jest": "^29.0.0",
     "rimraf": "*"
