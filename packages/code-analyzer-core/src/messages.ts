@@ -20,13 +20,13 @@ const messageCatalog : { [key: string]: string } = {
         'The engine with name "%s" threw an unexpected error: %s',
 
     PluginErrorFromGetAvailableEngineNames:
-        `Failed to add engine plugin since the plugin's getAvailableNames method threw an error:\n%s`,
+        `Failed to add engine plugin. The plugin's getAvailableNames method threw an error:\n%s`,
 
     PluginErrorFromCreateEngine:
-        `Failed to create engine with name "%s" since the plugin's createEngine method threw an error:\n%s`,
+        `Failed to create engine with name "%s". The plugin's createEngine method threw an error:\n%s`,
 
     FailedToDynamicallyLoadModule:
-        'Failed to dynamically load module "%s" since an error was thrown: %s',
+        'Failed to dynamically load module "%s". Error: %s',
 
     FailedToDynamicallyAddEnginePlugin:
         'Failed to dynamically add engine plugin from module "%s" because the module does not seem to export a "createEnginePlugin" function.',
