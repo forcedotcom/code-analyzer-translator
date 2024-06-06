@@ -118,6 +118,7 @@ export class ViolationImpl implements Violation {
     }
 
     getResourceUrls(): string[] {
+        // Returns the urls from the rule and then appends any urls from the violation that are not already from the rule.
         const urls: string[] = this.rule.getResourceUrls();
         return !this.apiViolation.resourceUrls ? urls :
             [...urls, ...this.apiViolation.resourceUrls.filter(url => !urls.includes(url))];
