@@ -122,6 +122,11 @@ export class StubEngine1 extends engApi.Engine {
     }
 }
 
+// Used to test dynamic import loading of an engine plugin
+export function createEnginePlugin(): engApi.EnginePlugin {
+    return new StubEnginePlugin();
+}
+
 /**
  * StubEngine2 - A sample engine stub with preconfigured outputs to help with testing
  */

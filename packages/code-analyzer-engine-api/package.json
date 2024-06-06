@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/code-analyzer-engine-api",
-  "description": "Engine Api Package for the Salesforce Code Analyzer",
+  "description": "Engine API Package for the Salesforce Code Analyzer",
   "version": "0.2.0",
   "author": "The Salesforce Code Analyzer Team",
   "license": "BSD-3-Clause license",
@@ -41,6 +41,7 @@
     "all": "npm run build && npm run test && npm run lint && npm run package",
     "clean": "tsc --build tsconfig.build.json --clean",
     "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz",
+    "scrub": "npm run clean && rimraf node_modules",
     "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "jest": {

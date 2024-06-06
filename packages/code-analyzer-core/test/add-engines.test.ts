@@ -100,6 +100,29 @@ describe("Tests for adding engines to Code Analyzer", () => {
             getMessage('PluginErrorFromCreateEngine', 'someEngine', 'SomeErrorFromCreateEngine')
         );
     });
+
+    it('When calling dynamicallyAddEnginePlugin on a module that has a createEnginePlugin function, then it is used to add create the plugin and then added', async () => {
+        const pluginModulePath: string = require.resolve('./stubs');
+        await codeAnalyzer.dynamicallyAddEnginePlugin(pluginModulePath);
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1", "stubEngine2"]);
+    });
+
+    it('When calling dynamicallyAddEnginePlugin on a module that is missing a createEnginePlugin function, then an error is thrown', async () => {
+        const badPluginModulePath: string = require.resolve('./test-helpers');
+        expect(codeAnalyzer.dynamicallyAddEnginePlugin(badPluginModulePath)).rejects.toThrow(
+            getMessage('FailedToDynamicallyAddEnginePlugin', badPluginModulePath));
+    });
+
+    it('When calling dynamicallyAddEnginePlugin on a module that does not exist, then an error is thrown', async () => {
+        const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', 'doesNotExist', '');
+        expect(codeAnalyzer.dynamicallyAddEnginePlugin('doesNotExist')).rejects.toThrow(expectedErrorMessageSubstring);
+    });
+
+    it('When calling dynamicallyAddEnginePlugin on a file that is not a module, then an error is thrown', async () => {
+        const nonModuleFile: string = path.resolve('LICENSE');
+        const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', nonModuleFile, '');
+        expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
+    });
 });
 
 function getLogEventsOfLevel(logLevel: LogLevel, logEvents: LogEvent[]): LogEvent[] {

@@ -25,6 +25,12 @@ const messageCatalog : { [key: string]: string } = {
     PluginErrorFromCreateEngine:
         `Failed to create engine with name "%s" since the plugin's createEngine method threw an error:\n%s`,
 
+    FailedToDynamicallyLoadModule:
+        'Failed to dynamically load module "%s" since an error was thrown: %s',
+
+    FailedToDynamicallyAddEnginePlugin:
+        'Failed to dynamically add engine plugin from module "%s" because the module does not seem to export a "createEnginePlugin" function.',
+
     EngineAdded:
         'Engine with name "%s" was added to Code Analyzer.',
 
