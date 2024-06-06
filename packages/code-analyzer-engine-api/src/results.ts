@@ -11,6 +11,7 @@ export type Violation = {
     message: string
     codeLocations: CodeLocation[]
     primaryLocationIndex: number
+    resourceUrls?: string[]
 }
 
 export type EngineRunResults = {

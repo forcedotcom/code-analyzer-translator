@@ -191,7 +191,7 @@ function createViolationOutput(id: number, violation: Violation, runDir: string)
         endColumn: primaryLocation.getEndColumn(),
         pathLocations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createPathLocations(codeLocations, runDir) : undefined,
         message: violation.getMessage(),
-        resources: violation.getRule().getResourceUrls()
+        resources: violation.getResourceUrls()
     };
 }
 

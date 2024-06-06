@@ -206,7 +206,10 @@ export function getSampleViolationForStub1RuleA(): engApi.Violation {
                 endColumn: 8
             }
         ],
-        primaryLocationIndex: 0
+        primaryLocationIndex: 0,
+        resourceUrls: [
+            "https://example.com/stub1RuleA" // Same url as rule's url... to test that we don't duplicate it
+        ]
     };
 }
 
@@ -223,7 +226,11 @@ export function getSampleViolationForStub1RuleC(): engApi.Violation {
                 endColumn: 4
             }
         ],
-        primaryLocationIndex: 0
+        primaryLocationIndex: 0,
+        resourceUrls: [
+            "https://example.com/aViolationSpecificUrl1", // starting with "aViolation" so that we can test that this url comes after the rule url even though alphabetically it comes first
+            "https://example.com/violationSpecificUrl2",
+        ]
     };
 }
 

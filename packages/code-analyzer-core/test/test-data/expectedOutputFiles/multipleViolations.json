@@ -47,7 +47,9 @@
       "endColumn": 4,
       "message": "SomeViolationMessage2",
       "resources": [
-        "https://example.com/stub1RuleC"
+        "https://example.com/stub1RuleC",
+        "https://example.com/aViolationSpecificUrl1",
+        "https://example.com/violationSpecificUrl2"
       ]
     },
     {

@@ -47,6 +47,8 @@
       <message>SomeViolationMessage2</message>
       <resources>
         <resource>https://example.com/stub1RuleC</resource>
+        <resource>https://example.com/aViolationSpecificUrl1</resource>
+        <resource>https://example.com/violationSpecificUrl2</resource>
       </resources>
     </violation>
     <violation id="3">
