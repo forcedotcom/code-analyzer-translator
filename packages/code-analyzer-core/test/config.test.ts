@@ -11,6 +11,7 @@ describe("Tests for creating and accessing configuration values", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.withDefaults();
 
         expect(conf.getLogFolder()).toEqual(os.tmpdir());
+        expect(conf.getCustomEnginePluginModules()).toEqual([]);
         expect(conf.getRuleOverridesFor("stubEngine1")).toEqual({});
         expect(conf.getEngineConfigFor("stubEngine1")).toEqual({});
         expect(conf.getRuleOverridesFor("stubEngine2")).toEqual({});
@@ -57,6 +58,7 @@ describe("Tests for creating and accessing configuration values", () => {
         // Also note that Yml should work just like yml. Case doesn't matter.
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml'));
         expect(conf.getLogFolder()).toEqual(os.tmpdir());
+        expect(conf.getCustomEnginePluginModules()).toEqual(['dummy_plugin_module_path']);
         expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({});
         expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({
             stub2RuleC: {
@@ -76,6 +78,7 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When constructing config from json file then values from file are parsed correctly", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-03.json'));
         expect(conf.getLogFolder()).toEqual(path.resolve(__dirname, 'test-data', 'sampleLogFolder'));
+        expect(conf.getCustomEnginePluginModules()).toEqual([]);
         expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({});
         expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({});
         expect(conf.getEngineConfigFor('stubEngine1')).toEqual({});
@@ -163,10 +166,10 @@ describe("Tests for creating and accessing configuration values", () => {
                     badTagsRule: {tags: 'oops'},
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(
-            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', '"oops"'));
+            getMessage('ConfigValueNotAValidStringArray','rules.someEngine.badTagsRule.tags', '"oops"'));
 
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
-            getMessage('ConfigValueNotAValidTagsLevel','rules.someEngine.badTagsRule.tags', 'null'));
+            getMessage('ConfigValueNotAValidStringArray','rules.someEngine.badTagsRule.tags', 'null'));
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
@@ -190,5 +193,13 @@ describe("Tests for creating and accessing configuration values", () => {
         expect(() => CodeAnalyzerConfig.fromObject({log_folder: notAFolder})).toThrow(
             getMessage('ConfigValueMustBeFolder', 'log_folder', notAFolder)
         );
+    });
+
+    it("When custom_engine_plugin_modules is not a string array, then throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 3})).toThrow(
+            getMessage('ConfigValueNotAValidStringArray','custom_engine_plugin_modules', '3'));
+
+        expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 'oops'})).toThrow(
+            getMessage('ConfigValueNotAValidStringArray','custom_engine_plugin_modules', '"oops"'));
     });
 });

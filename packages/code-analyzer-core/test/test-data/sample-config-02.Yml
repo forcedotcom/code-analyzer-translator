@@ -1,3 +1,5 @@
+custom_engine_plugin_modules: ["dummy_plugin_module_path"]
+
 rules:
   stubEngine2:
     stub2RuleC:

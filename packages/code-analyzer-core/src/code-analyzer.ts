@@ -254,7 +254,7 @@ function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
 
 function removeRedundantPaths(absolutePaths: string[]): string[] {
     // If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
-    // remove that subfolder or file. So
+    // remove that subfolder or file. Also, if we find duplicate entries, we remove those as well.
     const pathsSortedByLength: string[] = absolutePaths.sort((a, b) => a.length - b.length);
     const filteredPaths: string[] = [];
     for (const currentPath of pathsSortedByLength) {

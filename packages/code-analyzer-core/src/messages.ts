@@ -52,7 +52,7 @@ const messageCatalog : { [key: string]: string } = {
     ConfigValueNotAValidSeverityLevel:
         'The %s configuration value must be one of the following: %s. Instead received: %s',
 
-    ConfigValueNotAValidTagsLevel:
+    ConfigValueNotAValidStringArray:
         'The %s configuration value must an array of strings. Instead received: %s',
 
     ConfigValueFolderMustExist:

@@ -9,6 +9,7 @@ import {SeverityLevel} from "./rules";
 
 export const FIELDS = {
     LOG_FOLDER: 'log_folder',
+    CUSTOM_ENGINE_PLUGIN_MODULES: 'custom_engine_plugin_modules',
     RULES: 'rules',
     ENGINES: 'engines',
     SEVERITY: 'severity',
@@ -22,12 +23,14 @@ export type RuleOverride = {
 
 type TopLevelConfig = {
     log_folder: string
+    custom_engine_plugin_modules: string[]
     rules: Record<string, Record<string, RuleOverride>>
     engines: Record<string, engApi.ConfigObject>
 }
 
 const DEFAULT_CONFIG: TopLevelConfig = {
     log_folder: os.tmpdir(),
+    custom_engine_plugin_modules: [],
     rules: {},
     engines: {}
 };
@@ -70,6 +73,7 @@ export class CodeAnalyzerConfig {
     public static fromObject(data: object): CodeAnalyzerConfig {
         const config: TopLevelConfig = {
             log_folder: extractLogFolderValue(data),
+            custom_engine_plugin_modules: extractCustomEnginePluginModules(data),
             rules: extractRulesValue(data),
             engines: extractEnginesValue(data)
         }
@@ -82,6 +86,10 @@ export class CodeAnalyzerConfig {
 
     public getLogFolder(): string {
         return this.config.log_folder;
+    }
+
+    public getCustomEnginePluginModules(): string[] {
+        return this.config.custom_engine_plugin_modules;
     }
 
     public getRuleOverridesFor(engineName: string): Record<string, RuleOverride> {
@@ -108,6 +116,13 @@ function extractLogFolderValue(data: object): string {
         throw new Error(getMessage('ConfigValueMustBeFolder', FIELDS.LOG_FOLDER, logFolder));
     }
     return logFolder;
+}
+
+function extractCustomEnginePluginModules(data: object): string[] {
+    if (!(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES in data)) {
+        return DEFAULT_CONFIG.custom_engine_plugin_modules;
+    }
+    return validateStringArray(data[FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES], FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES);
 }
 
 function extractRulesValue(data: object): Record<string, Record<string, RuleOverride>> {
@@ -141,7 +156,7 @@ function extractRuleOverrideFor(ruleOverridesObj: object, engineName: string, ru
             `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.SEVERITY}`);
     }
     if (FIELDS.TAGS in ruleOverrideObj ) {
-        extractedValue.tags = validateTagsValue(ruleOverrideObj[FIELDS.TAGS],
+        extractedValue.tags = validateStringArray(ruleOverrideObj[FIELDS.TAGS],
             `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`);
     }
     return extractedValue;
@@ -173,9 +188,9 @@ function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel 
     return value as SeverityLevel;
 }
 
-function validateTagsValue(value: unknown, valueKey: string): string[] {
+function validateStringArray(value: unknown, valueKey: string): string[] {
     if (!Array.isArray(value) || !value.every(item => typeof item === 'string')) {
-        throw new Error(getMessage('ConfigValueNotAValidTagsLevel', valueKey, JSON.stringify(value)));
+        throw new Error(getMessage('ConfigValueNotAValidStringArray', valueKey, JSON.stringify(value)));
     }
     return value as string[];
 }
