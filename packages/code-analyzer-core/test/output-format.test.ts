@@ -8,18 +8,18 @@ import * as stubs from "./stubs";
 changeWorkingDirectoryToPackageRoot();
 
 let runResults: RunResults;
-beforeAll(() => {
+beforeAll(async () => {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
     codeAnalyzer.setClock(new FixedClock(new Date(2024, 6, 3, 9, 14, 34, 567)));
     const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
-    codeAnalyzer.addEnginePlugin(stubPlugin);
+    await codeAnalyzer.addEnginePlugin(stubPlugin);
     (stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleC(), stubs.getSampleViolationForStub1RuleE()]
     };
     (stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub2RuleC()]
     };
-    runResults = codeAnalyzer.run(codeAnalyzer.selectRules('all'), {filesToInclude: ['test']});
+    runResults = await codeAnalyzer.run(codeAnalyzer.selectRules('all'), {filesToInclude: ['test']});
 });
 
 describe("Tests for the CSV output format", () => {
@@ -36,8 +36,8 @@ describe("Tests for the CSV output format", () => {
         expect(formattedText).toEqual(expectedText);
     });
 
-    it("When results contain violation of type UnexpectedError, we create csv text correctly", () => {
-        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+    it("When results contain violation of type UnexpectedError, we create csv text correctly", async () => {
+        const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.CSV);
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.csv');
         expect(formattedText).toEqual(expectedText);
@@ -52,14 +52,14 @@ describe("Tests for the JSON output format", () => {
         expect(formattedText).toEqual(expectedText);
     });
 
-    it("When results contain multiple violations , we create json text correctly", () => {
+    it("When results contain multiple violations , we create json text correctly", async () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.JSON);
         const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 
-    it("When results contain violation of type UnexpectedError, we create json text correctly", () => {
-        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+    it("When results contain violation of type UnexpectedError, we create json text correctly", async () => {
+        const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.json', true);
         expect(formattedText).toEqual(expectedText);
@@ -80,8 +80,8 @@ describe("Tests for the XML output format", () => {
         expect(formattedText).toEqual(expectedText);
     });
 
-    it("When results contain violation of type UnexpectedError, we create xml text correctly", () => {
-        const resultsWithUnexpectedError: RunResults = createResultsWithUnexpectedError();
+    it("When results contain violation of type UnexpectedError, we create xml text correctly", async () => {
+        const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.XML);
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.xml');
         expect(formattedText).toEqual(expectedText);
@@ -120,8 +120,8 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
         .replaceAll('\r',''); // fix for windows
 }
 
-function createResultsWithUnexpectedError(): RunResults {
+async function createResultsWithUnexpectedError(): Promise<RunResults> {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-    codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
+    await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
     return codeAnalyzer.run(codeAnalyzer.selectRules(), {filesToInclude: ['test']});
 }

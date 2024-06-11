@@ -17,13 +17,13 @@ describe('Tests for selecting rules', () => {
 
     let codeAnalyzer: CodeAnalyzer;
 
-    function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) {
-        codeAnalyzer.addEnginePlugin(new StubEnginePlugin());
+    async function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) : Promise<void> {
+        await codeAnalyzer.addEnginePlugin(new StubEnginePlugin());
     }
 
-    beforeEach(() => {
+    beforeEach(async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-        setupCodeAnalyzer(codeAnalyzer);
+        await setupCodeAnalyzer(codeAnalyzer);
     })
 
     it('When no rule selectors are provided then the Recommended tag is used', () => {
@@ -166,9 +166,9 @@ describe('Tests for selecting rules', () => {
         expect(codeAnalyzer.selectRules('aLL')).toEqual(codeAnalyzer.selectRules('all'));
     });
 
-    it('When config contains rule overrides for the selected rules, then the rule selection contains these overrides', () => {
+    it('When config contains rule overrides for the selected rules, then the rule selection contains these overrides', async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
-        setupCodeAnalyzer(codeAnalyzer);
+        await setupCodeAnalyzer(codeAnalyzer);
 
         const selection: RuleSelection = codeAnalyzer.selectRules();
 
@@ -190,9 +190,9 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
     });
 
-    it('When config contains rule overrides, then we can select based on the new tags', () => {
+    it('When config contains rule overrides, then we can select based on the new tags', async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
-        setupCodeAnalyzer(codeAnalyzer);
+        await setupCodeAnalyzer(codeAnalyzer);
 
         const selection: RuleSelection = codeAnalyzer.selectRules('SomeNewTag');
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual([]);
@@ -209,9 +209,9 @@ describe('Tests for selecting rules', () => {
         expect(stub2RuleA.getType()).toEqual(RuleType.DataFlow);
     });
 
-    it('When config contains severity overrides, then we can select based on the severity values', () => {
+    it('When config contains severity overrides, then we can select based on the severity values', async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, "test-data", "sample-config-01.yaml")));
-        setupCodeAnalyzer(codeAnalyzer);
+        await setupCodeAnalyzer(codeAnalyzer);
 
         const selection: RuleSelection = codeAnalyzer.selectRules('5');
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleD']);
@@ -225,13 +225,6 @@ describe('Tests for selecting rules', () => {
             getMessage('RuleDoesNotExistInSelection', 'doesNotExist', 'stubEngine1'));
         expect(() => selection.getRule('oopsEngine', 'stub1RuleD')).toThrow(
             getMessage('RuleDoesNotExistInSelection', 'stub1RuleD', 'oopsEngine'));
-    });
-
-    it('When an engine returns multiple rules with the same name, then error', () => {
-        codeAnalyzer.addEnginePlugin(new RepeatedRuleNameEnginePlugin());
-
-        expect(() => codeAnalyzer.selectRules()).toThrow(
-            getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 });
 

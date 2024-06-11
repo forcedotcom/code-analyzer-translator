@@ -17,10 +17,10 @@ describe('Tests for v1', () => {
         expect(dummyPlugin.getApiVersion()).toEqual(1.0);
     });
 
-    it('Engine onEvent should receive events correctly from emitEvent', () => {
+    it('Engine onEvent should receive events correctly from emitEvent', async () => {
         const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
         const dummyEngine: Engine = dummyPlugin.createEngine('dummy', {});
-        dummyEngine.validate(); // Calling simply for code coverage
+        await dummyEngine.validate(); // Calling simply for code coverage
 
         const logEvents: LogEvent[] = [];
         dummyEngine.onEvent(EventType.LogEvent, (event: LogEvent): void => {
@@ -31,7 +31,7 @@ describe('Tests for v1', () => {
             progressEvents.push(event);
         });
 
-        dummyEngine.runRules(["dummy"], {
+        await dummyEngine.runRules(["dummy"], {
             filesToInclude: ["some/file"]
         });
 
@@ -66,7 +66,7 @@ export class DummyEnginePluginV1 extends EnginePluginV1 {
 }
 
 class DummyEngineV1 extends Engine {
-    describeRules(): RuleDescription[] {
+    async describeRules(): Promise<RuleDescription[]> {
         return [];
     }
 
@@ -74,7 +74,7 @@ class DummyEngineV1 extends Engine {
         return "dummy"
     }
 
-    runRules(ruleNames: string[], runOptions: RunOptions): EngineRunResults {
+    async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitEvent({
             type: EventType.ProgressEvent,
             percentComplete: 5.0

@@ -3,7 +3,7 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
-import {StubEngine1, StubEngine2} from "./stubs";
+import {RepeatedRuleNameEnginePlugin, StubEngine1, StubEngine2} from "./stubs";
 
 describe("Tests for adding engines to Code Analyzer", () => {
     changeWorkingDirectoryToPackageRoot();
@@ -17,9 +17,9 @@ describe("Tests for adding engines to Code Analyzer", () => {
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
     });
 
-    it('When adding engine plugin then all its engines are correctly added', () => {
+    it('When adding engine plugin then all its engines are correctly added', async () => {
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
-        codeAnalyzer.addEnginePlugin(stubEnginePlugin);
+        await codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"]);
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
@@ -30,11 +30,11 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(stubEngine2.config).toEqual({});
     });
 
-    it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', () => {
+    it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.resolve(__dirname, 'test-data', 'sample-config-02.Yml')));
 
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
-        codeAnalyzer.addEnginePlugin(stubEnginePlugin);
+        await codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
@@ -51,8 +51,8 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(stubEngine2.config).toEqual({});
     });
 
-    it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', () => {
-        codeAnalyzer.addEnginePlugin(new stubs.FutureEnginePlugin());
+    it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.FutureEnginePlugin());
 
         const warnEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Warn, logEvents);
         expect(warnEvents.length).toEqual(1);
@@ -60,9 +60,9 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames()).toEqual(["future"]);
     })
 
-    it('Attempt to add duplicate engines emits error log line but continues without adding the engines', () => {
-        codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
-        codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+    it('Attempt to add duplicate engines emits error log line but continues without adding the engines', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
 
         const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
         expect(errorEvents.length).toEqual(2);
@@ -71,8 +71,8 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
     })
 
-    it('When plugin returns engine that contradicts the plugin availableEngineNames method, then we emit error log line and skip that engine', () => {
-        codeAnalyzer.addEnginePlugin(new stubs.ContradictingEnginePlugin());
+    it('When plugin returns engine that contradicts the plugin availableEngineNames method, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.ContradictingEnginePlugin());
 
         const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
         expect(errorEvents.length).toEqual(1);
@@ -80,8 +80,8 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual([])
     })
 
-    it('When plugin returns engine that fails validation, then we emit error log line and skip that engine', () => {
-        codeAnalyzer.addEnginePlugin(new stubs.InvalidEnginePlugin());
+    it('When plugin returns engine that fails validation, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.InvalidEnginePlugin());
 
         const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
         expect(errorEvents.length).toEqual(1);
@@ -90,13 +90,13 @@ describe("Tests for adding engines to Code Analyzer", () => {
     })
 
     it('When plugin throws error during getAvailableEngineNames, then we throw an exception', () => {
-        expect(() => codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin1())).toThrow(
+        expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin1())).rejects.toThrow(
             getMessage('PluginErrorFromGetAvailableEngineNames', 'SomeErrorFromGetAvailableEngineNames')
         );
     })
 
     it('When plugin throws error during createEngine, then we throw an exception', () => {
-        expect(() => codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).toThrow(
+        expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).rejects.toThrow(
             getMessage('PluginErrorFromCreateEngine', 'someEngine', 'SomeErrorFromCreateEngine')
         );
     });
@@ -122,6 +122,11 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const nonModuleFile: string = path.resolve('LICENSE');
         const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', nonModuleFile, '');
         expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
+    });
+
+    it('When an engine returns multiple rules with the same name, then error', async () => {
+        expect(codeAnalyzer.addEnginePlugin(new RepeatedRuleNameEnginePlugin())).rejects.toThrow(
+            getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 });
 

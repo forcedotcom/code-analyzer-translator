@@ -16,13 +16,13 @@ export type RunOptions = {
 export abstract class Engine {
     private readonly eventEmitter: EventEmitter = new EventEmitter();
 
-    public validate(): void {}
+    public async validate(): Promise<void> {}
 
     abstract getName(): string
 
-    abstract describeRules(): RuleDescription[]
+    abstract describeRules(): Promise<RuleDescription[]>
 
-    abstract runRules(ruleNames: string[], runOptions: RunOptions): EngineRunResults
+    abstract runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults>
 
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
         this.eventEmitter.on(eventType, callback);
