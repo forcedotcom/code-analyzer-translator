@@ -9,31 +9,26 @@ import * as path from 'path';
 import {fileURLToPath} from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LATEST_VULN_FILE_URL = 'https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository.json';
+const LATEST_VULN_FILE_URL = 'https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository-v2.json';
 const DESTINATION_DIR = path.join(__dirname, '..', 'vulnerabilities');
 const DESTINATION_FILE = path.join(DESTINATION_DIR, 'RetireJsVulns.json');
-const MIN_NUM_EXPECTED_VULNS = 300;
+const MIN_NUM_EXPECTED_VULNS = 300; // There were actually about 347 on 2024/6/7, but I'll leave a buffer and make the minimum 300 for our sanity check.
 
 async function updateRetireJsVulns() {
-    try {
-        console.log(`Creating RetireJS vulnerability file`);
+    console.log(`Creating RetireJS vulnerability file`);
 
-        console.log(`* Downloading the latest RetireJS vulnerability file from: ${LATEST_VULN_FILE_URL}`);
-        const vulnJsonObj = await downloadJsonFile(LATEST_VULN_FILE_URL);
+    console.log(`* Downloading the latest RetireJS vulnerability file from: ${LATEST_VULN_FILE_URL}`);
+    const vulnJsonObj = await downloadJsonFile(LATEST_VULN_FILE_URL);
 
-        console.log(`* Validating the contents of the RetireJS vulnerability file`)
-        validateJson(vulnJsonObj);
+    console.log(`* Validating the contents of the RetireJS vulnerability file`)
+    validateJson(vulnJsonObj);
 
-        console.log(`* Cleaning the contents of the RetireJS vulnerability file`);
-        cleanUpJson(vulnJsonObj);
+    console.log(`* Cleaning the contents of the RetireJS vulnerability file`);
+    cleanUpJson(vulnJsonObj);
 
-        console.log(`* Writing RetireJS vulnerability catalog to: ${DESTINATION_FILE}`)
-        await writeJson(vulnJsonObj);
-        console.log(`Success!`);
-
-    } catch (err) {
-        console.error(`Error creating catalog: ${err.message || err}`);
-    }
+    console.log(`* Writing RetireJS vulnerability catalog to: ${DESTINATION_FILE}`)
+    await writeJson(vulnJsonObj);
+    console.log(`Success!`);
 }
 
 async function downloadJsonFile(jsonFileUrl) {
@@ -59,7 +54,7 @@ function validateJson(vulnJsonObj) {
             }
             if (!vuln.severity) {
                 problems.push(`Component: ${key}. Problem: Vulnerability #${i + 1} lacks a severity.`);
-            } else if (!["high","medium","low"].includes(vuln.severity)) {
+            } else if (!["critical", "high","medium","low"].includes(vuln.severity)) {
                 problems.push(`Component: ${key}. Problem: Vulnerability #${i + 1} contains a severity that we currently do not support: ${vuln.severity}.`);
             }
         });

@@ -1,0 +1,90 @@
+[
+  {
+    "file": "/temp/some-folder/jquery-3.1.0.js",
+    "results": [
+      {
+        "version": "3.1.0",
+        "component": "jquery",
+        "npmname": "jquery",
+        "detection": "filename",
+        "vulnerabilities": [
+          {
+            "info": [
+              "https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/",
+              "https://github.com/jquery/jquery/commit/753d591aea698e57d6db58c9f722cd0808619b1b",
+              "https://nvd.nist.gov/vuln/detail/CVE-2019-11358"
+            ],
+            "below": "3.4.0",
+            "atOrAbove": "1.1.4",
+            "severity": "medium",
+            "identifiers": {
+              "summary": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution",
+              "CVE": [
+                "CVE-2019-11358"
+              ],
+              "PR": "4333",
+              "githubID": "GHSA-6c3j-c64m-qhgq"
+            }
+          },
+          {
+            "info": [
+              "https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/"
+            ],
+            "below": "3.5.0",
+            "atOrAbove": "1.0.3",
+            "severity": "medium",
+            "identifiers": {
+              "summary": "passing HTML containing <option> elements from untrusted sources - even after sanitizing it - to one of jQuery's DOM manipulation methods (i.e. .html(), .append(), and others) may execute untrusted code.",
+              "CVE": [
+                "CVE-2020-11023"
+              ],
+              "issue": "4647",
+              "githubID": "GHSA-jpcq-cgw6-v4j6"
+            }
+          },
+          {
+            "info": [
+              "https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/"
+            ],
+            "below": "3.5.0",
+            "atOrAbove": "1.2.0",
+            "severity": "high",
+            "identifiers": {
+              "summary": "Regex in its jQuery.htmlPrefilter sometimes may introduce XSS",
+              "CVE": [
+                "CVE-2020-11022"
+              ],
+              "issue": "4642",
+              "githubID": "GHSA-gxr4-xjj5-5px2"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "/temp/someZipFile.zip::[ZIPPED_FILE]::innerFolder/sessvars-1.0.0.min.js",
+    "results": [
+      {
+        "version": "1.0.0",
+        "component": "sessvars",
+        "detection": "filename",
+        "vulnerabilities": [
+          {
+            "info": [
+              "http://www.thomasfrank.se/sessionvars.html"
+            ],
+            "below": "1.01",
+            "severity": "low",
+            "identifiers": {
+              "summary": "Unsanitized data passed to eval()",
+              "CVE": [
+                "CWE-79"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
