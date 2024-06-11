@@ -54,7 +54,7 @@ export class StubEngine1 extends engApi.Engine {
         return "stubEngine1";
     }
 
-    describeRules(): engApi.RuleDescription[] {
+    async describeRules(): Promise<engApi.RuleDescription[]> {
         return [
             {
                 name: "stub1RuleA",
@@ -99,7 +99,7 @@ export class StubEngine1 extends engApi.Engine {
         ];
     }
 
-    runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitEvent<engApi.ProgressEvent>({
             type: engApi.EventType.ProgressEvent,
@@ -144,7 +144,7 @@ export class StubEngine2 extends engApi.Engine {
         return "stubEngine2";
     }
 
-    describeRules(): engApi.RuleDescription[] {
+    async describeRules(): Promise<engApi.RuleDescription[]> {
         return [
             {
                 name: "stub2RuleA",
@@ -173,7 +173,7 @@ export class StubEngine2 extends engApi.Engine {
         ];
     }
 
-    runRules(ruleNames: string[], runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitEvent<engApi.LogEvent>({
             type: engApi.EventType.LogEvent,
@@ -300,11 +300,11 @@ class FutureEngine extends engApi.Engine {
         return "future";
     }
 
-    describeRules(): engApi.RuleDescription[] {
+    async describeRules(): Promise<engApi.RuleDescription[]> {
         return [];
     }
 
-    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         return { violations: [] };
     }
 }
@@ -339,7 +339,7 @@ export class InvalidEnginePlugin extends engApi.EnginePluginV1 {
  * InvalidEngine - A plugin that returns an engine that fails the validate() check
  */
 class InvalidEngine extends engApi.Engine {
-    validate(): void {
+    async validate(): Promise<void> {
         throw new Error('SomeErrorMessageFromValidate');
     }
 
@@ -347,11 +347,11 @@ class InvalidEngine extends engApi.Engine {
         return "invalidEngine";
     }
 
-    describeRules(): engApi.RuleDescription[] {
+    async describeRules(): Promise<engApi.RuleDescription[]> {
         return [];
     }
 
-    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         return { violations: [] };
     }
 }
@@ -407,7 +407,7 @@ class ThrowingEngine extends StubEngine1 {
         return "throwingEngine";
     }
 
-    runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): engApi.EngineRunResults {
+    async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         throw new Error('SomeErrorMessageFromThrowingEngine');
     }
 }
@@ -433,7 +433,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
         return 'repeatedRuleNameEngine';
     }
 
-    describeRules(): RuleDescription[] {
+    async describeRules(): Promise<RuleDescription[]> {
         return [
             {
                 name: "repeatedRule",
@@ -454,7 +454,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
         ];
     }
 
-    runRules(_ruleNames: string[], _runOptions: RunOptions): EngineRunResults {
+    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
         return { violations: [] };
     }
 }

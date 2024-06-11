@@ -13,6 +13,7 @@ import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
 import {Clock, RealClock, toAbsolutePath} from "./utils";
 import fs from "node:fs";
+import path from "node:path";
 
 export type RunOptions = {
     filesToInclude: string[]
@@ -24,6 +25,7 @@ export class CodeAnalyzer {
     private clock: Clock = new RealClock();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
+    private readonly allRules: RuleImpl[] = [];
 
     constructor(config: CodeAnalyzerConfig) {
         this.config = config;
@@ -34,7 +36,7 @@ export class CodeAnalyzer {
         this.clock = clock;
     }
 
-    public addEnginePlugin(enginePlugin: engApi.EnginePlugin): void {
+    public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
         if (enginePlugin.getApiVersion() > engApi.ENGINE_API_VERSION) {
             this.emitLogEvent(LogLevel.Warn, getMessage('EngineFromFutureApiDetected',
                 enginePlugin.getApiVersion(), `"${ enginePlugin.getAvailableEngineNames().join('","') }"`, engApi.ENGINE_API_VERSION))
@@ -44,7 +46,14 @@ export class CodeAnalyzer {
         for (const engineName of getAvailableEngineNamesFromPlugin(enginePluginV1)) {
             const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
             const engine: engApi.Engine = createEngineFromPlugin(enginePluginV1, engineName, engConf);
-            this.addEngineIfValid(engineName, engine);
+            await this.addEngineIfValid(engineName, engine);
+
+            const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules();
+            validateRuleDescriptions(ruleDescriptions, engineName);
+            for (let ruleDescription of ruleDescriptions) {
+                ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
+                this.allRules.push(new RuleImpl(engineName, ruleDescription))
+            }
         }
     }
 
@@ -64,7 +73,7 @@ export class CodeAnalyzer {
             throw new Error(getMessage('FailedToDynamicallyAddEnginePlugin', enginePluginModulePath));
         }
         const enginePlugin: engApi.EnginePlugin = pluginModule.createEnginePlugin();
-        this.addEnginePlugin(enginePlugin);
+        await this.addEnginePlugin(enginePlugin);
     }
 
     public getEngineNames(): string[] {
@@ -75,7 +84,7 @@ export class CodeAnalyzer {
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
-        for (const rule of this.getAllRules()) {
+        for (const rule of this.allRules) {
             if (selectors.some(s => rule.matchesRuleSelector(s))) {
                 ruleSelection.addRule(rule);
             }
@@ -83,7 +92,7 @@ export class CodeAnalyzer {
         return ruleSelection;
     }
 
-    public run(ruleSelection: RuleSelection, runOptions: RunOptions): RunResults {
+    public async run(ruleSelection: RuleSelection, runOptions: RunOptions): Promise<RunResults> {
         const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
@@ -93,7 +102,7 @@ export class CodeAnalyzer {
                 type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 0
             });
 
-            const engineRunResults: EngineRunResults = this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions);
+            const engineRunResults: EngineRunResults = await this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions);
             runResults.addEngineRunResults(engineRunResults);
 
             this.emitEvent<EngineProgressEvent>({
@@ -111,14 +120,14 @@ export class CodeAnalyzer {
         this.eventEmitter.on(eventType, callback);
     }
 
-    private runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): EngineRunResults {
+    private async runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): Promise<EngineRunResults> {
         const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
         const engine: engApi.Engine = this.getEngine(engineName);
 
         let apiEngineRunResults: engApi.EngineRunResults;
         try {
-            apiEngineRunResults = engine.runRules(rulesToRun, engineRunOptions);
+            apiEngineRunResults = await engine.runRules(rulesToRun, engineRunOptions);
         } catch (error) {
             return new UnexpectedErrorEngineRunResults(engineName, error as Error);
         }
@@ -140,7 +149,7 @@ export class CodeAnalyzer {
         })
     }
 
-    private addEngineIfValid(engineName: string, engine: engApi.Engine): void {
+    private async addEngineIfValid(engineName: string, engine: engApi.Engine): Promise<void> {
         if (this.engines.has(engineName)) {
             this.emitLogEvent(LogLevel.Error, getMessage('DuplicateEngine', engineName));
             return;
@@ -150,7 +159,7 @@ export class CodeAnalyzer {
             return;
         }
         try {
-            engine.validate();
+            await engine.validate();
         } catch (err) {
             this.emitLogEvent(LogLevel.Error, getMessage('EngineValidationFailed', engineName, (err as Error).message));
             return;
@@ -179,19 +188,6 @@ export class CodeAnalyzer {
                 percentComplete: event.percentComplete
             });
         });
-    }
-
-    private getAllRules(): RuleImpl[] {
-        const allRules: RuleImpl[] = [];
-        for (const [engineName, engine] of this.engines) {
-            const ruleDescriptions: engApi.RuleDescription[] = engine.describeRules();
-            validateRuleDescriptions(ruleDescriptions, engineName);
-            for (let ruleDescription of ruleDescriptions) {
-                ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
-                allRules.push(new RuleImpl(engineName, ruleDescription))
-            }
-        }
-        return allRules;
     }
 
     private updateRuleDescriptionWithOverrides(engineName: string, ruleDescription: engApi.RuleDescription): engApi.RuleDescription {
@@ -246,7 +242,7 @@ function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
-        filesToInclude: runOptions.filesToInclude.map(validateFileOrFolder)
+        filesToInclude: removeRedundantPaths(runOptions.filesToInclude.map(validateFileOrFolder))
     };
 
     if (runOptions.entryPoints && runOptions.entryPoints.length > 0) {
@@ -254,6 +250,22 @@ function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
     }
     validateEntryPointsLiveUnderFilesToInclude(engineRunOptions);
     return engineRunOptions;
+}
+
+function removeRedundantPaths(absolutePaths: string[]): string[] {
+    // If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
+    // remove that subfolder or file. So
+    const pathsSortedByLength: string[] = absolutePaths.sort((a, b) => a.length - b.length);
+    const filteredPaths: string[] = [];
+    for (const currentPath of pathsSortedByLength) {
+        const isAlreadyContained = filteredPaths.some(existingPath =>
+            currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
+        );
+        if (!isAlreadyContained) {
+            filteredPaths.push(currentPath);
+        }
+    }
+    return filteredPaths.sort(); // sort alphabetically
 }
 
 function validateFileOrFolder(fileOrFolder: string): string {

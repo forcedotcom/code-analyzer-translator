@@ -41,13 +41,13 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     const expectedStubEngine1RuleNames: string[] = ['stub1RuleA', 'stub1RuleB', 'stub1RuleC'];
     const expectedStubEngine2RuleNames: string[] = ['stub2RuleA', 'stub2RuleC'];
 
-    beforeEach(() => {
+    beforeEach(async () => {
         logEvents = [];
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer.setClock(new FixedClock(sampleTimestamp));
         const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
-        codeAnalyzer.addEnginePlugin(stubPlugin);
+        await codeAnalyzer.addEnginePlugin(stubPlugin);
         stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
@@ -58,7 +58,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const runOptions: RunOptions = {
             filesToInclude: ['does/not/exist.cls']
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', toAbsolutePath('does/not/exist.cls')));
     });
 
@@ -67,7 +67,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: [path.resolve(__dirname)],
             entryPoints: [path.resolve(__dirname, 'doesNotExist.xml')],
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
@@ -77,7 +77,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: [path.resolve(__dirname)],
             entryPoints: [path.resolve(__dirname, 'run.test.ts'), badEntryPoint]
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('EntryPointFileDoesNotExist', badEntryPoint, path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
@@ -87,7 +87,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: [path.resolve(__dirname)],
             entryPoints: [badEntryPoint],
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('EntryPointWithMethodMustNotBeFolder', badEntryPoint, path.resolve('test', 'test-data')));
     });
 
@@ -97,7 +97,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: ['test'],
             entryPoints: [badEntryPoint],
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('InvalidEntryPoint', badEntryPoint));
     });
 
@@ -107,7 +107,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: ['test'],
             entryPoints: [badEntryPoint],
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('InvalidEntryPoint', badEntryPoint));
     });
 
@@ -115,7 +115,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const runOptions: RunOptions = {
             filesToInclude: []
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     });
 
@@ -125,13 +125,13 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             filesToInclude: ['src', 'package.json'],
             entryPoints: [badEntryPoint],
         };
-        expect(() => codeAnalyzer.run(selection, runOptions)).toThrow(
+        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('EntryPointMustBeUnderFilesToInclude', path.resolve('test', 'test-helpers.ts'),
-                JSON.stringify([path.resolve('src'), path.resolve('package.json')])));
+                JSON.stringify([path.resolve('package.json'), path.resolve('src')])));
     });
 
-    it("When including a relative file and a folder then they both are passed each engine as absolute paths", () => {
-        codeAnalyzer.run(selection, {
+    it("When including a relative file and a folder then they both are passed each engine as absolute paths", async () => {
+        await codeAnalyzer.run(selection, {
             filesToInclude: ['src', 'test/run.test.ts']
         });
 
@@ -148,8 +148,26 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points as an empty array, then no entry points are passed to engines", () => {
-        codeAnalyzer.run(selection, {
+    it("When including a parent folder and child paths under that folder, then the redundant children are removed", async () => {
+        await codeAnalyzer.run(selection, {
+            filesToInclude: ['test/test-data', 'test', 'test/run.test.ts']
+        });
+
+        const expectedEngineRunOptions: engApi.RunOptions = {
+            filesToInclude: [path.resolve('test')]
+        };
+        expect(stubEngine1.runRulesCallHistory).toEqual([{
+            ruleNames: expectedStubEngine1RuleNames,
+            runOptions: expectedEngineRunOptions
+        }]);
+        expect(stubEngine2.runRulesCallHistory).toEqual([{
+            ruleNames: expectedStubEngine2RuleNames,
+            runOptions: expectedEngineRunOptions
+        }]);
+    });
+
+    it("When specifying entry points as an empty array, then no entry points are passed to engines", async () => {
+        await codeAnalyzer.run(selection, {
             filesToInclude: ['src'],
             entryPoints: []
         });
@@ -167,8 +185,8 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points as files and subfolders, then they are passed to each engine successfully", () => {
-        codeAnalyzer.run(selection, {
+    it("When specifying entry points as files and subfolders, then they are passed to each engine successfully", async () => {
+        await codeAnalyzer.run(selection, {
             filesToInclude: ['test'],
             entryPoints: ['test/test-data', 'test/run.test.ts']
         });
@@ -190,14 +208,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points individual methods, then they are passed to each engine successfully", () => {
-        codeAnalyzer.run(selection, {
+    it("When specifying entry points individual methods, then they are passed to each engine successfully", async () => {
+        await codeAnalyzer.run(selection, {
             filesToInclude: ['test', 'src/utils.ts', 'src/index.ts'],
             entryPoints: ['test/run.test.ts#someMethod','test/stubs.ts#method1;method2;method3','src/utils.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('test'), path.resolve("src", "utils.ts"), path.resolve("src", "index.ts")],
+            filesToInclude: [path.resolve("src", "index.ts"), path.resolve("src", "utils.ts"), path.resolve('test')],
             entryPoints: [
                 {
                     file: path.resolve("test", "run.test.ts"),
@@ -244,9 +262,9 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(stubEngine2.runRulesCallHistory).toEqual([]);
     });
 
-    it("When zero rules are selected, then all engines should be skipped and returned results contain no violations", () => {
+    it("When zero rules are selected, then all engines should be skipped and returned results contain no violations", async () => {
         selection = codeAnalyzer.selectRules('doesNotExist');
-        const results: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const results: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(stubEngine1.runRulesCallHistory).toEqual([]);
         expect(stubEngine2.runRulesCallHistory).toEqual([]);
@@ -258,9 +276,9 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(results.getEngineNames()).toEqual([]);
     });
 
-    it("When an engine did not run, then attempting to get that engine's run results gives an error", () => {
+    it("When an engine did not run, then attempting to get that engine's run results gives an error", async () => {
         selection = codeAnalyzer.selectRules('stubEngine2');
-        const results: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const results: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(results.getEngineNames()).toEqual(['stubEngine2']);
         expect(() => results.getEngineRunResults('stubEngine1')).toThrow(
@@ -268,8 +286,8 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(results.getEngineRunResults('stubEngine2')).toBeDefined();
     });
 
-    it("When no zero violations occurred, then results have no violations for the engines that ran", () => {
-        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+    it("When no zero violations occurred, then results have no violations for the engines that ran", async () => {
+        const overallResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(overallResults.getViolationCount()).toEqual(0);
@@ -295,14 +313,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(stubEngine2Results.getViolations()).toEqual([]);
     });
 
-    it("When an engines return violations, then they are correctly included in the run results", () => {
+    it("When an engines return violations, then they are correctly included in the run results", async () => {
         stubEngine1.resultsToReturn = {
             violations: [stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleC()]
         };
         stubEngine2.resultsToReturn = {
             violations: [stubs.getSampleViolationForStub2RuleC()]
         };
-        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const overallResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
         expect(overallResults.getViolationCount()).toEqual(3);
@@ -369,7 +387,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [stubs.getSampleViolationForStub1RuleC()]
         };
         selection = codeAnalyzer.selectRules('stub1RuleA');
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationForUnselectedRule', 'stubEngine1', 'stub1RuleC'));
     });
 
@@ -379,7 +397,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine1', 'stub1RuleC', 1, 1));
     });
 
@@ -389,7 +407,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine2', 'stub2RuleC', -2, 3));
     });
 
@@ -399,7 +417,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine1', 'stub1RuleC', 0.5, 1));
     });
 
@@ -409,7 +427,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationFileThatDoesNotExist',
                 'stubEngine2', 'stub2RuleC', path.resolve('test', 'doesNotExist')));
     });
@@ -420,7 +438,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationFileAsFolder',
                 'stubEngine2', 'stub2RuleC', path.resolve('test', 'test-data')));
     });
@@ -436,7 +454,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
                 'stubEngine1', 'stub1RuleA', expectedBadField, expectedBadValue));
     }
@@ -457,7 +475,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithEndLineBeforeStartLine',
                 'stubEngine1', 'stub1RuleA', 2, 4));
     });
@@ -472,12 +490,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(() => codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).toThrow(
+        expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithEndColumnBeforeStartColumnOnSameLine',
                 'stubEngine1', 'stub1RuleA', 2, 5));
     });
 
-    it("When an engine returns a code location with an endColumn but no endLine, then the endColumn is simply not used", () => {
+    it("When an engine returns a code location with an endColumn but no endLine, then the endColumn is simply not used", async () => {
         const malformedViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         malformedViolation.codeLocations[0].startLine = 4;
         malformedViolation.codeLocations[0].startColumn = 5;
@@ -486,7 +504,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         stubEngine1.resultsToReturn = {
             violations: [malformedViolation]
         };
-        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const overallResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         const violations: Violation[] = overallResults.getViolations();
         expect(violations).toHaveLength(1);
@@ -496,11 +514,11 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getCodeLocations()[0].getEndColumn()).toBeUndefined();
     });
 
-    it("When an engine throws an exception when running, then a result is returned with a Critical violation of type UnexpectedError", () => {
+    it("When an engine throws an exception when running, then a result is returned with a Critical violation of type UnexpectedError", async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-        codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
+        await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
         selection = codeAnalyzer.selectRules();
-        const overallResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const overallResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(overallResults.getRunDirectory()).toEqual(process.cwd() + path.sep);
         expect(overallResults.getViolationCount()).toEqual(1);
@@ -525,14 +543,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             'throwingEngine', 'SomeErrorMessageFromThrowingEngine'));
     });
 
-    it("When running engines, then events are wired up and emitted correctly from the engines", () => {
+    it("When running engines, then events are wired up and emitted correctly from the engines", async () => {
         const engineLogEvents: EngineLogEvent[] = [];
         const engineProgressEvents: EngineProgressEvent[] = [];
         const engineResultsEvents: EngineResultsEvent[] = [];
         codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
         codeAnalyzer.onEvent(EventType.EngineProgressEvent, (event: EngineProgressEvent) => engineProgressEvents.push(event));
         codeAnalyzer.onEvent(EventType.EngineResultsEvent, (event: EngineResultsEvent) => engineResultsEvents.push(event));
-        const runResults: RunResults = codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+        const runResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(engineLogEvents).toHaveLength(2);
         expect(engineLogEvents).toContainEqual({
