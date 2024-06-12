@@ -16,13 +16,14 @@
     "showcoverage": "open ./coverage/lcov-report/index.html"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "cross-env": "^7.0.3",
     "jest": "^29.0.0",
-    "ts-jest": "^29.0.0",
-    "rimraf": "*"
+    "rimraf": "*",
+    "ts-jest": "^29.0.0"
   },
   "jest": {
-    "coverageThreshold":  {
+    "coverageThreshold": {
       "global": {
         "branches": 80,
         "functions": 80,
@@ -37,5 +38,8 @@
       "src/**/*.ts",
       "!src/index.ts"
     ]
+  },
+  "dependencies": {
+    "@salesforce/code-analyzer-engine-api": "^0.2.0"
   }
 }

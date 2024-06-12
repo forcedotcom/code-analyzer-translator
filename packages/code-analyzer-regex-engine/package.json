@@ -1,6 +1,6 @@
 {
-  "name": "@salesforce/code-analyzer-engine-api",
-  "description": "Engine API Package for the Salesforce Code Analyzer",
+  "name": "@salesforce/code-analyzer-regex-engine",
+  "description": "Regex Engine for the Salesforce Code Analyzer",
   "version": "0.2.0",
   "author": "The Salesforce Code Analyzer Team",
   "license": "BSD-3-Clause license",
