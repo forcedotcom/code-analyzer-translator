@@ -3,13 +3,16 @@ import {
     Engine,
     EnginePluginV1,
     EngineRunResults,
+    EventType,
+    LogEvent,
+    LogLevel,
     RuleDescription,
     RuleType,
     RunOptions,
     SeverityLevel,
     Violation
 } from "@salesforce/code-analyzer-engine-api";
-import {RetireJsExecutor, AdvancedRetireJsExecutor, ZIPPED_FILE_MARKER} from "./executor";
+import {RetireJsExecutor, AdvancedRetireJsExecutor, ZIPPED_FILE_MARKER, EmitLogEventFcn} from "./executor";
 import {Finding, Vulnerability} from "retire/lib/types";
 import {getMessage} from "./messages";
 
@@ -46,7 +49,9 @@ export class RetireJsEngine extends Engine {
 
     constructor(retireJsExecutor?: RetireJsExecutor) {
         super();
-        this.retireJsExecutor = retireJsExecutor ? retireJsExecutor : new AdvancedRetireJsExecutor();
+        const emitLogEventFcn: EmitLogEventFcn = (logLevel: LogLevel, msg: string) => this.emitEvent<LogEvent>(
+            {type: EventType.LogEvent, logLevel: logLevel, message: msg});
+        this.retireJsExecutor = retireJsExecutor ? retireJsExecutor : new AdvancedRetireJsExecutor(emitLogEventFcn);
     }
 
     getName(): string {

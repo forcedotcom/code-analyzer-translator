@@ -11,7 +11,7 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
-import {RetireJsExecutor, AdvancedRetireJsExecutor} from "../src/executor";
+import {RetireJsExecutor} from "../src/executor";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
 import fs from "node:fs";
@@ -89,7 +89,7 @@ describe('Tests for the RetireJsEnginePlugin', () => {
     });
 
     it('When createEngine is passed retire-js then an RetireJsEngine instance is returned', () => {
-        expect(plugin.createEngine('retire-js', {})).toEqual(new RetireJsEngine(new AdvancedRetireJsExecutor()));
+        expect(plugin.createEngine('retire-js', {})).toBeInstanceOf(RetireJsEngine);
     });
 
     it('When createEngine is passed anything else then an error is thrown', () => {

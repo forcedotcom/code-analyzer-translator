@@ -6,6 +6,7 @@ import * as utils from "./utils";
 import path from "node:path";
 import * as StreamZip from 'node-stream-zip';
 import {getMessage} from "./messages";
+import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 
 const execAsync = promisify(exec);
 
@@ -18,6 +19,9 @@ const RETIRE_JS_VULN_REPO_FILE: string = path.resolve(__dirname, '..', 'vulnerab
 export interface RetireJsExecutor {
     execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
 }
+
+export type EmitLogEventFcn = (logLevel: LogLevel, msg: string) => void;
+const NO_OP: () => void = () => {};
 
 /**
  * SimpleRetireJsExecutor - A simple wrapper around the retire command
@@ -32,48 +36,56 @@ export interface RetireJsExecutor {
  * '.retireignore' and '.retireignore.json' files in their project if they wish to do so.
  */
 export class SimpleRetireJsExecutor implements RetireJsExecutor {
+    private readonly emitLogEvent: EmitLogEventFcn;
+
+    constructor(emitLogEvent: EmitLogEventFcn = NO_OP) {
+        this.emitLogEvent = emitLogEvent;
+    }
+
     async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
         let findings: Finding[] = [];
         for (const fileOrFolder of filesAndFoldersToScan) {
             if (fs.statSync(fileOrFolder).isFile()) {
-                findings = findings.concat(await scanFile(fileOrFolder));
+                findings = findings.concat(await this.scanFile(fileOrFolder));
             } else {
-                findings = findings.concat(await scanFolder(fileOrFolder));
+                findings = findings.concat(await this.scanFolder(fileOrFolder));
             }
         }
         return findings;
     }
-}
 
-async function scanFile(_file: string): Promise<Finding[]> {
-    // This line shouldn't be hit in production since users can't directly access this SimpleRetireJsExecutor themselves yet.
-    // See: https://github.com/RetireJS/retire.js/blob/master/node/README.md#retireignore
-    throw new Error('Currently the SimpleRetireJsExecutor does not support scanning individual files.');
-}
-
-async function scanFolder(folder: string): Promise<Finding[]> {
-    const tempOutputFile: string = path.resolve(await utils.createTempDir(), "output.json");
-    const command: string = `npx retire --path "${folder}" --exitwith 13 --outputformat jsonsimple --outputpath "${tempOutputFile}" --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"`;
-
-    try {
-        await execAsync(command, {encoding: 'utf-8'});
-    } catch (err) {
-        const execError: ExecException = err as ExecException;
-        /* istanbul ignore next */
-        if (execError.code != 13) {
-            throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', command, execError.message) +
-                `\n\n[stdout]:\n${execError.stdout}\n[stderror]:\n${execError.stderr}`,
-                {cause: err});
-        }
+    private async scanFile(_file: string): Promise<Finding[]> {
+        // This line shouldn't be hit in production since users can't directly access this SimpleRetireJsExecutor themselves yet.
+        // See: https://github.com/RetireJS/retire.js/blob/master/node/README.md#retireignore
+        throw new Error('Currently the SimpleRetireJsExecutor does not support scanning individual files.');
     }
 
-    try {
-        const fileContents: string = fs.readFileSync(tempOutputFile, 'utf-8');
-        return JSON.parse(fileContents) as Finding[];
-    } catch (err) {
-        /* istanbul ignore next */
-        throw new Error(getMessage('UnexpectedErrorWhenProcessingOutputFile', tempOutputFile, (err as Error).message),
-            {cause: err});
+    private async scanFolder(folder: string): Promise<Finding[]> {
+        const tempOutputFile: string = path.resolve(await utils.createTempDir(), "output.json");
+        const command: string = `npx retire --path "${folder}" --exitwith 13 --outputformat jsonsimple --outputpath "${tempOutputFile}" --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"`;
+
+        this.emitLogEvent(LogLevel.Fine, `Executing command: ${command}`);
+        try {
+            await execAsync(command, {encoding: 'utf-8'});
+        } catch (err) {
+            const execError: ExecException = err as ExecException;
+            /* istanbul ignore next */
+            if (execError.code != 13) {
+                throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', command, execError.message) +
+                    `\n\n[stdout]:\n${execError.stdout}\n[stderror]:\n${execError.stderr}`,
+                    {cause: err});
+            }
+        }
+
+        this.emitLogEvent(LogLevel.Fine, `Parsing output file: ${tempOutputFile}`);
+        try {
+            const fileContents: string = fs.readFileSync(tempOutputFile, 'utf-8');
+            return JSON.parse(fileContents) as Finding[];
+        } catch (err) {
+            /* istanbul ignore next */
+            throw new Error(getMessage('UnexpectedErrorWhenProcessingOutputFile', tempOutputFile, (err as Error).message),
+                {cause: err});
+        }
     }
 }
 
@@ -89,16 +101,23 @@ async function scanFolder(folder: string): Promise<Finding[]> {
  * which the engine then knows how to further process with special handling.
  */
 export class AdvancedRetireJsExecutor implements RetireJsExecutor {
-    private readonly simpleExecutor: RetireJsExecutor = new SimpleRetireJsExecutor();
+    private readonly simpleExecutor: RetireJsExecutor;
+    private readonly emitLogEvent: EmitLogEventFcn;
+
+    constructor(emitLogEvent: EmitLogEventFcn = NO_OP) {
+        this.simpleExecutor = new SimpleRetireJsExecutor(emitLogEvent);
+        this.emitLogEvent = emitLogEvent;
+    }
 
     async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
         const fileMap: Map<string, string> = new Map();
         const tmpDir: string = await utils.createTempDir();
+        this.emitLogEvent(LogLevel.Fine, `Created a temporary directory where relevant files will be copied to for scanning: ${tmpDir}`);
 
         const allFiles: string[] = utils.expandToListAllFiles(filesAndFoldersToScan);
-
         const fileProcessingPromises: Promise<void>[] = allFiles.map(file => processFile(file, tmpDir, fileMap));
         await Promise.all(fileProcessingPromises);
+        this.emitLogEvent(LogLevel.Fine, `Finished copying relevant files to temporary directory: '${tmpDir}'`);
 
         const findings: Finding[] = await this.simpleExecutor.execute([tmpDir]);
 
