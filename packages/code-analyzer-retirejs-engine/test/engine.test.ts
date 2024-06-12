@@ -16,6 +16,7 @@ import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
 import fs from "node:fs";
 import {Finding} from "retire/lib/types";
+import {getMessage} from "../src/messages";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -35,7 +36,8 @@ const EXPECTED_VIOLATION_1: Violation = {
     ruleName: "LibraryWithKnownMediumSeverityVulnerability",
     codeLocations: [EXPECTED_CODE_LOCATION_1],
     primaryLocationIndex: 0,
-    message: `'jquery v3.1.0' contains a known vulnerability. Please upgrade to latest version.\nVulnerability details: {\n  "summary": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution",\n  "CVE": [\n    "CVE-2019-11358"\n  ],\n  "PR": "4333",\n  "githubID": "GHSA-6c3j-c64m-qhgq"\n}`,
+    message: `${getMessage('LibraryContainsKnownVulnerability', 'jquery v3.1.0')} ${getMessage('UpgradeToLatestVersion')}\n`
+        + getMessage('VulnerabilityDetails', `{\n  "summary": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution",\n  "CVE": [\n    "CVE-2019-11358"\n  ],\n  "PR": "4333",\n  "githubID": "GHSA-6c3j-c64m-qhgq"\n}`),
     resourceUrls: [
         "https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/",
         "https://github.com/jquery/jquery/commit/753d591aea698e57d6db58c9f722cd0808619b1b",
@@ -47,7 +49,8 @@ const EXPECTED_VIOLATION_2: Violation = {
     ruleName: "LibraryWithKnownMediumSeverityVulnerability",
     codeLocations: [EXPECTED_CODE_LOCATION_1],
     primaryLocationIndex: 0,
-    message: `'jquery v3.1.0' contains a known vulnerability. Please upgrade to latest version.\nVulnerability details: {\n  "summary": "passing HTML containing <option> elements from untrusted sources - even after sanitizing it - to one of jQuery's DOM manipulation methods (i.e. .html(), .append(), and others) may execute untrusted code.",\n  "CVE": [\n    "CVE-2020-11023"\n  ],\n  "issue": "4647",\n  "githubID": "GHSA-jpcq-cgw6-v4j6"\n}`,
+    message: `${getMessage('LibraryContainsKnownVulnerability', 'jquery v3.1.0')} ${getMessage('UpgradeToLatestVersion')}\n`
+        + getMessage('VulnerabilityDetails', `{\n  "summary": "passing HTML containing <option> elements from untrusted sources - even after sanitizing it - to one of jQuery's DOM manipulation methods (i.e. .html(), .append(), and others) may execute untrusted code.",\n  "CVE": [\n    "CVE-2020-11023"\n  ],\n  "issue": "4647",\n  "githubID": "GHSA-jpcq-cgw6-v4j6"\n}`),
     resourceUrls: [
         "https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/"
     ],
@@ -57,7 +60,8 @@ const EXPECTED_VIOLATION_3: Violation = {
     ruleName: "LibraryWithKnownHighSeverityVulnerability",
     codeLocations: [EXPECTED_CODE_LOCATION_1],
     primaryLocationIndex: 0,
-    message: `'jquery v3.1.0' contains a known vulnerability. Please upgrade to latest version.\nVulnerability details: {\n  "summary": "Regex in its jQuery.htmlPrefilter sometimes may introduce XSS",\n  "CVE": [\n    "CVE-2020-11022"\n  ],\n  "issue": "4642",\n  "githubID": "GHSA-gxr4-xjj5-5px2"\n}`,
+    message: `${getMessage('LibraryContainsKnownVulnerability', 'jquery v3.1.0')} ${getMessage('UpgradeToLatestVersion')}\n`
+        + getMessage('VulnerabilityDetails', `{\n  "summary": "Regex in its jQuery.htmlPrefilter sometimes may introduce XSS",\n  "CVE": [\n    "CVE-2020-11022"\n  ],\n  "issue": "4642",\n  "githubID": "GHSA-gxr4-xjj5-5px2"\n}`),
     resourceUrls: [
         "https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/"
     ]
@@ -67,7 +71,8 @@ const EXPECTED_VIOLATION_4: Violation = {
     ruleName: "LibraryWithKnownLowSeverityVulnerability",
     codeLocations: [EXPECTED_CODE_LOCATION_2],
     primaryLocationIndex: 0,
-    message: `'sessvars v1.0.0' was found inside of the zipped archive in 'innerFolder/sessvars-1.0.0.min.js' which contains a known vulnerability. Please upgrade to latest version.\nVulnerability details: {\n  "summary": "Unsanitized data passed to eval()",\n  "CVE": [\n    "CWE-79"\n  ]\n}`,
+    message: `${getMessage('VulnerableLibraryFoundInZipArchive', 'sessvars v1.0.0', 'innerFolder/sessvars-1.0.0.min.js')} ${getMessage('UpgradeToLatestVersion')}\n`
+        + getMessage('VulnerabilityDetails', `{\n  "summary": "Unsanitized data passed to eval()",\n  "CVE": [\n    "CWE-79"\n  ]\n}`),
     resourceUrls: [
         "http://www.thomasfrank.se/sessionvars.html"
     ]
@@ -88,7 +93,8 @@ describe('Tests for the RetireJsEnginePlugin', () => {
     });
 
     it('When createEngine is passed anything else then an error is thrown', () => {
-        expect(() => plugin.createEngine('oops', {})).toThrow("The RetireJsEnginePlugin does not support creating an engine with name 'oops'.");
+        expect(() => plugin.createEngine('oops', {})).toThrow(
+            getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
     });
 });
 
@@ -114,7 +120,7 @@ describe('Tests for the RetireJsEngine', () => {
             severityLevel: SeverityLevel.Critical,
             type: RuleType.Standard,
             tags: ['Recommended'],
-            description: `Identifies JavaScript libraries with known vulnerabilities of critical severity.`,
+            description: getMessage('RetireJsRuleDescription', 'critical'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
@@ -122,7 +128,7 @@ describe('Tests for the RetireJsEngine', () => {
             severityLevel: SeverityLevel.High,
             type: RuleType.Standard,
             tags: ['Recommended'],
-            description: `Identifies JavaScript libraries with known vulnerabilities of high severity.`,
+            description: getMessage('RetireJsRuleDescription', 'high'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
@@ -130,7 +136,7 @@ describe('Tests for the RetireJsEngine', () => {
             severityLevel: SeverityLevel.Moderate,
             type: RuleType.Standard,
             tags: ['Recommended'],
-            description: `Identifies JavaScript libraries with known vulnerabilities of medium severity.`,
+            description: getMessage('RetireJsRuleDescription', 'medium'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
@@ -138,7 +144,7 @@ describe('Tests for the RetireJsEngine', () => {
             severityLevel: SeverityLevel.Low,
             type: RuleType.Standard,
             tags: ['Recommended'],
-            description: `Identifies JavaScript libraries with known vulnerabilities of low severity.`,
+            description: getMessage('RetireJsRuleDescription', 'low'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
     });

@@ -5,6 +5,7 @@ import fs from "node:fs";
 import * as utils from "./utils";
 import path from "node:path";
 import * as StreamZip from 'node-stream-zip';
+import {getMessage} from "./messages";
 
 const execAsync = promisify(exec);
 
@@ -60,8 +61,8 @@ async function scanFolder(folder: string): Promise<Finding[]> {
         const execError: ExecException = err as ExecException;
         /* istanbul ignore next */
         if (execError.code != 13) {
-            throw new Error(`An unexpected error was thrown when executing the command: ${command}\n\n` +
-                `[Error message]:\n${execError.message}\n[stdout]:\n${execError.stdout}\n[stderror]:\n${execError.stderr}`,
+            throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', command, execError.message) +
+                `\n\n[stdout]:\n${execError.stdout}\n[stderror]:\n${execError.stderr}`,
                 {cause: err});
         }
     }
@@ -71,8 +72,7 @@ async function scanFolder(folder: string): Promise<Finding[]> {
         return JSON.parse(fileContents) as Finding[];
     } catch (err) {
         /* istanbul ignore next */
-        throw new Error(`An unexpected error was thrown when attempting to process the output file: ${tempOutputFile}\n` +
-            `Error message: ${(err as Error).message}`,
+        throw new Error(getMessage('UnexpectedErrorWhenProcessingOutputFile', tempOutputFile, (err as Error).message),
             {cause: err});
     }
 }

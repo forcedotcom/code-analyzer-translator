@@ -11,6 +11,7 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {RetireJsExecutor, AdvancedRetireJsExecutor, ZIPPED_FILE_MARKER} from "./executor";
 import {Finding, Vulnerability} from "retire/lib/types";
+import {getMessage} from "./messages";
 
 enum RetireJsSeverity {
     Critical = 'critical',
@@ -35,7 +36,7 @@ export class RetireJsEnginePlugin extends EnginePluginV1 {
         if (engineName === RetireJsEngine.NAME) {
             return new RetireJsEngine();
         }
-        throw new Error(`The RetireJsEnginePlugin does not support creating an engine with name '${engineName}'.`);
+        throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
     }
 }
 
@@ -70,7 +71,7 @@ function createRuleDescription(rjsSeverity: RetireJsSeverity): RuleDescription {
         severityLevel: toSeverityLevel(rjsSeverity),
         type: RuleType.Standard,
         tags: ['Recommended'],
-        description: `Identifies JavaScript libraries with known vulnerabilities of ${rjsSeverity} severity.`,
+        description: getMessage('RetireJsRuleDescription', `${rjsSeverity}`),
         resourceUrls: ['https://retirejs.github.io/retire.js/']
     }
 }
@@ -115,11 +116,9 @@ function toViolations(findings: Finding[]): Violation[] {
 
 function toViolation(vulnerability: Vulnerability, library: string, fileOrZipArchive: string, fileInsideZipArchive?: string) {
     const vulnerabilityDetails: string = JSON.stringify(vulnerability.identifiers, null, 2);
-    const message: string = (fileInsideZipArchive ?
-                `'${library}' was found inside of the zipped archive in '${fileInsideZipArchive}' which contains a known vulnerability. `
-                : `'${library}' contains a known vulnerability. `
-        ) +
-        `Please upgrade to latest version.\nVulnerability details: ${vulnerabilityDetails}`;
+    let message: string = fileInsideZipArchive ? getMessage('VulnerableLibraryFoundInZipArchive', library, fileInsideZipArchive)
+        : getMessage('LibraryContainsKnownVulnerability', library);
+    message = `${message} ${getMessage('UpgradeToLatestVersion')}\n${getMessage('VulnerabilityDetails', vulnerabilityDetails)}`
 
     return {
         ruleName: toRuleName(vulnerability.severity as RetireJsSeverity),

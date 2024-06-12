@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {isBinaryFileSync} from "isbinaryfile";
 import {promisify} from "node:util";
+import {getMessage} from "./messages";
 
 tmp.setGracefulCleanup();
 const tmpDirAsync = promisify((options: tmp.DirOptions, cb: tmp.DirCallback) => tmp.dir(options, cb));
@@ -41,14 +42,14 @@ export async function linkOrCopy(srcFile: string, destinationFile: string): Prom
     /* istanbul ignore next */
     return fs.promises.symlink(srcFile, destinationFile)
         .catch((err: Error) => {
-            errMsgs.push(`symlink threw an error: ${err.message}`);
-            return fs.promises.link(srcFile, destinationFile)
+            errMsgs.push(getMessage('FunctionThrewAnError', 'symlink', err.message));
+            return fs.promises.link(srcFile, destinationFile);
         }).catch((err: Error) => {
-            errMsgs.push(`link threw an error: ${err.message}`);
+            errMsgs.push(getMessage('FunctionThrewAnError', 'link', err.message));
             return fs.promises.copyFile(srcFile, destinationFile);
         }).catch((err: Error) => {
-            errMsgs.push(`copyFile threw an error: ${err.message}`);
-            throw new Error(`All attempts to copy file ${srcFile} to ${destinationFile} have failed.\n${errMsgs.join('\n')}`)
+            errMsgs.push(getMessage('FunctionThrewAnError', 'copyFile', err.message));
+            throw new Error(`${getMessage('AllAttemptsToCopyFileHaveFailed', srcFile, destinationFile)}\n${errMsgs.join('\n')}`);
         });
 }
 
