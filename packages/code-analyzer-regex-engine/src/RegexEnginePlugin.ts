@@ -53,73 +53,17 @@ export class RegexEngine extends EngineApi.Engine {
 				description: "Some description for TrailingWhiteSpaceRuleStub",
 				resourceUrls: ["https://example.com/TrailingWhiteSpaceRuleStub"]
 			},
-			{
-				name: "VirtualClassSecurityLeakRuleStub",
-				severityLevel: EngineApi.SeverityLevel.High,
-				type: EngineApi.RuleType.Standard,
-				tags: ["Recommended", "Security"],
-				description: "Some description for VirtualClassSecurityLeakRuleStub",
-				resourceUrls: ["https://example.com/VirtualClassSecurityLeakRuleStub"]
-			}
 		];
 	}
 
 	runRules(ruleNames: string[], runOptions: EngineApi.RunOptions): EngineApi.EngineRunResults {
         /* Update section with logic for implementing trailing whitespace rule*/ 
-		this.runRulesCallHistory.push({ruleNames, runOptions});
-
-		ruleNames.forEach( rule => {
-			switch (rule) {
-				case 'TrailingWhiteSpaceRule':
-					const regex = new RegExp('\.cls$');
-					runOptions.filesToInclude.forEach(fileName => {
-						if (regex.test(fileName)) {
-							this.processLineByLine(fileName);
-						}
-
-
-
-
-						
-
-					});
-
-
-			}
-
-		});
-		
 		return this.resultsToReturn;
 
 	}
 
-	private async processLineByLine(fileName: string) {
-		try {
-		  const rl = rd.createInterface({
-			input: fs.createReadStream(fileName),
-			crlfDelay: Infinity
-		  });
 
 
-	  
-		  rl.on('line', (line) => {
-			const regex = new RegExp('([^ \t\r\n])[ \t]+$');
-			if (regex.test(line)) {
-				this.emitEvent<EngineApi.LogEvent>({
-					type: EngineApi.EventType.LogEvent,
-					message: "Trailing whitespace line found in code",
-					logLevel: EngineApi.LogLevel.Info
-				});
-			}
-			
-		  });
-	  
-		  await events.once(rl, 'close');
-	  
-		 
-		} catch (err) {
-		  console.error(err);
-		}
-	  };
+	
 }
 
