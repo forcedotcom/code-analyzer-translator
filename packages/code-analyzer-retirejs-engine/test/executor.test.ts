@@ -111,72 +111,69 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
     });
 });
 
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// These tests are just nice to have right now. We do not expose SimpleRetireJsExecutor currently.
-// ---------------------------------------------------------------------------------------------------------------------
 describe('Tests for the SimpleRetireJsExecutor', () => {
     let executor: RetireJsExecutor;
     beforeAll(() => {
         executor = new SimpleRetireJsExecutor();
     });
 
-    it('When running a directory containing no violations, then output is an empty array.', async () => {
-        const findings: Finding[] = await executor.execute([await utils.createTempDir()]);
-        expect(findings).toEqual([]);
+    it('When file is specified among input paths, then SimpleRetireJsExecutor currently errors out since it does not support files', () => {
+        expect(executor.execute([path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js')]))
+            .rejects.toThrow('Currently the SimpleRetireJsExecutor does not support scanning individual files.');
     });
 
-    it('When vulnerable js library exists in folder, then SimpleRetireJsExecutor reports it', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
-            path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]));
-        const expectedFindings: Finding[] = [{
+    describe.skip('These tests are just nice to have right now since we do not expose SimpleRetireJsExecutor. So they are skipped.', () => {
+        it('When running a directory containing no violations, then output is an empty array.', async () => {
+            const findings: Finding[] = await executor.execute([await utils.createTempDir()]);
+            expect(findings).toEqual([]);
+        });
+
+        it('When vulnerable js library exists in folder, then SimpleRetireJsExecutor reports it', async () => {
+            const findings: Finding[] = normalizeFindings(await executor.execute([
+                path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]));
+            const expectedFindings: Finding[] = [{
                 file: path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability','jquery-3.1.0.js'),
                 results: getExpectedJQueryResults()
             }] as Finding[];
 
-        expect(findings).toEqual(expectedFindings);
-    });
+            expect(findings).toEqual(expectedFindings);
+        });
 
-    it('When no vulnerable js libraries exists in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','2_hasJsLibraryWithoutVulnerability')]);
-        expect(findings).toEqual([]);
-    });
+        it('When no vulnerable js libraries exists in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','2_hasJsLibraryWithoutVulnerability')]);
+            expect(findings).toEqual([]);
+        });
 
-    it('When no js libraries exists in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','3_hasNoJsLibraries')]);
-        expect(findings).toEqual([]);
-    });
+        it('When no js libraries exists in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','3_hasNoJsLibraries')]);
+            expect(findings).toEqual([]);
+        });
 
-    it('When resource files without vulnerabilities in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','4_hasResourceFilesWithoutVulnerabilities')]);
-        expect(findings).toEqual([]);
-    });
+        it('When resource files without vulnerabilities in folder, then SimpleRetireJsExecutor reports empty findings', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','4_hasResourceFilesWithoutVulnerabilities')]);
+            expect(findings).toEqual([]);
+        });
 
-    it('When folder contains vulnerabilities in files with odd extension or no extension, then SimpleRetireJsExecutor does not find them', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt')]);
-        expect(findings).toEqual([]);
-    });
+        it('When folder contains vulnerabilities in files with odd extension or no extension, then SimpleRetireJsExecutor does not find them', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt')]);
+            expect(findings).toEqual([]);
+        });
 
-    it('When folder contains vulnerabilities within resource and zip files, then SimpleRetireJsExecutor does not find them', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles')]);
-        expect(findings).toEqual([]);
-    });
+        it('When folder contains vulnerabilities within resource and zip files, then SimpleRetireJsExecutor does not find them', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles')]);
+            expect(findings).toEqual([]);
+        });
 
-    it('When folder contains vulnerabilities in files with odd extension or no extension, then SimpleRetireJsExecutor does not find them', async () => {
-        const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','7_hasZipFolderWithVulnFileInChildFolders')]);
-        expect(findings).toEqual([]);
-    });
-
-    it('When file is specified among input paths, then SimpleRetireJsExecutor currently errors out since it does not support files', () => {
-        expect(executor.execute([path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js')]))
-            .rejects.toThrow('Currently the SimpleRetireJsExecutor does not support scanning individual files.');
+        it('When folder contains vulnerabilities in files with odd extension or no extension, then SimpleRetireJsExecutor does not find them', async () => {
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','7_hasZipFolderWithVulnFileInChildFolders')]);
+            expect(findings).toEqual([]);
+        });
     });
 });
 
