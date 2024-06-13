@@ -181,8 +181,10 @@ describe('Tests for the SimpleRetireJsExecutor', () => {
 });
 
 function normalizeFindings(findings: Finding[]): Finding[] {
-    // Different operating systems seem to fill in findings differently. Sometimes it is "filename" and sometimes it is
-    // "filecontents". Since we don't use this field, it is easiest to just remove it.
+    // With retire 5.0.0, a bug exists on windows platforms where it cant detect vulnerabilities based on "filename" and
+    // so it always just has detection done via "filecontents". Since we don't use this field, it is easiest to just
+    // remove it that to try to work around this bug. See https://github.com/RetireJS/retire.js/issues/437. When this
+    // bug is fixed then we can update this test file and the getExpectedJQueryResults method to have detection again.
     for (let i = 0; i < findings.length; i++) {
         for (let k = 0; k < findings[i].results.length; k++) {
             delete findings[i].results[k].detection;
