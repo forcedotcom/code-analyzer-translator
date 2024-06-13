@@ -18,11 +18,11 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
     });
 
     it('When vulnerable js library exists in folder, then AdvancedRetireJsExecutor reports it', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
-            path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]));
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
         const expectedFindings: Finding[] = [{
                 file: path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability','jquery-3.1.0.js'),
-                results: getExpectedJQueryResults()
+                results: getExpectedJQueryResults("filename")
             }] as Finding[];
         expect(findings).toEqual(expectedFindings);
     });
@@ -46,67 +46,67 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
     });
 
     it('When folder contains vulnerabilities in files with odd extension or no extension, then AdvancedRetireJsExecutor finds them', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
-            path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt')]));
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt')]);
         expect(findings).toHaveLength(2);
         expect(findings).toContainEqual({
             file: path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt','JsResWithOddExt.foo'),
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
         expect(findings).toContainEqual({
             file: path.resolve('test','test-data','scenarios','5_hasVulnerabilitiesInFilesWithOddExtOrNoExt','JsResWithoutExt'),
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
     });
 
     it('When folder contains vulnerabilities within zip files, then AdvancedRetireJsExecutor finds them', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
-            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles')]));
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles')]);
         expect(findings).toHaveLength(8);
         for (const zipFileName of ['ZipFile.zip', 'ZipFileAsResource.resource', 'ZipFileWithOddExt.foo', 'ZipFileWithNoExt']) {
             expect(findings).toContainEqual({
                 file: path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', zipFileName) + ZIPPED_FILE_MARKER + 'JsFileWithoutExt',
-                results: getExpectedJQueryResults()
+                results: getExpectedJQueryResults("filecontent")
             });
             expect(findings).toContainEqual({
                 file: path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', zipFileName) + ZIPPED_FILE_MARKER + 'JsFileWithOddExt.foo',
-                results: getExpectedJQueryResults()
+                results: getExpectedJQueryResults("filecontent")
             });
         }
     });
 
     it('When folder contains vulnerabilities in files with odd extension or no extension, then AdvancedRetireJsExecutor finds them', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
-            path.resolve('test','test-data','scenarios','7_hasZipFolderWithVulnFileInChildFolders')]));
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','7_hasZipFolderWithVulnFileInChildFolders')]);
         expect(findings).toHaveLength(2);
         expect(findings).toContainEqual({
             file: path.resolve('test', 'test-data', 'scenarios', '7_hasZipFolderWithVulnFileInChildFolders', 'ZipWithDirectories.zip') + ZIPPED_FILE_MARKER + 'FilledParentFolder/ChildFolderWithText/JsFileWithoutExt',
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
         expect(findings).toContainEqual({
             file: path.resolve('test', 'test-data', 'scenarios', '7_hasZipFolderWithVulnFileInChildFolders', 'ZipWithDirectories.zip') + ZIPPED_FILE_MARKER + 'FilledParentFolder/ChildFolderWithText/JsFileWithOddExt.foo',
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
     });
 
     it('When files are specified among input paths, then AdvancedRetireJsExecutor knows to target that scan those files without its peers', async () => {
-        const findings: Finding[] = normalizeFindings(await executor.execute([
+        const findings: Finding[] = await executor.execute([
             path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js'),
             path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ImageFileWithNoExt'),
             path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt')
-        ]));
+        ]);
         expect(findings).toHaveLength(3);
         expect(findings).toContainEqual({
             file: path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability','jquery-3.1.0.js'),
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filename")
         });
         expect(findings).toContainEqual({
             file: path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt') + ZIPPED_FILE_MARKER + 'JsFileWithoutExt',
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
         expect(findings).toContainEqual({
             file: path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt') + ZIPPED_FILE_MARKER + 'JsFileWithOddExt.foo',
-            results: getExpectedJQueryResults()
+            results: getExpectedJQueryResults("filecontent")
         });
     });
 });
@@ -129,11 +129,11 @@ describe('Tests for the SimpleRetireJsExecutor', () => {
         });
 
         it('When vulnerable js library exists in folder, then SimpleRetireJsExecutor reports it', async () => {
-            const findings: Finding[] = normalizeFindings(await executor.execute([
-                path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]));
+            const findings: Finding[] = await executor.execute([
+                path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
             const expectedFindings: Finding[] = [{
                 file: path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability','jquery-3.1.0.js'),
-                results: getExpectedJQueryResults()
+                results: getExpectedJQueryResults("filename")
             }] as Finding[];
 
             expect(findings).toEqual(expectedFindings);
@@ -177,23 +177,11 @@ describe('Tests for the SimpleRetireJsExecutor', () => {
     });
 });
 
-function normalizeFindings(findings: Finding[]): Finding[] {
-    // With retire 5.0.0, a bug exists on windows platforms where it cant detect vulnerabilities based on "filename" and
-    // so it always just has detection done via "filecontents". Since we don't use this field, it is easiest to just
-    // remove it that to try to work around this bug. See https://github.com/RetireJS/retire.js/issues/437. When this
-    // bug is fixed then we can update this test file and the getExpectedJQueryResults method to have detection again.
-    for (let i = 0; i < findings.length; i++) {
-        for (let k = 0; k < findings[i].results.length; k++) {
-            delete findings[i].results[k].detection;
-        }
-    }
-    return findings;
-}
-
-function getExpectedJQueryResults(): Component[] {
+function getExpectedJQueryResults(detection: string): Component[] {
     return [
         {
             component: "jquery",
+            detection: detection,
             npmname: "jquery",
             version: "3.1.0",
             vulnerabilities: [
