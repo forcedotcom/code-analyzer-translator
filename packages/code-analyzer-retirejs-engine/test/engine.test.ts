@@ -108,8 +108,8 @@ describe('Tests for the RetireJsEngine', () => {
         expect(engine.getName()).toEqual('retire-js');
     });
 
-    it('When validate is called, then nothing happens since it currently is a no-op', () => {
-        engine.validate();
+    it('When validate is called, then nothing happens since it currently is a no-op', async () => {
+        await engine.validate(); // Sanity check that nothing blows up since the core module will call this.
     });
 
     it('When describeRules is called, then the expected rules are returned', async () => {
@@ -150,8 +150,10 @@ describe('Tests for the RetireJsEngine', () => {
     });
 
     it('When runRules is called, then the RetireJsExecutor is called with the correct inputs', async () => {
+        // Note: This test replaces the StubRetireJsExecutor with a SpyRetireJsExecutor instead.
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
+
         const allRuleNames: string[] = (await engine.describeRules()).map(r => r.name);
         const filesAndFoldersToScan: string[] = [path.resolve('build-tools'), path.resolve('test/test-helpers.ts')];
         const runOptions: RunOptions = {

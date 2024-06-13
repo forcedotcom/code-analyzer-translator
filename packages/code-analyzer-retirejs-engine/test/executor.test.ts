@@ -89,12 +89,14 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
         });
     });
 
-    it('When files are specified among input paths, then AdvancedRetireJsExecutor knows to target that scan those files without its peers', async () => {
+    it('When files are specified among input paths, then AdvancedRetireJsExecutor knows to not accidentally scan the other files in their containing folders', async () => {
         const findings: Finding[] = await executor.execute([
-            path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js'),
-            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ImageFileWithNoExt'),
-            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt')
+            path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js'), // counts for 1 finding
+            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ImageFileWithNoExt'), // counts for 0 findings
+            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt') // contains 2 findings
         ]);
+
+        // Note that the other files inside of the 6_hasVulnerableResourceAndZipFiles folder shouldn't be scanned. Thus, the total should be only be 3.
         expect(findings).toHaveLength(3);
         expect(findings).toContainEqual({
             file: path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability','jquery-3.1.0.js'),
