@@ -74,6 +74,24 @@ export function isZipFile(file: string) {
  * Determines if a file is a non-binary text file
  * @param file a file path or the Buffer of its contents
  */
-export function isTextFile(file: string | Buffer) {
+export function isTextFile(file: string | Buffer): boolean {
     return !isBinaryFileSync(file);
+}
+
+/**
+ * Finds the command location (symlink) for a command that is pulled in from this package's dependencies.
+ * Note that this command is needed since we don't want to use npx because npx might accidentally use
+ * use a command located from the users directory instead of the one we want to be used. Also we shouldn't
+ * hard code the location of the command, and instead need to look it up since the node_modules or .bin can
+ * change locations in various scenarios.
+ */
+export function findCommand(commandName: string): string {
+    for (let dir = __dirname; dir !== path.resolve(dir, '..'); dir = path.resolve(dir, '..')) {
+        const commandPath = path.join(dir, 'node_modules', '.bin', commandName);
+        if (fs.existsSync(commandPath)) {
+            return commandPath;
+        }
+    }
+    /* istanbul ignore next */
+    throw new Error(`Could not find file for command: ${commandName}`);
 }

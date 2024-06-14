@@ -16,6 +16,8 @@ export const ZIPPED_FILE_MARKER = '::[ZIPPED_FILE]::';
 
 const RETIRE_JS_VULN_REPO_FILE: string = path.resolve(__dirname, '..', 'vulnerabilities', 'RetireJsVulns.json')
 
+const RETIRE_COMMAND: string = utils.findCommand('retire');
+
 export interface RetireJsExecutor {
     execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
 }
@@ -62,7 +64,7 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
 
     private async scanFolder(folder: string): Promise<Finding[]> {
         const tempOutputFile: string = path.resolve(await utils.createTempDir(), "output.json");
-        const command: string = `npx retire --path "${folder}" --exitwith 13 --outputformat jsonsimple --outputpath "${tempOutputFile}" --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"`;
+        const command: string = `${RETIRE_COMMAND} --path "${folder}" --exitwith 13 --outputformat jsonsimple --outputpath "${tempOutputFile}" --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"`;
 
         this.emitLogEvent(LogLevel.Fine, `Executing command: ${command}`);
         try {
