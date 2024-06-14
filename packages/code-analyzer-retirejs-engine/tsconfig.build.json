@@ -8,5 +8,10 @@
   "include": [
     "./src",
     "./vulnerabilities"
+  ],
+  "references": [
+    {
+      "path": "../code-analyzer-engine-api/tsconfig.build.json"
+    }
   ]
 }
