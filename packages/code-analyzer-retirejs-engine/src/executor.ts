@@ -23,6 +23,8 @@ const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
 const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
 const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
 
+const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
+
 export interface RetireJsExecutor {
     execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
 }
