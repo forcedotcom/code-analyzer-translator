@@ -23,7 +23,7 @@ export function expandToListAllFiles(absoluteFileOrFolderPaths: string[]): strin
     let allFiles: string[] = [];
     for (const fileOrFolder of absoluteFileOrFolderPaths) {
         if (fs.statSync(fileOrFolder).isDirectory()) {
-            const absSubPaths: string[] = fs.readdirSync(fileOrFolder).map(f => path.resolve(fileOrFolder, f));
+            const absSubPaths: string[] = fs.readdirSync(fileOrFolder).map(f => fileOrFolder + path.sep + f);
             allFiles = [...allFiles, ...expandToListAllFiles(absSubPaths)];
         } else { // isFile
             allFiles.push(fileOrFolder);
@@ -52,6 +52,7 @@ export async function linkOrCopy(srcFile: string, destinationFile: string): Prom
             throw new Error(`${getMessage('AllAttemptsToCopyFileHaveFailed', srcFile, destinationFile)}\n${errMsgs.join('\n')}`);
         });
 }
+
 
 /**
  * Determines if the provided file is a compressed zip file based on its contents

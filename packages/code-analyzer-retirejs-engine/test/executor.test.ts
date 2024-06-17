@@ -93,7 +93,8 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
         const findings: Finding[] = await executor.execute([
             path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js'), // counts for 1 finding
             path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ImageFileWithNoExt'), // counts for 0 findings
-            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt') // contains 2 findings
+            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt'), // contains 2 findings ...
+            path.resolve('test','test-data','scenarios','6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt.resource-meta.xml') // ... since it also has metadata file with it
         ]);
 
         // Note that the other files inside of the 6_hasVulnerableResourceAndZipFiles folder shouldn't be scanned. Thus, the total should be only be 3.
@@ -110,6 +111,18 @@ describe('Tests for the AdvancedRetireJsExecutor', () => {
             file: path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileWithNoExt') + ZIPPED_FILE_MARKER + 'JsFileWithOddExt.foo',
             results: getExpectedJQueryResults("filecontent")
         });
+    });
+
+    it('When vulnerable file is underneath a node_modules or bower_components folder, then AdvancedRetireJsExecutor skips that file', async () => {
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','8_hasVulnerabilitiesUnderFoldersToSkip')]);
+        expect(findings).toEqual([]);
+    });
+
+    it('When vulnerable file is a non-targeted text file, then AdvancedRetireJsExecutor skips that file', async () => {
+        const findings: Finding[] = await executor.execute([
+            path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')]);
+        expect(findings).toEqual([]);
     });
 });
 

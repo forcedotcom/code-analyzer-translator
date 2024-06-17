@@ -15,8 +15,13 @@ const execAsync = promisify(exec);
 export const ZIPPED_FILE_MARKER = '::[ZIPPED_FILE]::';
 
 const RETIRE_JS_VULN_REPO_FILE: string = path.resolve(__dirname, '..', 'vulnerabilities', 'RetireJsVulns.json')
-
 const RETIRE_COMMAND: string = utils.findCommand('retire');
+const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
+
+// To speed up our AdvancedRetireJsExecutor, we will only target files with extension among EXTENSIONS_TO_TARGET
+// that don't live under one of the FOLDERS_TO_SKIP
+const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
+const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
 
 export interface RetireJsExecutor {
     execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
@@ -63,8 +68,14 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
     }
 
     private async scanFolder(folder: string): Promise<Finding[]> {
-        const tempOutputFile: string = path.resolve(await utils.createTempDir(), "output.json");
-        const command: string = `${RETIRE_COMMAND} --path "${folder}" --exitwith 13 --outputformat jsonsimple --outputpath "${tempOutputFile}" --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"`;
+        const tempOutputFile: string = (await utils.createTempDir()) + path.sep + 'output.json';
+        const command: string = RETIRE_COMMAND +
+            ` --path "${folder}"` +
+            ` --exitwith 13` +
+            ` --outputformat jsonsimple` +
+            ` --outputpath "${tempOutputFile}"` +
+            ` --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"` +
+            ` --ext "${JS_EXTENSIONS.map(ext => ext.replace('.','')).join(',')}"`;
 
         this.emitLogEvent(LogLevel.Fine, `Executing command: ${command}`);
         try {
@@ -106,68 +117,145 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
     private readonly simpleExecutor: RetireJsExecutor;
     private readonly emitLogEvent: EmitLogEventFcn;
 
+    // Will contain the parent temporary directory where we place all files to be scanned
+    private parentTempDir: string = '';
+
+    // Map to associate each temp file (under the parentTempDir) to its original file
+    private readonly tempToOrigFileMap: Map<string, string> = new Map();
+
+    // Map to associate a list of original folders to a corresponding temporary subfolders name
+    private readonly origToTempDirMap: Map<string, string> = new Map();
+
+    // A counter to just help generate unique numbers to be appended to the generated file and subfolder names.
+    // Since this counter is used for both files and folders which, it may not give the best human names for debugging.
+    private uniqNameCounter: number = 0;
+
     constructor(emitLogEvent: EmitLogEventFcn = NO_OP) {
         this.simpleExecutor = new SimpleRetireJsExecutor(emitLogEvent);
         this.emitLogEvent = emitLogEvent;
     }
 
     async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
-        const fileMap: Map<string, string> = new Map();
-        const tmpDir: string = await utils.createTempDir();
-        this.emitLogEvent(LogLevel.Fine, `Created a temporary directory where relevant files will be copied to for scanning: ${tmpDir}`);
-
         const allFiles: string[] = utils.expandToListAllFiles(filesAndFoldersToScan);
-        const fileProcessingPromises: Promise<void>[] = allFiles.map(file => processFile(file, tmpDir, fileMap));
-        await Promise.all(fileProcessingPromises);
-        this.emitLogEvent(LogLevel.Fine, `Finished copying relevant files to temporary directory: '${tmpDir}'`);
+        const targetFiles: string[] = reduceToTargetFiles(allFiles);
+        const { textFiles, zipFiles } = separateTextAndZipFiles(targetFiles);
 
-        const findings: Finding[] = await this.simpleExecutor.execute([tmpDir]);
+        await this.prepareTempDirs(textFiles);
+        this.emitLogEvent(LogLevel.Fine, `Created a temporary directory where relevant files will be copied to for scanning: ${this.parentTempDir}`);
 
+        await Promise.all([
+            ...textFiles.map(file => this.processTextFile(file)),
+            ...zipFiles.map(file => this.processZipFile(file))]);
+        this.emitLogEvent(LogLevel.Fine, `Finished copying relevant files to temporary directory: '${this.parentTempDir}'`);
+
+        const findings: Finding[] = await this.simpleExecutor.execute([this.parentTempDir]);
         for (let i = 0; i < findings.length; i++) {
-            findings[i].file = fileMap.get(findings[i].file) as string;
+            findings[i].file = this.tempToOrigFileMap.get(findings[i].file) as string;
         }
         return findings;
     }
-}
 
-async function processFile(file: string, tmpDir: string, fileMap: Map<string, string>): Promise<void> {
-    if (file.toLowerCase().endsWith(".js") || utils.isTextFile(file)) {
-        return processTextFile(file, tmpDir, fileMap);
-    } else if (utils.isZipFile(file)) {
-        return processZipFile(file, tmpDir, fileMap);
-    }
-}
-
-async function processTextFile(file: string, tmpDir: string, fileMap: Map<string, string>): Promise<void> {
-    // Note that retire.js can sometimes only detect vulnerabilities based on the name of the file, so
-    // whenever possible we preserve the original name of the file by placing the file with the same name
-    // (but with a .js) extension inside a sub folder in the temporary directory. The sub folder helps avoid with
-    // possible name collisions. For performance, we avoid synchronous calls which block the main thread.
-    const fileNameWithJsExt: string = path.basename(file, path.extname(file)) + '.js';
-    const tmpSubFolder: string = await utils.createTempDir(tmpDir);
-    const linkFile: string = path.resolve(tmpSubFolder, fileNameWithJsExt);
-    fileMap.set(linkFile, file);
-    return utils.linkOrCopy(file, linkFile);
-}
-
-async function processZipFile(zipFile: string, tmpDir: string, fileMap: Map<string, string>): Promise<void> {
-    // Here we extract a zip file, looking one by one at the entries. Each text file based entry will be then processed
-    // in a similar fashion to how processTextFile works except for the file is actually extracted since we can't
-    // just make a symlink. Additionally, the fileMap points to the embedded file in the zip folder:
-    // <zip_file>::[ZIPPED_FILE]::<embedded_file>
-    const zip: StreamZip.StreamZipAsync = new StreamZip.async({file: zipFile, storeEntries: true});
-    const entries: { [name: string]: StreamZip.ZipEntry } = await zip.entries();
-
-    for (const entry of Object.values(entries)) {
-        if (entry.isDirectory || !utils.isTextFile(await zip.entryData(entry.name))) {
-            continue; // Skip directories and non-text files.
+    /**
+     *  Create parent temporary directory (that cleans up after itself when process exits) and add subdirectories under
+     *  the parent for each of the unique folders containing text files
+     */
+    private async prepareTempDirs(textFiles: string[]): Promise<void[]> {
+        this.origToTempDirMap.clear();
+        this.tempToOrigFileMap.clear();
+        this.uniqNameCounter = 0;
+        this.parentTempDir = await utils.createTempDir();
+        const mkdirPromises: Promise<void>[] = [];
+        for (const textFile of textFiles) {
+            const folder: string = path.dirname(textFile);
+            if (!this.origToTempDirMap.has(folder)) {
+                const tempDir: string = this.makeUniqueTempDirName();
+                this.origToTempDirMap.set(folder, tempDir);
+                mkdirPromises.push(fs.promises.mkdir(tempDir));
+            }
         }
-        const zippedFileNameWithJsExt: string = path.basename(entry.name, path.extname(entry.name)) + '.js';
-        const tmpSubFolder: string = await utils.createTempDir(tmpDir);
-        const extractedFile: string = path.resolve(tmpSubFolder, zippedFileNameWithJsExt);
-        fileMap.set(extractedFile, `${zipFile}${ZIPPED_FILE_MARKER}${entry.name}`);
-        await zip.extract(entry.name, extractedFile);
+        return Promise.all(mkdirPromises);
     }
 
-    await zip.close();
+    /**
+     * Make a symlink of the text file into its associated temporary directory with a .js file extension
+     * Additionally, we update tempToOrigFileMap so that the original text file can be mapped from the temporary file.
+     */
+    private async processTextFile(origTextFile: string): Promise<void> {
+        const fileInfo: path.ParsedPath = path.parse(origTextFile);
+        const tempDir: string = this.origToTempDirMap.get(fileInfo.dir) as string;
+        const fileNameWithJsExt: string = this.makeUniqueJsFileNameFor(fileInfo);
+        const tempTextFile: string = tempDir + path.sep + fileNameWithJsExt;
+        this.tempToOrigFileMap.set(tempTextFile, origTextFile);
+        return utils.linkOrCopy(origTextFile, tempTextFile);
+    }
+
+    /**
+     * Extract text files from zip file forcing them to have a js extension.
+     * Additionally, we update the tempToOrigFileMap so that the temp file points to the embedded zip file as:
+     *   <zip_file>::[ZIPPED_FILE]::<embedded_file>
+     */
+    private async processZipFile(zipFile: string): Promise<void> {
+        const zip: StreamZip.StreamZipAsync = new StreamZip.async({file: zipFile, storeEntries: true});
+        const entries: { [name: string]: StreamZip.ZipEntry } = await zip.entries();
+        for (const entry of Object.values(entries)) {
+            if (entry.isDirectory || !utils.isTextFile(await zip.entryData(entry.name))) {
+                continue; // Skip directories and non-text files.
+            }
+            const zippedFileInfo: path.ParsedPath = path.parse(entry.name);
+            const folderInZip: string = `${zipFile}${ZIPPED_FILE_MARKER}${zippedFileInfo.dir}`;
+            if (!this.origToTempDirMap.has(folderInZip)) {
+                const tempSubDir: string = this.makeUniqueTempDirName();
+                this.origToTempDirMap.set(folderInZip, tempSubDir);
+                await fs.promises.mkdir(tempSubDir);
+            }
+            const tempDir: string = this.origToTempDirMap.get(folderInZip) as string;
+            const zippedFileNameWithJsExt: string = this.makeUniqueJsFileNameFor(zippedFileInfo);
+            const tempUnzippedFile: string = tempDir + path.sep + zippedFileNameWithJsExt;
+            this.tempToOrigFileMap.set(tempUnzippedFile, `${zipFile}${ZIPPED_FILE_MARKER}${entry.name}`);
+            await zip.extract(entry.name, tempUnzippedFile);
+        }
+        await zip.close();
+    }
+
+    /**
+     *  Returns the file name if it already is a javascript file (to allow vulnerability detection based on filename).
+     *  Otherwise, returns a temp name with a .js extension so that it can be scanned.
+     */
+    private makeUniqueJsFileNameFor(fileInfo: path.ParsedPath): string {
+        return JS_EXTENSIONS.includes(fileInfo.ext) ? fileInfo.base : `TMPFILE_${this.uniqNameCounter++}.js`;
+    }
+
+    private makeUniqueTempDirName(): string {
+        return `${this.parentTempDir}${path.sep}TMPDIR_${this.uniqNameCounter++}`;
+    }
+}
+
+function reduceToTargetFiles(files: string[]): string[] {
+    const filesSet: Set<string> = new Set(files);
+    return files.filter(file => shouldTarget(file, filesSet));
+}
+function shouldTarget(file: string, filesSet: Set<string>): boolean {
+    const fileInfo: path.ParsedPath = path.parse(file);
+    if (fileIsInFolderToSkip(file)) {
+        return false;
+    } else if (EXTENSIONS_TO_TARGET.includes(fileInfo.ext.toLowerCase())) {
+        return true;
+    }
+    return filesSet.has(`${fileInfo.dir}${path.sep}${fileInfo.name}.resource-meta.xml`);
+}
+function fileIsInFolderToSkip(file: string): boolean {
+    return FOLDERS_TO_SKIP.some(folderToSkip => file.includes(path.sep + folderToSkip + path.sep));
+}
+
+function separateTextAndZipFiles(files: string[]): {textFiles: string[], zipFiles: string[]} {
+    const textFiles: string[] = [];
+    const zipFiles: string[] = [];
+    for (const file of files) {
+        if (file.toLowerCase().endsWith(".js") || utils.isTextFile(file)) {
+            textFiles.push(file);
+        } else if (utils.isZipFile(file)) {
+            zipFiles.push(file);
+        }
+    }
+    return {textFiles, zipFiles};
 }
