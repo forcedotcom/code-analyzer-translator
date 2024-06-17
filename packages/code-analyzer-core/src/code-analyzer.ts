@@ -16,8 +16,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 export type RunOptions = {
-    filesToInclude: string[]
-    entryPoints?: string[]
+    workspaceFiles: string[]
+    pathStartPoints?: string[]
 }
 
 export class CodeAnalyzer {
@@ -238,17 +238,17 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
 }
 
 function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
-    if(!runOptions.filesToInclude || runOptions.filesToInclude.length == 0) {
+    if(!runOptions.workspaceFiles || runOptions.workspaceFiles.length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
-        filesToInclude: removeRedundantPaths(runOptions.filesToInclude.map(validateFileOrFolder))
+        workspaceFiles: removeRedundantPaths(runOptions.workspaceFiles.map(validateFileOrFolder))
     };
 
-    if (runOptions.entryPoints && runOptions.entryPoints.length > 0) {
-        engineRunOptions.entryPoints = runOptions.entryPoints.flatMap(extractEngineEntryPoints)
+    if (runOptions.pathStartPoints && runOptions.pathStartPoints.length > 0) {
+        engineRunOptions.pathStartPoints = runOptions.pathStartPoints.flatMap(extractEnginePathStartPoints)
     }
-    validateEntryPointsLiveUnderFilesToInclude(engineRunOptions);
+    validatePathStartPointsAreInsideWorkspace(engineRunOptions);
     return engineRunOptions;
 }
 
@@ -276,53 +276,53 @@ function validateFileOrFolder(fileOrFolder: string): string {
     return absFileOrFolder;
 }
 
-function validateEntryPointFile(file: string, entryPointStr: string): string {
+function validatePathStartPointFile(file: string, pathStartPointStr: string): string {
     const absFile: string = toAbsolutePath(file);
     if (!fs.existsSync(absFile)) {
-        throw new Error(getMessage('EntryPointFileDoesNotExist', entryPointStr, absFile));
+        throw new Error(getMessage('PathStartPointFileDoesNotExist', pathStartPointStr, absFile));
     } else if (fs.statSync(absFile).isDirectory()) {
-        throw new Error(getMessage('EntryPointWithMethodMustNotBeFolder', entryPointStr, absFile));
+        throw new Error(getMessage('PathStartPointWithMethodMustNotBeFolder', pathStartPointStr, absFile));
     }
     return absFile;
 }
 
-function extractEngineEntryPoints(entryPointStr: string): engApi.EntryPoint[] {
-    const parts: string[] = entryPointStr.split('#');
+function extractEnginePathStartPoints(pathStartPointStr: string): engApi.PathPoint[] {
+    const parts: string[] = pathStartPointStr.split('#');
     if (parts.length == 1) {
         return [{
-            file: validateFileOrFolder(entryPointStr)
+            file: validateFileOrFolder(pathStartPointStr)
         }];
     } else if (parts.length > 2) {
-        throw new Error(getMessage('InvalidEntryPoint', entryPointStr));
+        throw new Error(getMessage('InvalidPathStartPoint', pathStartPointStr));
     }
 
-    const entryPointFile: string = validateEntryPointFile(parts[0], entryPointStr);
+    const pathStartPointFile: string = validatePathStartPointFile(parts[0], pathStartPointStr);
     const VALID_METHOD_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_]*$/;
     const TRAILING_SPACES_AND_SEMICOLONS_REGEX = /\s+;*$/;
     const methodNames: string = parts[1].replace(TRAILING_SPACES_AND_SEMICOLONS_REGEX, '');
     return methodNames.split(";").map(methodName => {
         if (! VALID_METHOD_NAME_REGEX.test(methodName) ) {
-            throw new Error(getMessage('InvalidEntryPoint', entryPointStr));
+            throw new Error(getMessage('InvalidPathStartPoint', pathStartPointStr));
         }
-        return { file: entryPointFile, methodName: methodName };
+        return { file: pathStartPointFile, methodName: methodName };
     });
 }
 
-function validateEntryPointsLiveUnderFilesToInclude(engineRunOptions: engApi.RunOptions) {
-    if (!engineRunOptions.entryPoints) {
+function validatePathStartPointsAreInsideWorkspace(engineRunOptions: engApi.RunOptions) {
+    if (!engineRunOptions.pathStartPoints) {
         return;
     }
-    for (const engineEntryPoint of engineRunOptions.entryPoints) {
-        if (!fileIsUnderneath(engineEntryPoint.file, engineRunOptions.filesToInclude)) {
-            throw new Error(getMessage('EntryPointMustBeUnderFilesToInclude', engineEntryPoint.file,
-                JSON.stringify(engineRunOptions.filesToInclude)));
+    for (const enginePathStartPoint of engineRunOptions.pathStartPoints) {
+        if (!fileIsUnderneath(enginePathStartPoint.file, engineRunOptions.workspaceFiles)) {
+            throw new Error(getMessage('PathStartPointMustBeInsideWorkspace', enginePathStartPoint.file,
+                JSON.stringify(engineRunOptions.workspaceFiles)));
         }
     }
 }
 
-function fileIsUnderneath(entryPointFile: string, filesOrFolders: string[]): boolean {
-    return filesOrFolders.some(fileOrFolder => fileOrFolder == entryPointFile ||
-        (fs.statSync(fileOrFolder).isDirectory() && entryPointFile.startsWith(fileOrFolder)));
+function fileIsUnderneath(file: string, filesOrFolders: string[]): boolean {
+    return filesOrFolders.some(fileOrFolder => fileOrFolder == file ||
+        (fs.statSync(fileOrFolder).isDirectory() && file.startsWith(fileOrFolder)));
 }
 
 function validateEngineRunResults(engineName: string, apiEngineRunResults: engApi.EngineRunResults, ruleSelection: RuleSelection): void {

@@ -31,7 +31,7 @@ const messageCatalog : { [key: string]: string } = {
 }
 
 /**
- * getMessage - This is the main entry point to get a message out of the message catalog.
+ * getMessage - This is the main function to get a message out of the message catalog.
  * @param msgId - The message identifier
  * @param args - The arguments that will fill in the %s and %d markers.
  */

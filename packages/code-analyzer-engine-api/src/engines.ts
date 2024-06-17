@@ -3,14 +3,14 @@ import { EngineRunResults } from "./results";
 import { Event } from "./events";
 import { EventEmitter } from "node:events";
 
-export type EntryPoint = {
+export type PathPoint = {
     file: string
     methodName?: string
 }
 
 export type RunOptions = {
-    filesToInclude: string[]
-    entryPoints?: EntryPoint[]
+    workspaceFiles: string[]
+    pathStartPoints?: PathPoint[]
 }
 
 export abstract class Engine {

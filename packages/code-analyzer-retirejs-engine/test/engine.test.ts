@@ -157,8 +157,8 @@ describe('Tests for the RetireJsEngine', () => {
         const allRuleNames: string[] = (await engine.describeRules()).map(r => r.name);
         const filesAndFoldersToScan: string[] = [path.resolve('build-tools'), path.resolve('test/test-helpers.ts')];
         const runOptions: RunOptions = {
-            filesToInclude: filesAndFoldersToScan,
-            entryPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
+            workspaceFiles: filesAndFoldersToScan,
+            pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
         };
         const results: EngineRunResults = await engine.runRules(allRuleNames, runOptions);
 
@@ -168,7 +168,7 @@ describe('Tests for the RetireJsEngine', () => {
 
     it('When using all rules and violations are found, then the engine correctly returns the results', async () => {
         const allRuleNames: string[] = (await engine.describeRules()).map(r => r.name);
-        const engineRunResults: EngineRunResults = await engine.runRules(allRuleNames, {filesToInclude: ['dummy']});
+        const engineRunResults: EngineRunResults = await engine.runRules(allRuleNames, {workspaceFiles: ['dummy']});
 
         expect(engineRunResults.violations).toHaveLength(4);
         expect(engineRunResults.violations[0]).toEqual(EXPECTED_VIOLATION_1);
@@ -180,21 +180,21 @@ describe('Tests for the RetireJsEngine', () => {
     it('When only selecting some rules, then only violations for those rules are returned', async () => {
         const engineRunResults1: EngineRunResults = await engine.runRules(
             ['LibraryWithKnownHighSeverityVulnerability', 'LibraryWithKnownLowSeverityVulnerability'],
-            {filesToInclude: ['dummy']});
+            {workspaceFiles: ['dummy']});
         expect(engineRunResults1).toEqual({
             violations: [EXPECTED_VIOLATION_3, EXPECTED_VIOLATION_4]
         });
 
         const engineRunResults2: EngineRunResults = await engine.runRules(
             ['LibraryWithKnownMediumSeverityVulnerability', 'LibraryWithKnownCriticalSeverityVulnerability'],
-            {filesToInclude: ['dummy']});
+            {workspaceFiles: ['dummy']});
         expect(engineRunResults2).toEqual({
             violations: [EXPECTED_VIOLATION_1, EXPECTED_VIOLATION_2]
         });
 
 
         const engineRunResults3: EngineRunResults = await engine.runRules(
-            ['LibraryWithKnownCriticalSeverityVulnerability'], {filesToInclude: ['dummy']});
+            ['LibraryWithKnownCriticalSeverityVulnerability'], {workspaceFiles: ['dummy']});
         expect(engineRunResults3).toEqual({violations: []});
     });
 });

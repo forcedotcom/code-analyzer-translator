@@ -32,7 +32,7 @@ describe('Tests for v1', () => {
         });
 
         await dummyEngine.runRules(["dummy"], {
-            filesToInclude: ["some/file"]
+            workspaceFiles: ["some/file"]
         });
 
         expect(logEvents).toHaveLength(1);
