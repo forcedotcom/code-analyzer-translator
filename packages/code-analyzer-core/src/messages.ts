@@ -70,17 +70,17 @@ const messageCatalog : { [key: string]: string } = {
     AtLeastOneFileOrFolderMustBeIncluded:
         'At least one file or folder must be included.',
 
-    EntryPointFileDoesNotExist:
-        'The value "%s" is not a valid entry point since the file "%s" does not exist.',
+    PathStartPointFileDoesNotExist:
+        'The value "%s" is not a valid path starting point since the file "%s" does not exist.',
 
-    EntryPointWithMethodMustNotBeFolder:
-        'The value "%s" is not a valid entry point since "%s" is a folder instead of a file.',
+    PathStartPointWithMethodMustNotBeFolder:
+        'The value "%s" is not a valid path starting point since "%s" is a folder instead of a file.',
 
-    InvalidEntryPoint:
-        `The value "%s" is not a valid entry point. Expected value to be of the format "<fileOrFolder>", "<file>#<methodName>", or "<file>#<methodName1>;<methodName2>;...".`,
+    InvalidPathStartPoint:
+        `The value "%s" is not a valid path starting point. Expected value to be of the format "<fileOrFolder>", "<file>#<methodName>", or "<file>#<methodName1>;<methodName2>;...".`,
 
-    EntryPointMustBeUnderFilesToInclude:
-        'The specified entry point of "%s" does not that exists underneath any of the specified paths: %s',
+    PathStartPointMustBeInsideWorkspace:
+        'The specified path starting point of "%s" does not that exists underneath any of the specified paths: %s',
 
     RunningWithRunOptions:
         'Running with the following run options: %s',
@@ -121,7 +121,7 @@ const messageCatalog : { [key: string]: string } = {
 }
 
 /**
- * getMessage - This is the main entry point to get a message out of the message catalog.
+ * getMessage - This is the main function to get a message out of the message catalog.
  * @param msgId - The message identifier
  * @param args - The arguments that will fill in the %s and %d markers.
  */

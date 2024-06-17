@@ -20,7 +20,7 @@ describe('End to end test', () => {
         expect(ruleDescriptions).toHaveLength(4);
         const ruleNames: string[] = ruleDescriptions.map(rd => rd.name);
         const engineRunResults: EngineRunResults = await engine.runRules(ruleNames, {
-            filesToInclude: [
+            workspaceFiles: [
                 path.resolve('test', 'test-data', 'scenarios', '1_hasJsLibraryWithVulnerability'), // Expect 3 violations: 1 file with 3 vulnerabilities
                 path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileAsResource.resource'), // Expect 6 violations: 2 files each with 3 vulnerabilities
             ]

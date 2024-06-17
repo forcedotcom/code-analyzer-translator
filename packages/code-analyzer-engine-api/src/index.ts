@@ -8,7 +8,7 @@ export {
 
 export {
     Engine,
-    EntryPoint,
+    PathPoint,
     RunOptions
 } from "./engines"
 

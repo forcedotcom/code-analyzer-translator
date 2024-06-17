@@ -26,7 +26,7 @@ import {UnexpectedEngineErrorRule} from "../src/rules";
 import {UndefinedCodeLocation} from "../src/results";
 
 const SAMPLE_RUN_OPTIONS: RunOptions = {
-    filesToInclude: ['test']
+    workspaceFiles: ['test']
 };
 
 describe("Tests for the run method of CodeAnalyzer", () => {
@@ -56,87 +56,87 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When run options contains file that does not exist, then error", () => {
         const runOptions: RunOptions = {
-            filesToInclude: ['does/not/exist.cls']
+            workspaceFiles: ['does/not/exist.cls']
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', toAbsolutePath('does/not/exist.cls')));
     });
 
-    it("When run options contains entrypoint (without method) with a file that does not exist, then error", () => {
+    it("When run options contains a path start point (without method) with a file that does not exist, then error", () => {
         const runOptions: RunOptions = {
-            filesToInclude: [path.resolve(__dirname)],
-            entryPoints: [path.resolve(__dirname, 'doesNotExist.xml')],
+            workspaceFiles: [path.resolve(__dirname)],
+            pathStartPoints: [path.resolve(__dirname, 'doesNotExist.xml')],
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
-    it("When run options contains entrypoint (with method) with a file that does not exist, then error", () => {
-        const badEntryPoint: string = path.resolve(__dirname, 'doesNotExist.xml#someMethod');
+    it("When run options contains a path start point (with method) with a file that does not exist, then error", () => {
+        const badPathStartPoint: string = path.resolve(__dirname, 'doesNotExist.xml#someMethod');
         const runOptions: RunOptions = {
-            filesToInclude: [path.resolve(__dirname)],
-            entryPoints: [path.resolve(__dirname, 'run.test.ts'), badEntryPoint]
+            workspaceFiles: [path.resolve(__dirname)],
+            pathStartPoints: [path.resolve(__dirname, 'run.test.ts'), badPathStartPoint]
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
-            getMessage('EntryPointFileDoesNotExist', badEntryPoint, path.resolve(__dirname, 'doesNotExist.xml')));
+            getMessage('PathStartPointFileDoesNotExist', badPathStartPoint, path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
-    it("When entry point is a folder with methods specified, then error", () => {
-        const badEntryPoint: string = "test/test-data#method1;method2";
+    it("When path starting point is a folder with methods specified, then error", () => {
+        const badPathStartPoint: string = "test/test-data#method1;method2";
         const runOptions: RunOptions = {
-            filesToInclude: [path.resolve(__dirname)],
-            entryPoints: [badEntryPoint],
+            workspaceFiles: [path.resolve(__dirname)],
+            pathStartPoints: [badPathStartPoint],
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
-            getMessage('EntryPointWithMethodMustNotBeFolder', badEntryPoint, path.resolve('test', 'test-data')));
+            getMessage('PathStartPointWithMethodMustNotBeFolder', badPathStartPoint, path.resolve('test', 'test-data')));
     });
 
-    it("When entry point has too many hashtags specified, then error", () => {
-        const badEntryPoint: string = "test/test-helpers.ts#method1#method2";
+    it("When path starting point has too many hashtags specified, then error", () => {
+        const badPathStartPoint: string = "test/test-helpers.ts#method1#method2";
         const runOptions: RunOptions = {
-            filesToInclude: ['test'],
-            entryPoints: [badEntryPoint],
+            workspaceFiles: ['test'],
+            pathStartPoints: [badPathStartPoint],
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
-            getMessage('InvalidEntryPoint', badEntryPoint));
+            getMessage('InvalidPathStartPoint', badPathStartPoint));
     });
 
-    it("When specifying an entry point that has an invalid character in its method name, then error", () => {
-        const badEntryPoint: string = "test/test-helpers.ts#someMethod,oopsCommaIsInvalidHere";
+    it("When specifying a path starting point that has an invalid character in its method name, then error", () => {
+        const badPathStartPoint: string = "test/test-helpers.ts#someMethod,oopsCommaIsInvalidHere";
         const runOptions: RunOptions = {
-            filesToInclude: ['test'],
-            entryPoints: [badEntryPoint],
+            workspaceFiles: ['test'],
+            pathStartPoints: [badPathStartPoint],
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
-            getMessage('InvalidEntryPoint', badEntryPoint));
+            getMessage('InvalidPathStartPoint', badPathStartPoint));
     });
 
     it("When files to include is an empty array, then error", () => {
         const runOptions: RunOptions = {
-            filesToInclude: []
+            workspaceFiles: []
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     });
 
-    it("When entry point does not live under one of the specified paths, then error", () => {
-        const badEntryPoint: string = "test/test-helpers.ts#someMethod";
+    it("When path start point does not live under one of the specified paths, then error", () => {
+        const badPathStartPoint: string = "test/test-helpers.ts#someMethod";
         const runOptions: RunOptions = {
-            filesToInclude: ['src', 'package.json'],
-            entryPoints: [badEntryPoint],
+            workspaceFiles: ['src', 'package.json'],
+            pathStartPoints: [badPathStartPoint],
         };
         expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
-            getMessage('EntryPointMustBeUnderFilesToInclude', path.resolve('test', 'test-helpers.ts'),
+            getMessage('PathStartPointMustBeInsideWorkspace', path.resolve('test', 'test-helpers.ts'),
                 JSON.stringify([path.resolve('package.json'), path.resolve('src')])));
     });
 
     it("When including a relative file and a folder then they both are passed each engine as absolute paths", async () => {
         await codeAnalyzer.run(selection, {
-            filesToInclude: ['src', 'test/run.test.ts']
+            workspaceFiles: ['src', 'test/run.test.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('src'), path.resolve('test', 'run.test.ts')]
+            workspaceFiles: [path.resolve('src'), path.resolve('test', 'run.test.ts')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
@@ -150,11 +150,11 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When including a parent folder and child paths under that folder, then the redundant children are removed", async () => {
         await codeAnalyzer.run(selection, {
-            filesToInclude: ['test/test-data', 'test', 'test/run.test.ts']
+            workspaceFiles: ['test/test-data', 'test', 'test/run.test.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('test')]
+            workspaceFiles: [path.resolve('test')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
@@ -166,14 +166,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points as an empty array, then no entry points are passed to engines", async () => {
+    it("When specifying path start points as an empty array, then no path start points are passed to engines", async () => {
         await codeAnalyzer.run(selection, {
-            filesToInclude: ['src'],
-            entryPoints: []
+            workspaceFiles: ['src'],
+            pathStartPoints: []
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('src')]
+            workspaceFiles: [path.resolve('src')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
@@ -185,15 +185,15 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points as files and subfolders, then they are passed to each engine successfully", async () => {
+    it("When specifying path start points as files and subfolders, then they are passed to each engine successfully", async () => {
         await codeAnalyzer.run(selection, {
-            filesToInclude: ['test'],
-            entryPoints: ['test/test-data', 'test/run.test.ts']
+            workspaceFiles: ['test'],
+            pathStartPoints: ['test/test-data', 'test/run.test.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('test')],
-            entryPoints: [
+            workspaceFiles: [path.resolve('test')],
+            pathStartPoints: [
                 { file: path.resolve("test", "test-data") },
                 { file: path.resolve("test", "run.test.ts")}
             ]
@@ -208,15 +208,15 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When specifying entry points individual methods, then they are passed to each engine successfully", async () => {
+    it("When specifying path start points individual methods, then they are passed to each engine successfully", async () => {
         await codeAnalyzer.run(selection, {
-            filesToInclude: ['test', 'src/utils.ts', 'src/index.ts'],
-            entryPoints: ['test/run.test.ts#someMethod','test/stubs.ts#method1;method2;method3','src/utils.ts']
+            workspaceFiles: ['test', 'src/utils.ts', 'src/index.ts'],
+            pathStartPoints: ['test/run.test.ts#someMethod','test/stubs.ts#method1;method2;method3','src/utils.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve("src", "index.ts"), path.resolve("src", "utils.ts"), path.resolve('test')],
-            entryPoints: [
+            workspaceFiles: [path.resolve("src", "index.ts"), path.resolve("src", "utils.ts"), path.resolve('test')],
+            pathStartPoints: [
                 {
                     file: path.resolve("test", "run.test.ts"),
                     methodName: 'someMethod'
@@ -253,7 +253,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            filesToInclude: [path.resolve('test')]
+            workspaceFiles: [path.resolve('test')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
