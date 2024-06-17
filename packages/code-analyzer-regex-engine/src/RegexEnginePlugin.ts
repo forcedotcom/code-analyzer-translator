@@ -1,17 +1,17 @@
-import * as EngineApi from '@salesforce/code-analyzer-engine-api';
-import fs from "node:fs";
-import rd from 'readline'
-import events from 'events'
+import * as EngineApi from '@salesforce/code-analyzer-engine-api/';
+import { EngineRunResults } from '@salesforce/code-analyzer-engine-api/';
+
+
 
 export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
 	private readonly createdEngines: Map<string, EngineApi.Engine> = new Map();
 
 	getAvailableEngineNames(): string[] {
-		return ['RegexEngine'];
+		return ['regex'];
 	}
 
 	createEngine(engineName: string, config: EngineApi.ConfigObject): EngineApi.Engine {
-		if (engineName === 'RegexEngine') {
+		if (engineName === 'regex') {
 			this.createdEngines.set(engineName, new RegexEngine(config));
 		}  else {
 			throw new Error(`Unsupported engine name: ${engineName}`);
@@ -40,7 +40,7 @@ export class RegexEngine extends EngineApi.Engine {
 	}
 
 	getName(): string {
-		return 'RegexEngine';
+		return 'regex';
 	}
 
 	describeRules(): EngineApi.RuleDescription[] {
