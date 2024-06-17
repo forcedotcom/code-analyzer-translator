@@ -15,10 +15,13 @@ const execAsync = promisify(exec);
 export const ZIPPED_FILE_MARKER = '::[ZIPPED_FILE]::';
 
 const RETIRE_JS_VULN_REPO_FILE: string = path.resolve(__dirname, '..', 'vulnerabilities', 'RetireJsVulns.json')
-
 const RETIRE_COMMAND: string = utils.findCommand('retire');
-
 const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
+
+// To speed up our AdvancedRetireJsExecutor, we will only target files with extension among EXTENSIONS_TO_TARGET
+// that don't live under one of the FOLDERS_TO_SKIP
+const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
+const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
 
 export interface RetireJsExecutor {
     execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
@@ -114,10 +117,18 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
     private readonly simpleExecutor: RetireJsExecutor;
     private readonly emitLogEvent: EmitLogEventFcn;
 
-    private readonly origToTempDirMap: Map<string, string> = new Map();
-    private readonly tempToOrigFileMap: Map<string, string> = new Map();
-    private uniqNameCounter: number = 0;
+    // Will contain the parent temporary directory where we place all files to be scanned
     private parentTempDir: string = '';
+
+    // Map to associate each temp file (under the parentTempDir) to its original file
+    private readonly tempToOrigFileMap: Map<string, string> = new Map();
+
+    // Map to associate a list of original folders to a corresponding temporary subfolders name
+    private readonly origToTempDirMap: Map<string, string> = new Map();
+
+    // A counter to just help generate unique numbers to be appended to the generated file and subfolder names.
+    // Since this counter is used for both files and folders which, it may not give the best human names for debugging.
+    private uniqNameCounter: number = 0;
 
     constructor(emitLogEvent: EmitLogEventFcn = NO_OP) {
         this.simpleExecutor = new SimpleRetireJsExecutor(emitLogEvent);
@@ -126,7 +137,7 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
 
     async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
         const allFiles: string[] = utils.expandToListAllFiles(filesAndFoldersToScan);
-        const targetFiles: string[] = await reduceToTargetFiles(allFiles);
+        const targetFiles: string[] = reduceToTargetFiles(allFiles);
         const { textFiles, zipFiles } = separateTextAndZipFiles(targetFiles);
 
         await this.prepareTempDirs(textFiles);
@@ -144,8 +155,10 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         return findings;
     }
 
-    // Create parent temporary directory (that cleans up after itself when process exits) and add subdirectories under
-    // the parent for each of the unique folders containing text files
+    /**
+     *  Create parent temporary directory (that cleans up after itself when process exits) and add subdirectories under
+     *  the parent for each of the unique folders containing text files
+     */
     private async prepareTempDirs(textFiles: string[]): Promise<void[]> {
         this.origToTempDirMap.clear();
         this.tempToOrigFileMap.clear();
@@ -163,8 +176,10 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         return Promise.all(mkdirPromises);
     }
 
-    // Make a symlink of the text file into its associated temporary directory with a .js file extension and update
-    // the tempToOrigFileMap so that the original text file can be mapped from the temporary text file.
+    /**
+     * Make a symlink of the text file into its associated temporary directory with a .js file extension
+     * Additionally, we update tempToOrigFileMap so that the original text file can be mapped from the temporary file.
+     */
     private async processTextFile(origTextFile: string): Promise<void> {
         const fileInfo: path.ParsedPath = path.parse(origTextFile);
         const tempDir: string = this.origToTempDirMap.get(fileInfo.dir) as string;
@@ -174,10 +189,11 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         return utils.linkOrCopy(origTextFile, tempTextFile);
     }
 
-    // Here we extract the zip file, looking one by one at the entries. Each text file based entry will be then
-    // processed in a similar fashion to how processTextFile works except for the file is actually extracted since
-    //  we can't just make a symlink. Additionally, the tempToOrigFileMap points to the embedded file in the zip folder:
-    // <zip_file>::[ZIPPED_FILE]::<embedded_file>
+    /**
+     * Extract text files from zip file forcing them to have a js extension.
+     * Additionally, we update the tempToOrigFileMap so that the temp file points to the embedded zip file as:
+     *   <zip_file>::[ZIPPED_FILE]::<embedded_file>
+     */
     private async processZipFile(zipFile: string): Promise<void> {
         const zip: StreamZip.StreamZipAsync = new StreamZip.async({file: zipFile, storeEntries: true});
         const entries: { [name: string]: StreamZip.ZipEntry } = await zip.entries();
@@ -201,8 +217,10 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         await zip.close();
     }
 
-    // Returns the file name if it already is a javascript file (to allow vulnerability detection based on filename).
-    // Otherwise, returns a temp name with a .js extension so that it can be scanned.
+    /**
+     *  Returns the file name if it already is a javascript file (to allow vulnerability detection based on filename).
+     *  Otherwise, returns a temp name with a .js extension so that it can be scanned.
+     */
     private makeUniqueJsFileNameFor(fileInfo: path.ParsedPath): string {
         return JS_EXTENSIONS.includes(fileInfo.ext) ? fileInfo.base : `TMPFILE_${this.uniqNameCounter++}.js`;
     }
@@ -212,12 +230,7 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
     }
 }
 
-// If we do not reduce the file list down, then there could be a massive amount of files to process resulting
-// in a rather slow engine. Therefore, we reduce the files with a targeted extension or files that have an associated
-// salesforce metadata file while skipping files that live in certain folders we want to skip.
-const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
-const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
-async function reduceToTargetFiles(files: string[]): Promise<string[]> {
+function reduceToTargetFiles(files: string[]): string[] {
     const filesSet: Set<string> = new Set(files);
     return files.filter(file => shouldTarget(file, filesSet));
 }
@@ -231,12 +244,7 @@ function shouldTarget(file: string, filesSet: Set<string>): boolean {
     return filesSet.has(`${fileInfo.dir}${path.sep}${fileInfo.name}.resource-meta.xml`);
 }
 function fileIsInFolderToSkip(file: string): boolean {
-    for (const folderToSkip of FOLDERS_TO_SKIP) {
-        if (file.includes(path.sep + folderToSkip + path.sep)) {
-            return true;
-        }
-    }
-    return false;
+    return FOLDERS_TO_SKIP.some(folderToSkip => file.includes(path.sep + folderToSkip + path.sep));
 }
 
 function separateTextAndZipFiles(files: string[]): {textFiles: string[], zipFiles: string[]} {
