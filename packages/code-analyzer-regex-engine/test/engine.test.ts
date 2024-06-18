@@ -8,9 +8,10 @@ describe('Regex Engine Tests', () => {
     beforeAll(() => {
         engine = new RegexEngine();
     });
+
     it('Check that when I try to access an engine name, it is retrieved and the name is correct', () => {
         const name: string = engine.getName();
-        expect(name).toEqual("regexEngine");
+        expect(name).toEqual("regex");
         
     });
     it('If I call describeRules() on an engine, it should correctly return the single trailing whitespace rule', async () => {
@@ -45,17 +46,17 @@ describe('RegexEnginePlugin Tests' , () => {
 
     beforeAll(() => {
         enginePlugin = new RegexEnginePlugin();
-        pluginEngine = enginePlugin.createEngine("regexEngine") as RegexEngine;
+        pluginEngine = enginePlugin.createEngine("regex") as RegexEngine;
 
     });
 
     it('Check that I can get all available engine names', () => {
-        const availableEngines: string[] = ['regexEngine'] 
+        const availableEngines: string[] = ['regex'] 
         expect(enginePlugin.getAvailableEngineNames()).toStrictEqual(availableEngines)
     })
    
     it('Check that engine created from the RegexEnginePlugin has expected name', () => {
-        const engineName = RegexEngine.NAME;
+        const engineName = "regex";
         expect(pluginEngine.getName()).toStrictEqual(engineName)
 
     });

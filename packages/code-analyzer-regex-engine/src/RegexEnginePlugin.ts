@@ -1,8 +1,5 @@
 import * as EngineApi from '@salesforce/code-analyzer-engine-api/';
 
-
-
-
 export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
 
 	getAvailableEngineNames(): string[] {
@@ -21,7 +18,7 @@ export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
 }
 
 export class RegexEngine extends EngineApi.Engine {
-	static readonly NAME = "regexEngine"
+	static readonly NAME = "regex"
 
 	constructor() {
 		super();
