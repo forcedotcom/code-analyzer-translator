@@ -1,64 +1,54 @@
 import * as EngineApi from '@salesforce/code-analyzer-engine-api/';
-import { EngineRunResults } from '@salesforce/code-analyzer-engine-api/';
+
 
 
 
 export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
-	private readonly createdEngines: Map<string, EngineApi.Engine> = new Map();
 
 	getAvailableEngineNames(): string[] {
-		return ['regex'];
+		return [RegexEngine.NAME];
 	}
 
-	createEngine(engineName: string, config: EngineApi.ConfigObject): EngineApi.Engine {
-		if (engineName === 'regex') {
-			this.createdEngines.set(engineName, new RegexEngine(config));
+	createEngine(engineName: string): EngineApi.Engine {
+		if (engineName === RegexEngine.NAME) {
+			return new RegexEngine()
 		}  else {
 			throw new Error(`Unsupported engine name: ${engineName}`);
 		}
-		return this.getCreatedEngine(engineName);
+		
 	}
 
-	getCreatedEngine(engineName: string): EngineApi.Engine {
-		if (this.createdEngines.has(engineName)) {
-			return this.createdEngines.get(engineName) as EngineApi.Engine;
-		}
-		throw new Error(`Engine with name ${engineName} has not yet been created`);
-	}
 }
 
 export class RegexEngine extends EngineApi.Engine {
-	readonly config: EngineApi.ConfigObject;
-	readonly runRulesCallHistory: {ruleNames: string[], runOptions: EngineApi.RunOptions}[] = [];
-	resultsToReturn: EngineApi.EngineRunResults = {
-		violations: []
-	};
+	static readonly NAME = "regexEngine"
 
-	constructor(config: EngineApi.ConfigObject) {
+	constructor() {
 		super();
-		this.config = config;
+		
 	}
 
 	getName(): string {
-		return 'regex';
+		return RegexEngine.NAME;
 	}
 
-	describeRules(): EngineApi.RuleDescription[] {
+	async describeRules(): Promise<EngineApi.RuleDescription[]> {
 		return [
 			{
 				name: "TrailingWhitespaceRule",
 				severityLevel: EngineApi.SeverityLevel.Low,
 				type: EngineApi.RuleType.Standard,
 				tags: ["Recommended", "CodeStyle"],
-				description: "Some description for TrailingWhiteSpaceRuleStub",
-				resourceUrls: ["https://example.com/TrailingWhiteSpaceRuleStub"]
+				/* TODO: Add rule description and resourceUrls for trailing whitespace rule*/ 
+				description: "",
+				resourceUrls: [""]
 			},
 		];
 	}
 
-	runRules(ruleNames: string[], runOptions: EngineApi.RunOptions): EngineApi.EngineRunResults {
-        /* Update section with logic for implementing trailing whitespace rule*/ 
-		return this.resultsToReturn;
+	async runRules(ruleNames: string[], runOptions: EngineApi.RunOptions): Promise<EngineApi.EngineRunResults> {
+        /* TODO: Update section with logic for implementing trailing whitespace rule*/ 
+		return {violations: []};
 
 	}
 
