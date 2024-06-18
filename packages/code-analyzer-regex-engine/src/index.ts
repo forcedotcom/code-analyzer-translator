@@ -1,4 +1,4 @@
-import {RegexEnginePlugin} from "./RegexEnginePlugin";
+import { RegexEnginePlugin } from "./RegexEnginePlugin";
 import {EnginePlugin} from "@salesforce/code-analyzer-engine-api";
 
 function createEnginePlugin(): EnginePlugin {
