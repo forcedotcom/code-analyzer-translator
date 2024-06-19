@@ -92,7 +92,4 @@ describe('RegexEnginePlugin Tests' , () => {
 
     });
     
-    
-
-
 });

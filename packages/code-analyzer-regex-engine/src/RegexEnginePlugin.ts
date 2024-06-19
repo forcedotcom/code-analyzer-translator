@@ -48,8 +48,5 @@ export class RegexEngine extends EngineApi.Engine {
         return {violations: []};
 
     }
-
-
-
-    
+   
 }
