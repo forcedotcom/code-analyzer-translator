@@ -1,6 +1,8 @@
-import { RegexEngine, RegexEnginePlugin} from "../src/RegexEnginePlugin";
+import {RegexEnginePlugin, RegexEngine} from "../src/RegexEnginePlugin";
 import * as EngineApi from '@salesforce/code-analyzer-engine-api';
+import { changeWorkingDirectoryToPackageRoot } from "./test-helpers";
 
+changeWorkingDirectoryToPackageRoot();
 
 
 describe('Regex Engine Tests', () => {
@@ -9,12 +11,12 @@ describe('Regex Engine Tests', () => {
         engine = new RegexEngine();
     });
 
-    it('Check that when I try to access an engine name, it is retrieved and the name is correct', () => {
+    it('Engine name is accessible and correct', () => {
         const name: string = engine.getName();
         expect(name).toEqual("regex");
         
     });
-    it('If I call describeRules() on an engine, it should correctly return the single trailing whitespace rule', async () => {
+    it('Calling describeRules() on an engine should return the single trailing whitespace rule', async () => {
         const rules_desc: EngineApi.RuleDescription[]= await engine.describeRules();
         const engineRules = [
             {
@@ -30,7 +32,7 @@ describe('Regex Engine Tests', () => {
         
     });
 
-    it('When I make a call to runRules(), nothing should happen since it is currently a no-op', () => {
+    it('Confirm runRules() is a no-op', () => {
         const ruleNames: string[] = ['TrailingWhitespaceRule']
         const runOptions: EngineApi.RunOptions = {"workspaceFiles": ["path/to/dir"] }
         engine.runRules(ruleNames, runOptions);

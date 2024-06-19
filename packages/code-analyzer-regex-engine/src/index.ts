@@ -5,6 +5,4 @@ function createEnginePlugin(): EnginePlugin {
     return new RegexEnginePlugin();
 }
 
-// Each code analyzer engine plugin module should export its plugin (so that it can be constructed manually) and
-// a createEnginePlugin function that creates the plugin (so that it can be dynamically loaded).
 export { createEnginePlugin, RegexEnginePlugin }
