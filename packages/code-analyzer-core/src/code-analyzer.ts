@@ -57,13 +57,10 @@ export class CodeAnalyzer {
         }
     }
 
-    // This method should be called from the client with an absolute path to the module if it isn't available globally.
-    // Basically, clients should call this method after resolving the module using require.resolve. For example:
-    //     codeAnalyzer.dynamicallyAddEnginePlugin(require.resolve('./someRelativePluginModule'));
     public async dynamicallyAddEnginePlugin(enginePluginModulePath: string): Promise<void> {
         let pluginModule;
         try {
-            enginePluginModulePath = require.resolve(enginePluginModulePath);
+            enginePluginModulePath = require.resolve(enginePluginModulePath, {paths: [process.cwd()]});
             pluginModule = (await import(enginePluginModulePath));
         } catch (err) {
             throw new Error(getMessage('FailedToDynamicallyLoadModule', enginePluginModulePath, (err as Error).message), {cause: err});
