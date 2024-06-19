@@ -12,18 +12,11 @@ export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
         }  else {
             throw new Error(`Unsupported engine name: ${engineName}`);
         }
-        
     }
-
 }
 
 export class RegexEngine extends EngineApi.Engine {
     static readonly NAME = "regex"
-
-    constructor() {
-        super();
-        
-    }
 
     getName(): string {
         return RegexEngine.NAME;
@@ -47,6 +40,5 @@ export class RegexEngine extends EngineApi.Engine {
         /* TODO: Update section with logic for implementing trailing whitespace rule*/ 
         return {violations: []};
 
-    }
-   
+    } 
 }
