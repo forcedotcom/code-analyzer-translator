@@ -43,7 +43,7 @@ export class RegexEngine extends EngineApi.Engine {
         ];
     }
 
-    async runRules(ruleNames: string[], runOptions: EngineApi.RunOptions): Promise<EngineApi.EngineRunResults> {
+    async runRules(_ruleNames: string[], _runOptions: EngineApi.RunOptions): Promise<EngineApi.EngineRunResults> {
         /* TODO: Update section with logic for implementing trailing whitespace rule*/ 
         return {violations: []};
 
