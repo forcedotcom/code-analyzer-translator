@@ -3,12 +3,18 @@ import { EngineRunResults } from "./results";
 import { Event } from "./events";
 import { EventEmitter } from "node:events";
 
+export type DescribeOptions = {
+    ruleSelectionId: string
+    workspaceFiles: string[]
+}
+
 export type PathPoint = {
     file: string
     methodName?: string
 }
 
 export type RunOptions = {
+    ruleSelectionId: string
     workspaceFiles: string[]
     pathStartPoints?: PathPoint[]
 }
@@ -16,11 +22,9 @@ export type RunOptions = {
 export abstract class Engine {
     private readonly eventEmitter: EventEmitter = new EventEmitter();
 
-    public async validate(): Promise<void> {}
-
     abstract getName(): string
 
-    abstract describeRules(): Promise<RuleDescription[]>
+    abstract describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]>
 
     abstract runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults>
 

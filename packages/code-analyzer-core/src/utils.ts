@@ -14,3 +14,20 @@ export class RealClock implements Clock {
         return new Date();
     }
 }
+
+export interface UniqueIdGenerator {
+    getUniqueId(): string;
+}
+
+export class PrefixedUniqueIdGenerator implements UniqueIdGenerator {
+    private readonly prefix: string;
+    private counter: number = 0;
+
+    constructor(prefix: string) {
+        this.prefix = prefix;
+    }
+
+    getUniqueId(): string {
+        return `${this.prefix}${++this.counter}`;
+    }
+}

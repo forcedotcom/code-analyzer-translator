@@ -4,7 +4,8 @@ export {
 
 export {
     CodeAnalyzer,
-    RunOptions
+    RunOptions,
+    SelectOptions
 } from "./code-analyzer"
 
 export {

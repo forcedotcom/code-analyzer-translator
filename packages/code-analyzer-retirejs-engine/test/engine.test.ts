@@ -1,5 +1,6 @@
 import {
     CodeLocation,
+    DescribeOptions,
     Engine,
     EnginePluginV1,
     EngineRunResults,
@@ -78,6 +79,16 @@ const EXPECTED_VIOLATION_4: Violation = {
     ]
 }
 
+const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {
+    ruleSelectionId: "dummy",
+    workspaceFiles: ['dummy']
+}
+
+const DUMMY_RUN_OPTIONS: RunOptions = {
+    ruleSelectionId: "dummy",
+    workspaceFiles: ['dummy']
+}
+
 describe('Tests for the RetireJsEnginePlugin', () => {
     let plugin: EnginePluginV1;
     beforeAll(() => {
@@ -88,12 +99,12 @@ describe('Tests for the RetireJsEnginePlugin', () => {
         expect(plugin.getAvailableEngineNames()).toEqual(['retire-js']);
     });
 
-    it('When createEngine is passed retire-js then an RetireJsEngine instance is returned', () => {
-        expect(plugin.createEngine('retire-js', {})).toBeInstanceOf(RetireJsEngine);
+    it('When createEngine is passed retire-js then an RetireJsEngine instance is returned', async () => {
+        expect(await plugin.createEngine('retire-js', {})).toBeInstanceOf(RetireJsEngine);
     });
 
     it('When createEngine is passed anything else then an error is thrown', () => {
-        expect(() => plugin.createEngine('oops', {})).toThrow(
+        expect(plugin.createEngine('oops', {})).rejects.toThrow(
             getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
     });
 });
@@ -108,12 +119,8 @@ describe('Tests for the RetireJsEngine', () => {
         expect(engine.getName()).toEqual('retire-js');
     });
 
-    it('When validate is called, then nothing happens since it currently is a no-op', async () => {
-        await engine.validate(); // Sanity check that nothing blows up since the core module will call this.
-    });
-
     it('When describeRules is called, then the expected rules are returned', async () => {
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules();
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(DUMMY_DESCRIBE_OPTIONS);
         expect(ruleDescriptions).toHaveLength(4);
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownCriticalSeverityVulnerability',
@@ -154,9 +161,10 @@ describe('Tests for the RetireJsEngine', () => {
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
 
-        const allRuleNames: string[] = (await engine.describeRules()).map(r => r.name);
+        const allRuleNames: string[] = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
         const filesAndFoldersToScan: string[] = [path.resolve('build-tools'), path.resolve('test/test-helpers.ts')];
         const runOptions: RunOptions = {
+            ruleSelectionId: "someRuleSelectionId",
             workspaceFiles: filesAndFoldersToScan,
             pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
         };
@@ -167,8 +175,8 @@ describe('Tests for the RetireJsEngine', () => {
     });
 
     it('When using all rules and violations are found, then the engine correctly returns the results', async () => {
-        const allRuleNames: string[] = (await engine.describeRules()).map(r => r.name);
-        const engineRunResults: EngineRunResults = await engine.runRules(allRuleNames, {workspaceFiles: ['dummy']});
+        const allRuleNames: string[] = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
+        const engineRunResults: EngineRunResults = await engine.runRules(allRuleNames, DUMMY_RUN_OPTIONS);
 
         expect(engineRunResults.violations).toHaveLength(4);
         expect(engineRunResults.violations[0]).toEqual(EXPECTED_VIOLATION_1);
@@ -180,21 +188,21 @@ describe('Tests for the RetireJsEngine', () => {
     it('When only selecting some rules, then only violations for those rules are returned', async () => {
         const engineRunResults1: EngineRunResults = await engine.runRules(
             ['LibraryWithKnownHighSeverityVulnerability', 'LibraryWithKnownLowSeverityVulnerability'],
-            {workspaceFiles: ['dummy']});
+            DUMMY_RUN_OPTIONS);
         expect(engineRunResults1).toEqual({
             violations: [EXPECTED_VIOLATION_3, EXPECTED_VIOLATION_4]
         });
 
         const engineRunResults2: EngineRunResults = await engine.runRules(
             ['LibraryWithKnownMediumSeverityVulnerability', 'LibraryWithKnownCriticalSeverityVulnerability'],
-            {workspaceFiles: ['dummy']});
+            DUMMY_RUN_OPTIONS);
         expect(engineRunResults2).toEqual({
             violations: [EXPECTED_VIOLATION_1, EXPECTED_VIOLATION_2]
         });
 
 
         const engineRunResults3: EngineRunResults = await engine.runRules(
-            ['LibraryWithKnownCriticalSeverityVulnerability'], {workspaceFiles: ['dummy']});
+            ['LibraryWithKnownCriticalSeverityVulnerability'], DUMMY_RUN_OPTIONS);
         expect(engineRunResults3).toEqual({violations: []});
     });
 });

@@ -7,6 +7,7 @@ export {
 } from "./engine-plugins"
 
 export {
+    DescribeOptions,
     Engine,
     PathPoint,
     RunOptions

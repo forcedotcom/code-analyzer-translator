@@ -4,9 +4,9 @@ import * as path from "node:path";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
-describe("Tests for creating and accessing configuration values", () => {
-    changeWorkingDirectoryToPackageRoot();
+changeWorkingDirectoryToPackageRoot();
 
+describe("Tests for creating and accessing configuration values", () => {
     it("When constructing config withDefaults then default values are returned", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.withDefaults();
 

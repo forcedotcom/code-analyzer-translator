@@ -11,9 +11,13 @@ import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
-import {Clock, RealClock, toAbsolutePath} from "./utils";
+import {Clock, PrefixedUniqueIdGenerator, RealClock, toAbsolutePath, UniqueIdGenerator} from "./utils";
 import fs from "node:fs";
 import path from "node:path";
+
+export type SelectOptions = {
+    workspaceFiles: string[]
+}
 
 export type RunOptions = {
     workspaceFiles: string[]
@@ -23,17 +27,20 @@ export type RunOptions = {
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
+    private ruleSelectionIdGenerator: UniqueIdGenerator = new PrefixedUniqueIdGenerator('ruleSelection');
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
-    private readonly allRules: RuleImpl[] = [];
 
     constructor(config: CodeAnalyzerConfig) {
         this.config = config;
     }
 
     // For testing purposes only
-    setClock(clock: Clock) {
+    _setClock(clock: Clock) {
         this.clock = clock;
+    }
+    _setRuleSelectionIdGenerator(ruleSelectionIdGenerator: UniqueIdGenerator) {
+        this.ruleSelectionIdGenerator = ruleSelectionIdGenerator;
     }
 
     public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
@@ -43,18 +50,9 @@ export class CodeAnalyzer {
         }
         const enginePluginV1: engApi.EnginePluginV1 = enginePlugin as engApi.EnginePluginV1;
 
-        for (const engineName of getAvailableEngineNamesFromPlugin(enginePluginV1)) {
-            const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
-            const engine: engApi.Engine = createEngineFromPlugin(enginePluginV1, engineName, engConf);
-            await this.addEngineIfValid(engineName, engine);
-
-            const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules();
-            validateRuleDescriptions(ruleDescriptions, engineName);
-            for (let ruleDescription of ruleDescriptions) {
-                ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
-                this.allRules.push(new RuleImpl(engineName, ruleDescription))
-            }
-        }
+        const promises: Promise<void>[] = getAvailableEngineNamesFromPlugin(enginePluginV1).map(engineName =>
+            this.createAndAddEngineIfValid(engineName, enginePluginV1));
+        await Promise.all(promises);
     }
 
     // This method should be called from the client with an absolute path to the module if it isn't available globally.
@@ -73,18 +71,26 @@ export class CodeAnalyzer {
             throw new Error(getMessage('FailedToDynamicallyAddEnginePlugin', enginePluginModulePath));
         }
         const enginePlugin: engApi.EnginePlugin = pluginModule.createEnginePlugin();
-        await this.addEnginePlugin(enginePlugin);
+        return this.addEnginePlugin(enginePlugin);
     }
 
     public getEngineNames(): string[] {
         return Array.from(this.engines.keys());
     }
 
-    public selectRules(...selectors: string[]): RuleSelection {
+    public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
+        if (!selectOptions) {
+            selectOptions = {workspaceFiles: [process.cwd()]};
+        }
 
-        const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
-        for (const rule of this.allRules) {
+        const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl(this.ruleSelectionIdGenerator.getUniqueId());
+        const describeOptions: engApi.DescribeOptions = {
+            ruleSelectionId: ruleSelection.getRuleSelectionId(),
+            workspaceFiles: selectOptions.workspaceFiles
+        }
+        const allRules: RuleImpl[] = await this.getAllRules(describeOptions);
+        for (const rule of allRules) {
             if (selectors.some(s => rule.matchesRuleSelector(s))) {
                 ruleSelection.addRule(rule);
             }
@@ -93,7 +99,7 @@ export class CodeAnalyzer {
     }
 
     public async run(ruleSelection: RuleSelection, runOptions: RunOptions): Promise<RunResults> {
-        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
+        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions, ruleSelection.getRuleSelectionId());
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
         const runResults: RunResultsImpl = new RunResultsImpl();
@@ -118,6 +124,20 @@ export class CodeAnalyzer {
 
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
         this.eventEmitter.on(eventType, callback);
+    }
+
+    private async getAllRules(describeOptions: engApi.DescribeOptions): Promise<RuleImpl[]> {
+        const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
+            engineName => this.getAllRulesFor(engineName, describeOptions));
+        return (await Promise.all(rulePromises)).flat();
+    }
+
+    private async getAllRulesFor(engineName: string, describeOptions: engApi.DescribeOptions): Promise<RuleImpl[]> {
+        const engine: engApi.Engine = this.getEngine(engineName);
+        const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules(describeOptions);
+        validateRuleDescriptions(ruleDescriptions, engineName);
+        return ruleDescriptions.map(rd => this.updateRuleDescriptionWithOverrides(engineName, rd))
+            .map(rd => new RuleImpl(engineName, rd));
     }
 
     private async runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): Promise<EngineRunResults> {
@@ -149,21 +169,27 @@ export class CodeAnalyzer {
         })
     }
 
-    private async addEngineIfValid(engineName: string, engine: engApi.Engine): Promise<void> {
+    private async createAndAddEngineIfValid(engineName: string, enginePluginV1: engApi.EnginePluginV1): Promise<void> {
         if (this.engines.has(engineName)) {
             this.emitLogEvent(LogLevel.Error, getMessage('DuplicateEngine', engineName));
             return;
         }
+
+        const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
+
+        let engine: engApi.Engine;
+        try {
+            engine = await enginePluginV1.createEngine(engineName, engConf);
+        } catch (err) {
+            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message));
+            return;
+        }
+
         if (engineName != engine.getName()) {
             this.emitLogEvent(LogLevel.Error, getMessage('EngineNameContradiction', engineName, engine.getName()));
             return;
         }
-        try {
-            await engine.validate();
-        } catch (err) {
-            this.emitLogEvent(LogLevel.Error, getMessage('EngineValidationFailed', engineName, (err as Error).message));
-            return;
-        }
+
         this.engines.set(engineName, engine);
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));
         this.listenToEngineEvents(engine);
@@ -219,14 +245,6 @@ function getAvailableEngineNamesFromPlugin(enginePlugin: engApi.EnginePluginV1):
     }
 }
 
-function createEngineFromPlugin(enginePlugin: engApi.EnginePluginV1, engineName: string, config: engApi.ConfigObject) {
-    try {
-        return enginePlugin.createEngine(engineName, config);
-    } catch (err) {
-        throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message), {cause: err})
-    }
-}
-
 function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], engineName: string): void {
     const ruleNamesSeen: Set<string> = new Set();
     for (const ruleDescription of ruleDescriptions) {
@@ -237,11 +255,12 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
     }
 }
 
-function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
+function extractEngineRunOptions(runOptions: RunOptions, ruleSelectionId: string): engApi.RunOptions {
     if(!runOptions.workspaceFiles || runOptions.workspaceFiles.length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
+        ruleSelectionId: ruleSelectionId,
         workspaceFiles: removeRedundantPaths(runOptions.workspaceFiles.map(validateFileOrFolder))
     };
 

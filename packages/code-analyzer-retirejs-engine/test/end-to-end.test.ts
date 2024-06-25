@@ -1,5 +1,12 @@
 import {RetireJsEnginePlugin} from "../src";
-import {Engine, EnginePluginV1, EngineRunResults, RuleDescription} from "@salesforce/code-analyzer-engine-api";
+import {
+    DescribeOptions,
+    Engine,
+    EnginePluginV1,
+    EngineRunResults,
+    RuleDescription,
+    RunOptions
+} from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
@@ -15,16 +22,17 @@ describe('End to end test', () => {
         const plugin: EnginePluginV1 = new RetireJsEnginePlugin();
         const availableEngineNames: string[] = plugin.getAvailableEngineNames();
         expect(availableEngineNames).toHaveLength(1);
-        const engine: Engine = plugin.createEngine(availableEngineNames[0], {});
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules();
+        const engine: Engine = await plugin.createEngine(availableEngineNames[0], {});
+        const workspaceFiles: string[] = [
+            path.resolve('test', 'test-data', 'scenarios', '1_hasJsLibraryWithVulnerability'), // Expect 3 violations: 1 file with 3 vulnerabilities
+            path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileAsResource.resource'), // Expect 6 violations: 2 files each with 3 vulnerabilities
+        ];
+        const describeOptions: DescribeOptions = {ruleSelectionId: "someRuleSelectionId", workspaceFiles: workspaceFiles};
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(describeOptions);
         expect(ruleDescriptions).toHaveLength(4);
         const ruleNames: string[] = ruleDescriptions.map(rd => rd.name);
-        const engineRunResults: EngineRunResults = await engine.runRules(ruleNames, {
-            workspaceFiles: [
-                path.resolve('test', 'test-data', 'scenarios', '1_hasJsLibraryWithVulnerability'), // Expect 3 violations: 1 file with 3 vulnerabilities
-                path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileAsResource.resource'), // Expect 6 violations: 2 files each with 3 vulnerabilities
-            ]
-        });
+        const runOptions: RunOptions = {ruleSelectionId: "someRuleSelectionId", workspaceFiles: workspaceFiles};
+        const engineRunResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
         expect(engineRunResults.violations).toHaveLength(9);
         // The details of these violations are already tested in the unit test files so no need to go crazy here.
     });

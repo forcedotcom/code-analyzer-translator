@@ -1,12 +1,21 @@
-import * as EngineApi from '@salesforce/code-analyzer-engine-api/';
+import {
+    ConfigObject, DescribeOptions,
+    Engine,
+    EnginePluginV1,
+    EngineRunResults,
+    RuleDescription,
+    RuleType,
+    RunOptions,
+    SeverityLevel
+} from "@salesforce/code-analyzer-engine-api";
 
-export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
+export class RegexEnginePlugin extends EnginePluginV1 {
 
     getAvailableEngineNames(): string[] {
         return [RegexEngine.NAME];
     }
 
-    createEngine(engineName: string): EngineApi.Engine {
+    async createEngine(engineName: string, _config: ConfigObject): Promise<Engine> {
         if (engineName === RegexEngine.NAME) {
             return new RegexEngine()
         }  else {
@@ -15,19 +24,19 @@ export class RegexEnginePlugin extends EngineApi.EnginePluginV1 {
     }
 }
 
-export class RegexEngine extends EngineApi.Engine {
+export class RegexEngine extends Engine {
     static readonly NAME = "regex"
 
     getName(): string {
         return RegexEngine.NAME;
     }
 
-    async describeRules(): Promise<EngineApi.RuleDescription[]> {
+    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         return [
             {
                 name: "TrailingWhitespaceRule",
-                severityLevel: EngineApi.SeverityLevel.Low,
-                type: EngineApi.RuleType.Standard,
+                severityLevel: SeverityLevel.Low,
+                type: RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
                 /* TODO: Add rule description and resourceUrls for trailing whitespace rule*/ 
                 description: "",
@@ -36,7 +45,7 @@ export class RegexEngine extends EngineApi.Engine {
         ];
     }
 
-    async runRules(_ruleNames: string[], _runOptions: EngineApi.RunOptions): Promise<EngineApi.EngineRunResults> {
+    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
         /* TODO: Update section with logic for implementing trailing whitespace rule*/ 
         return {violations: []};
 

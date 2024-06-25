@@ -25,12 +25,13 @@ import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {UnexpectedEngineErrorRule} from "../src/rules";
 import {UndefinedCodeLocation} from "../src/results";
 
+changeWorkingDirectoryToPackageRoot();
+
 const SAMPLE_RUN_OPTIONS: RunOptions = {
     workspaceFiles: ['test']
 };
 
 describe("Tests for the run method of CodeAnalyzer", () => {
-    changeWorkingDirectoryToPackageRoot();
 
     let sampleTimestamp: Date;
     let codeAnalyzer: CodeAnalyzer;
@@ -45,13 +46,13 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         logEvents = [];
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-        codeAnalyzer.setClock(new FixedClock(sampleTimestamp));
+        codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
         const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(stubPlugin);
         stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
-        selection = codeAnalyzer.selectRules();
+        selection = await codeAnalyzer.selectRules([]);
     })
 
     it("When run options contains file that does not exist, then error", () => {
@@ -136,6 +137,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection1",
             workspaceFiles: [path.resolve('src'), path.resolve('test', 'run.test.ts')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
@@ -154,6 +156,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection1",
             workspaceFiles: [path.resolve('test')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
@@ -173,6 +176,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection1",
             workspaceFiles: [path.resolve('src')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
@@ -192,6 +196,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection1",
             workspaceFiles: [path.resolve('test')],
             pathStartPoints: [
                 { file: path.resolve("test", "test-data") },
@@ -215,6 +220,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection1",
             workspaceFiles: [path.resolve("src", "index.ts"), path.resolve("src", "utils.ts"), path.resolve('test')],
             pathStartPoints: [
                 {
@@ -248,11 +254,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
-    it("When no rules are selected for an engine, then when running, that engine is skipped", () => {
-        selection = codeAnalyzer.selectRules('stubEngine1:Recommended');
-        codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
+    it("When no rules are selected for an engine, then when running, that engine is skipped", async () => {
+        selection = await codeAnalyzer.selectRules(['stubEngine1:Recommended']);
+        await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            ruleSelectionId: "ruleSelection2", // Also validates that when selectRules is called multiple times then each selection has its own id
             workspaceFiles: [path.resolve('test')]
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
@@ -263,7 +270,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When zero rules are selected, then all engines should be skipped and returned results contain no violations", async () => {
-        selection = codeAnalyzer.selectRules('doesNotExist');
+        selection = await codeAnalyzer.selectRules(['doesNotExist']);
         const results: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(stubEngine1.runRulesCallHistory).toEqual([]);
@@ -277,7 +284,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     });
 
     it("When an engine did not run, then attempting to get that engine's run results gives an error", async () => {
-        selection = codeAnalyzer.selectRules('stubEngine2');
+        selection = await codeAnalyzer.selectRules(['stubEngine2']);
         const results: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(results.getEngineNames()).toEqual(['stubEngine2']);
@@ -382,11 +389,11 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(overallResults.getViolations()).toEqual([...engine1Violations,...engine2Violations]);
     });
 
-    it("When an engine returns a violation for a rule that was not actually selected, then an error is thrown", () => {
+    it("When an engine returns a violation for a rule that was not actually selected, then an error is thrown", async () => {
         stubEngine1.resultsToReturn = {
             violations: [stubs.getSampleViolationForStub1RuleC()]
         };
-        selection = codeAnalyzer.selectRules('stub1RuleA');
+        selection = await codeAnalyzer.selectRules(['stub1RuleA']);
         expect(codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS)).rejects.toThrow(
             getMessage('EngineReturnedViolationForUnselectedRule', 'stubEngine1', 'stub1RuleC'));
     });
@@ -517,7 +524,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When an engine throws an exception when running, then a result is returned with a Critical violation of type UnexpectedError", async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
-        selection = codeAnalyzer.selectRules();
+        selection = await codeAnalyzer.selectRules([]);
         const overallResults: RunResults = await codeAnalyzer.run(selection, SAMPLE_RUN_OPTIONS);
 
         expect(overallResults.getRunDirectory()).toEqual(process.cwd() + path.sep);
