@@ -1,6 +1,6 @@
 import process from "node:process";
 import path from "node:path";
-import {Clock} from "../src/utils";
+import {Clock, UniqueIdGenerator} from "../src/utils";
 
 export function changeWorkingDirectoryToPackageRoot() {
     let original_working_directory: string;
@@ -28,4 +28,11 @@ export class FixedClock implements Clock {
     now(): Date {
         return this.fixedTimestamp;
     }
+}
+
+export class FixedUniqueIdGenerator implements UniqueIdGenerator {
+    getUniqueId(_prefix: string): string {
+        return "FixedId";
+    }
+
 }

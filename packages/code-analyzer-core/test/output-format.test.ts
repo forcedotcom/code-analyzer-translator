@@ -10,7 +10,7 @@ changeWorkingDirectoryToPackageRoot();
 let runResults: RunResults;
 beforeAll(async () => {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-    codeAnalyzer.setClock(new FixedClock(new Date(2024, 6, 3, 9, 14, 34, 567)));
+    codeAnalyzer._setClock(new FixedClock(new Date(2024, 6, 3, 9, 14, 34, 567)));
     const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
     await codeAnalyzer.addEnginePlugin(stubPlugin);
     (stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1).resultsToReturn = {
@@ -19,7 +19,7 @@ beforeAll(async () => {
     (stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub2RuleC()]
     };
-    runResults = await codeAnalyzer.run(codeAnalyzer.selectRules('all'), {workspaceFiles: ['test']});
+    runResults = await codeAnalyzer.run(await codeAnalyzer.selectRules(['all']), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 });
 
 describe("Tests for the CSV output format", () => {
@@ -123,5 +123,5 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
 async function createResultsWithUnexpectedError(): Promise<RunResults> {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
     await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
-    return codeAnalyzer.run(codeAnalyzer.selectRules(), {workspaceFiles: ['test']});
+    return codeAnalyzer.run(await codeAnalyzer.selectRules([]), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 }

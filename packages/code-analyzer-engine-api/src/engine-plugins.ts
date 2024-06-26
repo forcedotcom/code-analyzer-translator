@@ -25,5 +25,5 @@ export abstract class EnginePluginV1 implements EnginePlugin {
 
     abstract getAvailableEngineNames(): string[]
 
-    abstract createEngine(engineName: string, config: ConfigObject): Engine
+    abstract createEngine(engineName: string, config: ConfigObject): Promise<Engine>
 }

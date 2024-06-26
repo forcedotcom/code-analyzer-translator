@@ -1,5 +1,6 @@
 import {
     ConfigObject,
+    DescribeOptions,
     Engine,
     EnginePluginV1,
     EngineRunResults,
@@ -10,6 +11,7 @@ import {
     RuleDescription,
     RunOptions,
 } from "../src";
+import {Workspace} from "../src/engines";
 
 describe('Tests for v1', () => {
     it('EnginePluginV1 getApiVersion should return 1.0', () => {
@@ -19,8 +21,7 @@ describe('Tests for v1', () => {
 
     it('Engine onEvent should receive events correctly from emitEvent', async () => {
         const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
-        const dummyEngine: Engine = dummyPlugin.createEngine('dummy', {});
-        await dummyEngine.validate(); // Calling simply for code coverage
+        const dummyEngine: Engine = await dummyPlugin.createEngine('dummy', {});
 
         const logEvents: LogEvent[] = [];
         dummyEngine.onEvent(EventType.LogEvent, (event: LogEvent): void => {
@@ -31,9 +32,7 @@ describe('Tests for v1', () => {
             progressEvents.push(event);
         });
 
-        await dummyEngine.runRules(["dummy"], {
-            workspaceFiles: ["some/file"]
-        });
+        await dummyEngine.runRules(["dummy"], {workspace: new DummyWorkspace()});
 
         expect(logEvents).toHaveLength(1);
         expect(logEvents[0]).toEqual({
@@ -56,7 +55,7 @@ describe('Tests for v1', () => {
 
 
 export class DummyEnginePluginV1 extends EnginePluginV1 {
-    createEngine(engineName: string, config: ConfigObject): Engine {
+    async createEngine(engineName: string, config: ConfigObject): Promise<Engine> {
         return new DummyEngineV1();
     }
 
@@ -66,7 +65,7 @@ export class DummyEnginePluginV1 extends EnginePluginV1 {
 }
 
 class DummyEngineV1 extends Engine {
-    async describeRules(): Promise<RuleDescription[]> {
+    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         return [];
     }
 
@@ -74,7 +73,7 @@ class DummyEngineV1 extends Engine {
         return "dummy"
     }
 
-    async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
+    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitEvent({
             type: EventType.ProgressEvent,
             percentComplete: 5.0
@@ -91,5 +90,19 @@ class DummyEngineV1 extends Engine {
         return {
             violations: []
         };
+    }
+}
+
+class DummyWorkspace implements Workspace {
+    getWorkspaceId(): string {
+        return "dummy";
+    }
+
+    async getExpandedFiles(): Promise<string[]> {
+        return [];
+    }
+
+    getFilesAndFolders(): string[] {
+        return [];
     }
 }

@@ -1,6 +1,7 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {
     ConfigObject,
+    DescribeOptions,
     Engine,
     EngineRunResults,
     LogLevel,
@@ -18,7 +19,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
         return ["stubEngine1", "stubEngine2"];
     }
 
-    createEngine(engineName: string, config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(engineName: string, config: engApi.ConfigObject): Promise<engApi.Engine> {
         if (engineName == "stubEngine1") {
             this.createdEngines.set(engineName, new StubEngine1(config));
         } else if (engineName == "stubEngine2") {
@@ -43,6 +44,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
 export class StubEngine1 extends engApi.Engine {
     readonly config: engApi.ConfigObject;
     readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
     resultsToReturn: engApi.EngineRunResults = { violations: [] }
 
     constructor(config: engApi.ConfigObject) {
@@ -54,7 +56,8 @@ export class StubEngine1 extends engApi.Engine {
         return "stubEngine1";
     }
 
-    async describeRules(): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+        this.describeRulesCallHistory.push({describeOptions});
         return [
             {
                 name: "stub1RuleA",
@@ -133,6 +136,7 @@ export function createEnginePlugin(): engApi.EnginePlugin {
 export class StubEngine2 extends engApi.Engine {
     readonly config: engApi.ConfigObject;
     readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
     resultsToReturn: engApi.EngineRunResults = { violations: [] }
 
     constructor(config: engApi.ConfigObject) {
@@ -144,7 +148,8 @@ export class StubEngine2 extends engApi.Engine {
         return "stubEngine2";
     }
 
-    async describeRules(): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+        this.describeRulesCallHistory.push({describeOptions});
         return [
             {
                 name: "stub2RuleA",
@@ -287,7 +292,7 @@ export class FutureEnginePlugin extends engApi.EnginePluginV1 {
         return ["future"];
     }
 
-    createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
         return new FutureEngine();
     }
 }
@@ -300,7 +305,7 @@ class FutureEngine extends engApi.Engine {
         return "future";
     }
 
-    async describeRules(): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         return [];
     }
 
@@ -317,42 +322,8 @@ export class ContradictingEnginePlugin extends engApi.EnginePluginV1 {
         return ["stubEngine1"];
     }
 
-    createEngine(_engineName: string, config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(_engineName: string, config: engApi.ConfigObject): Promise<engApi.Engine> {
         return new StubEngine2(config); // returns "stubEngine1" from its getName method - thus the contradiction
-    }
-}
-
-/**
- * InvalidEnginePlugin - A plugin that returns an engine that fails the validate() check
- */
-export class InvalidEnginePlugin extends engApi.EnginePluginV1 {
-    getAvailableEngineNames(): string[] {
-        return ["invalidEngine"];
-    }
-
-    createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
-        return new InvalidEngine();
-    }
-}
-
-/**
- * InvalidEngine - A plugin that returns an engine that fails the validate() check
- */
-class InvalidEngine extends engApi.Engine {
-    async validate(): Promise<void> {
-        throw new Error('SomeErrorMessageFromValidate');
-    }
-
-    getName(): string {
-        return "invalidEngine";
-    }
-
-    async describeRules(): Promise<engApi.RuleDescription[]> {
-        return [];
-    }
-
-    async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
-        return { violations: [] };
     }
 }
 
@@ -364,7 +335,7 @@ export class ThrowingPlugin1 extends engApi.EnginePluginV1 {
         throw new Error('SomeErrorFromGetAvailableEngineNames');
     }
 
-    createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
         throw new Error('Should not be called');
     }
 }
@@ -377,7 +348,7 @@ export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
         return ['someEngine'];
     }
 
-    createEngine(_engineName: string, _config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
         throw new Error('SomeErrorFromCreateEngine');
     }
 }
@@ -390,7 +361,7 @@ export class ThrowingEnginePlugin extends engApi.EnginePluginV1 {
         return ['throwingEngine'];
     }
 
-    createEngine(_engineName: string, config: engApi.ConfigObject): engApi.Engine {
+    async createEngine(_engineName: string, config: engApi.ConfigObject): Promise<engApi.Engine> {
         return new ThrowingEngine(config);
     }
 }
@@ -420,7 +391,7 @@ export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
         return ['repeatedRuleNameEngine'];
     }
 
-    createEngine(_engineName: string, _config: ConfigObject): Engine {
+    async createEngine(_engineName: string, _config: ConfigObject): Promise<Engine> {
         return new RepeatedRuleNameEngine();
     }
 }
@@ -433,7 +404,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
         return 'repeatedRuleNameEngine';
     }
 
-    async describeRules(): Promise<RuleDescription[]> {
+    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         return [
             {
                 name: "repeatedRule",

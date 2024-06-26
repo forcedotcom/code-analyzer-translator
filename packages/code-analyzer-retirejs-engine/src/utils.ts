@@ -17,22 +17,6 @@ export async function createTempDir(parentTempDir?: string) : Promise<string> {
 }
 
 /**
- * Expands a list of files and/or folders to be a list of all contained files, including the files found in subfolders
- */
-export function expandToListAllFiles(absoluteFileOrFolderPaths: string[]): string[] {
-    let allFiles: string[] = [];
-    for (const fileOrFolder of absoluteFileOrFolderPaths) {
-        if (fs.statSync(fileOrFolder).isDirectory()) {
-            const absSubPaths: string[] = fs.readdirSync(fileOrFolder).map(f => fileOrFolder + path.sep + f);
-            allFiles = [...allFiles, ...expandToListAllFiles(absSubPaths)];
-        } else { // isFile
-            allFiles.push(fileOrFolder);
-        }
-    }
-    return allFiles;
-}
-
-/**
  * Attempts to create a symlink, and if that fails, attempts to create a link, and if that fails, just copies the file
  * @param srcFile Source file
  * @param destinationFile Destination file

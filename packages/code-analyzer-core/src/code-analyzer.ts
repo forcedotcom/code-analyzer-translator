@@ -11,29 +11,48 @@ import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
-import {Clock, RealClock, toAbsolutePath} from "./utils";
+import {
+    Clock,
+    RealClock,
+    SimpleUniqueIdGenerator,
+    toAbsolutePath,
+    UniqueIdGenerator
+} from "./utils";
 import fs from "node:fs";
-import path from "node:path";
+import {Workspace, WorkspaceImpl} from "./workspace";
+
+
+export type SelectOptions = {
+    workspace: Workspace
+}
 
 export type RunOptions = {
-    workspaceFiles: string[]
+    workspace: Workspace
     pathStartPoints?: string[]
 }
 
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
+    private uniqueIdGenerator: UniqueIdGenerator = new SimpleUniqueIdGenerator();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
-    private readonly allRules: RuleImpl[] = [];
 
     constructor(config: CodeAnalyzerConfig) {
         this.config = config;
     }
 
     // For testing purposes only
-    setClock(clock: Clock) {
+    _setClock(clock: Clock) {
         this.clock = clock;
+    }
+    _setUniqueIdGenerator(uniqueIdGenerator: UniqueIdGenerator) {
+        this.uniqueIdGenerator = uniqueIdGenerator;
+    }
+
+    public async createWorkspace(filesAndFolders: string[]): Promise<Workspace> {
+        const workspaceId: string = this.uniqueIdGenerator.getUniqueId('workspace');
+        return new WorkspaceImpl(workspaceId, filesAndFolders.map(validateFileOrFolder));
     }
 
     public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
@@ -43,18 +62,9 @@ export class CodeAnalyzer {
         }
         const enginePluginV1: engApi.EnginePluginV1 = enginePlugin as engApi.EnginePluginV1;
 
-        for (const engineName of getAvailableEngineNamesFromPlugin(enginePluginV1)) {
-            const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
-            const engine: engApi.Engine = createEngineFromPlugin(enginePluginV1, engineName, engConf);
-            await this.addEngineIfValid(engineName, engine);
-
-            const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules();
-            validateRuleDescriptions(ruleDescriptions, engineName);
-            for (let ruleDescription of ruleDescriptions) {
-                ruleDescription = this.updateRuleDescriptionWithOverrides(engineName, ruleDescription);
-                this.allRules.push(new RuleImpl(engineName, ruleDescription))
-            }
-        }
+        const promises: Promise<void>[] = getAvailableEngineNamesFromPlugin(enginePluginV1).map(engineName =>
+            this.createAndAddEngineIfValid(engineName, enginePluginV1));
+        await Promise.all(promises);
     }
 
     // This method should be called from the client with an absolute path to the module if it isn't available globally.
@@ -73,18 +83,21 @@ export class CodeAnalyzer {
             throw new Error(getMessage('FailedToDynamicallyAddEnginePlugin', enginePluginModulePath));
         }
         const enginePlugin: engApi.EnginePlugin = pluginModule.createEnginePlugin();
-        await this.addEnginePlugin(enginePlugin);
+        return this.addEnginePlugin(enginePlugin);
     }
 
     public getEngineNames(): string[] {
         return Array.from(this.engines.keys());
     }
 
-    public selectRules(...selectors: string[]): RuleSelection {
+    public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
 
+        const workspace: Workspace = selectOptions ? selectOptions.workspace : await this.createWorkspace([process.cwd()]);
+        const allRules: RuleImpl[] = await this.getAllRules(workspace);
+
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
-        for (const rule of this.allRules) {
+        for (const rule of allRules) {
             if (selectors.some(s => rule.matchesRuleSelector(s))) {
                 ruleSelection.addRule(rule);
             }
@@ -120,6 +133,20 @@ export class CodeAnalyzer {
         this.eventEmitter.on(eventType, callback);
     }
 
+    private async getAllRules(workspace: Workspace): Promise<RuleImpl[]> {
+        const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
+            engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
+        return (await Promise.all(rulePromises)).flat();
+    }
+
+    private async getAllRulesFor(engineName: string, describeOptions: engApi.DescribeOptions): Promise<RuleImpl[]> {
+        const engine: engApi.Engine = this.getEngine(engineName);
+        const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules(describeOptions);
+        validateRuleDescriptions(ruleDescriptions, engineName);
+        return ruleDescriptions.map(rd => this.updateRuleDescriptionWithOverrides(engineName, rd))
+            .map(rd => new RuleImpl(engineName, rd));
+    }
+
     private async runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): Promise<EngineRunResults> {
         const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
@@ -149,21 +176,27 @@ export class CodeAnalyzer {
         })
     }
 
-    private async addEngineIfValid(engineName: string, engine: engApi.Engine): Promise<void> {
+    private async createAndAddEngineIfValid(engineName: string, enginePluginV1: engApi.EnginePluginV1): Promise<void> {
         if (this.engines.has(engineName)) {
             this.emitLogEvent(LogLevel.Error, getMessage('DuplicateEngine', engineName));
             return;
         }
+
+        const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
+
+        let engine: engApi.Engine;
+        try {
+            engine = await enginePluginV1.createEngine(engineName, engConf);
+        } catch (err) {
+            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message));
+            return;
+        }
+
         if (engineName != engine.getName()) {
             this.emitLogEvent(LogLevel.Error, getMessage('EngineNameContradiction', engineName, engine.getName()));
             return;
         }
-        try {
-            await engine.validate();
-        } catch (err) {
-            this.emitLogEvent(LogLevel.Error, getMessage('EngineValidationFailed', engineName, (err as Error).message));
-            return;
-        }
+
         this.engines.set(engineName, engine);
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));
         this.listenToEngineEvents(engine);
@@ -175,7 +208,7 @@ export class CodeAnalyzer {
                 type: EventType.EngineLogEvent,
                 timestamp: this.clock.now(),
                 engineName: engine.getName(),
-                logLevel: event.logLevel,
+                logLevel: event.logLevel as LogLevel,
                 message: event.message
             });
         });
@@ -195,7 +228,7 @@ export class CodeAnalyzer {
         if (ruleOverride.severity) {
             this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.SEVERITY,
                 ruleDescription.name, engineName, ruleDescription.severityLevel, ruleOverride.severity));
-            ruleDescription.severityLevel = ruleOverride.severity;
+            ruleDescription.severityLevel = ruleOverride.severity as engApi.SeverityLevel;
         }
         if (ruleOverride.tags) {
             this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.TAGS,
@@ -219,14 +252,6 @@ function getAvailableEngineNamesFromPlugin(enginePlugin: engApi.EnginePluginV1):
     }
 }
 
-function createEngineFromPlugin(enginePlugin: engApi.EnginePluginV1, engineName: string, config: engApi.ConfigObject) {
-    try {
-        return enginePlugin.createEngine(engineName, config);
-    } catch (err) {
-        throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message), {cause: err})
-    }
-}
-
 function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], engineName: string): void {
     const ruleNamesSeen: Set<string> = new Set();
     for (const ruleDescription of ruleDescriptions) {
@@ -238,13 +263,12 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
 }
 
 function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
-    if(!runOptions.workspaceFiles || runOptions.workspaceFiles.length == 0) {
+    if(runOptions.workspace.getFilesAndFolders().length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
-        workspaceFiles: removeRedundantPaths(runOptions.workspaceFiles.map(validateFileOrFolder))
+        workspace: runOptions.workspace,
     };
-
     if (runOptions.pathStartPoints && runOptions.pathStartPoints.length > 0) {
         engineRunOptions.pathStartPoints = runOptions.pathStartPoints.flatMap(extractEnginePathStartPoints)
     }
@@ -252,25 +276,10 @@ function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
     return engineRunOptions;
 }
 
-function removeRedundantPaths(absolutePaths: string[]): string[] {
-    // If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
-    // remove that subfolder or file. Also, if we find duplicate entries, we remove those as well.
-    const pathsSortedByLength: string[] = absolutePaths.sort((a, b) => a.length - b.length);
-    const filteredPaths: string[] = [];
-    for (const currentPath of pathsSortedByLength) {
-        const isAlreadyContained = filteredPaths.some(existingPath =>
-            currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
-        );
-        if (!isAlreadyContained) {
-            filteredPaths.push(currentPath);
-        }
-    }
-    return filteredPaths.sort(); // sort alphabetically
-}
-
+// TODO: Eventually we should make all these validations async
 function validateFileOrFolder(fileOrFolder: string): string {
     const absFileOrFolder: string = toAbsolutePath(fileOrFolder);
-    if (!fs.existsSync(fileOrFolder)) {
+    if (!fs.existsSync(absFileOrFolder)) {
         throw new Error(getMessage('FileOrFolderDoesNotExist', absFileOrFolder));
     }
     return absFileOrFolder;
@@ -313,9 +322,9 @@ function validatePathStartPointsAreInsideWorkspace(engineRunOptions: engApi.RunO
         return;
     }
     for (const enginePathStartPoint of engineRunOptions.pathStartPoints) {
-        if (!fileIsUnderneath(enginePathStartPoint.file, engineRunOptions.workspaceFiles)) {
+        if (!fileIsUnderneath(enginePathStartPoint.file, engineRunOptions.workspace.getFilesAndFolders())) {
             throw new Error(getMessage('PathStartPointMustBeInsideWorkspace', enginePathStartPoint.file,
-                JSON.stringify(engineRunOptions.workspaceFiles)));
+                JSON.stringify(engineRunOptions.workspace.getFilesAndFolders())));
         }
     }
 }

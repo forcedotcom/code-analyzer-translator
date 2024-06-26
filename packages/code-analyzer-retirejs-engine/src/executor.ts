@@ -6,7 +6,7 @@ import * as utils from "./utils";
 import path from "node:path";
 import * as StreamZip from 'node-stream-zip';
 import {getMessage} from "./messages";
-import {LogLevel} from "@salesforce/code-analyzer-engine-api";
+import {LogLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 
 const execAsync = promisify(exec);
 
@@ -24,7 +24,7 @@ const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
 const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
 
 export interface RetireJsExecutor {
-    execute(filesAndFoldersToScan: string[]): Promise<Finding[]>
+    execute(workspace: Workspace): Promise<Finding[]>
 }
 
 export type EmitLogEventFcn = (logLevel: LogLevel, msg: string) => void;
@@ -49,9 +49,9 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
+    async execute(workspace: Workspace): Promise<Finding[]> {
         let findings: Finding[] = [];
-        for (const fileOrFolder of filesAndFoldersToScan) {
+        for (const fileOrFolder of workspace.getFilesAndFolders()) {
             if (fs.statSync(fileOrFolder).isFile()) {
                 findings = findings.concat(await this.scanFile(fileOrFolder));
             } else {
@@ -135,8 +135,8 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
-        const allFiles: string[] = utils.expandToListAllFiles(filesAndFoldersToScan);
+    async execute(workspace: Workspace): Promise<Finding[]> {
+        const allFiles: string[] = await workspace.getExpandedFiles();
         const targetFiles: string[] = reduceToTargetFiles(allFiles);
         const { textFiles, zipFiles } = separateTextAndZipFiles(targetFiles);
 
@@ -148,7 +148,7 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
             ...zipFiles.map(file => this.processZipFile(file))]);
         this.emitLogEvent(LogLevel.Fine, `Finished copying relevant files to temporary directory: '${this.parentTempDir}'`);
 
-        const findings: Finding[] = await this.simpleExecutor.execute([this.parentTempDir]);
+        const findings: Finding[] = await this.simpleExecutor.execute(new SingleFolderWorkspace(this.parentTempDir));
         for (let i = 0; i < findings.length; i++) {
             findings[i].file = this.tempToOrigFileMap.get(findings[i].file) as string;
         }
@@ -258,4 +258,26 @@ function separateTextAndZipFiles(files: string[]): {textFiles: string[], zipFile
         }
     }
     return {textFiles, zipFiles};
+}
+
+class SingleFolderWorkspace implements Workspace {
+    private readonly folder: string;
+
+    constructor(folder: string) {
+        this.folder = folder;
+    }
+
+    /* istanbul ignore next */
+    getWorkspaceId(): string {
+        throw new Error("This method should not be used");
+    }
+
+    getFilesAndFolders(): string[] {
+        return [this.folder];
+    }
+
+    /* istanbul ignore next */
+    getExpandedFiles(): Promise<string[]> {
+        throw new Error("This method should not be used");
+    }
 }

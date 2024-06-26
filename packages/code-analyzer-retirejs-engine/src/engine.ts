@@ -1,5 +1,6 @@
 import {
     ConfigObject,
+    DescribeOptions,
     Engine,
     EnginePluginV1,
     EngineRunResults,
@@ -35,7 +36,7 @@ export class RetireJsEnginePlugin extends EnginePluginV1 {
         return [RetireJsEngine.NAME];
     }
 
-    createEngine(engineName: string, _config: ConfigObject): Engine {
+    async createEngine(engineName: string, _config: ConfigObject): Promise<Engine> {
         if (engineName === RetireJsEngine.NAME) {
             return new RetireJsEngine();
         }
@@ -58,12 +59,12 @@ export class RetireJsEngine extends Engine {
         return RetireJsEngine.NAME;
     }
 
-    async describeRules(): Promise<RuleDescription[]> {
+    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         return Object.values(RetireJsSeverity).map(createRuleDescription);
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
-        const findings: Finding[] = await this.retireJsExecutor.execute(runOptions.workspaceFiles);
+        const findings: Finding[] = await this.retireJsExecutor.execute(runOptions.workspace);
         return {
             violations: toViolations(findings).filter(v => ruleNames.includes(v.ruleName))
         };

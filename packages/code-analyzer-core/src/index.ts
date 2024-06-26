@@ -4,7 +4,8 @@ export {
 
 export {
     CodeAnalyzer,
-    RunOptions
+    RunOptions,
+    SelectOptions
 } from "./code-analyzer"
 
 export {
@@ -35,3 +36,7 @@ export {
     RuleType,
     SeverityLevel
 } from "./rules"
+
+export {
+    Workspace
+} from "./workspace"

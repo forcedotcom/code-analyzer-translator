@@ -10,9 +10,6 @@ const messageCatalog : { [key: string]: string } = {
     EngineNameContradiction:
         'Failed to add engine with name "%s" because its getName() method returns a different name of "%s".',
 
-    EngineValidationFailed:
-        'Failed to add engine with name "%s" because it failed validation:\n%s',
-
     UnexpectedEngineErrorRuleDescription:
         'This rule reports a violation when an unexpected error occurs from engine "%s".',
 

@@ -3,11 +3,11 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
-import {RepeatedRuleNameEnginePlugin, StubEngine1, StubEngine2} from "./stubs";
+import {StubEngine1, StubEngine2} from "./stubs";
+
+changeWorkingDirectoryToPackageRoot();
 
 describe("Tests for adding engines to Code Analyzer", () => {
-    changeWorkingDirectoryToPackageRoot();
-
     let codeAnalyzer: CodeAnalyzer;
     let logEvents: LogEvent[];
 
@@ -80,25 +80,19 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual([])
     })
 
-    it('When plugin returns engine that fails validation, then we emit error log line and skip that engine', async () => {
-        await codeAnalyzer.addEnginePlugin(new stubs.InvalidEnginePlugin());
-
-        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
-        expect(errorEvents.length).toEqual(1);
-        expect(errorEvents[0].message).toEqual(getMessage('EngineValidationFailed', 'invalidEngine', 'SomeErrorMessageFromValidate'));
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual([]);
-    })
-
     it('When plugin throws error during getAvailableEngineNames, then we throw an exception', () => {
         expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin1())).rejects.toThrow(
             getMessage('PluginErrorFromGetAvailableEngineNames', 'SomeErrorFromGetAvailableEngineNames')
         );
     })
 
-    it('When plugin throws error during createEngine, then we throw an exception', () => {
-        expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).rejects.toThrow(
-            getMessage('PluginErrorFromCreateEngine', 'someEngine', 'SomeErrorFromCreateEngine')
-        );
+    it('When plugin throws error during createEngine, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2());
+
+        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
+        expect(errorEvents.length).toEqual(1);
+        expect(errorEvents[0].message).toEqual(getMessage('PluginErrorFromCreateEngine', 'someEngine', 'SomeErrorFromCreateEngine'));
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual([])
     });
 
     it('When calling dynamicallyAddEnginePlugin on a module that has a createEnginePlugin function, then it is used to add create the plugin and then added', async () => {
@@ -122,11 +116,6 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const nonModuleFile: string = path.resolve('LICENSE');
         const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', nonModuleFile, '');
         expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
-    });
-
-    it('When an engine returns multiple rules with the same name, then error', async () => {
-        expect(codeAnalyzer.addEnginePlugin(new RepeatedRuleNameEnginePlugin())).rejects.toThrow(
-            getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 });
 
