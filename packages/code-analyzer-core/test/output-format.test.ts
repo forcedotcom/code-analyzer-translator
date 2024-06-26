@@ -19,7 +19,7 @@ beforeAll(async () => {
     (stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub2RuleC()]
     };
-    runResults = await codeAnalyzer.run(await codeAnalyzer.selectRules(['all']), {workspaceFiles: ['test']});
+    runResults = await codeAnalyzer.run(await codeAnalyzer.selectRules(['all']), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 });
 
 describe("Tests for the CSV output format", () => {
@@ -123,5 +123,5 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
 async function createResultsWithUnexpectedError(): Promise<RunResults> {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
     await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
-    return codeAnalyzer.run(await codeAnalyzer.selectRules([]), {workspaceFiles: ['test']});
+    return codeAnalyzer.run(await codeAnalyzer.selectRules([]), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 }

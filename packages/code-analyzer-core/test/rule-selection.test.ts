@@ -13,6 +13,7 @@ import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot, FixedUniqueIdGenerator} from "./test-helpers";
 import {getMessage} from "../src/messages";
 import * as stubs from "./stubs";
+import {WorkspaceImpl} from "../src/workspace";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -24,7 +25,7 @@ describe('Tests for selecting rules', () => {
     async function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) : Promise<void> {
         plugin = new StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(plugin);
-        codeAnalyzer._setRuleSelectionIdGenerator(new FixedUniqueIdGenerator());
+        codeAnalyzer._setUniqueIdGenerator(new FixedUniqueIdGenerator());
     }
 
     beforeEach(async () => {
@@ -240,11 +241,10 @@ describe('Tests for selecting rules', () => {
     });
 
     it('When selectRules is not provided with SelectOptions, then cwd is provided by default for workspaceFiles', async () => {
-        codeAnalyzer.selectRules(['all']);
+        await codeAnalyzer.selectRules(['all']);
 
         const expectedDescribeOptions: DescribeOptions = {
-            ruleSelectionId: 'FixedId',
-            workspaceFiles: [process.cwd()]
+            workspace: new WorkspaceImpl("FixedId", [process.cwd()])
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
@@ -254,13 +254,12 @@ describe('Tests for selecting rules', () => {
 
     it('When selectRules is provided with SelectOptions, then they are forwarded to the engines', async () => {
         const selectOptions: SelectOptions = {
-            workspaceFiles: ['abc', 'def']
+            workspace: await codeAnalyzer.createWorkspace([path.resolve('src'), path.resolve('test')])
         }
-        codeAnalyzer.selectRules(['all'], selectOptions);
+        await codeAnalyzer.selectRules(['all'], selectOptions);
 
         const expectedDescribeOptions: DescribeOptions = {
-            ruleSelectionId: 'FixedId',
-            workspaceFiles: ['abc', 'def']
+            workspace: new WorkspaceImpl("FixedId", [path.resolve('src'), path.resolve('test')])
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);

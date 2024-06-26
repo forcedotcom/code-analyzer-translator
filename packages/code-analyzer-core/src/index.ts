@@ -36,3 +36,7 @@ export {
     RuleType,
     SeverityLevel
 } from "./rules"
+
+export {
+    Workspace
+} from "./workspace"

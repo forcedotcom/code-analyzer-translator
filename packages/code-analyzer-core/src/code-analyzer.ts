@@ -11,23 +11,30 @@ import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
-import {Clock, PrefixedUniqueIdGenerator, RealClock, toAbsolutePath, UniqueIdGenerator} from "./utils";
+import {
+    Clock,
+    RealClock,
+    SimpleUniqueIdGenerator,
+    toAbsolutePath,
+    UniqueIdGenerator
+} from "./utils";
 import fs from "node:fs";
-import path from "node:path";
+import {Workspace, WorkspaceImpl} from "./workspace";
+
 
 export type SelectOptions = {
-    workspaceFiles: string[]
+    workspace: Workspace
 }
 
 export type RunOptions = {
-    workspaceFiles: string[]
+    workspace: Workspace
     pathStartPoints?: string[]
 }
 
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
-    private ruleSelectionIdGenerator: UniqueIdGenerator = new PrefixedUniqueIdGenerator('ruleSelection');
+    private uniqueIdGenerator: UniqueIdGenerator = new SimpleUniqueIdGenerator();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
 
@@ -39,8 +46,13 @@ export class CodeAnalyzer {
     _setClock(clock: Clock) {
         this.clock = clock;
     }
-    _setRuleSelectionIdGenerator(ruleSelectionIdGenerator: UniqueIdGenerator) {
-        this.ruleSelectionIdGenerator = ruleSelectionIdGenerator;
+    _setUniqueIdGenerator(uniqueIdGenerator: UniqueIdGenerator) {
+        this.uniqueIdGenerator = uniqueIdGenerator;
+    }
+
+    public async createWorkspace(filesAndFolders: string[]): Promise<Workspace> {
+        const workspaceId: string = this.uniqueIdGenerator.getUniqueId('workspace');
+        return new WorkspaceImpl(workspaceId, filesAndFolders.map(validateFileOrFolder));
     }
 
     public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
@@ -80,16 +92,11 @@ export class CodeAnalyzer {
 
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
-        if (!selectOptions) {
-            selectOptions = {workspaceFiles: [process.cwd()]};
-        }
 
-        const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl(this.ruleSelectionIdGenerator.getUniqueId());
-        const describeOptions: engApi.DescribeOptions = {
-            ruleSelectionId: ruleSelection.getRuleSelectionId(),
-            workspaceFiles: selectOptions.workspaceFiles
-        }
-        const allRules: RuleImpl[] = await this.getAllRules(describeOptions);
+        const workspace: Workspace = selectOptions ? selectOptions.workspace : await this.createWorkspace([process.cwd()]);
+        const allRules: RuleImpl[] = await this.getAllRules(workspace);
+
+        const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
         for (const rule of allRules) {
             if (selectors.some(s => rule.matchesRuleSelector(s))) {
                 ruleSelection.addRule(rule);
@@ -99,7 +106,7 @@ export class CodeAnalyzer {
     }
 
     public async run(ruleSelection: RuleSelection, runOptions: RunOptions): Promise<RunResults> {
-        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions, ruleSelection.getRuleSelectionId());
+        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
         const runResults: RunResultsImpl = new RunResultsImpl();
@@ -126,9 +133,9 @@ export class CodeAnalyzer {
         this.eventEmitter.on(eventType, callback);
     }
 
-    private async getAllRules(describeOptions: engApi.DescribeOptions): Promise<RuleImpl[]> {
+    private async getAllRules(workspace: Workspace): Promise<RuleImpl[]> {
         const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
-            engineName => this.getAllRulesFor(engineName, describeOptions));
+            engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
         return (await Promise.all(rulePromises)).flat();
     }
 
@@ -201,7 +208,7 @@ export class CodeAnalyzer {
                 type: EventType.EngineLogEvent,
                 timestamp: this.clock.now(),
                 engineName: engine.getName(),
-                logLevel: event.logLevel,
+                logLevel: event.logLevel as LogLevel,
                 message: event.message
             });
         });
@@ -221,7 +228,7 @@ export class CodeAnalyzer {
         if (ruleOverride.severity) {
             this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.SEVERITY,
                 ruleDescription.name, engineName, ruleDescription.severityLevel, ruleOverride.severity));
-            ruleDescription.severityLevel = ruleOverride.severity;
+            ruleDescription.severityLevel = ruleOverride.severity as engApi.SeverityLevel;
         }
         if (ruleOverride.tags) {
             this.emitLogEvent(LogLevel.Debug, getMessage('RulePropertyOverridden', FIELDS.TAGS,
@@ -255,15 +262,13 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
     }
 }
 
-function extractEngineRunOptions(runOptions: RunOptions, ruleSelectionId: string): engApi.RunOptions {
-    if(!runOptions.workspaceFiles || runOptions.workspaceFiles.length == 0) {
+function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
+    if(runOptions.workspace.getFilesAndFolders().length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
-        ruleSelectionId: ruleSelectionId,
-        workspaceFiles: removeRedundantPaths(runOptions.workspaceFiles.map(validateFileOrFolder))
+        workspace: runOptions.workspace,
     };
-
     if (runOptions.pathStartPoints && runOptions.pathStartPoints.length > 0) {
         engineRunOptions.pathStartPoints = runOptions.pathStartPoints.flatMap(extractEnginePathStartPoints)
     }
@@ -271,25 +276,10 @@ function extractEngineRunOptions(runOptions: RunOptions, ruleSelectionId: string
     return engineRunOptions;
 }
 
-function removeRedundantPaths(absolutePaths: string[]): string[] {
-    // If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
-    // remove that subfolder or file. Also, if we find duplicate entries, we remove those as well.
-    const pathsSortedByLength: string[] = absolutePaths.sort((a, b) => a.length - b.length);
-    const filteredPaths: string[] = [];
-    for (const currentPath of pathsSortedByLength) {
-        const isAlreadyContained = filteredPaths.some(existingPath =>
-            currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
-        );
-        if (!isAlreadyContained) {
-            filteredPaths.push(currentPath);
-        }
-    }
-    return filteredPaths.sort(); // sort alphabetically
-}
-
+// TODO: Eventually we should make all these validations async
 function validateFileOrFolder(fileOrFolder: string): string {
     const absFileOrFolder: string = toAbsolutePath(fileOrFolder);
-    if (!fs.existsSync(fileOrFolder)) {
+    if (!fs.existsSync(absFileOrFolder)) {
         throw new Error(getMessage('FileOrFolderDoesNotExist', absFileOrFolder));
     }
     return absFileOrFolder;
@@ -332,9 +322,9 @@ function validatePathStartPointsAreInsideWorkspace(engineRunOptions: engApi.RunO
         return;
     }
     for (const enginePathStartPoint of engineRunOptions.pathStartPoints) {
-        if (!fileIsUnderneath(enginePathStartPoint.file, engineRunOptions.workspaceFiles)) {
+        if (!fileIsUnderneath(enginePathStartPoint.file, engineRunOptions.workspace.getFilesAndFolders())) {
             throw new Error(getMessage('PathStartPointMustBeInsideWorkspace', enginePathStartPoint.file,
-                JSON.stringify(engineRunOptions.workspaceFiles)));
+                JSON.stringify(engineRunOptions.workspace.getFilesAndFolders())));
         }
     }
 }

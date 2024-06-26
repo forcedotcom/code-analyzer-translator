@@ -1,24 +1,12 @@
 import {RegexEnginePlugin, RegexEngine} from "../src/RegexEnginePlugin";
-import { changeWorkingDirectoryToPackageRoot } from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, WorkspaceForTesting} from "./test-helpers";
 import {
-    DescribeOptions,
     RuleDescription,
     RuleType,
-    RunOptions,
     SeverityLevel
 } from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
-
-const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {
-    ruleSelectionId: "someRuleSelectionId",
-    workspaceFiles: ["path/to/dir"]
-}
-
-const DUMMY_RUN_OPTIONS: RunOptions = {
-    ruleSelectionId: "someRuleSelectionId",
-    workspaceFiles: ["path/to/dir"]
-}
 
 describe('Regex Engine Tests', () => {
     let engine: RegexEngine;
@@ -33,7 +21,7 @@ describe('Regex Engine Tests', () => {
     });
     
     it('Calling describeRules on an engine should return the single trailing whitespace rule', async () => {
-        const rules_desc: RuleDescription[]= await engine.describeRules(DUMMY_DESCRIBE_OPTIONS);
+        const rules_desc: RuleDescription[]= await engine.describeRules({workspace: new WorkspaceForTesting([])});
         const engineRules = [
             {
                 name: "TrailingWhitespaceRule",
@@ -49,7 +37,7 @@ describe('Regex Engine Tests', () => {
 
     it('Confirm runRules() is a no-op', () => {
         const ruleNames: string[] = ['TrailingWhitespaceRule']
-        engine.runRules(ruleNames, DUMMY_RUN_OPTIONS);
+        engine.runRules(ruleNames, {workspace: new WorkspaceForTesting([])});
     })
 });
 
@@ -82,17 +70,16 @@ describe('RegexEnginePlugin Tests' , () => {
                 resourceUrls: [""]
             },
         ];
-        const engineRules: RuleDescription[] = await pluginEngine.describeRules(DUMMY_DESCRIBE_OPTIONS)
+        const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: new WorkspaceForTesting([])})
         expect(engineRules).toStrictEqual(expEngineRules)
     });
 
     it('Check that engine created from the RegexEnginePlugin has runRules() method as a no-op', () => {
         const ruleNames: string[] = ['TrailingWhitespaceRule']
-        pluginEngine.runRules(ruleNames, DUMMY_RUN_OPTIONS);
+        pluginEngine.runRules(ruleNames, {workspace: new WorkspaceForTesting([])});
     });
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', () => { 
         expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("Unsupported engine name: OtherEngine");
     });
-    
 });

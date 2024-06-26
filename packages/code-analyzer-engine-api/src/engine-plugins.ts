@@ -16,7 +16,6 @@ export type ConfigValue =
 export interface EnginePlugin  {
     getApiVersion(): number
     getAvailableEngineNames(): string[]
-    createEngine(engineName: string, config: ConfigObject): Promise<Engine>
 }
 
 export abstract class EnginePluginV1 implements EnginePlugin {

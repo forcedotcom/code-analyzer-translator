@@ -10,7 +10,8 @@ export {
     DescribeOptions,
     Engine,
     PathPoint,
-    RunOptions
+    RunOptions,
+    Workspace
 } from "./engines"
 
 export {

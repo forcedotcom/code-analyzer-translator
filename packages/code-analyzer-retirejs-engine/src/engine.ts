@@ -64,7 +64,7 @@ export class RetireJsEngine extends Engine {
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
-        const findings: Finding[] = await this.retireJsExecutor.execute(runOptions.workspaceFiles);
+        const findings: Finding[] = await this.retireJsExecutor.execute(runOptions.workspace);
         return {
             violations: toViolations(findings).filter(v => ruleNames.includes(v.ruleName))
         };

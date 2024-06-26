@@ -3,9 +3,14 @@ import { EngineRunResults } from "./results";
 import { Event } from "./events";
 import { EventEmitter } from "node:events";
 
+export interface Workspace {
+    getWorkspaceId(): string
+    getFilesAndFolders(): string[]
+    getExpandedFiles(): Promise<string[]>
+}
+
 export type DescribeOptions = {
-    ruleSelectionId: string
-    workspaceFiles: string[]
+    workspace: Workspace
 }
 
 export type PathPoint = {
@@ -14,8 +19,7 @@ export type PathPoint = {
 }
 
 export type RunOptions = {
-    ruleSelectionId: string
-    workspaceFiles: string[]
+    workspace: Workspace
     pathStartPoints?: PathPoint[]
 }
 

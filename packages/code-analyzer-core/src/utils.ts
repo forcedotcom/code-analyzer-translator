@@ -16,18 +16,13 @@ export class RealClock implements Clock {
 }
 
 export interface UniqueIdGenerator {
-    getUniqueId(): string;
+    getUniqueId(prefix: string): string;
 }
 
-export class PrefixedUniqueIdGenerator implements UniqueIdGenerator {
-    private readonly prefix: string;
+export class SimpleUniqueIdGenerator implements UniqueIdGenerator {
     private counter: number = 0;
 
-    constructor(prefix: string) {
-        this.prefix = prefix;
-    }
-
-    getUniqueId(): string {
-        return `${this.prefix}${++this.counter}`;
+    getUniqueId(prefix: string): string {
+        return `${prefix}${++this.counter}`;
     }
 }

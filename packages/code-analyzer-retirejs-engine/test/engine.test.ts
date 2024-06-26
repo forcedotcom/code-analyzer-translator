@@ -8,12 +8,12 @@ import {
     RuleType,
     RunOptions,
     SeverityLevel,
-    Violation
+    Violation, Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
 import {RetireJsExecutor} from "../src/executor";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, WorkspaceForTesting} from "./test-helpers";
 import path from "node:path";
 import fs from "node:fs";
 import {Finding} from "retire/lib/types";
@@ -79,15 +79,9 @@ const EXPECTED_VIOLATION_4: Violation = {
     ]
 }
 
-const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {
-    ruleSelectionId: "dummy",
-    workspaceFiles: ['dummy']
-}
-
-const DUMMY_RUN_OPTIONS: RunOptions = {
-    ruleSelectionId: "dummy",
-    workspaceFiles: ['dummy']
-}
+const DUMMY_WORKSPACE: Workspace = new WorkspaceForTesting([]);
+const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
+const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
 
 describe('Tests for the RetireJsEnginePlugin', () => {
     let plugin: EnginePluginV1;
@@ -162,15 +156,14 @@ describe('Tests for the RetireJsEngine', () => {
         engine = new RetireJsEngine(spyExecutor);
 
         const allRuleNames: string[] = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
-        const filesAndFoldersToScan: string[] = [path.resolve('build-tools'), path.resolve('test/test-helpers.ts')];
+        const workspace: Workspace = new WorkspaceForTesting([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
         const runOptions: RunOptions = {
-            ruleSelectionId: "someRuleSelectionId",
-            workspaceFiles: filesAndFoldersToScan,
+            workspace: workspace,
             pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
         };
         const results: EngineRunResults = await engine.runRules(allRuleNames, runOptions);
 
-        expect(spyExecutor.executeCallHistory).toEqual([{filesAndFoldersToScan: filesAndFoldersToScan}]);
+        expect(spyExecutor.executeCallHistory).toEqual([{workspace: workspace}]);
         expect(results).toEqual({violations: []}); // Sanity check that zero vulnerabilities gives zero violations.
     });
 
@@ -208,16 +201,16 @@ describe('Tests for the RetireJsEngine', () => {
 });
 
 class SpyRetireJsExecutor implements RetireJsExecutor {
-    readonly executeCallHistory: {filesAndFoldersToScan: string[]}[] = [];
+    readonly executeCallHistory: {workspace: Workspace}[] = [];
 
-    async execute(filesAndFoldersToScan: string[]): Promise<Finding[]> {
-        this.executeCallHistory.push({filesAndFoldersToScan});
+    async execute(workspace: Workspace): Promise<Finding[]> {
+        this.executeCallHistory.push({workspace});
         return [];
     }
 }
 
 class StubRetireJsExecutor implements RetireJsExecutor {
-    async execute(_filesAndFoldersToScan: string[]): Promise<Finding[]> {
+    async execute(_workspace: Workspace): Promise<Finding[]> {
         const jsonStr: string = fs.readFileSync(path.resolve('test','test-data','sampleRetireJsExecutorFindings.json'),'utf-8');
         return JSON.parse(jsonStr) as Finding[];
     }

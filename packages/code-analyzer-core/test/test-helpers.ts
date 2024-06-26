@@ -31,7 +31,7 @@ export class FixedClock implements Clock {
 }
 
 export class FixedUniqueIdGenerator implements UniqueIdGenerator {
-    getUniqueId(): string {
+    getUniqueId(_prefix: string): string {
         return "FixedId";
     }
 

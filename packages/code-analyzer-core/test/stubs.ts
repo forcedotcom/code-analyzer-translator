@@ -1,6 +1,7 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {
-    ConfigObject, DescribeOptions,
+    ConfigObject,
+    DescribeOptions,
     Engine,
     EngineRunResults,
     LogLevel,

@@ -11,6 +11,7 @@ import {
     RuleDescription,
     RunOptions,
 } from "../src";
+import {Workspace} from "../src/engines";
 
 describe('Tests for v1', () => {
     it('EnginePluginV1 getApiVersion should return 1.0', () => {
@@ -31,10 +32,7 @@ describe('Tests for v1', () => {
             progressEvents.push(event);
         });
 
-        await dummyEngine.runRules(["dummy"], {
-            ruleSelectionId: "ruleSelection1",
-            workspaceFiles: ["some/file"]
-        });
+        await dummyEngine.runRules(["dummy"], {workspace: new DummyWorkspace()});
 
         expect(logEvents).toHaveLength(1);
         expect(logEvents[0]).toEqual({
@@ -92,5 +90,19 @@ class DummyEngineV1 extends Engine {
         return {
             violations: []
         };
+    }
+}
+
+class DummyWorkspace implements Workspace {
+    getWorkspaceId(): string {
+        return "dummy";
+    }
+
+    async getExpandedFiles(): Promise<string[]> {
+        return [];
+    }
+
+    getFilesAndFolders(): string[] {
+        return [];
     }
 }

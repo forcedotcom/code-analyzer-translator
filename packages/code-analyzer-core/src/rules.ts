@@ -27,7 +27,6 @@ export interface Rule {
 }
 
 export interface RuleSelection {
-    getRuleSelectionId(): string
     getCount(): number
     getEngineNames(): string[]
     getRulesFor(engineName: string): Rule[]
@@ -132,16 +131,7 @@ export class UnexpectedEngineErrorRule implements Rule {
 }
 
 export class RuleSelectionImpl implements RuleSelection {
-    private readonly ruleSelectionId: string;
     private readonly ruleMap: Map<string, Rule[]> = new Map();
-
-    constructor(ruleSelectionId: string) {
-        this.ruleSelectionId = ruleSelectionId;
-    }
-
-    getRuleSelectionId(): string {
-        return this.ruleSelectionId;
-    }
 
     addRule(rule: Rule) {
         const engineName = rule.getEngineName();
