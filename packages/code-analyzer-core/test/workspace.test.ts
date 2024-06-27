@@ -35,6 +35,14 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
         expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test')]);
     });
 
+    it("When including files we care not to process like .gitignore file or a node_modules folder, then they are removed", async () => {
+        const workspace: Workspace = await codeAnalyzer.createWorkspace([
+            'test/test-data/sampleWorkspace/node_modules/place_holder.txt',
+            'test/test-data/sampleWorkspace/someFile.txt',
+            'test/test-data/sampleWorkspace/.gitignore',]);
+        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test', 'test-data', 'sampleWorkspace', 'someFile.txt')]);
+    });
+
     it("When calling getExpandedFiles, then all files underneath all subfolders are found", async () => {
         const workspace: Workspace = await codeAnalyzer.createWorkspace(["test\\test-data\\sampleWorkspace"]);
         expect(await workspace.getExpandedFiles()).toEqual([
