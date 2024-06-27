@@ -15,7 +15,7 @@ export class WorkspaceImpl implements Workspace, engApi.Workspace {
 
     constructor(workspaceId: string, absFilesAndFolders: string[]) {
         this.workspaceId = workspaceId;
-        this.filesAndFolders = removeRedundantPaths(absFilesAndFolders);
+        this.filesAndFolders = removeRedundantPaths(absFilesAndFolders).filter(isWantedPath);
     }
 
     getWorkspaceId(): string {
@@ -28,7 +28,7 @@ export class WorkspaceImpl implements Workspace, engApi.Workspace {
 
     async getExpandedFiles(): Promise<string[]> {
         if (!this.expandedFiles) {
-            this.expandedFiles = await expandToListAllFiles(this.filesAndFolders);
+            this.expandedFiles = (await expandToListAllFiles(this.filesAndFolders)).filter(isWantedPath);
         }
         return this.expandedFiles as string[];
     }
@@ -51,6 +51,17 @@ function removeRedundantPaths(absolutePaths: string[]): string[] {
         }
     }
     return filteredPaths.sort(); // sort alphabetically
+}
+
+/**
+ * Returns whether a path should be included or not (like those that live under a "node_modules" folder should not be)
+ * Idea: in the future, we might consider having a .code_analyzer_ignore file or something that users can create
+ */
+function isWantedPath(absolutePath: string): boolean {
+    const unwantedFolders: string[] = ['node_modules', '.git', '.github'];
+    const unwantedFiles: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml', '.gitignore'];
+    return !unwantedFolders.some(f => absolutePath.includes(`${path.sep}${f}${path.sep}`)) &&
+        !unwantedFiles.includes(path.basename(absolutePath));
 }
 
 /**
