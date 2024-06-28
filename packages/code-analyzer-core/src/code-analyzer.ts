@@ -132,7 +132,7 @@ export class CodeAnalyzer {
         this.eventEmitter.on(eventType, callback);
     }
 
-    private async getAllRules(workspace: Workspace | undefined): Promise<RuleImpl[]> {
+    private async getAllRules(workspace?: Workspace): Promise<RuleImpl[]> {
         const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
             engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
         return (await Promise.all(rulePromises)).flat();
