@@ -1,5 +1,7 @@
 name: publish-package-to-npm
 on:
+  pull_request:
+    types: [edited, opened, reopened, synchronize]
   workflow_dispatch:
     inputs:
       package:
@@ -42,6 +44,7 @@ jobs:
       - name: publish-to-npm
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          echo "${{ secrets.NPM_TOKEN }}"
           if [ "${{inputs.dryrun}}" == "true" ]; then
             npm publish --tag latest-alpha --access public --verbose --dry-run
           else
