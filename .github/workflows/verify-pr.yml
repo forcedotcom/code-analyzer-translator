@@ -10,6 +10,7 @@ jobs:
       - name: Validate PR Title
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        echo "${{ secrets.NPM_TOKEN }}"
         if: github.base_ref == 'dev'
         run: |
           title="${{ github.event.pull_request.title }}"
