@@ -23,7 +23,7 @@ import {Workspace, WorkspaceImpl} from "./workspace";
 
 
 export type SelectOptions = {
-    workspace: Workspace
+    workspace?: Workspace
 }
 
 export type RunOptions = {
@@ -93,8 +93,7 @@ export class CodeAnalyzer {
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
 
-        const workspace: Workspace = selectOptions ? selectOptions.workspace : await this.createWorkspace([process.cwd()]);
-        const allRules: RuleImpl[] = await this.getAllRules(workspace);
+        const allRules: RuleImpl[] = await this.getAllRules(selectOptions?.workspace);
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
         for (const rule of allRules) {
@@ -133,7 +132,7 @@ export class CodeAnalyzer {
         this.eventEmitter.on(eventType, callback);
     }
 
-    private async getAllRules(workspace: Workspace): Promise<RuleImpl[]> {
+    private async getAllRules(workspace?: Workspace): Promise<RuleImpl[]> {
         const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
             engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
         return (await Promise.all(rulePromises)).flat();

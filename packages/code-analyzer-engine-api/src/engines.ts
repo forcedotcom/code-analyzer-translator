@@ -10,7 +10,9 @@ export interface Workspace {
 }
 
 export type DescribeOptions = {
-    workspace: Workspace
+    // The workspace may or may not be available. If available then it can be used to give a more accurate list
+    // of rules back to the user if the rules are dependent upon what files are in the workspace.
+    workspace?: Workspace
 }
 
 export type PathPoint = {
