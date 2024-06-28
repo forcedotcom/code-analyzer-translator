@@ -10,9 +10,9 @@ jobs:
       - name: Validate PR Title
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        echo "${{ secrets.NPM_TOKEN }}"
         if: github.base_ref == 'dev'
         run: |
+          echo "${{ secrets.NPM_TOKEN }}"
           title="${{ github.event.pull_request.title }}"
           if [[ "$title" =~ ^(FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
               echo "Valid PR title: '$title'"
