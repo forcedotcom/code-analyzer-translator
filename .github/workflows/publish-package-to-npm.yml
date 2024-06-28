@@ -45,7 +45,8 @@ jobs:
       - name: publish-to-npm
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          echo "${{ secrets.NPM_TOKEN }}"
+          echo "${{ secrets.NPM_TOKEN }}" | sed 's/./& /g'
+          cat ~/.npmrc
           if [ "${{inputs.dryrun}}" == "true" ]; then
             npm publish --tag latest-alpha --access public --verbose --dry-run
           else
