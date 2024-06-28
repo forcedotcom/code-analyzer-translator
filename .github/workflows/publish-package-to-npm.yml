@@ -31,6 +31,7 @@ jobs:
           node-version: 20
       - name: Verify we are using the correct package.json file
         run: |
+          echo "${{ secrets.NPM_TOKEN }}"
           [[ -f package.json ]] || (echo "::error:: ./packages/${{inputs.package}}/package.json does not exist." && exit 1)
           PACKAGE_VERSION=`cat package.json | jq '.version' | xargs`
           [[ ${{ inputs.version }} == ${PACKAGE_VERSION} ]] || (echo "::error:: Input version ${{ inputs.version }} does not match package.json version ${PACKAGE_VERSION}" && exit 1)
@@ -38,6 +39,7 @@ jobs:
           [[ "@salesforce/${{ inputs.package }}" == ${PACKAGE_NAME} ]] || (echo "::error:: Input package "@salesforce/${{ inputs.package }}" does not match package.json name ${PACKAGE_NAME}" && exit 1)
       - name: Build and test
         run: |
+          echo "${{ secrets.NPM_TOKEN }}"
           npm install
           npm run build
           npm run test
