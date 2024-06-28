@@ -6,8 +6,9 @@ import {
     RuleDescription,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
+import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import path from "node:path";
-import {changeWorkingDirectoryToPackageRoot, WorkspaceForTesting} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -22,7 +23,7 @@ describe('End to end test', () => {
         const availableEngineNames: string[] = plugin.getAvailableEngineNames();
         expect(availableEngineNames).toHaveLength(1);
         const engine: Engine = await plugin.createEngine(availableEngineNames[0], {});
-        const workspace: Workspace = new WorkspaceForTesting([
+        const workspace: Workspace = testTools.createWorkspace([
             path.resolve('test', 'test-data', 'scenarios', '1_hasJsLibraryWithVulnerability'), // Expect 3 violations: 1 file with 3 vulnerabilities
             path.resolve('test', 'test-data', 'scenarios', '6_hasVulnerableResourceAndZipFiles', 'ZipFileAsResource.resource'), // Expect 6 violations: 2 files each with 3 vulnerabilities
         ]);

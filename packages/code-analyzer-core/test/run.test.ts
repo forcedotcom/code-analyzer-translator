@@ -23,7 +23,7 @@ import {changeWorkingDirectoryToPackageRoot, FixedClock, FixedUniqueIdGenerator}
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {UnexpectedEngineErrorRule} from "../src/rules";
 import {UndefinedCodeLocation} from "../src/results";
-import {Workspace, WorkspaceImpl} from "../src/workspace";
+import {WorkspaceImpl} from "../src/workspace";
 
 changeWorkingDirectoryToPackageRoot();
 

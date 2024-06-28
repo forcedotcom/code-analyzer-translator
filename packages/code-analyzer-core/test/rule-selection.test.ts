@@ -240,11 +240,11 @@ describe('Tests for selecting rules', () => {
             getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 
-    it('When selectRules is not provided with SelectOptions, then cwd is provided by default for workspaceFiles', async () => {
+    it('When selectRules is not provided with SelectOptions, then workspace should be undefined for all engines', async () => {
         await codeAnalyzer.selectRules(['all']);
 
         const expectedDescribeOptions: DescribeOptions = {
-            workspace: new WorkspaceImpl("FixedId", [process.cwd()])
+            workspace: undefined
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
@@ -265,14 +265,6 @@ describe('Tests for selecting rules', () => {
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
         const stubEngine2: stubs.StubEngine2 = plugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         expect(stubEngine2.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
-    });
-});
-
-describe('Misc tests', () => {
-    it('When converting from a RuleDescription to a Rule, we need to make sure the SeverityLevel enums are the same', () => {
-        // Current the SeverityLevel from the engine api is the same name as the SeverityLevel from core. But if this
-        // ever changes, then this test will serve as a reminder to update our getSeverityLevel method of RuleImpl.
-        expect(SeverityLevel).toEqual(EngApi_SeverityLevel)
     });
 });
 

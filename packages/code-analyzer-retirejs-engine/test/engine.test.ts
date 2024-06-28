@@ -8,12 +8,14 @@ import {
     RuleType,
     RunOptions,
     SeverityLevel,
-    Violation, Workspace
+    Violation,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
+import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
 import {RetireJsExecutor} from "../src/executor";
-import {changeWorkingDirectoryToPackageRoot, WorkspaceForTesting} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import path from "node:path";
 import fs from "node:fs";
 import {Finding} from "retire/lib/types";
@@ -79,7 +81,7 @@ const EXPECTED_VIOLATION_4: Violation = {
     ]
 }
 
-const DUMMY_WORKSPACE: Workspace = new WorkspaceForTesting([]);
+const DUMMY_WORKSPACE: Workspace = testTools.createWorkspace([]);
 const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
 const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
 
@@ -156,7 +158,7 @@ describe('Tests for the RetireJsEngine', () => {
         engine = new RetireJsEngine(spyExecutor);
 
         const allRuleNames: string[] = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
-        const workspace: Workspace = new WorkspaceForTesting([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
+        const workspace: Workspace = testTools.createWorkspace([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
         const runOptions: RunOptions = {
             workspace: workspace,
             pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine

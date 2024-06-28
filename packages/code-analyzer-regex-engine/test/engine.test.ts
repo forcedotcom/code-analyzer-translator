@@ -1,10 +1,11 @@
 import {RegexEnginePlugin, RegexEngine} from "../src/RegexEnginePlugin";
-import {changeWorkingDirectoryToPackageRoot, WorkspaceForTesting} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
     RuleDescription,
     RuleType,
     SeverityLevel
 } from "@salesforce/code-analyzer-engine-api";
+import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -21,7 +22,7 @@ describe('Regex Engine Tests', () => {
     });
     
     it('Calling describeRules on an engine should return the single trailing whitespace rule', async () => {
-        const rules_desc: RuleDescription[]= await engine.describeRules({workspace: new WorkspaceForTesting([])});
+        const rules_desc: RuleDescription[]= await engine.describeRules({workspace: testTools.createWorkspace([])});
         const engineRules = [
             {
                 name: "TrailingWhitespaceRule",
@@ -37,7 +38,7 @@ describe('Regex Engine Tests', () => {
 
     it('Confirm runRules() is a no-op', () => {
         const ruleNames: string[] = ['TrailingWhitespaceRule']
-        engine.runRules(ruleNames, {workspace: new WorkspaceForTesting([])});
+        engine.runRules(ruleNames, {workspace: testTools.createWorkspace([])});
     })
 });
 
@@ -70,13 +71,13 @@ describe('RegexEnginePlugin Tests' , () => {
                 resourceUrls: [""]
             },
         ];
-        const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: new WorkspaceForTesting([])})
+        const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: testTools.createWorkspace([])})
         expect(engineRules).toStrictEqual(expEngineRules)
     });
 
     it('Check that engine created from the RegexEnginePlugin has runRules() method as a no-op', () => {
         const ruleNames: string[] = ['TrailingWhitespaceRule']
-        pluginEngine.runRules(ruleNames, {workspace: new WorkspaceForTesting([])});
+        pluginEngine.runRules(ruleNames, {workspace: testTools.createWorkspace([])});
     });
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', () => { 
