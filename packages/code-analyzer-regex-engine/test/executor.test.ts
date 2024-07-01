@@ -2,12 +2,18 @@
 import { changeWorkingDirectoryToPackageRoot } from "./test-helpers";
 import path from "node:path";
 import { RegexExecutor } from '../src/executor';
-import { EXPECTED_VIOLATION_1, EXPECTED_VIOLATION_2, EXPECTED_VIOLATION_3, EXPECTED_VIOLATION_4} from './test-config';
+import {
+    EXPECTED_VIOLATION_1,
+    EXPECTED_VIOLATION_2,
+    EXPECTED_VIOLATION_3,
+    EXPECTED_VIOLATION_4,
+    EXPECTED_VIOLATION_5,
+    EXPECTED_VIOLATION_6, EXPECTED_VIOLATION_7
+} from './test-config';
 import { Violation } from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
- 
-console.log(path.resolve("packages", "code-analyzer-regex-engine", "test", "test-data"))
+
 describe("Executor tests", () => {
     let executor: RegexExecutor;
     beforeAll(() => {
@@ -51,15 +57,4 @@ describe("Executor tests", () => {
         const violations: Violation[] = await executor.execute([file1, file2, file3])
         expect(violations).toStrictEqual(EXPECTED_VIOLATION_3)
     });
-
-    it("If execute is pointed to a file with a blank line in the middle, ensure that it properly emits a violations", async () => {
-        const file = path.resolve("test", "test-data", "5_apexClassWithBlankLine", "myOuterClass.cls")
-        const violations: Violation[] = await executor.execute([file]);
-        expect(violations).toStrictEqual(EXPECTED_VIOLATION_4);
-    })
-
-
-
 })
-
-

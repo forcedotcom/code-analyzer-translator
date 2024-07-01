@@ -63,7 +63,6 @@ describe('Regex Engine Tests', () => {
             const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
             const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
             expect(runResults.violations).toStrictEqual(EXPECTED_VIOLATION_2)
-            engine.runRules(ruleNames, runOptions);
         });
 
         it('If runRules() finds no violations when an apex file has no trailing whitespaces', async () => {
@@ -108,7 +107,6 @@ describe('RegexEnginePlugin Tests' , () => {
         const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: testTools.createWorkspace([])})
         expect(engineRules).toStrictEqual(expEngineRules)
     });
-
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', () => { 
         expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("Unsupported engine name: OtherEngine");
