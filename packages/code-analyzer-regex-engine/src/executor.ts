@@ -1,14 +1,17 @@
 import { Violation } from "@salesforce/code-analyzer-engine-api";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os"
 
 const APEX_CLASS_FILE_EXT: string = ".cls"
 
 export class RegexExecutor {
     newlineIndexes: number[]
+    lineSep: string
 
     constructor() {
         this.newlineIndexes = [];
+        this.lineSep = os.EOL
     }
 
     async execute(allFiles: string[]): Promise<Violation[]> {
@@ -25,13 +28,10 @@ export class RegexExecutor {
 
     private getColumnNumber(fileContents: string, charIndex: number): number {
         /*TODO: swap out findIndex for a modified binary search implementation */
-        if (charIndex === 0){
-            return 1;
-        }
-
         const idxOfNextNewline = this.newlineIndexes.findIndex(el => el >= charIndex)
-        const idxOfCorrectNewline = idxOfNextNewline === -1 ? this.newlineIndexes.length - 1 : idxOfNextNewline - 1
-        return charIndex - this.newlineIndexes.at(idxOfCorrectNewline)!
+        const idxOfCurrentLine = idxOfNextNewline === -1 ? this.newlineIndexes.length - 1: idxOfNextNewline - 1
+        const eolOffset = this.lineSep.length - 1
+        return charIndex - this.newlineIndexes.at(idxOfCurrentLine)! - eolOffset
     }
 
     private getLineNumber(fileContents: string, charIndex: number): number{
@@ -67,7 +67,7 @@ export class RegexExecutor {
     }
 
     private updateNewlineIndices(fileContents: string): void {
-        const newlineRegex: RegExp = /\r?\n/g
+        const newlineRegex: RegExp = new RegExp(this.lineSep, "g")
         const matches = fileContents.matchAll(newlineRegex);
         this.newlineIndexes = []
 
