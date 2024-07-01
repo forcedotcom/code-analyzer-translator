@@ -5,10 +5,7 @@ import { RegexExecutor } from '../src/executor';
 import {
     EXPECTED_VIOLATION_1,
     EXPECTED_VIOLATION_2,
-    EXPECTED_VIOLATION_3,
-    EXPECTED_VIOLATION_4,
-    EXPECTED_VIOLATION_5,
-    EXPECTED_VIOLATION_6, EXPECTED_VIOLATION_7
+    EXPECTED_VIOLATION_3
 } from './test-config';
 import { Violation } from "@salesforce/code-analyzer-engine-api";
 
