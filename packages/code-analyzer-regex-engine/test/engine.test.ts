@@ -1,16 +1,21 @@
 import {RegexEnginePlugin, RegexEngine} from "../src/RegexEnginePlugin";
+import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
     RuleDescription,
     RuleType,
-    SeverityLevel
+    SeverityLevel,
+    RunOptions,
+    EngineRunResults,
+    Violation
 } from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
+import { TRAILING_WHITESPACE_RULE_MESSAGE, TRAILING_WHITESPACE_RESOURCE_URLS, EXPECTED_VIOLATION_2 } from "./test-config";
 
 changeWorkingDirectoryToPackageRoot();
 
 describe('Regex Engine Tests', () => {
-    let engine: RegexEngine;
+    let engine: RegexEngine; 
     beforeAll(() => {
         engine = new RegexEngine();
     });
@@ -29,16 +34,44 @@ describe('Regex Engine Tests', () => {
                 severityLevel: SeverityLevel.Low,
                 type: RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
-                description: "",
-                resourceUrls: [""]
+                description: TRAILING_WHITESPACE_RULE_MESSAGE,
+                resourceUrls: TRAILING_WHITESPACE_RESOURCE_URLS
             },
         ];
         expect(rules_desc).toEqual(engineRules)
     });
 
-    it('Confirm runRules() is a no-op', () => {
-        const ruleNames: string[] = ['TrailingWhitespaceRule']
-        engine.runRules(ruleNames, {workspace: testTools.createWorkspace([])});
+
+
+    describe('runRules() tests', () => {
+        let ruleNames: string[];
+        beforeAll(() => {
+            ruleNames = ['TrailingWhitespaceRule']
+        })
+
+        it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {
+            const filePath = path.resolve("test", "test-data", "1_notApexClassWithWhitespace")
+            const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+            const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
+            const expViolations: Violation[] = [];
+            expect(runResults.violations).toStrictEqual(expViolations);
+        });
+
+        it('Confirm runRules() returns correct errors when called on a file', async () => {
+            const ruleNames: string[] = ['TrailingWhitespaceRule']
+            const filePath = path.resolve("test", "test-data", "2_apexClasses", "myClass.cls")
+            const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+            const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
+            expect(runResults.violations).toStrictEqual(EXPECTED_VIOLATION_2)
+        });
+
+        it('If runRules() finds no violations when an apex file has no trailing whitespaces', async () => {
+            const filePath = path.resolve("test", "test-data", "4_ApexClassWithoutWhitespace")
+            const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+            const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
+            const expViolations: Violation[] = [];
+            expect(runResults.violations).toStrictEqual(expViolations);
+        });
     })
 });
 
@@ -67,20 +100,16 @@ describe('RegexEnginePlugin Tests' , () => {
                 severityLevel: SeverityLevel.Low,
                 type: RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
-                description: "",
-                resourceUrls: [""]
+                description: "Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.",
+                resourceUrls: []
             },
         ];
         const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: testTools.createWorkspace([])})
         expect(engineRules).toStrictEqual(expEngineRules)
     });
 
-    it('Check that engine created from the RegexEnginePlugin has runRules() method as a no-op', () => {
-        const ruleNames: string[] = ['TrailingWhitespaceRule']
-        pluginEngine.runRules(ruleNames, {workspace: testTools.createWorkspace([])});
-    });
-
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', () => { 
         expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("Unsupported engine name: OtherEngine");
     });
 });
+
