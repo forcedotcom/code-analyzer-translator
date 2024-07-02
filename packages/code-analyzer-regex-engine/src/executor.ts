@@ -6,11 +6,9 @@ import os from "node:os"
 const APEX_CLASS_FILE_EXT: string = ".cls"
 
 export class RegexExecutor {
-    newlineIndexes: number[]
     lineSep: string
 
     constructor() {
-        this.newlineIndexes = [];
         this.lineSep = os.EOL
     }
 
@@ -26,17 +24,17 @@ export class RegexExecutor {
         return violations;
     }
 
-    private getColumnNumber(fileContents: string, charIndex: number): number {
+    private getColumnNumber(fileContents: string, charIndex: number, newlineIndexes: number[]): number {
         /*TODO: swap out findIndex for a modified binary search implementation */
-        const idxOfNextNewline = this.newlineIndexes.findIndex(el => el >= charIndex)
-        const idxOfCurrentLine = idxOfNextNewline === -1 ? this.newlineIndexes.length - 1: idxOfNextNewline - 1
+        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex)
+        const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1
         const eolOffset = this.lineSep.length - 1
-        return charIndex - this.newlineIndexes.at(idxOfCurrentLine)! - eolOffset
+        return charIndex - newlineIndexes.at(idxOfCurrentLine)! - eolOffset
     }
 
-    private getLineNumber(fileContents: string, charIndex: number): number{
-        const idxOfNextNewline = this.newlineIndexes.findIndex(el => el >= charIndex)
-        return idxOfNextNewline === -1 ? this.newlineIndexes.length + 1 : idxOfNextNewline + 1;
+    private getLineNumber(fileContents: string, charIndex: number, newlineIndexes: number[]): number{
+        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex)
+        return idxOfNextNewline === -1 ? newlineIndexes.length + 1 : idxOfNextNewline + 1;
     }
 
     private async scanFile(fileName: string): Promise<Violation[]> {
@@ -45,15 +43,15 @@ export class RegexExecutor {
             const fileContents: string = fs.readFileSync(fileName, {encoding: 'utf8'})
             const regex: RegExp = /[ \t]+((?=\r?\n)|(?=$))/g;
             const matches = fileContents.matchAll(regex);
-            this.updateNewlineIndices(fileContents);
+            const newlineIndexes = this.getNewlineIndices(fileContents);
 
             for (const match of matches) {
                 const codeLocation = {
                     file: fileName,
-                    startLine: this.getLineNumber(fileContents, match.index),
-                    startColumn: this.getColumnNumber(fileContents, match.index),
-                    endLine: this.getLineNumber(fileContents,match.index + match[0].length),
-                    endColumn: this.getColumnNumber(fileContents,match.index + match[0].length)
+                    startLine: this.getLineNumber(fileContents, match.index, newlineIndexes),
+                    startColumn: this.getColumnNumber(fileContents, match.index, newlineIndexes),
+                    endLine: this.getLineNumber(fileContents,match.index + match[0].length, newlineIndexes),
+                    endColumn: this.getColumnNumber(fileContents,match.index + match[0].length, newlineIndexes)
                 }
                 violations.push({
                     ruleName: "TrailingWhitespaceRule",
@@ -66,13 +64,14 @@ export class RegexExecutor {
         return violations;
     }
 
-    private updateNewlineIndices(fileContents: string): void {
+    private getNewlineIndices(fileContents: string): number[] {
         const newlineRegex: RegExp = new RegExp(this.lineSep, "g")
         const matches = fileContents.matchAll(newlineRegex);
-        this.newlineIndexes = []
+        const newlineIndexes = []
 
         for (const match of matches) {
-            this.newlineIndexes.push(match.index);
+            newlineIndexes.push(match.index);
         }
+        return newlineIndexes
     }
 }
