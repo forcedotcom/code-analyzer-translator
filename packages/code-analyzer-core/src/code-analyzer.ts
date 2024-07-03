@@ -70,7 +70,7 @@ export class CodeAnalyzer {
     public async dynamicallyAddEnginePlugin(enginePluginModulePath: string): Promise<void> {
         let pluginModule;
         try {
-            enginePluginModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigFolder()]});
+            enginePluginModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigRoot()]});
             pluginModule = (await import(enginePluginModulePath));
         } catch (err) {
             throw new Error(getMessage('FailedToDynamicallyLoadModule', enginePluginModulePath, (err as Error).message), {cause: err});

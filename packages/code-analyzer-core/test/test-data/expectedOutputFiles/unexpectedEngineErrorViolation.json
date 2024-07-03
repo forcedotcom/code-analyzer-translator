@@ -10,7 +10,6 @@
   },
   "violations": [
     {
-      "id": 1,
       "rule": "UnexpectedEngineError",
       "engine": "throwingEngine",
       "severity": 1,

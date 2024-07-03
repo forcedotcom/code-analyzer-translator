@@ -10,7 +10,7 @@
     <sev5>0</sev5>
   </violationCounts>
   <violations>
-    <violation id="1">
+    <violation>
       <rule>UnexpectedEngineError</rule>
       <engine>throwingEngine</engine>
       <severity>1</severity>

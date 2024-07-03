@@ -10,7 +10,7 @@
     <sev5>0</sev5>
   </violationCounts>
   <violations>
-    <violation id="1">
+    <violation>
       <rule>stub1RuleA</rule>
       <engine>stubEngine1</engine>
       <severity>4</severity>
@@ -29,7 +29,7 @@
         <resource>https://example.com/stub1RuleA</resource>
       </resources>
     </violation>
-    <violation id="2">
+    <violation>
       <rule>stub1RuleC</rule>
       <engine>stubEngine1</engine>
       <severity>3</severity>
@@ -51,7 +51,7 @@
         <resource>https://example.com/violationSpecificUrl2</resource>
       </resources>
     </violation>
-    <violation id="3">
+    <violation>
       <rule>stub1RuleE</rule>
       <engine>stubEngine1</engine>
       <severity>3</severity>
@@ -69,7 +69,7 @@ a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may
         <resource>https://example.com/stub1RuleE_2</resource>
       </resources>
     </violation>
-    <violation id="4">
+    <violation>
       <rule>stub2RuleC</rule>
       <engine>stubEngine2</engine>
       <severity>2</severity>
