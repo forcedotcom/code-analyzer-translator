@@ -41,7 +41,6 @@ type ResultsOutput = {
 }
 
 type ViolationOutput = {
-    id: number
     rule: string
     engine: string
     severity: number
@@ -63,7 +62,7 @@ class CsvOutputFormatter implements OutputFormatter {
         const options: CsvOptions = {
             header: true,
             quoted_string: true,
-            columns: ['id', 'rule', 'engine', 'severity', 'type', 'tags', 'file', 'line', 'column',
+            columns: ['rule', 'engine', 'severity', 'type', 'tags', 'file', 'line', 'column',
                 'endLine', 'endColumn', 'pathLocations', 'message', 'resources'],
             cast: {
                 object: value => {
@@ -103,7 +102,6 @@ class XmlOutputFormatter implements OutputFormatter {
         const violationsNode: xmlbuilder.XMLElement = resultsNode.node('violations');
         for (const violationOutput of resultsOutput.violations) {
             const violationNode: xmlbuilder.XMLElement = violationsNode.node('violation');
-            violationNode.attribute('id', violationOutput.id);
             violationNode.node('rule').text(violationOutput.rule);
             violationNode.node('engine').text(violationOutput.engine);
             violationNode.node('severity').text(`${violationOutput.severity}`);
@@ -163,22 +161,15 @@ function toResultsOutput(results: RunResults) {
 }
 
 function toViolationOutputs(violations: Violation[], runDir: string): ViolationOutput[] {
-    const violationOutputs: ViolationOutput[] = [];
-    for (let i = 0; i < violations.length; i++) {
-        const violation: Violation = violations[i];
-        const row: ViolationOutput = createViolationOutput(i+1, violation, runDir);
-        violationOutputs.push(row)
-    }
-    return violationOutputs;
+    return violations.map(v => createViolationOutput(v, runDir));
 }
 
-function createViolationOutput(id: number, violation: Violation, runDir: string): ViolationOutput {
+function createViolationOutput(violation: Violation, runDir: string): ViolationOutput {
     const rule: Rule = violation.getRule();
     const codeLocations: CodeLocation[] = violation.getCodeLocations();
     const primaryLocation: CodeLocation = codeLocations[violation.getPrimaryLocationIndex()];
 
     return {
-        id: id,
         rule: rule.getName(),
         engine: rule.getEngineName(),
         severity: rule.getSeverityLevel(),

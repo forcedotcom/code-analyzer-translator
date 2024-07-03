@@ -10,7 +10,6 @@
   },
   "violations": [
     {
-      "id": 1,
       "rule": "stub1RuleA",
       "engine": "stubEngine1",
       "severity": 4,
@@ -30,7 +29,6 @@
       ]
     },
     {
-      "id": 2,
       "rule": "stub1RuleC",
       "engine": "stubEngine1",
       "severity": 3,
@@ -53,7 +51,6 @@
       ]
     },
     {
-      "id": 3,
       "rule": "stub1RuleE",
       "engine": "stubEngine1",
       "severity": 3,
@@ -71,7 +68,6 @@
       ]
     },
     {
-      "id": 4,
       "rule": "stub2RuleC",
       "engine": "stubEngine2",
       "severity": 2,
