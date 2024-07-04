@@ -1,6 +1,7 @@
 import {CodeAnalyzerConfig, SeverityLevel} from "../src";
 import * as os from "node:os";
 import * as path from "node:path";
+import {getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
@@ -121,35 +122,35 @@ describe("Tests for creating and accessing configuration values", () => {
     });
 
     it("When constructing config from json string that isn't an object then we throw an error", () => {
-        expect(() => CodeAnalyzerConfig.fromJsonString("3")).toThrow(
-            getMessage('ConfigContentNotAnObject','number'));
+        expect(() => CodeAnalyzerConfig.fromJsonString("[3,4]")).toThrow(
+            getMessage('ConfigContentNotAnObject','array'));
         expect(() => CodeAnalyzerConfig.fromJsonString("null")).toThrow(
             getMessage('ConfigContentNotAnObject','null'));
     });
 
     it("When engines value is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({engines: ['oops']})).toThrow(
-            getMessage('ConfigValueMustBeOfType','engines', 'object', 'array'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','engines', 'object', 'array'));
     });
 
     it("When engines.someEngine is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({engines: {someEngine: 3.2}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','engines.someEngine', 'object', 'number'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','engines.someEngine', 'object', 'number'));
     });
 
     it("When rules is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({rules: 3})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rules', 'object', 'number'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules', 'object', 'number'));
     });
 
     it("When rules.someEngine is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: null}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rules.someEngine', 'object', 'null'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine', 'object', 'null'));
     });
 
     it("When rules.someEngine.someRule is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {someRule: [1,2]}}})).toThrow(
-            getMessage('ConfigValueMustBeOfType','rules.someEngine.someRule', 'object', 'array'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.someRule', 'object', 'array'));
     });
 
     it("When the severity of a rule not a valid value then we throw an error", () => {
@@ -172,10 +173,10 @@ describe("Tests for creating and accessing configuration values", () => {
                     badTagsRule: {tags: 'oops'},
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(
-            getMessage('ConfigValueNotAValidStringArray','rules.someEngine.badTagsRule.tags', '"oops"'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeStringArray','rules.someEngine.badTagsRule.tags', '"oops"'));
 
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
-            getMessage('ConfigValueNotAValidStringArray','rules.someEngine.badTagsRule.tags', 'null'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeStringArray','rules.someEngine.badTagsRule.tags', 'null'));
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
@@ -190,23 +191,23 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When log_folder does not exist, then throw an error", () => {
         const nonExistingFolder: string = path.resolve(__dirname, "doesNotExist");
         expect(() => CodeAnalyzerConfig.fromObject({log_folder: nonExistingFolder})).toThrow(
-            getMessage('ConfigValueFolderMustExist', 'log_folder', nonExistingFolder)
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist', 'log_folder', nonExistingFolder)
         );
     });
 
     it("When log_folder is a file and not a folder, then throw an error", () => {
         const notAFolder: string = path.resolve(__dirname, "config.test.ts");
         expect(() => CodeAnalyzerConfig.fromObject({log_folder: notAFolder})).toThrow(
-            getMessage('ConfigValueMustBeFolder', 'log_folder', notAFolder)
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigFolderValueMustNotBeFile', 'log_folder', notAFolder)
         );
     });
 
     it("When custom_engine_plugin_modules is not a string array, then throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 3})).toThrow(
-            getMessage('ConfigValueNotAValidStringArray','custom_engine_plugin_modules', '3'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeStringArray','custom_engine_plugin_modules', '3'));
 
         expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 'oops'})).toThrow(
-            getMessage('ConfigValueNotAValidStringArray','custom_engine_plugin_modules', '"oops"'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeStringArray','custom_engine_plugin_modules', '"oops"'));
     });
 
     it("When supplied config_root path is a valid absolute path, then we use it", () => {
@@ -217,16 +218,17 @@ describe("Tests for creating and accessing configuration values", () => {
 
     it("When supplied config_root path does not exist, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({config_root: path.resolve('doesNotExist')})).toThrow(
-            getMessage('ConfigValueFolderMustExist','config_root', path.resolve('doesNotExist')));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist','config_root', path.resolve('doesNotExist')));
     });
 
     it("When supplied config_root path is a file instead of a folder, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({config_root: path.resolve('package.json')})).toThrow(
-            getMessage('ConfigValueMustBeFolder','config_root', path.resolve('package.json')));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigFolderValueMustNotBeFile','config_root', path.resolve('package.json')));
     });
 
     it("When supplied config_root path is a relative folder, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({config_root: 'test/test-data'})).toThrow(
-            getMessage('ConfigValueMustBeAbsolutePath','config_root', path.resolve('test','test-data')));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueMustBeAbsolute',
+                'config_root', `test${path.sep}test-data`, path.resolve('test','test-data')));
     });
 });

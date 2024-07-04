@@ -85,13 +85,18 @@ export class CodeAnalyzerConfig {
     }
 
     public static fromObject(data: object, configRoot?: string): CodeAnalyzerConfig {
-        configRoot = extractConfigRootValue(data, configRoot);
+        const rawConfig: engApi.ConfigObject = data as engApi.ConfigObject;
+        if (!rawConfig.config_root) {
+            rawConfig.config_root = configRoot ? configRoot : process.cwd();
+        }
+        const configValueExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig);
         const config: TopLevelConfig = {
-            config_root: configRoot,
-            log_folder: extractLogFolderValue(data, configRoot),
-            custom_engine_plugin_modules: extractCustomEnginePluginModules(data),
-            rules: extractRulesValue(data),
-            engines: extractEnginesValue(data)
+            config_root: configValueExtractor.extractConfigRoot(),
+            log_folder: configValueExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
+            custom_engine_plugin_modules: configValueExtractor.extractStringArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
+                DEFAULT_CONFIG.custom_engine_plugin_modules)!,
+            rules: extractRulesValue(configValueExtractor),
+            engines: extractEnginesValue(configValueExtractor)
         }
         return new CodeAnalyzerConfig(config);
     }
@@ -130,52 +135,12 @@ export class CodeAnalyzerConfig {
     }
 }
 
-function extractConfigRootValue(data: object, configRoot?: string): string {
-    if (!(FIELDS.CONFIG_ROOT in data)) {
-        return configRoot || DEFAULT_CONFIG.config_root;
-    }
-    configRoot = toAbsolutePath(validateType('string', data[FIELDS.CONFIG_ROOT], FIELDS.CONFIG_ROOT));
-    if (!fs.existsSync(configRoot)) {
-        throw new Error(getMessage('ConfigValueFolderMustExist', FIELDS.CONFIG_ROOT, configRoot));
-    } else if (!fs.statSync(configRoot).isDirectory()) {
-        throw new Error(getMessage('ConfigValueMustBeFolder', FIELDS.CONFIG_ROOT, configRoot));
-    } else if (data[FIELDS.CONFIG_ROOT] !== configRoot) {
-        throw new Error(getMessage('ConfigValueMustBeAbsolutePath', FIELDS.CONFIG_ROOT, configRoot));
-    }
-    return configRoot;
-}
-
-function extractLogFolderValue(data: object, configRoot: string): string {
-    if (!(FIELDS.LOG_FOLDER in data)) {
-        return DEFAULT_CONFIG.log_folder;
-    }
-    const rawLogFolder: string = validateType('string', data[FIELDS.LOG_FOLDER], FIELDS.LOG_FOLDER);
-    let logFolder: string = toAbsolutePath(rawLogFolder, configRoot); // First assume it is relative to the config folder
-    if (!fs.existsSync(logFolder)) {
-        logFolder = toAbsolutePath(rawLogFolder); // Otherwise just try to resolve without config folder
-        if (!fs.existsSync(logFolder)) {
-            throw new Error(getMessage('ConfigValueFolderMustExist', FIELDS.LOG_FOLDER, logFolder));
-        }
-    }
-    if (!fs.statSync(logFolder).isDirectory()) {
-        throw new Error(getMessage('ConfigValueMustBeFolder', FIELDS.LOG_FOLDER, logFolder));
-    }
-    return logFolder;
-}
-
-function extractCustomEnginePluginModules(data: object): string[] {
-    if (!(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES in data)) {
-        return DEFAULT_CONFIG.custom_engine_plugin_modules;
-    }
-    return validateStringArray(data[FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES], FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES);
-}
-
-function extractRulesValue(data: object): Record<string, Record<string, RuleOverride>> {
-    if (!(FIELDS.RULES in data)) {
+function extractRulesValue(configValueExtractor: engApi.ConfigValueExtractor): Record<string, Record<string, RuleOverride>> {
+    const rulesObj: engApi.ConfigObject | undefined = configValueExtractor.extractObject(FIELDS.RULES);
+    if (!rulesObj) {
         return DEFAULT_CONFIG.rules;
     }
     const extractedValue: Record<string, Record<string, RuleOverride>> = {};
-    const rulesObj: object = validateObject(data[FIELDS.RULES], FIELDS.RULES);
     for (const engineName of Object.keys(rulesObj)) {
         extractedValue[engineName] = extractRuleOverridesFor(rulesObj, engineName);
     }
@@ -184,7 +149,7 @@ function extractRulesValue(data: object): Record<string, Record<string, RuleOver
 
 function extractRuleOverridesFor(rulesObj: object, engineName: string): Record<string, RuleOverride> {
     const extractedValue: Record<string, RuleOverride> = {};
-    const ruleOverridesObj: object = validateObject(rulesObj[engineName as keyof typeof rulesObj],
+    const ruleOverridesObj: object = engApi.ValueValidator.validateObject(rulesObj[engineName as keyof typeof rulesObj],
         `${FIELDS.RULES}.${engineName}`);
     for (const ruleName of Object.keys(ruleOverridesObj)) {
         extractedValue[ruleName] = extractRuleOverrideFor(ruleOverridesObj, engineName, ruleName);
@@ -194,28 +159,17 @@ function extractRuleOverridesFor(rulesObj: object, engineName: string): Record<s
 
 function extractRuleOverrideFor(ruleOverridesObj: object, engineName: string, ruleName: string): RuleOverride {
     const extractedValue: RuleOverride = {};
-    const ruleOverrideObj: object = validateObject(ruleOverridesObj[ruleName as keyof typeof ruleOverridesObj],
+    const ruleOverrideObj: object = engApi.ValueValidator.validateObject(ruleOverridesObj[ruleName as keyof typeof ruleOverridesObj],
         `${FIELDS.RULES}.${engineName}.${ruleName}`);
     if (FIELDS.SEVERITY in ruleOverrideObj) {
         extractedValue.severity = validateSeverityValue(ruleOverrideObj[FIELDS.SEVERITY],
             `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.SEVERITY}`);
     }
     if (FIELDS.TAGS in ruleOverrideObj ) {
-        extractedValue.tags = validateStringArray(ruleOverrideObj[FIELDS.TAGS],
+        extractedValue.tags = engApi.ValueValidator.validateStringArray(ruleOverrideObj[FIELDS.TAGS],
             `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`);
     }
     return extractedValue;
-}
-
-function validateObject(value: unknown, valueKey: string): object {
-    return validateType<object>('object', value, valueKey);
-}
-
-function validateType<T>(expectedType: string, value: unknown, valueKey: string): T {
-    if (typeOf(value) !== expectedType) {
-        throw new Error(getMessage('ConfigValueMustBeOfType', valueKey, expectedType, typeOf(value)));
-    }
-    return value as T;
 }
 
 function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel {
@@ -233,20 +187,13 @@ function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel 
     return value as SeverityLevel;
 }
 
-function validateStringArray(value: unknown, valueKey: string): string[] {
-    if (!Array.isArray(value) || !value.every(item => typeof item === 'string')) {
-        throw new Error(getMessage('ConfigValueNotAValidStringArray', valueKey, JSON.stringify(value)));
-    }
-    return value as string[];
-}
-
-function extractEnginesValue(data: object): Record<string, engApi.ConfigObject> {
-    if (!(FIELDS.ENGINES in data)) {
+function extractEnginesValue(configValueExtractor: engApi.ConfigValueExtractor): Record<string, engApi.ConfigObject> {
+    const engineSettingsObj: engApi.ConfigObject | undefined = configValueExtractor.extractObject(FIELDS.ENGINES);
+    if (!engineSettingsObj) {
         return DEFAULT_CONFIG.engines;
     }
-    const engineSettingsObj: object = validateObject(data[FIELDS.ENGINES], FIELDS.ENGINES);
     for (const [engineName, settingsForEngine] of Object.entries(engineSettingsObj)) {
-        validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
+        engApi.ValueValidator.validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
     }
     return engineSettingsObj as Record<string, engApi.ConfigObject>;
 }
@@ -258,12 +205,9 @@ function parseAndValidate(parseFcn: () => unknown): object {
     } catch (err) {
         throw new Error(getMessage('ConfigContentFailedToParse', (err as Error).message), { cause: err });
     }
-    if (typeOf(data) !== 'object') {
-        throw new Error(getMessage('ConfigContentNotAnObject', typeOf(data)));
+    const dataType: string = data === null ? 'null' : Array.isArray(data) ? 'array' : typeof data;
+    if (dataType !== 'object') {
+        throw new Error(getMessage('ConfigContentNotAnObject', dataType));
     }
     return data as object;
-}
-
-function typeOf(value: unknown) {
-    return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
 }

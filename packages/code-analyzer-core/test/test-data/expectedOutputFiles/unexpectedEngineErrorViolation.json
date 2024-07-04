@@ -15,7 +15,7 @@
       "severity": 1,
       "type": "UnexpectedError",
       "tags": [],
-      "message": "The engine with name \"throwingEngine\" threw an unexpected error: SomeErrorMessageFromThrowingEngine",
+      "message": "The engine with name 'throwingEngine' threw an unexpected error: SomeErrorMessageFromThrowingEngine",
       "resources": []
     }
   ]
