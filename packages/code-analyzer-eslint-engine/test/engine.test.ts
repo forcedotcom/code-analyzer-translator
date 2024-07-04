@@ -1,38 +1,18 @@
-import {Engine, EnginePluginV1, RuleDescription} from "@salesforce/code-analyzer-engine-api";
+import {Engine, RuleDescription} from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {ESLintEngine, ESLintEnginePlugin} from "../src/engine";
-import {getMessage} from "../src/messages";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import {ESLintEngine} from "../src/engine";
+import {DEFAULT_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
-describe('Tests for the ESLintEnginePlugin', () => {
-    let plugin: EnginePluginV1;
-    beforeAll(() => {
-        plugin = new ESLintEnginePlugin();
-    });
-
-    it('When the getAvailableEngineNames method is called then only eslint is returned', () => {
-        expect(plugin.getAvailableEngineNames()).toEqual(['eslint']);
-    });
-
-    it('When createEngine is passed eslint then an ESLintEngine instance is returned', async () => {
-        expect(await plugin.createEngine('eslint', {})).toBeInstanceOf(ESLintEngine);
-    });
-
-    it('When createEngine is passed anything else then an error is thrown', () => {
-        expect(plugin.createEngine('oops', {})).rejects.toThrow(
-            getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
-    });
-});
-
-describe('Tests for the ESLintEngine', () => {
+describe('Tests for the ESLintEngine with default config values', () => {
     let engine: Engine;
     beforeEach(() => {
-        engine = new ESLintEngine();
+        engine = new ESLintEngine(DEFAULT_CONFIG);
     });
 
     it('When getName is called, then eslint is returned', () => {

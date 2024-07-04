@@ -1,57 +1,39 @@
 import {
-    ConfigObject,
     DescribeOptions,
     Engine,
-    EnginePluginV1,
     EngineRunResults,
     RuleDescription,
     RuleType,
     RunOptions,
     SeverityLevel
 } from '@salesforce/code-analyzer-engine-api'
-import {getMessage} from "./messages";
 import {ESLintRuleStatus, ESLintRuleType} from "./enums";
 import {Rule} from "eslint";
 import {ESLintWorkspace, MissingESLintWorkspace, PresentESLintWorkspace} from "./workspace";
 import {ESLintStrategy, LegacyESLintStrategy} from "./strategy";
-
-const DEFAULT_JAVASCRIPT_EXTENSIONS: string[] = ['.js', '.cjs', '.mjs'];
-const DEFAULT_TYPESCRIPT_EXTENSIONS: string[] = ['.ts'];
-
-export class ESLintEnginePlugin extends EnginePluginV1 {
-    getAvailableEngineNames(): string[] {
-        return [ESLintEngine.NAME];
-    }
-
-    async createEngine(engineName: string, _engineConfig: ConfigObject): Promise<Engine> {
-        if (engineName === ESLintEngine.NAME) {
-            return new ESLintEngine();
-        }
-        throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
-    }
-}
+import {ESLintEngineConfig} from "./config";
 
 export class ESLintEngine extends Engine {
     static readonly NAME = "eslint";
-    private readonly javascriptExtensions: string[];
-    private readonly typescriptExtensions: string[];
+    private readonly config: ESLintEngineConfig;
 
-    constructor() {
+    constructor(config: ESLintEngineConfig) {
         super();
-
-        // TODO: Once we implement engine config, add this as an option to the engine config
-        this.javascriptExtensions = DEFAULT_JAVASCRIPT_EXTENSIONS;
-        this.typescriptExtensions = DEFAULT_TYPESCRIPT_EXTENSIONS;
+        this.config = config;
     }
 
     getName(): string {
         return ESLintEngine.NAME;
     }
 
+    getConfig(): ESLintEngineConfig {
+        return this.config;
+    }
+
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         const workspace: ESLintWorkspace = describeOptions.workspace ?
-            new PresentESLintWorkspace(describeOptions.workspace, this.javascriptExtensions, this.typescriptExtensions) :
-            new MissingESLintWorkspace(this.javascriptExtensions, this.typescriptExtensions);
+            new PresentESLintWorkspace(describeOptions.workspace, this.config) :
+            new MissingESLintWorkspace(this.config);
 
         const eslintStrategy: ESLintStrategy = new LegacyESLintStrategy(workspace);
 

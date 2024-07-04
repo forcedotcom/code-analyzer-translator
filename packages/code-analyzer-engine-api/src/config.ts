@@ -15,12 +15,12 @@ export type ConfigValue =
 
 export class ConfigValueExtractor {
     private readonly configObj: ConfigObject;
-    private readonly fieldNamePrefix: string;
+    private readonly fieldRoot?: string;
     private configRoot?: string;
 
-    constructor(configObject: ConfigObject, fieldNamePrefix?: string) {
+    constructor(configObject: ConfigObject, fieldRoot?: string) {
         this.configObj = configObject;
-        this.fieldNamePrefix = fieldNamePrefix && fieldNamePrefix.length > 0 ? fieldNamePrefix + '.' : '';
+        this.fieldRoot = fieldRoot;
     }
 
     extractConfigRoot(): string {
@@ -67,14 +67,14 @@ export class ConfigValueExtractor {
             ValueValidator.validateFolder(this.configObj[fieldName], this.getFullFieldName(fieldName), this.extractConfigRoot());
     }
 
+    getFullFieldName(fieldName: string): string {
+        return this.fieldRoot && this.fieldRoot.length > 0 ? `${this.fieldRoot}.${fieldName}` : fieldName;
+    }
+
     private isUndefined(fieldName: string): boolean {
         // Note a user could provide a boolean false value, which is why we don't just do an if statement on the value
         // but instead check to see if it is undefined or null.
         return this.configObj[fieldName] === undefined || this.configObj[fieldName] === null;
-    }
-
-    private getFullFieldName(fieldName: string): string {
-        return this.fieldNamePrefix + fieldName;
     }
 }
 

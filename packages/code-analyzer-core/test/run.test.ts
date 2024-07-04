@@ -58,7 +58,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
             pathStartPoints: [path.resolve(__dirname, 'doesNotExist.xml')],
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
@@ -68,7 +68,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
             pathStartPoints: [path.resolve(__dirname, 'run.test.ts'), badPathStartPoint]
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('PathStartPointFileDoesNotExist', badPathStartPoint, path.resolve(__dirname, 'doesNotExist.xml')));
     });
 
@@ -78,7 +78,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
             pathStartPoints: [badPathStartPoint],
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('PathStartPointWithMethodMustNotBeFolder', badPathStartPoint, path.resolve('test', 'test-data')));
     });
 
@@ -88,7 +88,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace(['test']),
             pathStartPoints: [badPathStartPoint],
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('InvalidPathStartPoint', badPathStartPoint));
     });
 
@@ -98,7 +98,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace(['test']),
             pathStartPoints: [badPathStartPoint],
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('InvalidPathStartPoint', badPathStartPoint));
     });
 
@@ -106,7 +106,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const runOptions: RunOptions = {
             workspace: await codeAnalyzer.createWorkspace([]),
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     });
 
@@ -116,7 +116,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             workspace: await codeAnalyzer.createWorkspace(['src', 'package.json']),
             pathStartPoints: [badPathStartPoint],
         };
-        expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('PathStartPointMustBeInsideWorkspace', path.resolve('test', 'test-helpers.ts'),
                 JSON.stringify([path.resolve('package.json'), path.resolve('src')])));
     });
@@ -342,64 +342,64 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [stubs.getSampleViolationForStub1RuleC()]
         };
         selection = await codeAnalyzer.selectRules(['stub1RuleA']);
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationForUnselectedRule', 'stubEngine1', 'stub1RuleC'));
     });
 
-    it("When an engine returns a violation that has a primary location index that is too large, then an error is thrown", () => {
+    it("When an engine returns a violation that has a primary location index that is too large, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 1;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine1', 'stub1RuleC', 1, 1));
     });
 
-    it("When an engine returns a violation that has a primary location index that is negative, then an error is thrown", () => {
+    it("When an engine returns a violation that has a primary location index that is negative, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.primaryLocationIndex = -2;
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine2', 'stub2RuleC', -2, 3));
     });
 
-    it("When an engine returns a violation that has a primary location index that is not an integer, then an error is thrown", () => {
+    it("When an engine returns a violation that has a primary location index that is not an integer, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleC();
         badViolation.primaryLocationIndex = 0.5;
         stubEngine1.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex', 'stubEngine1', 'stub1RuleC', 0.5, 1));
     });
 
-    it("When an engine returns a code location file that does not exist, then an error is thrown", () => {
+    it("When an engine returns a code location file that does not exist, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/doesNotExist';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationFileThatDoesNotExist',
                 'stubEngine2', 'stub2RuleC', path.resolve('test', 'doesNotExist')));
     });
 
-    it("When an engine returns a code location file that is a folder, then an error is thrown", () => {
+    it("When an engine returns a code location file that is a folder, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub2RuleC();
         badViolation.codeLocations[1].file = 'test/test-data';
         stubEngine2.resultsToReturn = {
             violations: [badViolation]
         };
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationFileAsFolder',
                 'stubEngine2', 'stub2RuleC', path.resolve('test', 'test-data')));
     });
 
 
-    function testInvalidLineOrColumnScenario(startLine: number, startColumn: number, endLine: number, endColumn: number, expectedBadField: string, expectedBadValue: number): void {
+    async function testInvalidLineOrColumnScenario(startLine: number, startColumn: number, endLine: number, endColumn: number, expectedBadField: string, expectedBadValue: number): Promise<void> {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = startLine;
         badViolation.codeLocations[0].startColumn = startColumn;
@@ -409,20 +409,20 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
                 'stubEngine1', 'stub1RuleA', expectedBadField, expectedBadValue));
     }
-    it("When an engine returns a code location that has an invalid line or column, then an error is thrown", () => {
-        testInvalidLineOrColumnScenario(-1, 2, 3, 4, 'startLine', -1);
-        testInvalidLineOrColumnScenario(1.5, 2, 3, 4, 'startLine', 1.5);
-        testInvalidLineOrColumnScenario(1, 0, 3, 4, 'startColumn', 0);
-        testInvalidLineOrColumnScenario(1, 3.124, 3, 4, 'startColumn', 3.124);
-        testInvalidLineOrColumnScenario(1, 2, -1.2, 4, 'endLine', -1.2);
-        testInvalidLineOrColumnScenario(1, 2, 3, 0, 'endColumn', 0);
+    it("When an engine returns a code location that has an invalid line or column, then an error is thrown", async () => {
+        await testInvalidLineOrColumnScenario(-1, 2, 3, 4, 'startLine', -1);
+        await testInvalidLineOrColumnScenario(1.5, 2, 3, 4, 'startLine', 1.5);
+        await testInvalidLineOrColumnScenario(1, 0, 3, 4, 'startColumn', 0);
+        await testInvalidLineOrColumnScenario(1, 3.124, 3, 4, 'startColumn', 3.124);
+        await testInvalidLineOrColumnScenario(1, 2, -1.2, 4, 'endLine', -1.2);
+        await testInvalidLineOrColumnScenario(1, 2, 3, 0, 'endColumn', 0);
     });
 
-    it("When an engine returns a code location with a endLine before a startLine, then an error is thrown", () => {
+    it("When an engine returns a code location with a endLine before a startLine, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].endLine = 2;
@@ -430,12 +430,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithEndLineBeforeStartLine',
                 'stubEngine1', 'stub1RuleA', 2, 4));
     });
 
-    it("When an engine returns a code location with equal startLine and endLine with an endColumn before a startColumn, then an error is thrown", () => {
+    it("When an engine returns a code location with equal startLine and endLine with an endColumn before a startColumn, then an error is thrown", async () => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
         badViolation.codeLocations[0].startLine = 4;
         badViolation.codeLocations[0].startColumn = 5;
@@ -445,7 +445,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             violations: [badViolation]
         };
 
-        expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
+        await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithEndColumnBeforeStartColumnOnSameLine',
                 'stubEngine1', 'stub1RuleA', 2, 5));
     });

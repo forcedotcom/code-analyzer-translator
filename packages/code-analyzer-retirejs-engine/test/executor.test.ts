@@ -133,8 +133,8 @@ describe('Tests for the SimpleRetireJsExecutor', () => {
         executor = new SimpleRetireJsExecutor();
     });
 
-    it('When file is specified among input paths, then SimpleRetireJsExecutor currently errors out since it does not support files', () => {
-        expect(executor.execute(testTools.createWorkspace([path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js')])))
+    it('When file is specified among input paths, then SimpleRetireJsExecutor currently errors out since it does not support files', async () => {
+        await expect(executor.execute(testTools.createWorkspace([path.resolve('test','test-data','scenarios','1_hasJsLibraryWithVulnerability', 'jquery-3.1.0.js')])))
             .rejects.toThrow('Currently the SimpleRetireJsExecutor does not support scanning individual files.');
     });
 
