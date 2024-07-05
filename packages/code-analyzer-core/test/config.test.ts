@@ -229,6 +229,6 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When supplied config_root path is a relative folder, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({config_root: 'test/test-data'})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueMustBeAbsolute',
-                'config_root', `test${path.sep}test-data`, path.resolve('test','test-data')));
+                'config_root', 'test/test-data', path.resolve('test','test-data')));
     });
 });
