@@ -1,6 +1,7 @@
 import {ConfigObject, ConfigValueExtractor} from '@salesforce/code-analyzer-engine-api';
 import {getMessage} from "./messages";
 import path from "node:path";
+import {makeUnique} from "./utils";
 
 export type ESLintEngineConfig = {
     // The code analyzer config root. It is supplied to us automatically from core even if the user doesn't specify it.
@@ -27,17 +28,13 @@ export type ESLintEngineConfig = {
     // Default: false
     disable_typescript_base_config: boolean
 
-    // Extensions of the javascript files in your workspace that will be used to discover javascript based rules.
+    // Extensions of the javascript files in your workspace that will be used to discover rules.
     // Default: ['.js', '.cjs', '.mjs']
     javascript_file_extensions: string[]
 
-    // Extensions of the typescript files in your workspace that will be used to discover typescript based rules.
+    // Extensions of the typescript files in your workspace that will be used to discover rules.
     // Default: ['.ts']
     typescript_file_extensions: string[]
-
-    // Extensions of the other (non-javascript and non-typescript) files in your workspace that will be used to discover other rules.
-    // Default: []
-    other_file_extensions: string[]
 }
 
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
@@ -48,17 +45,17 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     disable_lwc_base_config: false,
     disable_typescript_base_config: false,
     javascript_file_extensions:  ['.js', '.cjs', '.mjs'],
-    typescript_file_extensions: ['.ts'],
-    other_file_extensions: []
+    typescript_file_extensions: ['.ts']
 }
 
 // See https://eslint.org/docs/v8.x/use/configure/configuration-files#configuration-file-formats
 export const LEGACY_ESLINT_CONFIG_FILES: string[] =
     ['.eslintrc.js', '.eslintrc.cjs', '.eslintrc.yaml', '.eslintrc.yml', '.eslintrc.json'];
 
+
 export function validateAndNormalizeConfig(rawConfig: ConfigObject): ESLintEngineConfig {
     const valueExtractor: ESLintEngineConfigValueExtractor = new ESLintEngineConfigValueExtractor(rawConfig);
-    const [jsExts, tsExts, otherExts] = valueExtractor.extractFileExtensionsValues();
+    const [jsExts, tsExts] = valueExtractor.extractFileExtensionsValues();
     return {
         config_root: valueExtractor.extractConfigRoot(),
         eslint_config_file: valueExtractor.extractESLintConfigFileValue(),
@@ -67,8 +64,7 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): ESLintEngin
         disable_lwc_base_config: valueExtractor.extractBoolean('disable_lwc_base_config', DEFAULT_CONFIG.disable_lwc_base_config)!,
         disable_typescript_base_config: valueExtractor.extractBoolean('disable_typescript_base_config', DEFAULT_CONFIG.disable_typescript_base_config)!,
         javascript_file_extensions:  jsExts,
-        typescript_file_extensions: tsExts,
-        other_file_extensions: otherExts
+        typescript_file_extensions: tsExts
     };
 }
 
@@ -91,22 +87,19 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
 
     extractFileExtensionsValues(): string[][] {
         const jsExtsField: string = 'javascript_file_extensions';
-        const jsExts: string[] = makeUnique(this.extractExtensionsValue(jsExtsField, DEFAULT_CONFIG.javascript_file_extensions)!);
         const tsExtsField: string = 'typescript_file_extensions';
+        const jsExts: string[] = makeUnique(this.extractExtensionsValue(jsExtsField, DEFAULT_CONFIG.javascript_file_extensions)!);
         const tsExts: string[] = makeUnique(this.extractExtensionsValue(tsExtsField, DEFAULT_CONFIG.typescript_file_extensions)!);
-        const otherExtsField: string = 'other_file_extensions';
-        const otherExts: string[] = makeUnique(this.extractExtensionsValue(otherExtsField, DEFAULT_CONFIG.other_file_extensions)!);
 
-        const allExts: string[] = [...jsExts, ...tsExts, ...otherExts];
-        if (allExts.length != makeUnique(allExts).length) {
+        const allExts: string[] = jsExts.concat(tsExts);
+        if (allExts.length != (new Set(allExts)).size) {
             const currentValuesString: string =
                 `  ${this.getFullFieldName(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
-                `  ${this.getFullFieldName(tsExtsField)}: ${JSON.stringify(tsExts)}\n` +
-                `  ${this.getFullFieldName(otherExtsField)}: ${JSON.stringify(otherExts)}`;
+                `  ${this.getFullFieldName(tsExtsField)}: ${JSON.stringify(tsExts)}`;
             throw new Error(getMessage('ConfigStringArrayValuesMustNotShareElements', currentValuesString));
         }
 
-        return [jsExts, tsExts, otherExts];
+        return [jsExts, tsExts];
     }
 
     extractExtensionsValue(fieldName: string, defaultValue: string[]): string[] {
@@ -114,10 +107,6 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
         return fileExts.map((fileExt, i) => validateStringMatches(
             ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.getFullFieldName(fieldName)}[${i}]`));
     }
-}
-
-function makeUnique(value: string[]): string[] {
-    return [...new Set(value)];
 }
 
 function validateStringMatches(pattern: RegExp, value: string, fieldName: string): string {

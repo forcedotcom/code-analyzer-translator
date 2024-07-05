@@ -1,0 +1,99 @@
+[
+  {
+    "name": "@lwc/lwc/no-deprecated",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "disallow usage of deprecated LWC APIs",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/no-deprecated.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/no-disallowed-lwc-imports",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "restrict unexpected imports from the lwc package",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/no-disallowed-lwc-imports.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/no-unexpected-wire-adapter-usages",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "restrict unexpected wire adapter usages",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/no-unexpected-wire-adapter-usages.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/no-unknown-wire-adapters",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "restrict usage of unknown wire adapters",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/no-unknown-wire-adapters.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/valid-api",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "validate api decorator usage",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/valid-api.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/valid-track",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "validate track decorator usage",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/valid-track.md"
+    ]
+  },
+  {
+    "name": "@lwc/lwc/valid-wire",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended"
+    ],
+    "description": "validate wire decorator usage",
+    "resourceUrls": [
+      "https://github.com/salesforce/eslint-plugin-lwc/blob/v1.8.2/docs/rules/valid-wire.md"
+    ]
+  },
+  {
+    "name": "no-restricted-imports",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "suggestion"
+    ],
+    "description": "Disallow specified modules when loaded by `import`",
+    "resourceUrls": [
+      "https://eslint.org/docs/latest/rules/no-restricted-imports"
+    ]
+  }
+]

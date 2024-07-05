@@ -35,7 +35,7 @@ export class ESLintEngine extends Engine {
             new PresentESLintWorkspace(describeOptions.workspace, this.config) :
             new MissingESLintWorkspace(this.config);
 
-        const eslintStrategy: ESLintStrategy = new LegacyESLintStrategy(workspace);
+        const eslintStrategy: ESLintStrategy = new LegacyESLintStrategy(workspace, this.config);
 
         const ruleStatuses: Map<string, ESLintRuleStatus> = await eslintStrategy.calculateRuleStatuses();
         const rulesMetadata: Map<string, Rule.RuleMetaData> = await eslintStrategy.calculateRulesMetadata();

@@ -50,11 +50,11 @@ describe('Tests for the ESLintEnginePlugin', () => {
     it('When a valid eslint_config_file is passed to createEngine, then it is set on the config', async () => {
         const rawConfig: ConfigObject = {
             config_root: __dirname,
-            eslint_config_file: 'test-data/legacyConfigCases/3_CustomizationWithNewRules/.eslintrc.yml'
+            eslint_config_file: 'test-data/legacyConfigCases/workspace_HasCustomConfigWithNewRules/.eslintrc.yml'
         };
         const engine: ESLintEngine = (await plugin.createEngine('eslint', rawConfig)) as ESLintEngine;
         expect(engine.getConfig().eslint_config_file).toEqual(
-            path.resolve(__dirname, 'test-data', 'legacyConfigCases', '3_CustomizationWithNewRules', '.eslintrc.yml'));
+            path.resolve(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigWithNewRules', '.eslintrc.yml'));
     });
 
     it('When eslint_config_file value does not exist, then createEngine errors', async () => {
@@ -146,25 +146,13 @@ describe('Tests for the ESLintEnginePlugin', () => {
                 'engines.eslint.typescript_file_extensions[1]', 'missingDot', '^[.][a-zA-Z0-9]+$'));
     });
 
-    it('When a valid other_file_extensions value is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {other_file_extensions: ['.htm', '.html', '.css']})) as ESLintEngine;
-        expect(engine.getConfig().other_file_extensions).toEqual(['.htm', '.html', '.css']);
-    });
-
-    it('When other_file_extensions is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {other_file_extensions: ['.htm', '.html', '.css oops']})).rejects.toThrow(
-            getMessage('ConfigStringValueMustMatchPattern',
-                'engines.eslint.other_file_extensions[2]', '.css oops', '^[.][a-zA-Z0-9]+$'));
-    });
-
     it('When an extension is listed in more than one *_file_extensions field, then createEngine errors', async () => {
         const rawConfig: ConfigObject = {
-            other_file_extensions: ['.html', '.js', '.css']
+            typescript_file_extensions: ['.ts', '.js']
         };
         await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
             getMessage('ConfigStringArrayValuesMustNotShareElements',
                 `  engines.eslint.javascript_file_extensions: [".js",".cjs",".mjs"]\n` +
-                `  engines.eslint.typescript_file_extensions: [".ts"]\n` +
-                `  engines.eslint.other_file_extensions: [".html",".js",".css"]`));
+                `  engines.eslint.typescript_file_extensions: [".ts",".js"]`));
     });
 });

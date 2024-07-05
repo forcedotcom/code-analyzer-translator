@@ -2,25 +2,28 @@ import {ESLintRuleStatus} from "./enums";
 import {ESLint, Linter, Rule} from "eslint";
 import {ESLintWorkspace} from "./workspace";
 import path from "node:path";
-import {createJavascriptPlusLwcBaseConfig, createTypescriptBaseConfig, BaseRuleset} from "./base-config";
+import {BaseRuleset, LegacyBaseConfigFactory} from "./base-config";
+import {ESLintEngineConfig} from "./config";
 
 export interface ESLintStrategy {
     calculateRuleStatuses(): Promise<Map<string, ESLintRuleStatus>>
-
     calculateRulesMetadata(): Promise<Map<string, Rule.RuleMetaData>>
 }
 
 export class LegacyESLintStrategy implements ESLintStrategy {
     private readonly workspace: ESLintWorkspace;
+    private readonly baseConfigFactory: LegacyBaseConfigFactory;
+    private readonly config: ESLintEngineConfig;
     private ruleStatuses?: Map<string, ESLintRuleStatus>;
 
-    constructor(workspace: ESLintWorkspace) {
+    constructor(workspace: ESLintWorkspace, config: ESLintEngineConfig) {
         this.workspace = workspace;
+        this.config = config;
+        this.baseConfigFactory = new LegacyBaseConfigFactory(config);
     }
 
     async calculateRulesMetadata(): Promise<Map<string, Rule.RuleMetaData>> {
-        const ruleModulesMap: Map<string, Rule.RuleModule> = await getAllRuleModules(
-            this.createLegacyESLint(BaseRuleset.ALL, true));
+        const ruleModulesMap: Map<string, Rule.RuleModule> = await getAllRuleModules(this.createESLint(BaseRuleset.ALL));
         const rulesMetadata: Map<string, Rule.RuleMetaData> = new Map();
         for (const [ruleName, ruleModule] of ruleModulesMap) {
             if (ruleModule.meta && !ruleModule.meta.deprecated) { // do not add deprecated rules or rules without metadata
@@ -44,10 +47,12 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             return this.ruleStatuses;
         }
 
-        const candidateFiles: string[] = [...await this.workspace.getJavascriptFiles(),
-            ...await this.workspace.getTypescriptFiles()];
+        const candidateFiles: string[] = this.userConfigEnabled() ?
+            await this.workspace.getCandidateFilesForUserConfig() :
+            await this.workspace.getCandidateFilesForBaseConfig();
+
         this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles,
-            this.createLegacyESLint(BaseRuleset.RECOMMENDED, true));
+            this.createESLint(BaseRuleset.RECOMMENDED));
 
         // The ruleStatuses so far only include the rules that are explicitly listed in the recommended base configs
         // and the users config files. We manually add in the other base rules that are not recommended so that they can
@@ -63,8 +68,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         return this.ruleStatuses;
     }
 
-    private async calculateRuleStatusesFor(files: string[], legacyESLint: ESLint): Promise<Map<string, ESLintRuleStatus>> {
-        const configs: Linter.Config[] = await Promise.all(files.map(f => legacyESLint.calculateConfigForFile(f) as Linter.Config));
+    private userConfigEnabled(): boolean {
+        // The use of the user's config is based on whether we are allowed to dynamically lookup user config as we go.
+        // If not, then it is determined on whether the user has manually supplied a config file.
+        return !this.config.disable_config_lookup || this.workspace.getLegacyConfigFile() !== undefined;
+    }
+
+    private async calculateRuleStatusesFor(files: string[], eslint: ESLint): Promise<Map<string, ESLintRuleStatus>> {
+        const configs: Linter.Config[] = await Promise.all(files.map(f => eslint.calculateConfigForFile(f) as Linter.Config));
         const ruleStatuses: Map<string, ESLintRuleStatus> = new Map();
         for (const config of configs) {
             /* istanbul ignore next */
@@ -83,34 +94,27 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         return ruleStatuses;
     }
 
-    private createLegacyESLint(baseRuleset: BaseRuleset, applyUserConfig: boolean, overrideConfig?: Linter.Config): ESLint {
+    private createESLint(baseRuleset: BaseRuleset, overrideConfig?: Linter.Config): ESLint {
         const options: ESLint.Options = {
             cwd: __dirname, // This is needed to make the base plugins discoverable. Don't worry, user's plugins are also still discovered.
             errorOnUnmatchedPattern: false,
-            baseConfig: this.createLegacyBaseConfig(baseRuleset), // This is applied first (on bottom).
-            useEslintrc: applyUserConfig, // This is applied second. TODO: Allow users to turn this off via engine config
-            overrideConfigFile: applyUserConfig ? this.workspace.getLegacyConfigFile() : undefined, // This is applied third.
-            overrideConfig: overrideConfig // This is applied fourth (on top).
+            baseConfig: this.baseConfigFactory.createBaseConfig(baseRuleset), // This is applied first (on bottom).
+            useEslintrc: !this.config.disable_config_lookup,                  // This is applied second.
+            overrideConfigFile: this.workspace.getLegacyConfigFile(),         // This is applied third.
+            overrideConfig: overrideConfig                                    // This is applied fourth (on top).
         };
         return new ESLint(options);
     }
 
-    private createLegacyBaseConfig(baseRuleset: BaseRuleset): Linter.Config {
-        const overrides: Linter.ConfigOverride[] = [];
-        overrides.push(createJavascriptPlusLwcBaseConfig(baseRuleset));
-        overrides.push(createTypescriptBaseConfig(baseRuleset));
-        return {
-            globals: {
-                "$A": "readonly",  // Mark as known global for Aura: https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_jsapi_dollarA.htm
-            },
-            overrides: overrides
-        };
-    }
-
     private async getAllBaseRuleNames(): Promise<string[]> {
         const candidateFiles: string[] = await this.workspace.getCandidateFilesForBaseConfig();
+        const eslintForBaseRuleNameDiscovery: ESLint = new ESLint({
+            cwd: __dirname, // This is needed to make the base plugins discoverable.
+            baseConfig: this.baseConfigFactory.createBaseConfig(BaseRuleset.ALL),
+            useEslintrc: false
+        });
         return Array.from(
-            (await this.calculateRuleStatusesFor(candidateFiles, this.createLegacyESLint(BaseRuleset.ALL, false))).keys()
+            (await this.calculateRuleStatusesFor(candidateFiles, eslintForBaseRuleNameDiscovery)).keys()
         );
     }
 }
