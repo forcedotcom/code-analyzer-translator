@@ -1553,18 +1553,6 @@
     ]
   },
   {
-    "name": "constructor-super",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Require `super()` calls in constructors",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/constructor-super"
-    ]
-  },
-  {
     "name": "curly",
     "severityLevel": 3,
     "type": "Standard",
@@ -1683,18 +1671,6 @@
     "description": "Enforce the consistent use of either `function` declarations or expressions",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/func-style"
-    ]
-  },
-  {
-    "name": "getter-return",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Enforce `return` statements in getters",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/getter-return"
     ]
   },
   {
@@ -1914,18 +1890,6 @@
     ]
   },
   {
-    "name": "no-array-constructor",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow `Array` constructors",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-array-constructor"
-    ]
-  },
-  {
     "name": "no-async-promise-executor",
     "severityLevel": 2,
     "type": "Standard",
@@ -2039,18 +2003,6 @@
     ]
   },
   {
-    "name": "no-const-assign",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow reassigning `const` variables",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-const-assign"
-    ]
-  },
-  {
     "name": "no-constant-binary-expression",
     "severityLevel": 2,
     "type": "Standard",
@@ -2151,30 +2103,6 @@
     ]
   },
   {
-    "name": "no-dupe-args",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow duplicate arguments in `function` definitions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-dupe-args"
-    ]
-  },
-  {
-    "name": "no-dupe-class-members",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow duplicate class members",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-dupe-class-members"
-    ]
-  },
-  {
     "name": "no-dupe-else-if",
     "severityLevel": 2,
     "type": "Standard",
@@ -2185,18 +2113,6 @@
     "description": "Disallow duplicate conditions in if-else-if chains",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-dupe-else-if"
-    ]
-  },
-  {
-    "name": "no-dupe-keys",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow duplicate keys in object literals",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-dupe-keys"
     ]
   },
   {
@@ -2399,18 +2315,6 @@
     ]
   },
   {
-    "name": "no-func-assign",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow reassigning `function` declarations",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-func-assign"
-    ]
-  },
-  {
     "name": "no-global-assign",
     "severityLevel": 3,
     "type": "Standard",
@@ -2457,18 +2361,6 @@
     "description": "Disallow the use of `eval()`-like methods",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-implied-eval"
-    ]
-  },
-  {
-    "name": "no-import-assign",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow assigning to imported bindings",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-import-assign"
     ]
   },
   {
@@ -2607,18 +2499,6 @@
     ]
   },
   {
-    "name": "no-loss-of-precision",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow literal numbers that lose precision",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-loss-of-precision"
-    ]
-  },
-  {
     "name": "no-magic-numbers",
     "severityLevel": 3,
     "type": "Standard",
@@ -2716,30 +2596,6 @@
     ]
   },
   {
-    "name": "no-new-native-nonconstructor",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow `new` operators with global non-constructor functions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-new-native-nonconstructor"
-    ]
-  },
-  {
-    "name": "no-new-symbol",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow `new` operators with the `Symbol` object",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-new-symbol"
-    ]
-  },
-  {
     "name": "no-new-wrappers",
     "severityLevel": 3,
     "type": "Standard",
@@ -2762,18 +2618,6 @@
     "description": "Disallow `\\8` and `\\9` escape sequences in string literals",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-nonoctal-decimal-escape"
-    ]
-  },
-  {
-    "name": "no-obj-calls",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow calling global object properties as functions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-obj-calls"
     ]
   },
   {
@@ -2872,18 +2716,6 @@
     "description": "Disallow calling some `Object.prototype` methods directly on objects",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-prototype-builtins"
-    ]
-  },
-  {
-    "name": "no-redeclare",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow variable redeclaration",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-redeclare"
     ]
   },
   {
@@ -3021,18 +2853,6 @@
     ]
   },
   {
-    "name": "no-setter-return",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow returning values from setters",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-setter-return"
-    ]
-  },
-  {
     "name": "no-shadow",
     "severityLevel": 3,
     "type": "Standard",
@@ -3095,18 +2915,6 @@
     ]
   },
   {
-    "name": "no-this-before-super",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow `this`/`super` before calling `super()` in constructors",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-this-before-super"
-    ]
-  },
-  {
     "name": "no-throw-literal",
     "severityLevel": 3,
     "type": "Standard",
@@ -3116,18 +2924,6 @@
     "description": "Disallow throwing literals as exceptions",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-throw-literal"
-    ]
-  },
-  {
-    "name": "no-undef",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow the use of undeclared variables unless mentioned in `/*global */` comments",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-undef"
     ]
   },
   {
@@ -3204,18 +3000,6 @@
     ]
   },
   {
-    "name": "no-unreachable",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow unreachable code after `return`, `throw`, `continue`, and `break` statements",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-unreachable"
-    ]
-  },
-  {
     "name": "no-unreachable-loop",
     "severityLevel": 2,
     "type": "Standard",
@@ -3238,18 +3022,6 @@
     "description": "Disallow control flow statements in `finally` blocks",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-unsafe-finally"
-    ]
-  },
-  {
-    "name": "no-unsafe-negation",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow negating the left operand of relational operators",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-unsafe-negation"
     ]
   },
   {
@@ -3300,18 +3072,6 @@
     "description": "Disallow unused private class members",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-unused-private-class-members"
-    ]
-  },
-  {
-    "name": "no-unused-vars",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow unused variables",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-unused-vars"
     ]
   },
   {

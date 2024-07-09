@@ -54,13 +54,24 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles,
             this.createESLint(BaseRuleset.RECOMMENDED));
 
+        // Since we have no easy way of turning on a rule that has been explicitly turned off in the config
+        // (because we don't know its rule options or parser configuration ), we remove these turned off
+        // rules entirely so that they can't be selected.
+        const explicitlyTurnedOffRules: Set<string> = new Set();
+        for (const [ruleName, ruleStatus] of this.ruleStatuses) {
+            if (ruleStatus === ESLintRuleStatus.OFF) {
+                explicitlyTurnedOffRules.add(ruleName);
+                this.ruleStatuses.delete(ruleName);
+            }
+        }
+
         // The ruleStatuses so far only include the rules that are explicitly listed in the recommended base configs
         // and the users config files. We manually add in the other base rules that are not recommended so that they can
         // be selectable even though they are off by default. Note that we do not want to add in any additional rules
         // from users plugins that aren't explicitly configured since we have no easy way of turning them on for the
         // user (since we don't know if their rules require special options), thus we only add in the missing base rules.
         for (const ruleName of await this.getAllBaseRuleNames()) {
-            if (!this.ruleStatuses.has(ruleName)) {
+            if (!this.ruleStatuses.has(ruleName) && !explicitlyTurnedOffRules.has(ruleName)) {
                 this.ruleStatuses.set(ruleName, ESLintRuleStatus.OFF);
             }
         }

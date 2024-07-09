@@ -715,18 +715,6 @@
     ]
   },
   {
-    "name": "no-useless-escape",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow unnecessary escape characters",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-useless-escape"
-    ]
-  },
-  {
     "name": "no-with",
     "severityLevel": 3,
     "type": "Standard",

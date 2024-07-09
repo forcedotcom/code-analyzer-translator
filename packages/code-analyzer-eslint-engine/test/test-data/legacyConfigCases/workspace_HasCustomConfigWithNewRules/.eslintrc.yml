@@ -9,6 +9,10 @@ rules:
     - "error"
   "dummy/my-rule-5":
     - "error"
+  "dummy/my-rule-6":
+    - "off"
 
-# Note we aren't selecting my-rule-4 and so our tests should act like this rule doesn't even exist and can't be selected
-# and note that my-rule-5 has no metadata and so it too should act like it doesn't even exist and can't be selected
+# Notes:
+#  * we aren't selecting my-rule-4 and so our tests should act like this rule doesn't even exist and can't be selected
+#  * my-rule-5 has no metadata and so it too should act like it doesn't even exist and can't be selected
+#  * my-rule-6 is explicitly turned off, therefore it is also acts like it does not exist and can't be selected
