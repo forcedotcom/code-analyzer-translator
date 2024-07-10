@@ -99,8 +99,8 @@ describe('Tests for the RetireJsEnginePlugin', () => {
         expect(await plugin.createEngine('retire-js', {})).toBeInstanceOf(RetireJsEngine);
     });
 
-    it('When createEngine is passed anything else then an error is thrown', () => {
-        expect(plugin.createEngine('oops', {})).rejects.toThrow(
+    it('When createEngine is passed anything else then an error is thrown', async () => {
+        await expect(plugin.createEngine('oops', {})).rejects.toThrow(
             getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
     });
 });

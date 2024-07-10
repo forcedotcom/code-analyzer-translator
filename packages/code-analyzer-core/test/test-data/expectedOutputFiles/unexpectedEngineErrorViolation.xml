@@ -16,7 +16,7 @@
       <severity>1</severity>
       <type>UnexpectedError</type>
       <tags></tags>
-      <message>The engine with name "throwingEngine" threw an unexpected error: SomeErrorMessageFromThrowingEngine</message>
+      <message>The engine with name 'throwingEngine' threw an unexpected error: SomeErrorMessageFromThrowingEngine</message>
       <resources></resources>
     </violation>
   </violations>

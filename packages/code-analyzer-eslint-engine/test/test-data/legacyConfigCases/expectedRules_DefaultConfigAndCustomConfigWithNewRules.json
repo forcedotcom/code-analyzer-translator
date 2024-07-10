@@ -1533,7 +1533,6 @@
     "severityLevel": 2,
     "type": "Standard",
     "tags": [
-      "Recommended",
       "problem"
     ],
     "description": "Enforce `return` statements in callbacks of array methods",
@@ -1709,6 +1708,43 @@
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/dot-notation"
     ]
+  },
+  {
+    "name": "dummy/my-rule-1",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "suggestion"
+    ],
+    "description": "My description of my-rule-1",
+    "resourceUrls": [
+      "https://example.com/my-rule-1"
+    ]
+  },
+  {
+    "name": "dummy/my-rule-2",
+    "severityLevel": 5,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "problem"
+    ],
+    "description": "",
+    "resourceUrls": [
+      "https://example.com/my-rule-2"
+    ]
+  },
+  {
+    "name": "dummy/my-rule-3",
+    "severityLevel": 4,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "layout"
+    ],
+    "description": "My description of my-rule-3",
+    "resourceUrls": []
   },
   {
     "name": "eqeqeq",
@@ -1998,18 +2034,6 @@
     "description": "Disallow the use of `alert`, `confirm`, and `prompt`",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-alert"
-    ]
-  },
-  {
-    "name": "no-array-constructor",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow `Array` constructors",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-array-constructor"
     ]
   },
   {
@@ -2810,18 +2834,6 @@
     ]
   },
   {
-    "name": "no-new-native-nonconstructor",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow `new` operators with global non-constructor functions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-new-native-nonconstructor"
-    ]
-  },
-  {
     "name": "no-new-symbol",
     "severityLevel": 2,
     "type": "Standard",
@@ -3432,7 +3444,7 @@
   },
   {
     "name": "no-useless-backreference",
-    "severityLevel": 5,
+    "severityLevel": 2,
     "type": "Standard",
     "tags": [
       "Recommended",
@@ -3509,6 +3521,7 @@
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
+      "Recommended",
       "suggestion"
     ],
     "description": "Disallow unnecessary escape characters",

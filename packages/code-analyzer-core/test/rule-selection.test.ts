@@ -236,7 +236,7 @@ describe('Tests for selecting rules', () => {
 
     it('When an engine returns multiple rules with the same name, then error', async () => {
         await codeAnalyzer.addEnginePlugin(new RepeatedRuleNameEnginePlugin());
-        expect(codeAnalyzer.selectRules([])).rejects.toThrow(
+        await expect(codeAnalyzer.selectRules([])).rejects.toThrow(
             getMessage('EngineReturnedMultipleRulesWithSameName', 'repeatedRuleNameEngine', 'repeatedRule'));
     });
 

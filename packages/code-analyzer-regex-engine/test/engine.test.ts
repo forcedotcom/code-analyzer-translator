@@ -108,8 +108,8 @@ describe('RegexEnginePlugin Tests' , () => {
         expect(engineRules).toStrictEqual(expEngineRules)
     });
 
-    it('If I make an engine with an invalid name, it should throw an error with the proper error message', () => { 
-        expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("Unsupported engine name: OtherEngine");
+    it('If I make an engine with an invalid name, it should throw an error with the proper error message', async () => {
+        await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("Unsupported engine name: OtherEngine");
     });
 });
 

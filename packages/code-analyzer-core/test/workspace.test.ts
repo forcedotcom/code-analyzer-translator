@@ -21,7 +21,7 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
     });
 
     it("When creating workspace with file that does not exist, then error", async () => {
-        expect(codeAnalyzer.createWorkspace(['does/not/exist.cls'])).rejects.toThrow(
+        await expect(codeAnalyzer.createWorkspace(['does/not/exist.cls'])).rejects.toThrow(
             getMessage('FileOrFolderDoesNotExist', toAbsolutePath('does/not/exist.cls')));
     });
 

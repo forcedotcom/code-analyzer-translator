@@ -1,17 +1,7 @@
-import { Engine } from "./engines"
+import {Engine} from "./engines"
+import {ConfigObject} from "./config";
 
 export const ENGINE_API_VERSION: number = 1.0;
-
-export type ConfigObject = {
-    [key: string]: ConfigValue
-}
-export type ConfigValue =
-    | string
-    | number
-    | boolean
-    | null
-    | ConfigValue[]
-    | ConfigObject;
 
 export interface EnginePlugin  {
     getApiVersion(): number

@@ -84,8 +84,8 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual([])
     })
 
-    it('When plugin throws error during getAvailableEngineNames, then we throw an exception', () => {
-        expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin1())).rejects.toThrow(
+    it('When plugin throws error during getAvailableEngineNames, then we throw an exception', async () => {
+        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin1())).rejects.toThrow(
             getMessage('PluginErrorFromGetAvailableEngineNames', 'SomeErrorFromGetAvailableEngineNames')
         );
     })
@@ -107,19 +107,19 @@ describe("Tests for adding engines to Code Analyzer", () => {
 
     it('When calling dynamicallyAddEnginePlugin on a module that is missing a createEnginePlugin function, then an error is thrown', async () => {
         const badPluginModulePath: string = require.resolve('./test-helpers');
-        expect(codeAnalyzer.dynamicallyAddEnginePlugin(badPluginModulePath)).rejects.toThrow(
+        await expect(codeAnalyzer.dynamicallyAddEnginePlugin(badPluginModulePath)).rejects.toThrow(
             getMessage('FailedToDynamicallyAddEnginePlugin', badPluginModulePath));
     });
 
     it('When calling dynamicallyAddEnginePlugin on a module that does not exist, then an error is thrown', async () => {
         const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', 'doesNotExist', '');
-        expect(codeAnalyzer.dynamicallyAddEnginePlugin('doesNotExist')).rejects.toThrow(expectedErrorMessageSubstring);
+        await expect(codeAnalyzer.dynamicallyAddEnginePlugin('doesNotExist')).rejects.toThrow(expectedErrorMessageSubstring);
     });
 
     it('When calling dynamicallyAddEnginePlugin on a file that is not a module, then an error is thrown', async () => {
         const nonModuleFile: string = path.resolve('LICENSE');
         const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', nonModuleFile, '');
-        expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
+        await expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
     });
 });
 

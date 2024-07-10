@@ -1,0 +1,39 @@
+[
+  {
+    "name": "dummy/my-rule-1",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "suggestion"
+    ],
+    "description": "My description of my-rule-1",
+    "resourceUrls": [
+      "https://example.com/my-rule-1"
+    ]
+  },
+  {
+    "name": "dummy/my-rule-2",
+    "severityLevel": 5,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "problem"
+    ],
+    "description": "",
+    "resourceUrls": [
+      "https://example.com/my-rule-2"
+    ]
+  },
+  {
+    "name": "dummy/my-rule-3",
+    "severityLevel": 4,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "layout"
+    ],
+    "description": "My description of my-rule-3",
+    "resourceUrls": []
+  }
+]

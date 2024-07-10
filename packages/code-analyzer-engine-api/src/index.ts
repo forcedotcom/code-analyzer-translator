@@ -1,6 +1,11 @@
 export {
     ConfigObject,
     ConfigValue,
+    ConfigValueExtractor,
+    ValueValidator
+} from "./config"
+
+export {
     EnginePlugin,
     EnginePluginV1,
     ENGINE_API_VERSION
@@ -21,6 +26,12 @@ export {
     LogLevel,
     ProgressEvent
 } from "./events"
+
+export {
+    MessageCatalog,
+    getMessageFromCatalog,
+    SHARED_MESSAGE_CATALOG
+} from "./messages"
 
 export {
     CodeLocation,
