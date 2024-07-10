@@ -398,28 +398,24 @@ describe("Tests for the run method of CodeAnalyzer", () => {
                 'stubEngine2', 'stub2RuleC', path.resolve('test', 'test-data')));
     });
 
-
-    async function testInvalidLineOrColumnScenario(startLine: number, startColumn: number, endLine: number, endColumn: number, expectedBadField: string, expectedBadValue: number): Promise<void> {
+    it.each([
+        {startLine: -1, startColumn: 2, endLine: 3, endColumn: 4, expectedBadField: 'startLine', expectedBadValue: -1},
+        {startLine: 1.5, startColumn: 2, endLine: 3, endColumn: 4, expectedBadField: 'startLine', expectedBadValue: 1.5},
+        {startLine: 1, startColumn: 0, endLine: 3, endColumn: 4, expectedBadField: 'startColumn', expectedBadValue: 0},
+        {startLine: 1, startColumn: 3.124, endLine: 3, endColumn: 4, expectedBadField: 'startColumn', expectedBadValue: 3.124},
+        {startLine: 1, startColumn: 2, endLine: -1.2, endColumn: 4, expectedBadField: 'endLine', expectedBadValue: -1.2},
+        {startLine: 1, startColumn: 2, endLine: 3, endColumn: 0, expectedBadField: 'endColumn', expectedBadValue: 0},
+    ])("When an engine returns a code location that has an invalid line or column, then an error is thrown", async (caseObj) => {
         const badViolation: engApi.Violation = stubs.getSampleViolationForStub1RuleA();
-        badViolation.codeLocations[0].startLine = startLine;
-        badViolation.codeLocations[0].startColumn = startColumn;
-        badViolation.codeLocations[0].endLine = endLine;
-        badViolation.codeLocations[0].endColumn = endColumn;
-        stubEngine1.resultsToReturn = {
-            violations: [badViolation]
-        };
+        badViolation.codeLocations[0].startLine = caseObj.startLine;
+        badViolation.codeLocations[0].startColumn = caseObj.startColumn;
+        badViolation.codeLocations[0].endLine = caseObj.endLine;
+        badViolation.codeLocations[0].endColumn = caseObj.endColumn;
+        stubEngine1.resultsToReturn = { violations: [badViolation] };
 
         await expect(codeAnalyzer.run(selection, sampleRunOptions)).rejects.toThrow(
             getMessage('EngineReturnedViolationWithCodeLocationWithInvalidLineOrColumn',
-                'stubEngine1', 'stub1RuleA', expectedBadField, expectedBadValue));
-    }
-    it("When an engine returns a code location that has an invalid line or column, then an error is thrown", async () => {
-        await testInvalidLineOrColumnScenario(-1, 2, 3, 4, 'startLine', -1);
-        await testInvalidLineOrColumnScenario(1.5, 2, 3, 4, 'startLine', 1.5);
-        await testInvalidLineOrColumnScenario(1, 0, 3, 4, 'startColumn', 0);
-        await testInvalidLineOrColumnScenario(1, 3.124, 3, 4, 'startColumn', 3.124);
-        await testInvalidLineOrColumnScenario(1, 2, -1.2, 4, 'endLine', -1.2);
-        await testInvalidLineOrColumnScenario(1, 2, 3, 0, 'endColumn', 0);
+                'stubEngine1', 'stub1RuleA', caseObj.expectedBadField, caseObj.expectedBadValue));
     });
 
     it("When an engine returns a code location with a endLine before a startLine, then an error is thrown", async () => {

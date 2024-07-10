@@ -5,6 +5,7 @@ import {ESLintEngineConfig, LEGACY_ESLINT_CONFIG_FILES} from "./config";
 import {calculateLongestCommonParentFolderOf, makeUnique} from "./utils";
 
 export interface ESLintWorkspace {
+    getFilesToScan(): Promise<string[]>
     getCandidateFilesForUserConfig(): Promise<string[]>
     getCandidateFilesForBaseConfig(): Promise<string[]>
     getLegacyConfigFile(): string | undefined
@@ -17,6 +18,11 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
 
     constructor(config: ESLintEngineConfig) {
         this.config = config;
+    }
+
+    /* istanbul ignore next */
+    async getFilesToScan(): Promise<string[]> {
+        throw new Error("This method should never be called");
     }
 
     async getCandidateFilesForUserConfig(): Promise<string[]> {
@@ -64,15 +70,18 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
     private getWorkspaceRoot(): string {
         if (!this.workspaceRoot) {
             const filesAndFolders: string[] = this.delegateWorkspace.getFilesAndFolders();
-            this.workspaceRoot = filesAndFolders.length == 0 ? this.config.config_root :
-                (calculateLongestCommonParentFolderOf(filesAndFolders) || this.config.config_root);
+            this.workspaceRoot = calculateLongestCommonParentFolderOf(filesAndFolders) || this.config.config_root;
         }
         return this.workspaceRoot;
     }
 
-    async getCandidateFilesForUserConfig(): Promise<string[]> {
+    async getFilesToScan(): Promise<string[]> {
         const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest();
         return filesOfInterest.javascriptFiles.concat(filesOfInterest.typescriptFiles);
+    }
+
+    async getCandidateFilesForUserConfig(): Promise<string[]> {
+        return this.getFilesToScan();
     }
 
     async getCandidateFilesForBaseConfig(): Promise<string[]> {

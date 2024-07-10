@@ -352,7 +352,7 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigPathValueDoesNotExist','engines.dummy.some_field2', path.resolve(process.cwd(), 'doesNotExist')));
     });
 
-    it("When calling extractFolder on a field that is a folder, then error", () => {
+    it("When calling extractFolder on a field that is a file, then error", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
             config_root: __dirname,
             some_field: 'test-data/sampleWorkspace/someFile.txt'
