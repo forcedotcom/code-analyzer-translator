@@ -70,8 +70,7 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
     private getWorkspaceRoot(): string {
         if (!this.workspaceRoot) {
             const filesAndFolders: string[] = this.delegateWorkspace.getFilesAndFolders();
-            this.workspaceRoot = filesAndFolders.length == 0 ? this.config.config_root :
-                (calculateLongestCommonParentFolderOf(filesAndFolders) || this.config.config_root);
+            this.workspaceRoot = calculateLongestCommonParentFolderOf(filesAndFolders) || this.config.config_root;
         }
         return this.workspaceRoot;
     }

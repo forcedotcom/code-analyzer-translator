@@ -6,7 +6,7 @@ import path from "node:path";
  *
  * @param paths It is assumed that paths is a non-empty array of absolute value paths.
  * If empty or if no common parent folder exists (like in the case on Windows machines of using two different drives
- * C: and D:) then null is returned.
+ * C: and D:) then null is returned (to allow the client of this function to handle this case without needing try/catch)
  */
 export function calculateLongestCommonParentFolderOf(paths: string[]): string | null {
     if (paths.length === 0) {
