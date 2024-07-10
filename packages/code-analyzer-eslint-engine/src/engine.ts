@@ -5,17 +5,20 @@ import {
     RuleDescription,
     RuleType,
     RunOptions,
-    SeverityLevel
+    SeverityLevel,
+    Violation,
+    Workspace
 } from '@salesforce/code-analyzer-engine-api'
 import {ESLintRuleStatus, ESLintRuleType} from "./enums";
-import {Rule} from "eslint";
-import {ESLintWorkspace, MissingESLintWorkspace, PresentESLintWorkspace} from "./workspace";
+import {ESLint, Linter, Rule} from "eslint";
+import {MissingESLintWorkspace, PresentESLintWorkspace} from "./workspace";
 import {ESLintStrategy, LegacyESLintStrategy} from "./strategy";
 import {ESLintEngineConfig} from "./config";
 
 export class ESLintEngine extends Engine {
     static readonly NAME = "eslint";
     private readonly config: ESLintEngineConfig;
+    private readonly eslintStrategyCache: Map<string, ESLintStrategy> = new Map();
 
     constructor(config: ESLintEngineConfig) {
         super();
@@ -31,11 +34,7 @@ export class ESLintEngine extends Engine {
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        const workspace: ESLintWorkspace = describeOptions.workspace ?
-            new PresentESLintWorkspace(describeOptions.workspace, this.config) :
-            new MissingESLintWorkspace(this.config);
-
-        const eslintStrategy: ESLintStrategy = new LegacyESLintStrategy(workspace, this.config);
+        const eslintStrategy: ESLintStrategy = this.getESLintStrategy(describeOptions.workspace);
 
         const ruleStatuses: Map<string, ESLintRuleStatus> = await eslintStrategy.calculateRuleStatuses();
         const rulesMetadata: Map<string, Rule.RuleMetaData> = await eslintStrategy.calculateRulesMetadata();
@@ -50,16 +49,44 @@ export class ESLintEngine extends Engine {
         return ruleDescriptions.sort((d1, d2) => d1.name.localeCompare(d2.name));
     }
 
-    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
-        // TODO: Implement this. Note that we'll want to cache the eslintStrategy from above and reuse it if the workspace is the same.
+    async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
+        const eslintStrategy: ESLintStrategy = this.getESLintStrategy(runOptions.workspace);
+        const eslintResults: ESLint.LintResult[] = await eslintStrategy.run(ruleNames);
         return {
-            violations: []
+            violations: this.toViolations(eslintResults, ruleNames)
+        };
+    }
+
+    private getESLintStrategy(workspace?: Workspace): ESLintStrategy {
+        if (!workspace) {
+            return new LegacyESLintStrategy(new MissingESLintWorkspace(this.config), this.config);
         }
+        const strategyKey: string = workspace.getWorkspaceId();
+        if(!this.eslintStrategyCache.has(strategyKey)) {
+            this.eslintStrategyCache.set(strategyKey,
+                new LegacyESLintStrategy(new PresentESLintWorkspace(workspace, this.config), this.config));
+        }
+        return this.eslintStrategyCache.get(strategyKey)!;
+    }
+
+    private toViolations(eslintResults: ESLint.LintResult[], ruleNames: string[]): Violation[] {
+        const violations: Violation[] = [];
+        for (const eslintResult of eslintResults) {
+            for (const resultMsg of eslintResult.messages) {
+                const ruleName = resultMsg.ruleId;
+                if(!ruleName) { // If there is no ruleName, this is how ESLint indicates something else went wrong (like a parse error).
+                    // TODO: Log an warning event since eslint warned or errored in some way... most likely a parser error.
+                    continue;
+                } else if (!ruleNames.includes(ruleName)) {
+                    // TODO: Log a warning event since: A rule with name '${ruleName}' produced a violation, but this rule was not registered so it will not be included in the results. Result:\n${JSON.stringify(eslintResult,null,2)}`);
+                    continue;
+                }
+                violations.push(toViolation(eslintResult.filePath, resultMsg));
+            }
+        }
+        return violations;
     }
 }
-
-
-
 
 function toRuleDescription(name: string, metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefined): RuleDescription {
     return {
@@ -99,4 +126,33 @@ function toTags(metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefine
         tags.push(metadata.type);
     }
     return tags;
+}
+
+function toViolation(file: string, resultMsg: Linter.LintMessage): Violation {
+    // Note: If in the future we add in some sort of suggestion or fix field on Violation, then we might want to
+    // leverage the fix and/or suggestions field on the LintMessage object.
+    // See: https://eslint.org/docs/v8.x/integrate/nodejs-api#-lintmessage-type
+    return {
+        ruleName: resultMsg.ruleId as string,
+        message: resultMsg.message,
+        codeLocations: [{
+            file: file,
+            startLine: normalizeStartValue(resultMsg.line),
+            startColumn: normalizeStartValue(resultMsg.column),
+            endLine: normalizeEndValue(resultMsg.endLine),
+            endColumn: normalizeEndValue(resultMsg.endColumn),
+        }],
+        primaryLocationIndex: 0
+    };
+}
+
+function normalizeStartValue(startValue: number): number {
+    // Sometimes rules contain a negative number if the line/column is unknown, so we force 1 in that case
+    return Math.max(startValue, 1);
+}
+
+function normalizeEndValue(endValue: number | undefined): number | undefined {
+    // Sometimes rules contain a negative number if the line/column is unknown, so we force undefined in that case
+    /* istanbul ignore next */
+    return endValue && endValue > 0 ? endValue : undefined;
 }

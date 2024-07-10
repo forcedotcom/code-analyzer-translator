@@ -1,4 +1,4 @@
-import {RuleDescription} from "@salesforce/code-analyzer-engine-api";
+import {EngineRunResults, RuleDescription, RunOptions, Violation} from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import fs from "node:fs";
@@ -9,34 +9,44 @@ import {DEFAULT_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
-describe('Tests for the ESLintEngine with default config values', () => {
+const legacyConfigCasesFolder: string = path.join(__dirname, 'test-data', 'legacyConfigCases');
+const workspaceWithNoCustomConfig: string =
+    path.join(legacyConfigCasesFolder, 'workspace_NoCustomConfig');
+const workspaceThatHasCustomConfigModifyingExistingRules: string =
+    path.join(legacyConfigCasesFolder, 'workspace_HasCustomConfigModifyingExistingRules');
+const workspaceThatHasCustomConfigWithNewRules: string =
+    path.join(legacyConfigCasesFolder, 'workspace_HasCustomConfigWithNewRules');
+
+describe('Tests for the getName method of ESLintEngine', () => {
     it('When getName is called, then eslint is returned', () => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         expect(engine.getName()).toEqual('eslint');
     });
+})
 
+describe('Tests for the describeRules method of ESLintEngine', () => {
     type LEGACY_CASE = {description: string, folder: string, expectationFile: string};
     const legacyCases: LEGACY_CASE[] = [
         {
             description: 'with no customizations',
-            folder: 'workspace_NoCustomConfig',
+            folder: workspaceWithNoCustomConfig,
             expectationFile: 'expectedRules_DefaultConfig.json'
         },
         {
             description: 'with config that modifies existing rules',
-            folder: 'workspace_HasCustomConfigModifyingExistingRules',
+            folder: workspaceThatHasCustomConfigModifyingExistingRules,
             expectationFile: 'expectedRules_DefaultConfigAndCustomConfigModifyingExistingRules.json'
         },
         {
             description: 'with config that adds a new plugin and rules',
-            folder: 'workspace_HasCustomConfigWithNewRules',
+            folder: workspaceThatHasCustomConfigWithNewRules,
             expectationFile: 'expectedRules_DefaultConfigAndCustomConfigWithNewRules.json'
         },
     ]
 
     it.each(legacyCases)('When describing rules while cwd is folder $description, then return expected', async (caseObj: LEGACY_CASE) => {
         const origWorkingDir: string = process.cwd();
-        process.chdir(path.join(__dirname, 'test-data', 'legacyConfigCases', caseObj.folder));
+        process.chdir(caseObj.folder);
         try {
             const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
@@ -49,38 +59,35 @@ describe('Tests for the ESLintEngine with default config values', () => {
     it.each(legacyCases)('When describing rules while from a workspace $description, then return expected', async (caseObj: LEGACY_CASE) => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
-            workspace: testTools.createWorkspace([path.join(__dirname, 'test-data', 'legacyConfigCases', caseObj.folder)])});
+            workspace: testTools.createWorkspace([caseObj.folder])});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, caseObj.expectationFile);
     });
 
     it.each(legacyCases)('When describing rules while config_root is folder $description, then return expected', async (caseObj: LEGACY_CASE) => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-            config_root: path.join(__dirname, 'test-data', 'legacyConfigCases', caseObj.folder)});
+            config_root: caseObj.folder});
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, caseObj.expectationFile);
     });
 
     it('When describing rules from a workspace with no javascript files, then no javascript rules should return', async () => {
-        const caseFolder: string = path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig');
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
-                path.join(caseFolder, 'dummy3.txt'), path.join(caseFolder, 'dummy2.ts')])});
+                path.join(workspaceWithNoCustomConfig, 'dummy3.txt'), path.join(workspaceWithNoCustomConfig, 'dummy2.ts')])});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_DefaultConfig_NoJavascriptFilesInWorkspace.json');
     });
 
     it('When describing rules from a workspace with no typescript files, then no typescript rules should returned', async () => {
-        const caseFolder: string = path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig');
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
-            path.join(caseFolder, 'dummy1.js'), path.join(caseFolder, 'dummy3.txt')])});
+            path.join(workspaceWithNoCustomConfig, 'dummy1.js'), path.join(workspaceWithNoCustomConfig, 'dummy3.txt')])});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_DefaultConfig_NoTypescriptFilesInWorkspace.json');
     });
 
     it('When describing rules from a workspace with no javascript or typescript files, then no rules should return', async () => {
-        const caseFolder: string = path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig');
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
-                path.join(caseFolder, 'dummy3.txt')])});
+                path.join(workspaceWithNoCustomConfig, 'dummy3.txt')])});
         expect(ruleDescriptions).toHaveLength(0);
     });
 
@@ -95,26 +102,25 @@ describe('Tests for the ESLintEngine with default config values', () => {
         // While the workspace is workspace_NoCustomConfig, we use the config from workspace_HasCustomConfigWithNewRules
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             config_root: __dirname,
-            eslint_config_file: path.join(__dirname,'test-data','legacyConfigCases','workspace_HasCustomConfigWithNewRules','.eslintrc.yml')
+            eslint_config_file: path.join(workspaceThatHasCustomConfigWithNewRules, '.eslintrc.yml')
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
-            workspace: testTools.createWorkspace([path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig')])});
+            workspace: testTools.createWorkspace([workspaceWithNoCustomConfig])});
 
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_DefaultConfigAndCustomConfigWithNewRules.json');
     });
 
     it('When disable_config_lookup=true and eslint_config_file is not provided, then no user config should be applied', async () => {
         // While sitting in workspace_HasCustomConfigModifyingExistingRules, we turn off customization
-        const folderForEverything: string = path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigModifyingExistingRules');
         const origWorkingDir: string = process.cwd();
-        process.chdir(folderForEverything); // We will cd into it ...
+        process.chdir(workspaceThatHasCustomConfigModifyingExistingRules); // We will cd into it ...
         try {
             const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-                config_root: folderForEverything, // ... make it config root ...
+                config_root: workspaceThatHasCustomConfigModifyingExistingRules, // ... make it config root ...
                 disable_config_lookup: true // This should trump the environment so that no user config is applied
             });
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({
-                workspace: testTools.createWorkspace([folderForEverything])}); // ... and include it in the workspace
+                workspace: testTools.createWorkspace([workspaceThatHasCustomConfigModifyingExistingRules])}); // ... and include it in the workspace
 
             expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_DefaultConfig.json');
         } finally {
@@ -124,17 +130,16 @@ describe('Tests for the ESLintEngine with default config values', () => {
 
     it('When disable_config_lookup=true and eslint_config_file is provided, the supplied config file is used but others are not', async () => {
         // While sitting in workspace_HasCustomConfigWithNewRules, we use the eslint config file from workspace_HasCustomConfigModifyingExistingRules
-        const folderForEverything: string = path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigWithNewRules');
         const origWorkingDir: string = process.cwd();
-        process.chdir(folderForEverything); // We will cd into it ...
+        process.chdir(workspaceThatHasCustomConfigWithNewRules); // We will cd into it ...
         try {
             const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-                config_root: folderForEverything, // ... make it config root ...
+                config_root: workspaceThatHasCustomConfigWithNewRules, // ... make it config root ...
                 disable_config_lookup: true, // This should trump environment info but not the eslint_config_file
-                eslint_config_file: path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigModifyingExistingRules', '.eslintrc.json')
+                eslint_config_file: path.join(workspaceThatHasCustomConfigModifyingExistingRules, '.eslintrc.json')
             });
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({
-                workspace: testTools.createWorkspace([folderForEverything])}); // ... and include it in the workspace
+                workspace: testTools.createWorkspace([workspaceThatHasCustomConfigWithNewRules])}); // ... and include it in the workspace
 
             expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_DefaultConfigAndCustomConfigModifyingExistingRules.json');
         } finally {
@@ -205,7 +210,7 @@ describe('Tests for the ESLintEngine with default config values', () => {
 
     it('When all base configs are off and custom config with new rules exists, then only custom config is applied', async() => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-            config_root: path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigWithNewRules'),
+            config_root: workspaceThatHasCustomConfigWithNewRules,
             disable_javascript_base_config: true,
             disable_typescript_base_config: true,
             disable_lwc_base_config: true
@@ -221,7 +226,7 @@ describe('Tests for the ESLintEngine with default config values', () => {
             disable_lwc_base_config: true
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
-            workspace: testTools.createWorkspace([path.join(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigModifyingExistingRules', 'dummy1.js')])
+            workspace: testTools.createWorkspace([path.join(workspaceThatHasCustomConfigModifyingExistingRules, 'dummy1.js')])
         });
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'expectedRules_OnlyCustomConfigModifyingExistingRules.json');
     });
@@ -249,6 +254,112 @@ describe('Tests for the ESLintEngine with default config values', () => {
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expect(ruleDescriptions).toHaveLength(0);
+    });
+});
+
+describe('Tests for the runRules method of ESLintEngine', () => {
+    const expectedJsViolation_noInvalidRegexp: Violation = {
+        "codeLocations": [{
+            "endColumn": 30,
+            "endLine": 2,
+            "file": path.join(workspaceWithNoCustomConfig, 'dummy1.js'),
+            "startColumn": 15,
+            "startLine": 2
+        }],
+        "message": "Invalid regular expression: /[/: Unterminated character class.",
+        "primaryLocationIndex": 0,
+        "ruleName": "no-invalid-regexp"
+    };
+    const expectedTsViolation_noInvalidRegexp: Violation = {
+        "codeLocations": [{
+            "endColumn": 38,
+            "endLine": 6,
+            "file": path.join(workspaceWithNoCustomConfig, 'dummy2.ts'),
+            "startColumn": 23,
+            "startLine": 6
+        }],
+        "message": "Invalid regular expression: /[/: Unterminated character class.",
+        "primaryLocationIndex": 0,
+        "ruleName": "no-invalid-regexp"
+    };
+    const expectedTsViolation_banTypes: Violation = {
+        "codeLocations": [{
+            "endColumn": 20,
+            "endLine": 2,
+            "file": path.join(workspaceWithNoCustomConfig, 'dummy2.ts'),
+            "startColumn": 14,
+            "startLine": 2
+        }],
+        "message": "Don't use `String` as a type. Use string instead",
+        "primaryLocationIndex": 0,
+        "ruleName": "@typescript-eslint/ban-types"
+    };
+
+    it('When running with defaults and no customizations, then violations for javascript and typescript are found correctly', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceWithNoCustomConfig])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+
+        expect(results.violations).toHaveLength(3);
+        expect(results.violations).toContainEqual(expectedJsViolation_noInvalidRegexp);
+        expect(results.violations).toContainEqual(expectedTsViolation_noInvalidRegexp);
+        expect(results.violations).toContainEqual(expectedTsViolation_banTypes);
+    });
+
+    it('When workspace only contains javascript files, then only javascript violations are returned', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([path.join(workspaceWithNoCustomConfig, 'dummy1.js')])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp'], runOptions);
+
+        expect(results.violations).toEqual([expectedJsViolation_noInvalidRegexp]);
+    });
+
+    it('When workspace only contains typescript files, then only typescript violations are returned', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([path.join(workspaceWithNoCustomConfig, 'dummy2.ts')])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp'], runOptions);
+
+        expect(results.violations).toEqual([expectedTsViolation_noInvalidRegexp]);
+    });
+
+    it('When workspace does not contains javascript or typescript files, then zero violations are returned', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([path.join(workspaceWithNoCustomConfig, 'dummy3.txt')])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp'], runOptions);
+
+        expect(results.violations).toHaveLength(0);
+    });
+
+    it('When using custom plugin rules, then violations from custom rules are returned', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([path.join(workspaceThatHasCustomConfigWithNewRules, 'dummy1.js')])};
+        const results: EngineRunResults = await engine.runRules(['dummy/my-rule-1', 'dummy/my-rule-2'], runOptions);
+
+        expect(results.violations).toHaveLength(2);
+        expect(results.violations).toContainEqual({
+            "codeLocations": [{
+                "endColumn": 14,
+                "endLine": 1,
+                "file": path.join(workspaceThatHasCustomConfigWithNewRules, 'dummy1.js'),
+                "startColumn": 5,
+                "startLine": 1
+            }],
+            "message": "Avoid using variables named 'forbidden'",
+            "primaryLocationIndex": 0,
+            "ruleName": "dummy/my-rule-1"
+        });
+        expect(results.violations).toContainEqual({
+            "codeLocations": [{
+                "endColumn": 9,
+                "endLine": 3,
+                "file":  path.join(workspaceThatHasCustomConfigWithNewRules, 'dummy1.js'),
+                "startColumn": 5,
+                "startLine": 3
+            }],
+            "message": "Avoid using variables named 'oops'",
+            "primaryLocationIndex": 0,
+            "ruleName": "dummy/my-rule-1"
+        });
     });
 });
 

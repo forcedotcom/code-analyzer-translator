@@ -8,6 +8,7 @@ import {ESLintEngineConfig} from "./config";
 export interface ESLintStrategy {
     calculateRuleStatuses(): Promise<Map<string, ESLintRuleStatus>>
     calculateRulesMetadata(): Promise<Map<string, Rule.RuleMetaData>>
+    run(ruleNames: string[]): Promise<ESLint.LintResult[]>
 }
 
 export class LegacyESLintStrategy implements ESLintStrategy {
@@ -22,6 +23,9 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         this.baseConfigFactory = new LegacyBaseConfigFactory(config);
     }
 
+    /**
+     * Calculates the metadata for all available rules
+     */
     async calculateRulesMetadata(): Promise<Map<string, Rule.RuleMetaData>> {
         const ruleModulesMap: Map<string, Rule.RuleModule> = await getAllRuleModules(this.createESLint(BaseRuleset.ALL));
         const rulesMetadata: Map<string, Rule.RuleMetaData> = new Map();
@@ -77,6 +81,32 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         }
 
         return this.ruleStatuses;
+    }
+
+    /**
+     * Runs the rules against the workspace
+     *
+     * Note that the strategy is to start with all the rules and then apply an override config object which disables
+     * any rules that are not specified to run. This strategy is practically the only one that works since turning rules
+     * off does not require any knowledge of the parser or rule parameters (whereas turning rules on does).
+     * @param ruleNames The list of rules to run.
+     */
+    async run(ruleNames: string[]): Promise<ESLint.LintResult[]> {
+        const overrideConfig: Linter.Config = await this.createConfigThatTurnsOffUnselectedRules(ruleNames);
+        const eslint: ESLint = this.createESLint(BaseRuleset.ALL, overrideConfig);
+        return eslint.lintFiles(await this.workspace.getFilesToScan());
+    }
+
+    private async createConfigThatTurnsOffUnselectedRules(ruleNames: string[]) : Promise<Linter.Config> {
+        const setOfRulesThatShouldBeOn: Set<string> = new Set(ruleNames);
+        const allRuleNames: string[] = Array.from((await this.calculateRuleStatuses()).keys());
+        const rulesRecord: Linter.RulesRecord = {};
+        for (const ruleName of allRuleNames) {
+            if (!setOfRulesThatShouldBeOn.has(ruleName)) {
+                rulesRecord[ruleName] = 'off';
+            }
+        }
+        return { rules: rulesRecord };
     }
 
     private userConfigEnabled(): boolean {
