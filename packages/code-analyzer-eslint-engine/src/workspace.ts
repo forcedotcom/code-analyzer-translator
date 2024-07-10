@@ -41,9 +41,8 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
     getLegacyConfigFile(): string | undefined {
         if (!this.legacyConfigLookupCache) {
             this.legacyConfigLookupCache = {
-                file: this.config.eslint_config_file || (this.config.disable_config_lookup ? undefined :
-                        findLegacyConfigFile(makeUnique([this.config.config_root, process.cwd()])))
-            }
+                file: chooseLegacyConfigFile(this.config, [this.config.config_root, process.cwd()])
+            };
         }
         return this.legacyConfigLookupCache.file;
     }
@@ -100,9 +99,8 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
     getLegacyConfigFile(): string | undefined {
         if (!this.legacyConfigLookupCache) {
             this.legacyConfigLookupCache = {
-                file: this.config.eslint_config_file || (this.config.disable_config_lookup ? undefined :
-                    findLegacyConfigFile(makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()])))
-            }
+                file: chooseLegacyConfigFile(this.config, [this.getWorkspaceRoot(), this.config.config_root, process.cwd()])
+            };
         }
         return this.legacyConfigLookupCache.file;
     }
@@ -126,6 +124,11 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
 
 function createPlaceholderCandidateFiles(fileExtensions: string[], rootFolder: string) {
     return fileExtensions.map(ext => `${rootFolder}${path.sep}placeholderCandidateFile${ext}`);
+}
+
+function chooseLegacyConfigFile(config: ESLintEngineConfig, foldersToCheck: string[]): string | undefined {
+    return config.eslint_config_file || (config.disable_config_lookup ? undefined :
+        findLegacyConfigFile(makeUnique(foldersToCheck)));
 }
 
 function findLegacyConfigFile(foldersToCheck: string[]): string | undefined {

@@ -2,6 +2,10 @@ import {
     DescribeOptions,
     Engine,
     EngineRunResults,
+    EventType,
+    LogEvent,
+    LogLevel,
+    ProgressEvent,
     RuleDescription,
     RuleType,
     RunOptions,
@@ -12,8 +16,9 @@ import {
 import {ESLintRuleStatus, ESLintRuleType} from "./enums";
 import {ESLint, Linter, Rule} from "eslint";
 import {MissingESLintWorkspace, PresentESLintWorkspace} from "./workspace";
-import {ESLintStrategy, LegacyESLintStrategy} from "./strategy";
+import {EmitLogEventFcn, ESLintStrategy, LegacyESLintStrategy} from "./strategy";
 import {ESLintEngineConfig} from "./config";
+import {getMessage} from "./messages";
 
 export class ESLintEngine extends Engine {
     static readonly NAME = "eslint";
@@ -34,57 +39,100 @@ export class ESLintEngine extends Engine {
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+        this.emitProgressEvent(0);
+
         const eslintStrategy: ESLintStrategy = this.getESLintStrategy(describeOptions.workspace);
+        this.emitProgressEvent(5);
 
         const ruleStatuses: Map<string, ESLintRuleStatus> = await eslintStrategy.calculateRuleStatuses();
-        const rulesMetadata: Map<string, Rule.RuleMetaData> = await eslintStrategy.calculateRulesMetadata();
+        this.emitProgressEvent(20);
 
-        const ruleDescriptions: RuleDescription[] = [];
+        const rulesMetadata: Map<string, Rule.RuleMetaData> = await eslintStrategy.calculateRulesMetadata();
+        this.emitProgressEvent(40);
+
+        let ruleDescriptions: RuleDescription[] = [];
         for (const [ruleName, ruleStatus] of ruleStatuses) {
             const ruleMetadata: Rule.RuleMetaData | undefined = rulesMetadata.get(ruleName);
             if (ruleMetadata) { // do not include rules that don't have metadata
                 ruleDescriptions.push(toRuleDescription(ruleName, ruleMetadata, ruleStatus));
             }
         }
-        return ruleDescriptions.sort((d1, d2) => d1.name.localeCompare(d2.name));
+        ruleDescriptions = ruleDescriptions.sort((d1, d2) => d1.name.localeCompare(d2.name));
+        this.emitProgressEvent(50);
+
+        return ruleDescriptions;
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const eslintStrategy: ESLintStrategy = this.getESLintStrategy(runOptions.workspace);
         const eslintResults: ESLint.LintResult[] = await eslintStrategy.run(ruleNames);
-        return {
-            violations: this.toViolations(eslintResults, ruleNames)
+        this.emitProgressEvent(95);
+
+        const engineResults: EngineRunResults = {
+            violations: this.toViolations(eslintResults, new Set(ruleNames))
         };
+
+        this.emitProgressEvent(100);
+        return engineResults
     }
 
     private getESLintStrategy(workspace?: Workspace): ESLintStrategy {
+        const emitLogEventFcn: EmitLogEventFcn = (l, m) => this.emitLogEvent(l, m);
         if (!workspace) {
-            return new LegacyESLintStrategy(new MissingESLintWorkspace(this.config), this.config);
+            return new LegacyESLintStrategy(new MissingESLintWorkspace(this.config), this.config, emitLogEventFcn);
         }
         const strategyKey: string = workspace.getWorkspaceId();
         if(!this.eslintStrategyCache.has(strategyKey)) {
             this.eslintStrategyCache.set(strategyKey,
-                new LegacyESLintStrategy(new PresentESLintWorkspace(workspace, this.config), this.config));
+                new LegacyESLintStrategy(new PresentESLintWorkspace(workspace, this.config), this.config, emitLogEventFcn));
         }
         return this.eslintStrategyCache.get(strategyKey)!;
     }
 
-    private toViolations(eslintResults: ESLint.LintResult[], ruleNames: string[]): Violation[] {
+    private toViolations(eslintResults: ESLint.LintResult[], ruleNames: Set<string>): Violation[] {
         const violations: Violation[] = [];
         for (const eslintResult of eslintResults) {
             for (const resultMsg of eslintResult.messages) {
                 const ruleName = resultMsg.ruleId;
                 if(!ruleName) { // If there is no ruleName, this is how ESLint indicates something else went wrong (like a parse error).
-                    // TODO: Log an warning event since eslint warned or errored in some way... most likely a parser error.
-                    continue;
-                } else if (!ruleNames.includes(ruleName)) {
-                    // TODO: Log a warning event since: A rule with name '${ruleName}' produced a violation, but this rule was not registered so it will not be included in the results. Result:\n${JSON.stringify(eslintResult,null,2)}`);
+                    this.handleEslintErrorOrWarning(eslintResult.filePath, resultMsg);
                     continue;
                 }
-                violations.push(toViolation(eslintResult.filePath, resultMsg));
+                const violation: Violation = toViolation(eslintResult.filePath, resultMsg);
+
+                /* istanbul ignore else */
+                if (ruleNames.has(ruleName)) {
+                    violations.push(toViolation(eslintResult.filePath, resultMsg));
+                } else {
+                    // This theoretically should never be possible. But for sanity sakes, we'll emit a warning if this ever happens.
+                    this.emitLogEvent(LogLevel.Warn, getMessage('ViolationFoundFromUnregisteredRule', ruleName, JSON.stringify(violation,null,2)))
+                }
             }
         }
         return violations;
+    }
+
+    private handleEslintErrorOrWarning(file: string, resultMsg: Linter.LintMessage) {
+        if (resultMsg.fatal) {
+            this.emitLogEvent(LogLevel.Error, getMessage('ESLintErroredWhenScanningFile', file, resultMsg.message));
+        } else {
+            this.emitLogEvent(LogLevel.Warn, getMessage('ESLintWarnedWhenScanningFile', file, resultMsg.message));
+        }
+    }
+
+    private emitProgressEvent(percComplete: number) {
+        this.emitEvent<ProgressEvent>({
+            type: EventType.ProgressEvent,
+            percentComplete: percComplete
+        });
+    }
+
+    private emitLogEvent(logLevel: LogLevel, message: string) {
+        this.emitEvent<LogEvent>({
+            type: EventType.LogEvent,
+            logLevel: logLevel,
+            message: message
+        });
     }
 }
 
