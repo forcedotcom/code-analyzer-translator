@@ -91,6 +91,11 @@ export class CodeAnalyzer {
     }
 
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
+        // TODO: Before we expose core to external clients, we might consider throwing an exception if selectRules is
+        //  called a second time before the first call to selectRules hasn't finished. This can occur if someone builds
+        //  up a bunch of RuleSelection promises and then does a Promise.all on them. Otherwise, the progress events may
+        //  override each other.
+
         this.emitEvent({type: EventType.RuleSelectionProgressEvent, timestamp: this.clock.now(), percentComplete: 0});
 
         selectors = selectors.length > 0 ? selectors : ['Recommended'];
@@ -108,6 +113,11 @@ export class CodeAnalyzer {
     }
 
     public async run(ruleSelection: RuleSelection, runOptions: RunOptions): Promise<RunResults> {
+        // TODO: Before we expose core to external clients, we might consider throwing an exception if run is
+        //  called a second time before the first call to run hasn't finished. This can occur if someone builds
+        //  up a bunch of RunResults promises and then does a Promise.all on them. Otherwise, the progress events may
+        //  override each other.
+
         const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
