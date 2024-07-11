@@ -1,11 +1,11 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 
 const MESSAGE_CATALOG : { [key: string]: string } = {
-    TemplateMessage1:
-        `This message has one variable, '%s', in its message.`,
+    CantCreateEngineWithUnknownEngineName:
+        `The MetadataEnginePlugin does not support creating an engine with name '%s'.`,
 
-    TemplateMessage2:
-        `This message has two variables, '%s' and %d, in its message.`
+    PrivateMethodApiVersionRuleDescription:
+        "Enforces a minimum API version for declaring private methods in abstract/virtual apex classes."
 }
 
 /**

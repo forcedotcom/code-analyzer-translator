@@ -9,6 +9,7 @@ import {
     RunOptions,
     SeverityLevel,
 } from "@salesforce/code-analyzer-engine-api";
+import {getMessage} from "./messages";
 
 export class MetadataEnginePlugin extends EnginePluginV1 {
 
@@ -20,7 +21,7 @@ export class MetadataEnginePlugin extends EnginePluginV1 {
         if (engineName === MetadataEngine.NAME) {
             return new MetadataEngine()
         }  else {
-            throw new Error(`Unsupported engine name: ${engineName}`);
+            throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
         }
     }
 }
@@ -40,7 +41,7 @@ export class MetadataEngine extends Engine {
                 resourceUrls: [],
                 tags: ["Recommended", "Security"],
                 type: RuleType.Standard,
-                description: "Enforces a minimum API version for declaring private methods in abstract/virtual apex classes."
+                description: getMessage('PrivateMethodApiVersionRuleDescription')
             }
         ];
     }
