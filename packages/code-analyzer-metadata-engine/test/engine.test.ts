@@ -7,6 +7,7 @@ import {
     RuleType,
     SeverityLevel
 } from "@salesforce/code-analyzer-engine-api";
+import {getMessage} from "../src/messages";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -42,12 +43,6 @@ describe('Metadata Engine Tests', () => {
         expect(rules_desc).toEqual(engineRules)
     });
 
-    it("Check that running runRules() is a no-op that just returns an empty list of violations", async () => {
-        const runOptions = {workspace: testTools.createWorkspace([])}
-        const expResults: EngineRunResults = {violations: []}
-        const results = await engine.runRules(["PrivateMethodAPIVersionRule"], runOptions);
-        expect(results).toEqual(expResults)
-    })
 });
 
 describe('MetadataEnginePlugin Tests' , () => {
@@ -84,7 +79,7 @@ describe('MetadataEnginePlugin Tests' , () => {
     });
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', async () => {
-        await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("The MetadataEnginePlugin does not support creating an engine with name 'OtherEngine'.");
+        await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow(getMessage('CantCreateEngineWithUnknownEngineName', 'OtherEngine'));
     });
 });
 
