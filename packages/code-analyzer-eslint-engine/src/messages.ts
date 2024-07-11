@@ -11,7 +11,16 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The '%s' configuration value '%s' must match the pattern: /%s/`,
 
     ConfigStringArrayValuesMustNotShareElements:
-        `The following configuration values must not share any common array elements between them:\n%s`
+        `The following configuration values must not share any common array elements between them:\n%s`,
+
+    ESLintErroredWhenScanningFile:
+        `When scanning file '%s' with the eslint engine, ESLint gave the following error:\n%s`,
+
+    ESLintWarnedWhenScanningFile:
+        `When scanning file '%s' with the eslint engine, ESLint gave the following warning:\n%s`,
+
+    ViolationFoundFromUnregisteredRule:
+        `A rule with name '%s' produced a violation, but this rule was not registered with the 'eslint' engine so it will not be included in the results. Ignored Violation:\n%s`
 }
 
 /**

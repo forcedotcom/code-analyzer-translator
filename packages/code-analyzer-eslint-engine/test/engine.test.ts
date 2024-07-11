@@ -1,4 +1,13 @@
-import {EngineRunResults, RuleDescription, RunOptions, Violation} from "@salesforce/code-analyzer-engine-api";
+import {
+    EngineRunResults,
+    EventType,
+    LogEvent,
+    LogLevel,
+    ProgressEvent,
+    RuleDescription,
+    RunOptions,
+    Violation
+} from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import fs from "node:fs";
@@ -6,6 +15,7 @@ import path from "node:path";
 import process from "node:process";
 import {ESLintEngine} from "../src/engine";
 import {DEFAULT_CONFIG} from "../src/config";
+import {getMessage} from "../src/messages";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -257,7 +267,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
     });
 });
 
-describe('Tests for the runRules method of ESLintEngine', () => {
+describe('Typical tests for the runRules method of ESLintEngine', () => {
     const expectedJsViolation_noInvalidRegexp: Violation = {
         "codeLocations": [{
             "endColumn": 30,
@@ -363,10 +373,71 @@ describe('Tests for the runRules method of ESLintEngine', () => {
     });
 });
 
+describe('Tests for emitting events', () => {
+    let engine: ESLintEngine;
+    let logEvents: LogEvent[];
+    let progressEvents: ProgressEvent[];
+    beforeEach(() => {
+        engine = new ESLintEngine(DEFAULT_CONFIG);
+        logEvents = [];
+        progressEvents = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        engine.onEvent(EventType.ProgressEvent, (event: ProgressEvent) => progressEvents.push(event));
+    })
+
+    it('When workspace contains an unparsable javascript file, then we emit an error log event and continue to next file', async () => {
+        const workspaceFolder: string = path.join(__dirname, 'test-data', 'workspaceWithUnparsableCode');
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceFolder])};
+        const results: EngineRunResults = await engine.runRules(['no-unused-vars'], runOptions);
+
+        const errorEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Error);
+        expect(errorEvents).toHaveLength(1);
+        expect(errorEvents[0].logLevel).toEqual(LogLevel.Error);
+        expect(errorEvents[0].message).toEqual(
+            getMessage('ESLintErroredWhenScanningFile', path.join(workspaceFolder, 'unparsableFile.js'),
+                'Parsing error: Unterminated string constant. (2:4)'));
+
+        // Sanity check that we still get violations from files that could be parsed
+        expect(results.violations).toHaveLength(1);
+        expect(results.violations[0].codeLocations[0].file).toEqual(
+            path.join(workspaceFolder, 'parsableFileWithViolation.js'));
+    });
+
+    it('When eslint ignores a file, then we emit a warning event and continue to the next file', async () => {
+        // eslint by default ignores files under node_modules... so if a user explicitly targets this file in their
+        // workspace, then we should forward this warning.
+        const fileThatIsIgnored: string = path.join(workspaceThatHasCustomConfigWithNewRules,
+            'node_modules', 'eslint-plugin-dummy', 'index.js');
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([fileThatIsIgnored])};
+        const results: EngineRunResults = await engine.runRules(['no-unused-vars'], runOptions);
+
+        const warnEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Warn);
+        expect(warnEvents).toHaveLength(1);
+        expect(warnEvents[0].logLevel).toEqual(LogLevel.Warn);
+        expect(warnEvents[0].message).toEqual(
+            getMessage('ESLintWarnedWhenScanningFile', fileThatIsIgnored,
+                'File ignored because of a matching ignore pattern. Use "--no-ignore" to override.'));
+
+        expect(results.violations).toHaveLength(0);
+    });
+
+    it('When describeRules is called, then it emits progress events up to 50 percent', async () => {
+        await engine.describeRules({});
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([0,5,20,40,50]);
+    });
+
+    it('When runRules is called, then it emits progress events up to 100 percent', async () => {
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceWithNoCustomConfig])};
+        await engine.runRules(['no-unused-vars'], runOptions);
+
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([95, 100]);
+    });
+});
+
 function expectRulesToMatchLegacyExpectationFile(ruleDescriptions: RuleDescription[], expectationFile: string): void {
     const actualRuleDescriptionsJsonString: string = JSON.stringify(ruleDescriptions, undefined, 2);
     const expectedRuleDescriptionsJsonString: string = fs.readFileSync(
-        path.join(__dirname, 'test-data', 'legacyConfigCases', expectationFile), 'utf8')
+        path.join(legacyConfigCasesFolder, expectationFile), 'utf8')
         .replaceAll('\r', ''); // Remove carriage return characters from files in windows
     expect(actualRuleDescriptionsJsonString).toEqual(expectedRuleDescriptionsJsonString);
 }
