@@ -7,12 +7,13 @@ import {
     RuleType,
     SeverityLevel
 } from "@salesforce/code-analyzer-engine-api";
-import {
-    VIRTUAL_ABSTRACT_CLASS_API_RULE_DESCRIPTION,
-    VIRTUAL_ABSTRACT_CLASS_API_RULE_RESOURCE_URLS
-} from "./test-config";
 
 changeWorkingDirectoryToPackageRoot();
+
+export const VIRTUAL_ABSTRACT_CLASS_API_RULE_NAME = "PrivateMethodAPIVersionRule"
+export const VIRTUAL_ABSTRACT_CLASS_API_RULE_MESSAGE = "For API versions 60.0 and below, declaring a private method in an abstract or virtual class will override a method with the same signature in a child class. Please update your API version to resolve the issue."
+export const VIRTUAL_ABSTRACT_CLASS_API_RULE_DESCRIPTION = "Enforces a minimum API version for declaring private methods in abstract/virtual apex classes."
+export const VIRTUAL_ABSTRACT_CLASS_API_RULE_RESOURCE_URLS = []
 
 describe('Metadata Engine Tests', () => {
     let engine: MetadataEngine;
@@ -30,7 +31,7 @@ describe('Metadata Engine Tests', () => {
         const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([])});
         const engineRules = [
             {
-                name: "PrivateMethodAPIVersionRule",
+                name: VIRTUAL_ABSTRACT_CLASS_API_RULE_NAME,
                 severityLevel: SeverityLevel.High,
                 type: RuleType.Standard,
                 tags: ["Recommended", "Security"],

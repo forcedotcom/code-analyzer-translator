@@ -18,11 +18,10 @@ export class MetadataEnginePlugin extends EnginePluginV1 {
     }
 
     async createEngine(engineName: string, _config: ConfigObject): Promise<Engine> {
-        if (engineName === MetadataEngine.NAME) {
-            return new MetadataEngine()
-        }  else {
+        if (engineName !== MetadataEngine.NAME) {
             throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
         }
+        return new MetadataEngine()
     }
 }
 
