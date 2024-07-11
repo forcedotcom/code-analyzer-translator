@@ -69,11 +69,20 @@ const MESSAGE_CATALOG : MessageCatalog = {
     PathStartPointMustBeInsideWorkspace:
         `The specified path starting point of '%s' does not that exists underneath any of the specified paths: %s`,
 
+    GatheringRulesFromEngine:
+        `Gathering all available rules from engine '%s'.`,
+
+    FinishedGatheringRulesFromEngine:
+        `Finished gathering %d available rule(s) from engine '%s'.`,
+
     RunningWithRunOptions:
         `Running with the following run options: %s`,
 
     RunningEngineWithRules:
         `Running engine '%s' with the following rules: %s`,
+
+    FinishedRunningEngine:
+        `Finished running engine '%s'.`,
 
     RuleDoesNotExistInSelection:
         `No rule with name '%s' and engine '%s' exists among the selected rules.`,

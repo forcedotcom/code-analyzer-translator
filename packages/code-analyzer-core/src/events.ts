@@ -2,8 +2,9 @@ import { EngineRunResults } from "./results"
 
 export enum EventType {
     LogEvent = "LogEvent",
+    RuleSelectionProgressEvent = "RuleSelectionProgressEvent",
     EngineLogEvent = "EngineLogEvent",
-    EngineProgressEvent = "EngineProgressEvent",
+    EngineRunProgressEvent = "EngineRunProgressEvent",
     EngineResultsEvent = "EngineResultsEvent"
 }
 
@@ -22,6 +23,12 @@ export type LogEvent = {
     message: string
 }
 
+export type RuleSelectionProgressEvent = {
+    type: EventType.RuleSelectionProgressEvent,
+    timestamp: Date,
+    percentComplete: number
+}
+
 export type EngineLogEvent = {
     type: EventType.EngineLogEvent,
     timestamp: Date,
@@ -30,8 +37,8 @@ export type EngineLogEvent = {
     message: string
 }
 
-export type EngineProgressEvent = {
-    type: EventType.EngineProgressEvent,
+export type EngineRunProgressEvent = {
+    type: EventType.EngineRunProgressEvent,
     timestamp: Date,
     engineName: string,
     percentComplete: number
@@ -43,4 +50,4 @@ export type EngineResultsEvent = {
     results: EngineRunResults
 }
 
-export type Event = LogEvent | EngineLogEvent | EngineProgressEvent | EngineResultsEvent;
+export type Event = LogEvent | RuleSelectionProgressEvent | EngineLogEvent | EngineRunProgressEvent | EngineResultsEvent;

@@ -2,10 +2,7 @@ import {
     DescribeOptions,
     Engine,
     EngineRunResults,
-    EventType,
-    LogEvent,
     LogLevel,
-    ProgressEvent,
     RuleDescription,
     RuleType,
     RunOptions,
@@ -39,16 +36,16 @@ export class ESLintEngine extends Engine {
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        this.emitProgressEvent(0);
+        this.emitDescribeRulesProgressEvent(0);
 
         const eslintStrategy: ESLintStrategy = this.getESLintStrategy(describeOptions.workspace);
-        this.emitProgressEvent(5);
+        this.emitDescribeRulesProgressEvent(10);
 
         const ruleStatuses: Map<string, ESLintRuleStatus> = await eslintStrategy.calculateRuleStatuses();
-        this.emitProgressEvent(20);
+        this.emitDescribeRulesProgressEvent(40);
 
         const rulesMetadata: Map<string, Rule.RuleMetaData> = await eslintStrategy.calculateRulesMetadata();
-        this.emitProgressEvent(40);
+        this.emitDescribeRulesProgressEvent(80);
 
         let ruleDescriptions: RuleDescription[] = [];
         for (const [ruleName, ruleStatus] of ruleStatuses) {
@@ -58,21 +55,23 @@ export class ESLintEngine extends Engine {
             }
         }
         ruleDescriptions = ruleDescriptions.sort((d1, d2) => d1.name.localeCompare(d2.name));
-        this.emitProgressEvent(50);
+        this.emitDescribeRulesProgressEvent(100);
 
         return ruleDescriptions;
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
+        this.emitRunRulesProgressEvent(0);
+
         const eslintStrategy: ESLintStrategy = this.getESLintStrategy(runOptions.workspace);
+        this.emitRunRulesProgressEvent(30);
+
         const eslintResults: ESLint.LintResult[] = await eslintStrategy.run(ruleNames);
-        this.emitProgressEvent(95);
+        this.emitRunRulesProgressEvent(95);
 
-        const engineResults: EngineRunResults = {
-            violations: this.toViolations(eslintResults, new Set(ruleNames))
-        };
+        const engineResults: EngineRunResults = {violations: this.toViolations(eslintResults, new Set(ruleNames))};
+        this.emitRunRulesProgressEvent(100);
 
-        this.emitProgressEvent(100);
         return engineResults
     }
 
@@ -118,21 +117,6 @@ export class ESLintEngine extends Engine {
         } else {
             this.emitLogEvent(LogLevel.Warn, getMessage('ESLintWarnedWhenScanningFile', file, resultMsg.message));
         }
-    }
-
-    private emitProgressEvent(percComplete: number) {
-        this.emitEvent<ProgressEvent>({
-            type: EventType.ProgressEvent,
-            percentComplete: percComplete
-        });
-    }
-
-    private emitLogEvent(logLevel: LogLevel, message: string) {
-        this.emitEvent<LogEvent>({
-            type: EventType.LogEvent,
-            logLevel: logLevel,
-            message: message
-        });
     }
 }
 

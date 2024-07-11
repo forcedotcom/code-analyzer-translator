@@ -1,16 +1,21 @@
 import {
     CodeAnalyzer,
     CodeAnalyzerConfig,
+    EngineLogEvent,
+    EventType,
+    LogEvent,
+    LogLevel,
     Rule,
     RuleSelection,
+    RuleSelectionProgressEvent,
     RuleType,
     SelectOptions,
     SeverityLevel
 } from "../src";
-import {DescribeOptions, SeverityLevel as EngApi_SeverityLevel} from "@salesforce/code-analyzer-engine-api"
+import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {RepeatedRuleNameEnginePlugin, StubEnginePlugin} from "./stubs";
 import path from "node:path";
-import {changeWorkingDirectoryToPackageRoot, FixedUniqueIdGenerator} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, FixedClock, FixedUniqueIdGenerator} from "./test-helpers";
 import {getMessage} from "../src/messages";
 import * as stubs from "./stubs";
 import {WorkspaceImpl} from "../src/workspace";
@@ -18,9 +23,9 @@ import {WorkspaceImpl} from "../src/workspace";
 changeWorkingDirectoryToPackageRoot();
 
 describe('Tests for selecting rules', () => {
-
     let codeAnalyzer: CodeAnalyzer;
     let plugin: StubEnginePlugin;
+    let sampleTimestamp: Date;
 
     async function setupCodeAnalyzer(codeAnalyzer: CodeAnalyzer) : Promise<void> {
         plugin = new StubEnginePlugin();
@@ -31,6 +36,8 @@ describe('Tests for selecting rules', () => {
     beforeEach(async () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         await setupCodeAnalyzer(codeAnalyzer);
+        sampleTimestamp = new Date();
+        codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
     })
 
     it('When no rule selectors are provided then the Recommended tag is used', async () => {
@@ -243,7 +250,7 @@ describe('Tests for selecting rules', () => {
     it('When selectRules is not provided with SelectOptions, then workspace should be undefined for all engines', async () => {
         await codeAnalyzer.selectRules(['all']);
 
-        const expectedDescribeOptions: DescribeOptions = {
+        const expectedDescribeOptions: engApi.DescribeOptions = {
             workspace: undefined
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
@@ -258,13 +265,93 @@ describe('Tests for selecting rules', () => {
         }
         await codeAnalyzer.selectRules(['all'], selectOptions);
 
-        const expectedDescribeOptions: DescribeOptions = {
+        const expectedDescribeOptions: engApi.DescribeOptions = {
             workspace: new WorkspaceImpl("FixedId", [path.resolve('src'), path.resolve('test')])
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
         const stubEngine2: stubs.StubEngine2 = plugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
         expect(stubEngine2.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);
+    });
+
+    it("When selecting rules, then the log events should include the start and end of each engine's rule gathering", async () => {
+        const logEvents: LogEvent[] = [];
+        codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        await codeAnalyzer.selectRules([]);
+
+        expect(logEvents.length).toBeGreaterThanOrEqual(4);
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('GatheringRulesFromEngine', 'stubEngine1'),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('GatheringRulesFromEngine', 'stubEngine2'),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('FinishedGatheringRulesFromEngine', 5, 'stubEngine1'),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('FinishedGatheringRulesFromEngine', 3, 'stubEngine2'),
+            timestamp: sampleTimestamp
+        });
+    });
+
+    it("When selecting rules, then the engine progress events should aggregated and emitted as RuleSelectionProgressEvent", async () => {
+        const ruleSelectionProgressEvents: RuleSelectionProgressEvent[] = [];
+        codeAnalyzer.onEvent(EventType.RuleSelectionProgressEvent,
+            (event: RuleSelectionProgressEvent) => ruleSelectionProgressEvents.push(event));
+        await codeAnalyzer.selectRules([]);
+
+        expect(ruleSelectionProgressEvents).toHaveLength(8);
+        const expectedPercentages: number[] = [
+            0, // initial progress always reported
+            10, // average of 20 from engine1 and 0 from engine2
+            40, // average of 80 from engine1 and 0 from engine2
+            55, // average of 80 from engine1 and 30 from engine2
+            85, // average of 80 from engine1 and 90 from engine2
+            95, // average of 100 from engine1 and 90 from engine2
+            100, // average of 100 from engine1 and 100 from engine 2
+            100 // final progress always reported (just in case there are no engines, we don't want to get stuck on 0)
+        ]
+        for (const [i, expectedPercentComplete] of expectedPercentages.entries()) {
+            expect(ruleSelectionProgressEvents[i]).toEqual({
+                type: EventType.RuleSelectionProgressEvent,
+                timestamp: sampleTimestamp,
+                percentComplete: expectedPercentComplete
+            });
+        }
+    });
+
+    it("When selecting rules, then engine specific log events are wired up and emitted correctly", async () => {
+        const engineLogEvents: EngineLogEvent[] = [];
+        codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
+        await codeAnalyzer.selectRules([]);
+
+        expect(engineLogEvents).toHaveLength(2);
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine1",
+            logLevel: LogLevel.Warn,
+            message: "someMiscWarnMessageFromStubEngine1"
+        });
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine2",
+            logLevel: LogLevel.Error,
+            message: "someMiscErrorMessageFromStubEngine2"
+        });
     });
 });
 

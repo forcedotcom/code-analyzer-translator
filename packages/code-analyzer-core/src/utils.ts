@@ -26,3 +26,26 @@ export class SimpleUniqueIdGenerator implements UniqueIdGenerator {
         return `${prefix}${++this.counter}`;
     }
 }
+
+export class EngineProgressAggregator {
+    private readonly percentagesMap: Map<string, number> = new Map();
+
+    reset(engineNames: string[]): void {
+        this.percentagesMap.clear();
+        for (const engineName of engineNames) {
+            this.setProgressFor(engineName, 0);
+        }
+    }
+
+    setProgressFor(engineName: string, value: number): void {
+        this.percentagesMap.set(engineName, value);
+    }
+
+    getAggregatedProgressPercentage(): number {
+        let sumOfPercentages = 0;
+        for (const value of this.percentagesMap.values()) {
+            sumOfPercentages += value;
+        }
+        return sumOfPercentages / Math.max(this.percentagesMap.size, 1);
+    }
+}

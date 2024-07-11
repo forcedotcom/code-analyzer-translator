@@ -20,11 +20,12 @@ export {
 } from "./engines"
 
 export {
+    DescribeRulesProgressEvent,
     Event,
     EventType,
     LogEvent,
     LogLevel,
-    ProgressEvent
+    RunRulesProgressEvent
 } from "./events"
 
 export {

@@ -1,9 +1,10 @@
 import {
+    DescribeRulesProgressEvent,
     EngineRunResults,
     EventType,
     LogEvent,
     LogLevel,
-    ProgressEvent,
+    RunRulesProgressEvent,
     RuleDescription,
     RunOptions,
     Violation
@@ -376,13 +377,16 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
 describe('Tests for emitting events', () => {
     let engine: ESLintEngine;
     let logEvents: LogEvent[];
-    let progressEvents: ProgressEvent[];
+    let runRulesProgressEvents: RunRulesProgressEvent[];
+    let describeRulesProgressEvents: DescribeRulesProgressEvent[];
     beforeEach(() => {
         engine = new ESLintEngine(DEFAULT_CONFIG);
         logEvents = [];
-        progressEvents = [];
         engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
-        engine.onEvent(EventType.ProgressEvent, (event: ProgressEvent) => progressEvents.push(event));
+        runRulesProgressEvents = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (event: RunRulesProgressEvent) => runRulesProgressEvents.push(event));
+        describeRulesProgressEvents = [];
+        engine.onEvent(EventType.DescribeRulesProgressEvent, (event: DescribeRulesProgressEvent) => describeRulesProgressEvents.push(event));
     })
 
     it('When workspace contains an unparsable javascript file, then we emit an error log event and continue to next file', async () => {
@@ -421,16 +425,15 @@ describe('Tests for emitting events', () => {
         expect(results.violations).toHaveLength(0);
     });
 
-    it('When describeRules is called, then it emits progress events up to 50 percent', async () => {
+    it('When describeRules is called, then it emits correct progress events', async () => {
         await engine.describeRules({});
-        expect(progressEvents.map(e => e.percentComplete)).toEqual([0,5,20,40,50]);
+        expect(describeRulesProgressEvents.map(e => e.percentComplete)).toEqual([0, 10, 40, 80, 100]);
     });
 
-    it('When runRules is called, then it emits progress events up to 100 percent', async () => {
+    it('When runRules is called, then it emits correct progress events', async () => {
         const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceWithNoCustomConfig])};
         await engine.runRules(['no-unused-vars'], runOptions);
-
-        expect(progressEvents.map(e => e.percentComplete)).toEqual([95, 100]);
+        expect(runRulesProgressEvents.map(e => e.percentComplete)).toEqual([0, 30, 95, 100]);
     });
 });
 

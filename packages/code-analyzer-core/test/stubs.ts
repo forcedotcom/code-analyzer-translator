@@ -58,6 +58,9 @@ export class StubEngine1 extends engApi.Engine {
 
     async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
+        this.emitDescribeRulesProgressEvent(20);
+        this.emitLogEvent(LogLevel.Warn, "someMiscWarnMessageFromStubEngine1");
+        this.emitDescribeRulesProgressEvent(80);
         return [
             {
                 name: "stub1RuleA",
@@ -104,23 +107,10 @@ export class StubEngine1 extends engApi.Engine {
 
     async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 0
-        });
-        this.emitEvent<engApi.LogEvent>({
-            type: engApi.EventType.LogEvent,
-            message: "someMiscFineMessageFromStubEngine1",
-            logLevel: LogLevel.Fine
-        });
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 50
-        });
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 100
-        });
+        this.emitRunRulesProgressEvent(0);
+        this.emitLogEvent(LogLevel.Fine, "someMiscFineMessageFromStubEngine1");
+        this.emitRunRulesProgressEvent(50);
+        this.emitRunRulesProgressEvent(100);
         return this.resultsToReturn;
     }
 }
@@ -150,6 +140,9 @@ export class StubEngine2 extends engApi.Engine {
 
     async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
+        this.emitDescribeRulesProgressEvent(30);
+        this.emitLogEvent(LogLevel.Error, "someMiscErrorMessageFromStubEngine2");
+        this.emitDescribeRulesProgressEvent(90);
         return [
             {
                 name: "stub2RuleA",
@@ -180,19 +173,9 @@ export class StubEngine2 extends engApi.Engine {
 
     async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
-        this.emitEvent<engApi.LogEvent>({
-            type: engApi.EventType.LogEvent,
-            message: "someMiscInfoMessageFromStubEngine2",
-            logLevel: LogLevel.Info
-        });
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 5
-        });
-        this.emitEvent<engApi.ProgressEvent>({
-            type: engApi.EventType.ProgressEvent,
-            percentComplete: 63
-        });
+        this.emitLogEvent(LogLevel.Info, "someMiscInfoMessageFromStubEngine2");
+        this.emitRunRulesProgressEvent(5);
+        this.emitRunRulesProgressEvent(63);
         return this.resultsToReturn;
     }
 }
@@ -305,7 +288,7 @@ class FutureEngine extends engApi.Engine {
         return "future";
     }
 
-    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+    async describeRules(_describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         return [];
     }
 

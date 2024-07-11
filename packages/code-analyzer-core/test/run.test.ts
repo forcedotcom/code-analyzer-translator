@@ -4,7 +4,7 @@ import {
     CodeLocation,
     EngineRunResults,
     EngineLogEvent,
-    EngineProgressEvent,
+    EngineRunProgressEvent,
     EngineResultsEvent,
     EventType,
     LogEvent,
@@ -33,14 +33,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     let codeAnalyzer: CodeAnalyzer;
     let stubEngine1: stubs.StubEngine1;
     let stubEngine2: stubs.StubEngine2;
-    let logEvents: LogEvent[];
     let selection: RuleSelection;
     const expectedStubEngine1RuleNames: string[] = ['stub1RuleA', 'stub1RuleB', 'stub1RuleC'];
     const expectedStubEngine2RuleNames: string[] = ['stub2RuleA', 'stub2RuleC'];
 
     beforeEach(async () => {
         sampleRunOptions = {workspace: new WorkspaceImpl('FixedId', [path.resolve('test')])};
-        logEvents = [];
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
@@ -49,7 +47,6 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         await codeAnalyzer.addEnginePlugin(stubPlugin);
         stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         stubEngine2 = stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2;
-        codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
         selection = await codeAnalyzer.selectRules([]);
     });
 
@@ -494,14 +491,88 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             'throwingEngine', 'SomeErrorMessageFromThrowingEngine'));
     });
 
-    it("When running engines, then events are wired up and emitted correctly from the engines", async () => {
-        const engineLogEvents: EngineLogEvent[] = [];
-        const engineProgressEvents: EngineProgressEvent[] = [];
+    it("When running engines, then the log events should include the start and end of each engine run", async () => {
+        const logEvents: LogEvent[] = [];
+        codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        await codeAnalyzer.run(selection, sampleRunOptions);
+
+        expect(logEvents.length).toBeGreaterThanOrEqual(4);
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('RunningEngineWithRules', 'stubEngine1', `["stub1RuleA","stub1RuleB","stub1RuleC"]`),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('RunningEngineWithRules', 'stubEngine2', `["stub2RuleA","stub2RuleC"]`),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('FinishedRunningEngine', 'stubEngine1'),
+            timestamp: sampleTimestamp
+        });
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            message: getMessage('FinishedRunningEngine', 'stubEngine2'),
+            timestamp: sampleTimestamp
+        });
+    });
+
+    it("When running engines, then run progress events are wired up and emitted correctly from the engines", async () => {
+        const engineRunProgressEvents: EngineRunProgressEvent[] = [];
+        codeAnalyzer.onEvent(EventType.EngineRunProgressEvent, (event: EngineRunProgressEvent) => engineRunProgressEvents.push(event));
+        await codeAnalyzer.run(selection, sampleRunOptions);
+
+        expect(engineRunProgressEvents).toHaveLength(9);
+        const stub1RunProgressEvents: EngineRunProgressEvent[] = engineRunProgressEvents.filter(e => e.engineName === 'stubEngine1');
+        expect(stub1RunProgressEvents).toHaveLength(5);
+        const stub2RunProgressEvents: EngineRunProgressEvent[] = engineRunProgressEvents.filter(e => e.engineName === 'stubEngine2');
+        expect(stub2RunProgressEvents).toHaveLength(4);
+        for (const [i, expectedPercentComplete] of [0, 0, 50, 100, 100].entries()) { // Core and stubEngine1 both give us 0 and 100
+            expect(stub1RunProgressEvents[i]).toEqual({
+                type: EventType.EngineRunProgressEvent,
+                timestamp: sampleTimestamp,
+                engineName: "stubEngine1",
+                percentComplete: expectedPercentComplete
+            });
+        }
+        for (const [i, expectedPercentComplete] of [0, 5, 63, 100].entries()) { // Only Core gives us 0 and 100
+            expect(stub2RunProgressEvents[i]).toEqual({
+                type: EventType.EngineRunProgressEvent,
+                timestamp: sampleTimestamp,
+                engineName: "stubEngine2",
+                percentComplete: expectedPercentComplete
+            });
+        }
+    });
+
+    it("When running engines, then engine run results events are emitted correctly when the enginges complete", async () => {
         const engineResultsEvents: EngineResultsEvent[] = [];
-        codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
-        codeAnalyzer.onEvent(EventType.EngineProgressEvent, (event: EngineProgressEvent) => engineProgressEvents.push(event));
         codeAnalyzer.onEvent(EventType.EngineResultsEvent, (event: EngineResultsEvent) => engineResultsEvents.push(event));
         const runResults: RunResults = await codeAnalyzer.run(selection, sampleRunOptions);
+
+        expect(engineResultsEvents).toHaveLength(2);
+        expect(engineResultsEvents).toContainEqual({
+            type: EventType.EngineResultsEvent,
+            timestamp: sampleTimestamp,
+            results: runResults.getEngineRunResults("stubEngine1")
+        });
+        expect(engineResultsEvents).toContainEqual({
+            type: EventType.EngineResultsEvent,
+            timestamp: sampleTimestamp,
+            results: runResults.getEngineRunResults("stubEngine2")
+        });
+    });
+
+    it("When running engines, then engine specific events are wired up and emitted correctly from the engines", async () => {
+        const engineLogEvents: EngineLogEvent[] = [];
+        codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
+        await codeAnalyzer.run(selection, sampleRunOptions);
 
         expect(engineLogEvents).toHaveLength(2);
         expect(engineLogEvents).toContainEqual({
@@ -518,37 +589,6 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             logLevel: LogLevel.Info,
             message: "someMiscInfoMessageFromStubEngine2"
         });
-
-        expect(engineProgressEvents).toHaveLength(9);
-        let i = 0; // Using this to ensure the order of events
-        for (const expectedPercentComplete of [0, 0, 50, 100, 100]) { // Core and stubEngine1 both give us 0 and 100
-            expect(engineProgressEvents[i++]).toEqual({
-                type: EventType.EngineProgressEvent,
-                timestamp: sampleTimestamp,
-                engineName: "stubEngine1",
-                percentComplete: expectedPercentComplete
-            });
-        }
-        for (const expectedPercentComplete of [0, 5, 63, 100]) { // Only Core gives us 0 and 100
-            expect(engineProgressEvents[i++]).toEqual({
-                type: EventType.EngineProgressEvent,
-                timestamp: sampleTimestamp,
-                engineName: "stubEngine2",
-                percentComplete: expectedPercentComplete
-            });
-        }
-
-        expect(engineResultsEvents).toHaveLength(2);
-        expect(engineResultsEvents).toContainEqual({
-            type: EventType.EngineResultsEvent,
-            timestamp: sampleTimestamp,
-            results: runResults.getEngineRunResults("stubEngine1")
-        })
-        expect(engineResultsEvents).toContainEqual({
-            type: EventType.EngineResultsEvent,
-            timestamp: sampleTimestamp,
-            results: runResults.getEngineRunResults("stubEngine2")
-        })
     });
 });
 
