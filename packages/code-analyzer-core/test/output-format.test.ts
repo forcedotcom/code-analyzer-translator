@@ -26,20 +26,20 @@ describe("Tests for the CSV output format", () => {
     it("When an empty result is provided, we create a csv text with headers but no rows", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.CSV);
-        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.csv');
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.csv');
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain multiple violations, we create csv text correctly", () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.CSV);
-        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.csv');
+        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.csv');
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain violation of type UnexpectedError, we create csv text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.CSV);
-        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.csv');
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.csv');
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -48,20 +48,20 @@ describe("Tests for the JSON output format", () => {
     it("When an empty result is provided, we create a json text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain multiple violations , we create json text correctly", async () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain violation of type UnexpectedError, we create json text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.json', true);
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -70,20 +70,20 @@ describe("Tests for the XML output format", () => {
     it("When an empty result is provided, we create a xml text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.XML);
-        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.xml');
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.xml');
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain multiple violations , we create xml text correctly", () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.XML);
-        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.xml');
+        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.xml');
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain violation of type UnexpectedError, we create xml text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.XML);
-        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.xml');
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.xml');
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -116,8 +116,7 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
         runDirVar = runDirVar.replaceAll('\\','\\\\');
     }
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
-        .replaceAll('{{RUNDIR}}', runDirVar)
-        .replaceAll('\r',''); // fix for windows
+        .replaceAll('{{RUNDIR}}', runDirVar);
 }
 
 async function createResultsWithUnexpectedError(): Promise<RunResults> {
