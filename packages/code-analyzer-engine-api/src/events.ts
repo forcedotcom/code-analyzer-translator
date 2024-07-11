@@ -1,6 +1,7 @@
 export enum EventType {
     LogEvent = "LogEvent",
-    ProgressEvent = "ProgressEvent"
+    RunRulesProgressEvent = "RunRulesProgressEvent",
+    DescribeRulesProgressEvent = "DescribeRulesProgressEvent"
 }
 
 export enum LogLevel {
@@ -17,9 +18,14 @@ export type LogEvent = {
     message: string
 }
 
-export type ProgressEvent = {
-    type: EventType.ProgressEvent,
+export type RunRulesProgressEvent = {
+    type: EventType.RunRulesProgressEvent,
     percentComplete: number
 }
 
-export type Event = LogEvent | ProgressEvent;
+export type DescribeRulesProgressEvent = {
+    type: EventType.DescribeRulesProgressEvent,
+    percentComplete: number
+}
+
+export type Event = LogEvent | RunRulesProgressEvent | DescribeRulesProgressEvent;

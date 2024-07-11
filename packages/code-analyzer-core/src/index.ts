@@ -10,12 +10,13 @@ export {
 
 export {
     EngineLogEvent,
-    EngineProgressEvent,
+    EngineRunProgressEvent,
     EngineResultsEvent,
     Event,
     EventType,
     LogEvent,
-    LogLevel
+    LogLevel,
+    RuleSelectionProgressEvent
 } from "./events"
 
 export {

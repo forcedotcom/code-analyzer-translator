@@ -1,6 +1,6 @@
 import { RuleDescription } from "./rules";
 import { EngineRunResults } from "./results";
-import { Event } from "./events";
+import {Event, EventType, LogLevel} from "./events";
 import { EventEmitter } from "node:events";
 
 export interface Workspace {
@@ -40,5 +40,27 @@ export abstract class Engine {
 
     protected emitEvent<T extends Event>(event: T): void {
         this.eventEmitter.emit(event.type, event);
+    }
+
+    protected emitLogEvent(logLevel: LogLevel, messages: string): void {
+        this.emitEvent({
+            type: EventType.LogEvent,
+            logLevel: logLevel,
+            message: messages
+        });
+    }
+
+    protected emitDescribeRulesProgressEvent(percentComplete: number): void {
+        this.emitEvent({
+            type: EventType.DescribeRulesProgressEvent,
+            percentComplete: percentComplete
+        });
+    }
+
+    protected emitRunRulesProgressEvent(percentComplete: number): void {
+        this.emitEvent({
+            type: EventType.RunRulesProgressEvent,
+            percentComplete: percentComplete
+        });
     }
 }

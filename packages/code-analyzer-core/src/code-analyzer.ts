@@ -6,13 +6,14 @@ import {
     RunResultsImpl,
     UnexpectedErrorEngineRunResults
 } from "./results"
-import {EngineLogEvent, EngineProgressEvent, EngineResultsEvent, Event, EventType, LogLevel} from "./events"
+import {EngineLogEvent, EngineResultsEvent, EngineRunProgressEvent, Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
 import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
 import {
     Clock,
+    EngineProgressAggregator,
     RealClock,
     SimpleUniqueIdGenerator,
     toAbsolutePath,
@@ -37,6 +38,8 @@ export class CodeAnalyzer {
     private uniqueIdGenerator: UniqueIdGenerator = new SimpleUniqueIdGenerator();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
+    private readonly rulesCache: Map<string, RuleImpl[]> = new Map();
+    private readonly engineRuleDiscoveryProgressAggregator: EngineProgressAggregator = new EngineProgressAggregator();
 
     constructor(config: CodeAnalyzerConfig) {
         this.config = config;
@@ -88,8 +91,9 @@ export class CodeAnalyzer {
     }
 
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
-        selectors = selectors.length > 0 ? selectors : ['Recommended'];
+        this.emitEvent({type: EventType.RuleSelectionProgressEvent, timestamp: this.clock.now(), percentComplete: 0});
 
+        selectors = selectors.length > 0 ? selectors : ['Recommended'];
         const allRules: RuleImpl[] = await this.getAllRules(selectOptions?.workspace);
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();
@@ -98,6 +102,8 @@ export class CodeAnalyzer {
                 ruleSelection.addRule(rule);
             }
         }
+
+        this.emitEvent({type: EventType.RuleSelectionProgressEvent, timestamp: this.clock.now(), percentComplete: 100});
         return ruleSelection;
     }
 
@@ -105,23 +111,14 @@ export class CodeAnalyzer {
         const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
 
+        const runPromises: Promise<EngineRunResults>[] = ruleSelection.getEngineNames().map(
+            engineName => this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions));
+        const engineRunResultsList: EngineRunResults[] = await Promise.all(runPromises);
+
         const runResults: RunResultsImpl = new RunResultsImpl();
-        for (const engineName of ruleSelection.getEngineNames()) {
-            this.emitEvent<EngineProgressEvent>({
-                type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 0
-            });
-
-            const engineRunResults: EngineRunResults = await this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions);
+        for (const engineRunResults of engineRunResultsList) {
             runResults.addEngineRunResults(engineRunResults);
-
-            this.emitEvent<EngineProgressEvent>({
-                type: EventType.EngineProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 100
-            });
-            this.emitEvent<EngineResultsEvent>({
-                type: EventType.EngineResultsEvent, timestamp: this.clock.now(), results: engineRunResults
-            });
         }
-
         return runResults;
     }
 
@@ -130,20 +127,39 @@ export class CodeAnalyzer {
     }
 
     private async getAllRules(workspace?: Workspace): Promise<RuleImpl[]> {
-        const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
-            engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
-        return (await Promise.all(rulePromises)).flat();
+        const cacheKey: string = workspace ? workspace.getWorkspaceId() : process.cwd();
+        if (!this.rulesCache.has(cacheKey)) {
+            this.engineRuleDiscoveryProgressAggregator.reset(this.getEngineNames());
+            const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
+                engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
+            this.rulesCache.set(cacheKey, (await Promise.all(rulePromises)).flat());
+        }
+        return this.rulesCache.get(cacheKey)!;
     }
 
     private async getAllRulesFor(engineName: string, describeOptions: engApi.DescribeOptions): Promise<RuleImpl[]> {
-        const engine: engApi.Engine = this.getEngine(engineName);
-        const ruleDescriptions: engApi.RuleDescription[] = await engine.describeRules(describeOptions);
+        this.emitLogEvent(LogLevel.Debug, getMessage('GatheringRulesFromEngine', engineName));
+        const ruleDescriptions: engApi.RuleDescription[] = await this.getEngine(engineName).describeRules(describeOptions);
+        this.emitLogEvent(LogLevel.Debug, getMessage('FinishedGatheringRulesFromEngine', ruleDescriptions.length, engineName));
+
         validateRuleDescriptions(ruleDescriptions, engineName);
-        return ruleDescriptions.map(rd => this.updateRuleDescriptionWithOverrides(engineName, rd))
+        const rules: RuleImpl[] = ruleDescriptions.map(rd => this.updateRuleDescriptionWithOverrides(engineName, rd))
             .map(rd => new RuleImpl(engineName, rd));
+        this.updateRuleGatheringProgressFor(engineName, 100);
+        return rules;
+    }
+
+    private updateRuleGatheringProgressFor(engineName: string, percComplete: number) {
+        this.engineRuleDiscoveryProgressAggregator.setProgressFor(engineName, percComplete);
+        const aggregatedPerc: number = this.engineRuleDiscoveryProgressAggregator.getAggregatedProgressPercentage();
+        this.emitEvent({type: EventType.RuleSelectionProgressEvent, timestamp: this.clock.now(), percentComplete: aggregatedPerc});
     }
 
     private async runEngineAndValidateResults(engineName: string, ruleSelection: RuleSelection, engineRunOptions: engApi.RunOptions): Promise<EngineRunResults> {
+        this.emitEvent<EngineRunProgressEvent>({
+            type: EventType.EngineRunProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 0
+        });
+
         const rulesToRun: string[] = ruleSelection.getRulesFor(engineName).map(r => r.getName());
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningEngineWithRules', engineName, JSON.stringify(rulesToRun)));
         const engine: engApi.Engine = this.getEngine(engineName);
@@ -156,7 +172,16 @@ export class CodeAnalyzer {
         }
 
         validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
-        return new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
+        const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
+
+        this.emitEvent<EngineRunProgressEvent>({
+            type: EventType.EngineRunProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 100
+        });
+        this.emitLogEvent(LogLevel.Debug, getMessage('FinishedRunningEngine', engineName));
+        this.emitEvent<EngineResultsEvent>({
+            type: EventType.EngineResultsEvent, timestamp: this.clock.now(), results: engineRunResults
+        });
+        return engineRunResults;
     }
 
     private emitEvent<T extends Event>(event: T): void {
@@ -209,9 +234,13 @@ export class CodeAnalyzer {
             });
         });
 
-        engine.onEvent(engApi.EventType.ProgressEvent, (event: engApi.ProgressEvent) => {
-            this.emitEvent<EngineProgressEvent>({
-                type: EventType.EngineProgressEvent,
+        engine.onEvent(engApi.EventType.DescribeRulesProgressEvent, (event: engApi.DescribeRulesProgressEvent) => {
+            this.updateRuleGatheringProgressFor(engine.getName(), event.percentComplete);
+        });
+
+        engine.onEvent(engApi.EventType.RunRulesProgressEvent, (event: engApi.RunRulesProgressEvent) => {
+            this.emitEvent<EngineRunProgressEvent>({
+                type: EventType.EngineRunProgressEvent,
                 timestamp: this.clock.now(),
                 engineName: engine.getName(),
                 percentComplete: event.percentComplete
@@ -235,8 +264,7 @@ export class CodeAnalyzer {
     }
 
     private getEngine(engineName: string): engApi.Engine {
-        // This line should never return undefined, so we are safe to directly cast to engApi.Engine
-        return this.engines.get(engineName) as engApi.Engine;
+        return this.engines.get(engineName)!;
     }
 }
 

@@ -1,17 +1,18 @@
 import {
     ConfigObject,
     DescribeOptions,
+    DescribeRulesProgressEvent,
     Engine,
     EnginePluginV1,
     EngineRunResults,
     EventType,
     LogEvent,
     LogLevel,
-    ProgressEvent,
     RuleDescription,
     RunOptions,
+    RunRulesProgressEvent,
+    Workspace
 } from "../src";
-import {Workspace} from "../src/engines";
 
 describe('Tests for v1', () => {
     it('EnginePluginV1 getApiVersion should return 1.0', () => {
@@ -27,27 +28,49 @@ describe('Tests for v1', () => {
         dummyEngine.onEvent(EventType.LogEvent, (event: LogEvent): void => {
             logEvents.push(event);
         });
-        const progressEvents: ProgressEvent[] = [];
-        dummyEngine.onEvent(EventType.ProgressEvent, (event: ProgressEvent): void => {
-            progressEvents.push(event);
+        const describeRulesProgressEvents: DescribeRulesProgressEvent[] = [];
+        dummyEngine.onEvent(EventType.DescribeRulesProgressEvent, (event: DescribeRulesProgressEvent): void => {
+            describeRulesProgressEvents.push(event);
+        });
+        const runRulesProgressEvents: RunRulesProgressEvent[] = [];
+        dummyEngine.onEvent(EventType.RunRulesProgressEvent, (event: RunRulesProgressEvent): void => {
+            runRulesProgressEvents.push(event);
         });
 
-        await dummyEngine.runRules(["dummy"], {workspace: new DummyWorkspace()});
+        const workspace: Workspace = new DummyWorkspace();
+        await dummyEngine.describeRules({workspace: workspace});
+        await dummyEngine.runRules(["dummy"], {workspace: workspace});
 
-        expect(logEvents).toHaveLength(1);
+        expect(logEvents).toHaveLength(2);
         expect(logEvents[0]).toEqual({
             type: EventType.LogEvent,
-            logLevel: LogLevel.Info,
-            message: "Hello World"
+            logLevel: LogLevel.Debug,
+            message: "describeRules called"
+        });
+        expect(logEvents[1]).toEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Fine,
+            message: "runRules called"
         });
 
-        expect(progressEvents).toHaveLength(2);
-        expect(progressEvents[0]).toEqual({
-            type: EventType.ProgressEvent,
+        expect(describeRulesProgressEvents).toHaveLength(2);
+        expect(describeRulesProgressEvents).toHaveLength(2);
+        expect(describeRulesProgressEvents[0]).toEqual({
+            type: EventType.DescribeRulesProgressEvent,
+            percentComplete: 30
+        });
+        expect(describeRulesProgressEvents[1]).toEqual({
+            type: EventType.DescribeRulesProgressEvent,
+            percentComplete: 99
+        });
+
+        expect(runRulesProgressEvents).toHaveLength(2);
+        expect(runRulesProgressEvents[0]).toEqual({
+            type: EventType.RunRulesProgressEvent,
             percentComplete: 5.0
         });
-        expect(progressEvents[1]).toEqual({
-            type: EventType.ProgressEvent,
+        expect(runRulesProgressEvents[1]).toEqual({
+            type: EventType.RunRulesProgressEvent,
             percentComplete: 100.0
         });
     });
@@ -55,7 +78,7 @@ describe('Tests for v1', () => {
 
 
 export class DummyEnginePluginV1 extends EnginePluginV1 {
-    async createEngine(engineName: string, config: ConfigObject): Promise<Engine> {
+    async createEngine(_engineName: string, _config: ConfigObject): Promise<Engine> {
         return new DummyEngineV1();
     }
 
@@ -66,6 +89,9 @@ export class DummyEnginePluginV1 extends EnginePluginV1 {
 
 class DummyEngineV1 extends Engine {
     async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+        this.emitDescribeRulesProgressEvent(30);
+        this.emitLogEvent(LogLevel.Debug, "describeRules called");
+        this.emitDescribeRulesProgressEvent(99);
         return [];
     }
 
@@ -74,19 +100,9 @@ class DummyEngineV1 extends Engine {
     }
 
     async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
-        this.emitEvent({
-            type: EventType.ProgressEvent,
-            percentComplete: 5.0
-        });
-        this.emitEvent({
-            type: EventType.LogEvent,
-            logLevel: LogLevel.Info,
-            message: "Hello World"
-        });
-        this.emitEvent({
-            type: EventType.ProgressEvent,
-            percentComplete: 100.0
-        });
+        this.emitRunRulesProgressEvent(5.0);
+        this.emitLogEvent(LogLevel.Fine, "runRules called");
+        this.emitRunRulesProgressEvent(100.0);
         return {
             violations: []
         };
