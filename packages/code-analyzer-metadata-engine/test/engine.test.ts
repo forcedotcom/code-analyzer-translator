@@ -47,7 +47,6 @@ describe('Metadata Engine Tests', () => {
         const results = await engine.runRules(["PrivateMethodAPIVersionRule"], runOptions);
         expect(results).toEqual(expResults)
     })
-    
 });
 
 describe('MetadataEnginePlugin Tests' , () => {
