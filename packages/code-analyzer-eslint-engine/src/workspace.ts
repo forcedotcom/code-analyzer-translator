@@ -4,10 +4,12 @@ import path from "node:path";
 import {ESLintEngineConfig, LEGACY_ESLINT_CONFIG_FILES} from "./config";
 import {calculateLongestCommonParentFolderOf, makeUnique} from "./utils";
 
+export type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
+
 export interface ESLintWorkspace {
-    getFilesToScan(): Promise<string[]>
-    getCandidateFilesForUserConfig(): Promise<string[]>
-    getCandidateFilesForBaseConfig(): Promise<string[]>
+    getFilesToScan(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
+    getCandidateFilesForUserConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
+    getCandidateFilesForBaseConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
     getLegacyConfigFile(): string | undefined
 }
 
@@ -21,16 +23,16 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
     }
 
     /* istanbul ignore next */
-    async getFilesToScan(): Promise<string[]> {
+    async getFilesToScan(_filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         throw new Error("This method should never be called");
     }
 
-    async getCandidateFilesForUserConfig(): Promise<string[]> {
+    async getCandidateFilesForUserConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         // With no workspace, we just reuse same candidate files as base config
-        return this.getCandidateFilesForBaseConfig();
+        return this.getCandidateFilesForBaseConfig(filterFcn);
     }
 
-    async getCandidateFilesForBaseConfig(): Promise<string[]> {
+    async getCandidateFilesForBaseConfig(_filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         return createPlaceholderCandidateFiles([
                 ... this.config.javascript_file_extensions,
                 ... this.config.typescript_file_extensions],
@@ -74,17 +76,17 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         return this.workspaceRoot;
     }
 
-    async getFilesToScan(): Promise<string[]> {
-        const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest();
+    async getFilesToScan(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
+        const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest(filterFcn);
         return filesOfInterest.javascriptFiles.concat(filesOfInterest.typescriptFiles);
     }
 
-    async getCandidateFilesForUserConfig(): Promise<string[]> {
-        return this.getFilesToScan();
+    async getCandidateFilesForUserConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
+        return this.getFilesToScan(filterFcn);
     }
 
-    async getCandidateFilesForBaseConfig(): Promise<string[]> {
-        const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest();
+    async getCandidateFilesForBaseConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
+        const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest(filterFcn);
         let candidateFiles: string[] = [];
         if (filesOfInterest.javascriptFiles.length > 0) {
             candidateFiles = createPlaceholderCandidateFiles(this.config.javascript_file_extensions, this.getWorkspaceRoot());
@@ -105,10 +107,11 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         return this.legacyConfigLookupCache.file;
     }
 
-    private async getFilesOfInterest(): Promise<FilesOfInterest> {
+    private async getFilesOfInterest(filterFcn: AsyncFilterFnc<string>): Promise<FilesOfInterest> {
         if (this.filesOfInterest) {
             return this.filesOfInterest;
         }
+
         this.filesOfInterest = { javascriptFiles: [], typescriptFiles: [] };
         for (const file of await this.delegateWorkspace.getExpandedFiles()) {
             const fileExt = path.extname(file).toLowerCase();
@@ -118,6 +121,9 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
                 this.filesOfInterest.typescriptFiles.push(file);
             }
         }
+        this.filesOfInterest.javascriptFiles = await filterAsync(this.filesOfInterest.javascriptFiles, filterFcn);
+        this.filesOfInterest.typescriptFiles = await filterAsync(this.filesOfInterest.typescriptFiles, filterFcn);
+
         return this.filesOfInterest;
     }
 }
@@ -141,4 +147,9 @@ function findLegacyConfigFile(foldersToCheck: string[]): string | undefined {
         }
     }
     return undefined;
+}
+
+async function filterAsync<T>(array: T[], filterFcn: AsyncFilterFnc<T>): Promise<T[]> {
+    const mask: boolean[] = await Promise.all(array.map(filterFcn));
+    return array.filter((_, index) => mask[index]);
 }

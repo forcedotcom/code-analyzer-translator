@@ -112,6 +112,7 @@ export class ESLintEngine extends Engine {
     }
 
     private handleEslintErrorOrWarning(file: string, resultMsg: Linter.LintMessage) {
+        /* istanbul ignore else */
         if (resultMsg.fatal) {
             this.emitLogEvent(LogLevel.Error, getMessage('ESLintErroredWhenScanningFile', file, resultMsg.message));
         } else {
