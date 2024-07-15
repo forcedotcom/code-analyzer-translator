@@ -270,9 +270,14 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
     });
 
     it('When workspace contains custom config that installs same plugin as one of our base plugins, we should make eslint conflict error helpful', async () => {
-        // Sadly this test takes like 3 to 30 seconds. I wish there was an alternative way to write this test, but we
-        // need a workspace that has the eslint plugin lwc plugin installed with all of its dependencies and unzipping
-        // the workspace is the best thing I could come up with.
+        if (os.platform() === 'win32') {
+            // Sadly this test takes like 30 to 60 seconds on windows. I wish there was an alternative way to write this
+            // test, but we need a workspace that has the eslint plugin lwc plugin installed with all of its
+            // dependencies and unzipping the workspace is the best thing I could come up with.
+            // For now, we skip this test only on windows.
+            return;
+        }
+
         const workspaceZip: string = path.join(__dirname, 'test-data', 'workspaceWithConflictingConfig.zip');
         const tempFolder: string = fs.mkdtempSync(path.join(os.tmpdir(), 'engine-test'));
         await unzipToFolder(workspaceZip, tempFolder);
