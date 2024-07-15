@@ -54,7 +54,7 @@ export class LegacyBaseConfigFactory {
         }
     }
 
-    private createLwcConfig() {
+    private createLwcConfig(): Linter.ConfigOverride {
         return {
             files: this.config.javascript_file_extensions.map(ext => `*${ext}`),
             extends: [

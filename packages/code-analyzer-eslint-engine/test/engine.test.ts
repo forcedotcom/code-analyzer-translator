@@ -10,13 +10,15 @@ import {
     Violation
 } from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, unzipToFolder} from "./test-helpers";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import {ESLintEngine} from "../src/engine";
 import {DEFAULT_CONFIG} from "../src/config";
 import {getMessage} from "../src/messages";
+import * as os from "node:os";
+import * as zlib from "node:zlib";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -265,6 +267,25 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expect(ruleDescriptions).toHaveLength(0);
+    });
+
+    it('When workspace contains custom config that installs same plugin as one of our base plugins, we should make eslint conflict error helpful', async () => {
+        // Sadly this test takes like 3 to 30 seconds. I wish there was an alternative way to write this test, but we
+        // need a workspace that has the eslint plugin lwc plugin installed with all of its dependencies and unzipping
+        // the workspace is the best thing I could come up with.
+        const workspaceZip: string = path.join(__dirname, 'test-data', 'workspaceWithConflictingConfig.zip');
+        const tempFolder: string = fs.mkdtempSync(path.join(os.tmpdir(), 'engine-test'));
+        await unzipToFolder(workspaceZip, tempFolder);
+        const workspaceFolder: string = path.join(tempFolder, 'workspaceWithConflictingConfig');
+
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG, config_root: workspaceFolder});
+        await expect(engine.describeRules({})).rejects.toThrow(/The eslint engine encountered a conflict.*/);
+    }, 30000); // Increasing timeout to 30 seconds
+
+    it('When configuration file contains plugin that cannot be found, then error with helpful message', async () => {
+        const workspaceFolder: string = path.join(__dirname, 'test-data', 'workspaceWithMissingESLintPlugin');
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG, config_root: workspaceFolder});
+        await expect(engine.describeRules({})).rejects.toThrow(/The eslint engine encountered an unexpected error.*/);
     });
 });
 

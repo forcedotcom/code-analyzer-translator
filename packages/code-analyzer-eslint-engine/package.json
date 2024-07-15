@@ -1,7 +1,7 @@
 {
     "name": "@salesforce/code-analyzer-eslint-engine",
     "description": "Plugin package that adds 'eslint' as an engine into Salesforce Code Analyzer",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "author": "The Salesforce Code Analyzer Team",
     "license": "BSD-3-Clause license",
     "homepage": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview",
@@ -19,7 +19,12 @@
       "@eslint/js": "^8.57.0",
       "@types/eslint": "^8.56.10",
       "@lwc/eslint-plugin-lwc": "^1.8.0",
+      "@babel/core": "^7.24.7",
+      "@babel/eslint-parser": "^7.24.7",
       "@salesforce/eslint-config-lwc": "^3.5.3",
+      "@salesforce/eslint-plugin-lightning": "^1.0.0",
+      "eslint-plugin-import": "^2.29.1",
+      "eslint-plugin-jest": "^28.6.0",
       "@typescript-eslint/parser": "^7.13.1",
       "@typescript-eslint/eslint-plugin": "^7.13.1"
     },
@@ -30,7 +35,9 @@
       "rimraf": "*",
       "ts-jest": "^29.0.0",
       "typescript": "^5.4.5",
-      "typescript-eslint": "^7.8.0"
+      "typescript-eslint": "^7.8.0",
+      "unzipper": "^0.10.9",
+      "@types/unzipper": "^0.10.9"
     },
     "engines": {
       "node": ">=20.0.0"
