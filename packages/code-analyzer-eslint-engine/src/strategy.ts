@@ -75,12 +75,10 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles, eslint);
 
         // Since we have no easy way of turning on a rule that has been explicitly turned off in the config
-        // (because we don't know its rule options or parser configuration ), we remove these turned off
+        // (because we don't know its rule options or parser configuration), we remove these turned off
         // rules entirely so that they can't be selected.
-        const explicitlyTurnedOffRules: Set<string> = new Set();
         for (const [ruleName, ruleStatus] of this.ruleStatuses) {
             if (ruleStatus === ESLintRuleStatus.OFF) {
-                explicitlyTurnedOffRules.add(ruleName);
                 this.ruleStatuses.delete(ruleName);
             }
         }
@@ -91,7 +89,7 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         // from users plugins that aren't explicitly configured since we have no easy way of turning them on for the
         // user (since we don't know if their rules require special options), thus we only add in the missing base rules.
         for (const ruleName of await this.getAllBaseRuleNames(filterFcn)) {
-            if (!this.ruleStatuses.has(ruleName) && !explicitlyTurnedOffRules.has(ruleName)) {
+            if (!this.ruleStatuses.has(ruleName)) {
                 this.ruleStatuses.set(ruleName, ESLintRuleStatus.OFF);
             }
         }
@@ -177,9 +175,15 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             baseConfig: this.baseConfigFactory.createBaseConfig(BaseRuleset.ALL),
             useEslintrc: false
         });
-        return Array.from(
-            (await this.calculateRuleStatusesFor(candidateFiles, eslintForBaseRuleNameDiscovery)).keys()
-        );
+        const allBaseRuleStatuses: Map<string, ESLintRuleStatus> =
+            await this.calculateRuleStatusesFor(candidateFiles, eslintForBaseRuleNameDiscovery);
+        const baseRulesThatAreOn: string[] = [];
+        for (const [ruleName, status] of allBaseRuleStatuses) {
+            if (status !== ESLintRuleStatus.OFF) {
+                baseRulesThatAreOn.push(ruleName);
+            }
+        }
+        return baseRulesThatAreOn;
     }
 }
 

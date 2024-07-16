@@ -1916,6 +1916,18 @@
     ]
   },
   {
+    "name": "no-array-constructor",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "suggestion"
+    ],
+    "description": "Disallow `Array` constructors",
+    "resourceUrls": [
+      "https://eslint.org/docs/latest/rules/no-array-constructor"
+    ]
+  },
+  {
     "name": "no-async-promise-executor",
     "severityLevel": 2,
     "type": "Standard",
@@ -2710,6 +2722,18 @@
     "description": "Disallow `new` operators with the `Function` object",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-new-func"
+    ]
+  },
+  {
+    "name": "no-new-native-nonconstructor",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "problem"
+    ],
+    "description": "Disallow `new` operators with global non-constructor functions",
+    "resourceUrls": [
+      "https://eslint.org/docs/latest/rules/no-new-native-nonconstructor"
     ]
   },
   {
