@@ -114,9 +114,9 @@ export class ESLintEngine extends Engine {
     private handleEslintErrorOrWarning(file: string, resultMsg: Linter.LintMessage) {
         /* istanbul ignore else */
         if (resultMsg.fatal) {
-            this.emitLogEvent(LogLevel.Error, getMessage('ESLintErroredWhenScanningFile', file, resultMsg.message));
+            this.emitLogEvent(LogLevel.Error, getMessage('ESLintErroredWhenScanningFile', file, indent(resultMsg.message)));
         } else {
-            this.emitLogEvent(LogLevel.Warn, getMessage('ESLintWarnedWhenScanningFile', file, resultMsg.message));
+            this.emitLogEvent(LogLevel.Warn, getMessage('ESLintWarnedWhenScanningFile', file, indent(resultMsg.message)));
         }
     }
 }
@@ -188,4 +188,8 @@ function normalizeEndValue(endValue: number | undefined): number | undefined {
     // Sometimes rules contain a negative number if the line/column is unknown, so we force undefined in that case
     /* istanbul ignore next */
     return endValue && endValue > 0 ? endValue : undefined;
+}
+
+function indent(text: string, indentLength: number = 4): string {
+    return text.replace(/^/gm, ' '.repeat(indentLength));
 }

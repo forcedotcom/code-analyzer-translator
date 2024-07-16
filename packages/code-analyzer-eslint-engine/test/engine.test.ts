@@ -441,7 +441,7 @@ describe('Tests for emitting events', () => {
         expect(errorEvents[0].logLevel).toEqual(LogLevel.Error);
         expect(errorEvents[0].message).toEqual(
             getMessage('ESLintErroredWhenScanningFile', path.join(workspaceFolder, 'unparsableFile.js'),
-                'Parsing error: Unterminated string constant. (2:4)'));
+                '    Parsing error: Unterminated string constant. (2:4)'));
 
         // Sanity check that we still get violations from files that could be parsed
         expect(results.violations).toHaveLength(1);
