@@ -1,6 +1,6 @@
 import {ESLintRuleStatus} from "./enums";
 import {ESLint, Linter, Rule} from "eslint";
-import {ESLintWorkspace} from "./workspace";
+import {AsyncFilterFnc, ESLintWorkspace} from "./workspace";
 import path from "node:path";
 import {BaseRuleset, LegacyBaseConfigFactory} from "./base-config";
 import {ESLintEngineConfig} from "./config";
@@ -61,23 +61,24 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             return this.ruleStatuses;
         }
 
-        const candidateFiles: string[] = this.userConfigEnabled() ?
-            await this.workspace.getCandidateFilesForUserConfig() :
-            await this.workspace.getCandidateFilesForBaseConfig();
-
         const eslintOptions: ESLint.Options = this.createESLintOptions(BaseRuleset.RECOMMENDED);
+        const eslint: ESLint = new LegacyESLint(eslintOptions);
+        const filterFcn: AsyncFilterFnc<string> = createFilterFcn(eslint);
+
+        const candidateFiles: string[] = this.userConfigEnabled() ?
+            await this.workspace.getCandidateFilesForUserConfig(filterFcn) :
+            await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
+
         this.emitLogEvent(LogLevel.Fine,
             `Calculating rule statuses using files ${JSON.stringify(candidateFiles)}\n` +
             `and an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`);
-        this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles, new LegacyESLint(eslintOptions));
+        this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles, eslint);
 
         // Since we have no easy way of turning on a rule that has been explicitly turned off in the config
-        // (because we don't know its rule options or parser configuration ), we remove these turned off
+        // (because we don't know its rule options or parser configuration), we remove these turned off
         // rules entirely so that they can't be selected.
-        const explicitlyTurnedOffRules: Set<string> = new Set();
         for (const [ruleName, ruleStatus] of this.ruleStatuses) {
             if (ruleStatus === ESLintRuleStatus.OFF) {
-                explicitlyTurnedOffRules.add(ruleName);
                 this.ruleStatuses.delete(ruleName);
             }
         }
@@ -87,8 +88,8 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         // be selectable even though they are off by default. Note that we do not want to add in any additional rules
         // from users plugins that aren't explicitly configured since we have no easy way of turning them on for the
         // user (since we don't know if their rules require special options), thus we only add in the missing base rules.
-        for (const ruleName of await this.getAllBaseRuleNames()) {
-            if (!this.ruleStatuses.has(ruleName) && !explicitlyTurnedOffRules.has(ruleName)) {
+        for (const ruleName of await this.getAllBaseRuleNames(filterFcn)) {
+            if (!this.ruleStatuses.has(ruleName)) {
                 this.ruleStatuses.set(ruleName, ESLintRuleStatus.OFF);
             }
         }
@@ -107,11 +108,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
     async run(ruleNames: string[]): Promise<ESLint.LintResult[]> {
         const overrideConfig: Linter.Config = await this.createConfigThatTurnsOffUnselectedRules(ruleNames);
         const eslintOptions: ESLint.Options = this.createESLintOptions(BaseRuleset.ALL, overrideConfig);
-        const filesToScan: string[] = await this.workspace.getFilesToScan();
+        const eslint: ESLint = new LegacyESLint(eslintOptions);
+        const filterFcn: AsyncFilterFnc<string> = createFilterFcn(eslint);
+
+        const filesToScan: string[] = await this.workspace.getFilesToScan(filterFcn);
+
         this.emitLogEvent(LogLevel.Fine, `Running the ESLint.lintFiles method on files ${JSON.stringify(filesToScan)}\n` +
             `using an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`)
-        const eslint: ESLint = new LegacyESLint(eslintOptions);
-        return eslint.lintFiles(await this.workspace.getFilesToScan());
+        return eslint.lintFiles(filesToScan);
     }
 
     private async createConfigThatTurnsOffUnselectedRules(ruleNames: string[]) : Promise<Linter.Config> {
@@ -164,16 +168,22 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         };
     }
 
-    private async getAllBaseRuleNames(): Promise<string[]> {
-        const candidateFiles: string[] = await this.workspace.getCandidateFilesForBaseConfig();
+    private async getAllBaseRuleNames(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
+        const candidateFiles: string[] = await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
         const eslintForBaseRuleNameDiscovery: ESLint = new LegacyESLint({
             cwd: __dirname, // This is needed to make the base plugins discoverable.
             baseConfig: this.baseConfigFactory.createBaseConfig(BaseRuleset.ALL),
             useEslintrc: false
         });
-        return Array.from(
-            (await this.calculateRuleStatusesFor(candidateFiles, eslintForBaseRuleNameDiscovery)).keys()
-        );
+        const allBaseRuleStatuses: Map<string, ESLintRuleStatus> =
+            await this.calculateRuleStatusesFor(candidateFiles, eslintForBaseRuleNameDiscovery);
+        const baseRulesThatAreOn: string[] = [];
+        for (const [ruleName, status] of allBaseRuleStatuses) {
+            if (status !== ESLintRuleStatus.OFF) {
+                baseRulesThatAreOn.push(ruleName);
+            }
+        }
+        return baseRulesThatAreOn;
     }
 }
 
@@ -198,6 +208,10 @@ function getRuleStatusFromRuleEntry(ruleEntry: Linter.RuleEntry): ESLintRuleStat
     return getRuleStatusFromRuleEntry(ruleEntry[0]);
 }
 
+function createFilterFcn(eslint: ESLint): AsyncFilterFnc<string> {
+    return async (file: string) => !(await eslint.isPathIgnored(file));
+}
+
 /**
  * Wrapper around the ESLint class to help throw more useful error messages.
  */
@@ -218,7 +232,7 @@ class LegacyESLint extends ESLint {
         try {
             return await super.calculateConfigForFile(filePath);
         } catch (error) {
-            throw wrapESLintError(error, 'ESLint.calculateConfigForFile', this.options);
+            throw wrapESLintError(error, `ESLint.calculateConfigForFile(${filePath})`, this.options);
         }
 
     }
@@ -230,13 +244,21 @@ class LegacyESLint extends ESLint {
             throw wrapESLintError(error, 'ESLint.lintFiles', this.options);
         }
     }
+
+    override async isPathIgnored(filePath: string): Promise<boolean> {
+        try {
+            return await super.isPathIgnored(filePath);
+        } catch (error) { /* istanbul ignore next */
+            throw wrapESLintError(error, `ESLint.isPathIgnored(${filePath})`, this.options);
+        }
+    }
 }
 
-function wrapESLintError(rawError: unknown, methodName: string, options: ESLint.Options): Error {
+function wrapESLintError(rawError: unknown, fcnCallStr: string, options: ESLint.Options): Error {
     const rawErrMsg: string = rawError instanceof Error ? rawError.message : /* istanbul ignore next */
         String(rawError);
     const wrappedErrMsg: string = rawErrMsg.includes('conflict') ?
-        getMessage('ESLintThrewExceptionWithPluginConflictMessage', methodName, rawErrMsg, JSON.stringify(options,null,2))
-        : getMessage('ESLintThrewExceptionWithUnknownMessage', methodName, rawErrMsg, JSON.stringify(options,null,2));
+        getMessage('ESLintThrewExceptionWithPluginConflictMessage', fcnCallStr, rawErrMsg, JSON.stringify(options,null,2))
+        : getMessage('ESLintThrewExceptionWithUnknownMessage', fcnCallStr, rawErrMsg, JSON.stringify(options,null,2));
     return new Error(wrappedErrMsg, {cause: rawError});
 }

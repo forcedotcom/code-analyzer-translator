@@ -18,7 +18,6 @@ import {ESLintEngine} from "../src/engine";
 import {DEFAULT_CONFIG} from "../src/config";
 import {getMessage} from "../src/messages";
 import * as os from "node:os";
-import * as zlib from "node:zlib";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -29,6 +28,8 @@ const workspaceThatHasCustomConfigModifyingExistingRules: string =
     path.join(legacyConfigCasesFolder, 'workspace_HasCustomConfigModifyingExistingRules');
 const workspaceThatHasCustomConfigWithNewRules: string =
     path.join(legacyConfigCasesFolder, 'workspace_HasCustomConfigWithNewRules');
+const workspaceThatIgnoresFiles: string =
+    path.join(legacyConfigCasesFolder, 'workspace_HasIgnoredFiles');
 
 describe('Tests for the getName method of ESLintEngine', () => {
     it('When getName is called, then eslint is returned', () => {
@@ -277,7 +278,6 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             // For now, we skip this test only on windows.
             return;
         }
-
         const workspaceZip: string = path.join(__dirname, 'test-data', 'workspaceWithConflictingConfig.zip');
         const tempFolder: string = fs.mkdtempSync(path.join(os.tmpdir(), 'engine-test'));
         await unzipToFolder(workspaceZip, tempFolder);
@@ -291,6 +291,13 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         const workspaceFolder: string = path.join(__dirname, 'test-data', 'workspaceWithMissingESLintPlugin');
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG, config_root: workspaceFolder});
         await expect(engine.describeRules({})).rejects.toThrow(/The eslint engine encountered an unexpected error.*/);
+    });
+
+    it('When workspace contains ignored file, then that file is ignored during rule calculation', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: testTools.createWorkspace([workspaceThatIgnoresFiles])});
+        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
     });
 });
 
@@ -398,6 +405,15 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
             "ruleName": "dummy/my-rule-1"
         });
     });
+
+    it('When runRules is called on workspace that ignores files, then those files are ignored', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceThatIgnoresFiles])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+        expect(results.violations).toHaveLength(2); // Should not contain js violations but should contain ts violations
+        expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');
+        expect(path.extname(results.violations[1].codeLocations[0].file)).toEqual('.ts');
+    });
 });
 
 describe('Tests for emitting events', () => {
@@ -425,30 +441,12 @@ describe('Tests for emitting events', () => {
         expect(errorEvents[0].logLevel).toEqual(LogLevel.Error);
         expect(errorEvents[0].message).toEqual(
             getMessage('ESLintErroredWhenScanningFile', path.join(workspaceFolder, 'unparsableFile.js'),
-                'Parsing error: Unterminated string constant. (2:4)'));
+                '    Parsing error: Unterminated string constant. (2:4)'));
 
         // Sanity check that we still get violations from files that could be parsed
         expect(results.violations).toHaveLength(1);
         expect(results.violations[0].codeLocations[0].file).toEqual(
             path.join(workspaceFolder, 'parsableFileWithViolation.js'));
-    });
-
-    it('When eslint ignores a file, then we emit a warning event and continue to the next file', async () => {
-        // eslint by default ignores files under node_modules... so if a user explicitly targets this file in their
-        // workspace, then we should forward this warning.
-        const fileThatIsIgnored: string = path.join(workspaceThatHasCustomConfigWithNewRules,
-            'node_modules', 'eslint-plugin-dummy', 'index.js');
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([fileThatIsIgnored])};
-        const results: EngineRunResults = await engine.runRules(['no-unused-vars'], runOptions);
-
-        const warnEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Warn);
-        expect(warnEvents).toHaveLength(1);
-        expect(warnEvents[0].logLevel).toEqual(LogLevel.Warn);
-        expect(warnEvents[0].message).toEqual(
-            getMessage('ESLintWarnedWhenScanningFile', fileThatIsIgnored,
-                'File ignored because of a matching ignore pattern. Use "--no-ignore" to override.'));
-
-        expect(results.violations).toHaveLength(0);
     });
 
     it('When describeRules is called, then it emits correct progress events', async () => {

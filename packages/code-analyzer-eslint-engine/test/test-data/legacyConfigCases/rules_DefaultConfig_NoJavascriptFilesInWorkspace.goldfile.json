@@ -1505,18 +1505,6 @@
     ]
   },
   {
-    "name": "class-methods-use-this",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Enforce that class methods utilize `this`",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/class-methods-use-this"
-    ]
-  },
-  {
     "name": "complexity",
     "severityLevel": 3,
     "type": "Standard",
@@ -1526,18 +1514,6 @@
     "description": "Enforce a maximum cyclomatic complexity allowed in a program",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/complexity"
-    ]
-  },
-  {
-    "name": "consistent-return",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Require `return` statements to either always or never specify values",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/consistent-return"
     ]
   },
   {
@@ -1586,30 +1562,6 @@
     "description": "Enforce default clauses in switch statements to be last",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/default-case-last"
-    ]
-  },
-  {
-    "name": "default-param-last",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Enforce default parameters to be last",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/default-param-last"
-    ]
-  },
-  {
-    "name": "dot-notation",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Enforce dot notation whenever possible",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/dot-notation"
     ]
   },
   {
@@ -1734,18 +1686,6 @@
     ]
   },
   {
-    "name": "init-declarations",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Require or disallow initialization in variable declarations",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/init-declarations"
-    ]
-  },
-  {
     "name": "line-comment-position",
     "severityLevel": 4,
     "type": "Standard",
@@ -1827,18 +1767,6 @@
     "description": "Enforce a maximum depth that callbacks can be nested",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/max-nested-callbacks"
-    ]
-  },
-  {
-    "name": "max-params",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Enforce a maximum number of parameters in function definitions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/max-params"
     ]
   },
   {
@@ -2179,18 +2107,6 @@
     ]
   },
   {
-    "name": "no-empty-function",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow empty functions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-empty-function"
-    ]
-  },
-  {
     "name": "no-empty-pattern",
     "severityLevel": 2,
     "type": "Standard",
@@ -2352,18 +2268,6 @@
     ]
   },
   {
-    "name": "no-implied-eval",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow the use of `eval()`-like methods",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-implied-eval"
-    ]
-  },
-  {
     "name": "no-inline-comments",
     "severityLevel": 3,
     "type": "Standard",
@@ -2399,18 +2303,6 @@
     "description": "Disallow invalid regular expression strings in `RegExp` constructors",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-invalid-regexp"
-    ]
-  },
-  {
-    "name": "no-invalid-this",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow use of `this` in contexts where the value of `this` is `undefined`",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-invalid-this"
     ]
   },
   {
@@ -2484,30 +2376,6 @@
     "description": "Disallow `if` statements as the only statement in `else` blocks",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-lonely-if"
-    ]
-  },
-  {
-    "name": "no-loop-func",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow function declarations that contain unsafe references inside loop statements",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-loop-func"
-    ]
-  },
-  {
-    "name": "no-magic-numbers",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow magic numbers",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-magic-numbers"
     ]
   },
   {
@@ -2756,18 +2624,6 @@
     ]
   },
   {
-    "name": "no-restricted-imports",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow specified modules when loaded by `import`",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-restricted-imports"
-    ]
-  },
-  {
     "name": "no-restricted-properties",
     "severityLevel": 3,
     "type": "Standard",
@@ -2853,18 +2709,6 @@
     ]
   },
   {
-    "name": "no-shadow",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow variable declarations from shadowing variables declared in the outer scope",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-shadow"
-    ]
-  },
-  {
     "name": "no-shadow-restricted-names",
     "severityLevel": 3,
     "type": "Standard",
@@ -2912,18 +2756,6 @@
     "description": "Disallow ternary operators",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-ternary"
-    ]
-  },
-  {
-    "name": "no-throw-literal",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow throwing literals as exceptions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-throw-literal"
     ]
   },
   {
@@ -3038,18 +2870,6 @@
     ]
   },
   {
-    "name": "no-unused-expressions",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow unused expressions",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-unused-expressions"
-    ]
-  },
-  {
     "name": "no-unused-labels",
     "severityLevel": 3,
     "type": "Standard",
@@ -3072,18 +2892,6 @@
     "description": "Disallow unused private class members",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-unused-private-class-members"
-    ]
-  },
-  {
-    "name": "no-use-before-define",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "problem"
-    ],
-    "description": "Disallow the use of variables before they are defined",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-use-before-define"
     ]
   },
   {
@@ -3146,18 +2954,6 @@
     "description": "Disallow unnecessary concatenation of literals or template literals",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-useless-concat"
-    ]
-  },
-  {
-    "name": "no-useless-constructor",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow unnecessary constructors",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-useless-constructor"
     ]
   },
   {
@@ -3309,18 +3105,6 @@
     ]
   },
   {
-    "name": "prefer-destructuring",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Require destructuring from arrays and/or objects",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/prefer-destructuring"
-    ]
-  },
-  {
     "name": "prefer-exponentiation-operator",
     "severityLevel": 3,
     "type": "Standard",
@@ -3378,18 +3162,6 @@
     "description": "Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/prefer-object-spread"
-    ]
-  },
-  {
-    "name": "prefer-promise-reject-errors",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Require using Error objects as Promise rejection reasons",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/prefer-promise-reject-errors"
     ]
   },
   {
@@ -3464,18 +3236,6 @@
     "description": "Disallow assignments that can lead to race conditions due to usage of `await` or `yield`",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/require-atomic-updates"
-    ]
-  },
-  {
-    "name": "require-await",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "suggestion"
-    ],
-    "description": "Disallow async functions which have no `await` expression",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/require-await"
     ]
   },
   {

@@ -119,7 +119,8 @@ export class CodeAnalyzer {
         //  override each other.
 
         const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
-        this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions)));
+        this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions,
+            (key, value) => key === "expandedFiles" ? undefined : value))); // omit the expandedFiles since it is very large
 
         const runPromises: Promise<EngineRunResults>[] = ruleSelection.getEngineNames().map(
             engineName => this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions));
