@@ -21,6 +21,8 @@ import * as os from "node:os";
 
 changeWorkingDirectoryToPackageRoot();
 
+jest.setTimeout(30_000);
+
 const legacyConfigCasesFolder: string = path.join(__dirname, 'test-data', 'legacyConfigCases');
 const workspaceWithNoCustomConfig: string =
     path.join(legacyConfigCasesFolder, 'workspace_NoCustomConfig');
@@ -285,7 +287,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
 
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG, config_root: workspaceFolder});
         await expect(engine.describeRules({})).rejects.toThrow(/The eslint engine encountered a conflict.*/);
-    }, 30000); // Increasing timeout to 30 seconds
+    });
 
     it('When configuration file contains plugin that cannot be found, then error with helpful message', async () => {
         const workspaceFolder: string = path.join(__dirname, 'test-data', 'workspaceWithMissingESLintPlugin');

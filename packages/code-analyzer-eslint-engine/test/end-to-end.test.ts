@@ -13,6 +13,8 @@ import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
 changeWorkingDirectoryToPackageRoot();
 
+jest.setTimeout(30_000);
+
 /**
  * NOTE THAT WE WANT TO KEEP THE AMOUNT OF TESTS HERE TO A MINIMUM!
  * All functionality should be tested at the unit level. This file ideally should only contain 1 (maybe 2) tests

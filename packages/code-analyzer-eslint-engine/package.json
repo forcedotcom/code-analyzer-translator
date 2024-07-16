@@ -1,7 +1,7 @@
 {
     "name": "@salesforce/code-analyzer-eslint-engine",
     "description": "Plugin package that adds 'eslint' as an engine into Salesforce Code Analyzer",
-    "version": "0.7.2",
+    "version": "0.7.3",
     "author": "The Salesforce Code Analyzer Team",
     "license": "BSD-3-Clause license",
     "homepage": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview",
@@ -45,7 +45,8 @@
     "files": [
       "dist",
       "LICENSE",
-      "package.json"
+      "package.json",
+      "worker-scripts"
     ],
     "scripts": {
       "build": "tsc --build tsconfig.build.json --verbose",

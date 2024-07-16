@@ -6,6 +6,7 @@ import {BaseRuleset, LegacyBaseConfigFactory} from "./base-config";
 import {ESLintEngineConfig} from "./config";
 import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
+import {Worker} from "node:worker_threads";
 
 export interface ESLintStrategy {
     calculateRuleStatuses(): Promise<Map<string, ESLintRuleStatus>>
@@ -114,8 +115,25 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         const filesToScan: string[] = await this.workspace.getFilesToScan(filterFcn);
 
         this.emitLogEvent(LogLevel.Fine, `Running the ESLint.lintFiles method on files ${JSON.stringify(filesToScan)}\n` +
-            `using an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`)
-        return eslint.lintFiles(filesToScan);
+            `using an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`);
+
+        const worker: Worker = new Worker(path.resolve(__dirname,'..', 'worker-scripts', 'run-eslint.mjs'), {
+            workerData: {
+                filesToScan: filesToScan,
+                eslintOptions: eslintOptions
+            }
+        });
+        return new Promise((resolve, reject) => {
+            worker.on('message', resolve);
+            /* istanbul ignore next */
+            worker.on('error', (err: Error) => reject(wrapESLintError(err, 'ESLint.lintFiles', eslintOptions)));
+            /* istanbul ignore next */
+            worker.on('exit', (code: number) => {
+                if (code !== 0) {
+                    reject(new Error(`Worker exited with code ${code}`))
+                }
+            });
+        });
     }
 
     private async createConfigThatTurnsOffUnselectedRules(ruleNames: string[]) : Promise<Linter.Config> {
@@ -235,14 +253,6 @@ class LegacyESLint extends ESLint {
             throw wrapESLintError(error, `ESLint.calculateConfigForFile(${filePath})`, this.options);
         }
 
-    }
-
-    override async lintFiles(patterns: string | string[]): Promise<ESLint.LintResult[]> {
-        try {
-            return await super.lintFiles(patterns);
-        } catch (error) { /* istanbul ignore next */
-            throw wrapESLintError(error, 'ESLint.lintFiles', this.options);
-        }
     }
 
     override async isPathIgnored(filePath: string): Promise<boolean> {
