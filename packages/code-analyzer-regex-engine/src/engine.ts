@@ -10,33 +10,33 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import fs from "node:fs";
-import {getColumnNumber, getLineNumber, getNewlineIndices} from "./utils";
 import {getMessage} from "./messages";
-import {RuleMap} from "./rule";
+import os from "node:os";
 
 const APEX_CLASS_FILE_EXT: string = ".cls"
 
+interface Rule {
+    regex: RegExp;
+    fileExtensions: string[];
+    description: string;
+}
+
+export type RuleMap = Record<string, Rule>;
+
 export class RegexEngine extends Engine {
     static readonly NAME = "regex"
-    private regexRules: RuleMap = {};
-
-    /*TODO: swap hardcoding of rule for addRules() method that processes a config file*/
-    constructor() {
-        super();
-        this.regexRules = {
-            "TrailingWhitespaceRule": {
-                regex: /[ \t]+((?=\r?\n)|(?=$))/g,
-                fileExtensions: [APEX_CLASS_FILE_EXT],
-                description: getMessage('TrailingWhitespaceRuleDescription'),
-                message: getMessage('TrailingWhitespaceRuleDescription')
-            }
+    private readonly regexRules: RuleMap = {
+        "TrailingWhitespaceRule": {
+            regex: /[ \t]+((?=\r?\n)|(?=$))/g,
+            fileExtensions: [APEX_CLASS_FILE_EXT],
+            description: getMessage('TrailingWhitespaceRuleDescription'),
         }
-    }
+    };
 
     getName(): string {
         return RegexEngine.NAME;
     }
-
+    /*TODO: Use describeOptions so that rules not applicable to the workspace aren't returned and rules extracted from a data structure instead of being hardcoded */
     async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         return [
             {
@@ -44,7 +44,7 @@ export class RegexEngine extends Engine {
                 severityLevel: SeverityLevel.Low,
                 type: RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
-                description: "Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.",
+                description: getMessage("TrailingWhitespaceRuleDescription"),
                 resourceUrls: []
             }
         ];
@@ -52,19 +52,17 @@ export class RegexEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const fullFileList: string[] = await runOptions.workspace.getExpandedFiles();
-        const violations: Violation[] = [];
-
-        const filePromises = fullFileList.map(async (file) => {
-            const rulesToRun = ruleNames.filter(rule => this.shouldScanFile(file, rule));
-            const violationPromises = rulesToRun.map(async (rule) => await this.scanFile(file, rule));
-            violations.push(...(await Promise.all(violationPromises)).flat());
-        });
-
-        await Promise.all(filePromises);
-
+        const ruleRunPromises = fullFileList.map(file => this.runRulesForFile(file, ruleNames))
         return {
-            violations: violations
+            violations: (await Promise.all(ruleRunPromises)).flat()
         };
+    }
+
+    private async runRulesForFile(file: string, ruleNames: string[]): Promise<Violation[]>{
+        const rulesToRun = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
+        const violationPromises = rulesToRun.map(ruleName => this.scanFile(file, ruleName));
+        const violationsArray = await Promise.all(violationPromises);
+        return violationsArray.flat();
     }
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
@@ -77,23 +75,54 @@ export class RegexEngine extends Engine {
         const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'})
         const regex: RegExp = this.regexRules[ruleName].regex;
         const matches = fileContents.matchAll(regex);
-        const newlineIndexes = getNewlineIndices(fileContents);
+        const newlineIndexes = this.getNewlineIndices(fileContents);
 
         for (const match of matches) {
+            const startLine = this.getLineNumber(match.index, newlineIndexes)
+            const startColumn = this.getColumnNumber(match.index, newlineIndexes)
+            const endLine = this.getLineNumber(match.index + match[0].length, newlineIndexes)
+            const endColumn = this.getColumnNumber(match.index + match[0].length, newlineIndexes)
             const codeLocation = {
                 file: fileName,
-                startLine: getLineNumber(match.index, newlineIndexes),
-                startColumn: getColumnNumber(match.index, newlineIndexes),
-                endLine: getLineNumber(match.index + match[0].length, newlineIndexes),
-                endColumn: getColumnNumber(match.index + match[0].length, newlineIndexes)
+                startLine: startLine,
+                startColumn: startColumn,
+                endLine: endLine,
+                endColumn: endColumn
             }
             violations.push({
                 ruleName: ruleName,
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
-                message: this.regexRules[ruleName].message
+                message: getMessage('RuleViolationMessage', ruleName, fileName, startLine, startColumn, endLine, endColumn)
             });
         }
         return violations;
+    }
+
+    private getColumnNumber(charIndex: number, newlineIndexes: number[]): number {
+        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex)
+        const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1
+        if (idxOfCurrentLine === 0){
+            return charIndex + 1
+        } else {
+            const eolOffset = os.EOL.length - 1
+            return charIndex - newlineIndexes.at(idxOfCurrentLine)! - eolOffset
+        }
+    }
+
+    private getLineNumber(charIndex: number, newlineIndexes: number[]): number{
+        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex)
+        return idxOfNextNewline === -1 ? newlineIndexes.length : idxOfNextNewline;
+    }
+
+    private getNewlineIndices(fileContents: string): number[] {
+        const newlineRegex: RegExp = new RegExp(os.EOL, "g")
+        const matches = fileContents.matchAll(newlineRegex);
+        const newlineIndexes = [0]
+
+        for (const match of matches) {
+            newlineIndexes.push(match.index);
+        }
+        return newlineIndexes
     }
 }

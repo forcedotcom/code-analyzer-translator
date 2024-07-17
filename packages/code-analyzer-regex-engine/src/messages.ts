@@ -7,8 +7,8 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     TrailingWhitespaceRuleDescription:
         "Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.",
 
-    PrivateMethodApiVersionRuleDescription:
-        "For API versions 60.0 and below, declaring a private method in an abstract or virtual class will override a method with the same signature in a child class. Please update your API version to resolve the issue."
+    RuleViolationMessage:
+        "A violation for %s was found in %s on line %d starting at column %d and ending on line %d at column %d"
 }
 
 /**
