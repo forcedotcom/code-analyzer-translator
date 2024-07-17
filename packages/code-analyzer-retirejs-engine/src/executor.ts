@@ -4,7 +4,7 @@ import {promisify} from "node:util";
 import fs from "node:fs";
 import * as utils from "./utils";
 import path from "node:path";
-import * as StreamZip from 'node-stream-zip';
+import {DecoratedStreamZip} from './zip-decorator';
 import {getMessage} from "./messages";
 import {LogLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 
@@ -195,8 +195,8 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
      *   <zip_file>::[ZIPPED_FILE]::<embedded_file>
      */
     private async processZipFile(zipFile: string): Promise<void> {
-        const zip: StreamZip.StreamZipAsync = new StreamZip.async({file: zipFile, storeEntries: true});
-        const entries: { [name: string]: StreamZip.ZipEntry } = await zip.entries();
+        const zip: DecoratedStreamZip = new DecoratedStreamZip({file: zipFile, storeEntries: true});
+        const entries = await zip.entries();
         for (const entry of Object.values(entries)) {
             if (entry.isDirectory || !utils.isTextFile(await zip.entryData(entry.name))) {
                 continue; // Skip directories and non-text files.
