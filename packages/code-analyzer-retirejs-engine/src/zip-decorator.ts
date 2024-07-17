@@ -7,7 +7,7 @@ export class DecoratedStreamZip {
 
     public constructor(config: StreamZip.StreamZipOptions) {
         this.streamZip = new StreamZip.async(config);
-        this.file = config.file || /* istanbul ignore next - Not worth testing */ '';
+        this.file = config.file!;
     }
 
     public async entries(): Promise<{ [name: string]: StreamZip.ZipEntry }> {
@@ -19,13 +19,12 @@ export class DecoratedStreamZip {
         }
     }
 
-    public async entryData(entry: string | StreamZip.ZipEntry): Promise<Buffer> {
+    public async entryData(entry: string): Promise<Buffer> {
         try {
             return await this.streamZip.entryData(entry);
         } catch (e) {
-            const reason = e instanceof Error ? e.message : e as string;
-            const entryName: string = typeof entry === 'string' ? entry : /* istanbul ignore next */ entry.name;
-            throw new Error(getMessage('CouldNotReadZipEntry', entryName, this.file, reason));
+            const reason = e instanceof Error ? /* istanbul ignore next */ e.message : e as string;
+            throw new Error(getMessage('CouldNotReadZipEntry', entry, this.file, reason));
         }
     }
 
