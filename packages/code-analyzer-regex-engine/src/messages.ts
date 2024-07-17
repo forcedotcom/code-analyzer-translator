@@ -8,7 +8,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         "Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.",
 
     RuleViolationMessage:
-        "A violation for %s was found in %s on line %d starting at column %d and ending on line %d at column %d"
+        `A match of the regular expression %s was found for rule '%s': %s`
 }
 
 /**

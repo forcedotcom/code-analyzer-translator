@@ -13,13 +13,13 @@ import {
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {getMessage} from "../src/messages";
 
-export const FILE_LOCATION_1 = path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
-export const FILE_LOCATION_2 = path.resolve(__dirname,  "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls")
+const FILE_LOCATION_1 = path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
+const FILE_LOCATION_2 = path.resolve(__dirname,  "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls")
 
-export const TRAILING_WHITESPACE_RULE_NAME = "TrailingWhitespaceRule"
-export const TRAILING_WHITESPACE_RULE_DESCRIPTION ="Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace."
-export const TRAILING_WHITESPACE_RULE_MESSAGE = "There are trailing whitespaces at the end of line in an Apex class. Remove the excess whitespace.";
-export const TRAILING_WHITESPACE_RESOURCE_URLS = []
+const TRAILING_WHITESPACE_RULE_NAME: string = "NoTrailingWhitespace"
+const TRAILING_WHITESPACE_RULE_DESCRIPTION: string ="Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace."
+const TRAILING_WHITESPACE_RESOURCE_URLS: string[] = []
+const TRAILING_WHITESPACE_REGEX: string = new RegExp('[ \\t]+((?=\\r?\\n)|(?=$))', 'g').toString()
 
 const EXPECTED_CODE_LOCATION_1: CodeLocation = {
     file: FILE_LOCATION_1,
@@ -27,7 +27,7 @@ const EXPECTED_CODE_LOCATION_1: CodeLocation = {
     startColumn: 2,
     endLine: 6,
     endColumn: 4
-}
+};
 
 const EXPECTED_CODE_LOCATION_2: CodeLocation = {
     file: FILE_LOCATION_2,
@@ -35,7 +35,7 @@ const EXPECTED_CODE_LOCATION_2: CodeLocation = {
     startColumn: 40,
     endLine: 2,
     endColumn: 41
-}
+};
 
 const EXPECTED_CODE_LOCATION_3: CodeLocation = {
     file: FILE_LOCATION_2,
@@ -43,7 +43,7 @@ const EXPECTED_CODE_LOCATION_3: CodeLocation = {
     startColumn: 2,
     endLine: 6,
     endColumn: 4
-}
+};
 
 const EXPECTED_CODE_LOCATION_4: CodeLocation = {
     file: FILE_LOCATION_2,
@@ -51,23 +51,20 @@ const EXPECTED_CODE_LOCATION_4: CodeLocation = {
     startColumn: 21,
     endLine: 1,
     endColumn: 23
-}
+};
 
 const EXPECTED_VIOLATION_1: Violation[] = [
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_1.file,
-            EXPECTED_CODE_LOCATION_1.startLine,
-            EXPECTED_CODE_LOCATION_1.startColumn,
-            EXPECTED_CODE_LOCATION_1.endLine as number,
-            EXPECTED_CODE_LOCATION_1.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_1]
     }
-]
+];
 
 const EXPECTED_VIOLATION_2: Violation[] = [
 
@@ -75,12 +72,9 @@ const EXPECTED_VIOLATION_2: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_2.file,
-            EXPECTED_CODE_LOCATION_2.startLine,
-            EXPECTED_CODE_LOCATION_2.startColumn,
-            EXPECTED_CODE_LOCATION_2.endLine as number,
-            EXPECTED_CODE_LOCATION_2.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_2]
     },
@@ -88,12 +82,9 @@ const EXPECTED_VIOLATION_2: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_3.file,
-            EXPECTED_CODE_LOCATION_3.startLine,
-            EXPECTED_CODE_LOCATION_3.startColumn,
-            EXPECTED_CODE_LOCATION_3.endLine as number,
-            EXPECTED_CODE_LOCATION_3.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_3]
 
@@ -102,28 +93,22 @@ const EXPECTED_VIOLATION_2: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_4.file,
-            EXPECTED_CODE_LOCATION_4.startLine,
-            EXPECTED_CODE_LOCATION_4.startColumn,
-            EXPECTED_CODE_LOCATION_4.endLine as number,
-            EXPECTED_CODE_LOCATION_4.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_4]
     },
-]
+];
 
 const EXPECTED_VIOLATION_3: Violation[] = [
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_4.file,
-            EXPECTED_CODE_LOCATION_4.startLine,
-            EXPECTED_CODE_LOCATION_4.startColumn,
-            EXPECTED_CODE_LOCATION_4.endLine as number,
-            EXPECTED_CODE_LOCATION_4.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_4]
     },
@@ -131,12 +116,9 @@ const EXPECTED_VIOLATION_3: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_1.file,
-            EXPECTED_CODE_LOCATION_1.startLine,
-            EXPECTED_CODE_LOCATION_1.startColumn,
-            EXPECTED_CODE_LOCATION_1.endLine as number,
-            EXPECTED_CODE_LOCATION_1.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_1]
     },
@@ -144,12 +126,9 @@ const EXPECTED_VIOLATION_3: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_2.file,
-            EXPECTED_CODE_LOCATION_2.startLine,
-            EXPECTED_CODE_LOCATION_2.startColumn,
-            EXPECTED_CODE_LOCATION_2.endLine as number,
-            EXPECTED_CODE_LOCATION_2.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_2]
     },
@@ -157,16 +136,14 @@ const EXPECTED_VIOLATION_3: Violation[] = [
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
         message: getMessage(
             'RuleViolationMessage',
+            TRAILING_WHITESPACE_REGEX,
             TRAILING_WHITESPACE_RULE_NAME,
-            EXPECTED_CODE_LOCATION_3.file,
-            EXPECTED_CODE_LOCATION_3.startLine,
-            EXPECTED_CODE_LOCATION_3.startColumn,
-            EXPECTED_CODE_LOCATION_3.endLine as number,
-            EXPECTED_CODE_LOCATION_3.endColumn as number),
+            TRAILING_WHITESPACE_RULE_DESCRIPTION),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_3]
     },
-]
+];
+
 changeWorkingDirectoryToPackageRoot();
 
 describe('Regex Engine Tests', () => {
@@ -185,7 +162,7 @@ describe('Regex Engine Tests', () => {
         const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([])});
         const engineRules = [
             {
-                name: "TrailingWhitespaceRule",
+                name: "NoTrailingWhitespace",
                 severityLevel: SeverityLevel.Low,
                 type: RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
@@ -199,18 +176,18 @@ describe('Regex Engine Tests', () => {
 
 describe('runRules() TrailingWhitespaceRule tests', () => {
     let engine: RegexEngine;
-    let ruleNames: string[] ;
+    let ruleNames: string[];
     beforeAll(() => {
-        ruleNames = ["TrailingWhitespaceRule"]
-        engine = new RegexEngine();
+        ruleNames = ["NoTrailingWhitespace"]
+        engine = new RegexEngine()
     });
 
     it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {
         const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
         const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
         const expViolations: Violation[] = [];
-        expect(runResults.violations).toStrictEqual(expViolations);
+        expect(runResults.violations).toStrictEqual(expViolations)
     });
 
     it('Confirm runRules() returns correct errors when called on a file', async () => {
@@ -224,34 +201,34 @@ describe('runRules() TrailingWhitespaceRule tests', () => {
     });
 
     it('If runRules() finds no violations when an apex file has no trailing whitespaces', async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace");
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
         const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
         const expViolations: Violation[] = [];
-        expect(runResults.violations).toStrictEqual(expViolations);
+        expect(runResults.violations).toStrictEqual(expViolations)
     });
 
     it("If runRules() is called with trailing whitespace rule on an Apex class that has trailing whitespace, emit violation", async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls");
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
         const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
         expect(runResults.violations).toStrictEqual(EXPECTED_VIOLATION_1)
     });
 
     it("If trailing whitespace rule is run on an Apex class without trailing whitespace ensure there are no erroneous violations", async () => {
         const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
         const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        const expViolations: Violation[] = []
-        expect(runResults.violations).toStrictEqual(expViolations);
+        const expViolations: Violation[] = [];
+        expect(runResults.violations).toStrictEqual(expViolations)
 
     });
 
-    it("Ensure execute() can be called on a list Apex classes and properly emits errors", async () => {
-        const file1 = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
+    it("Ensure runRules() can be called on a list Apex classes and properly emits errors", async () => {
+        const file1 = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls");
         const file2 = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls");
-        const file3 = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([file1, file2, file3])}
+        const file3 = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls");
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([file1, file2, file3])};
         const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
         expect(runResults.violations).toHaveLength(EXPECTED_VIOLATION_3.length)
         expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_3[0])

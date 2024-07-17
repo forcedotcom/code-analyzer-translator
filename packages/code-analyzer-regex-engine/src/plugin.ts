@@ -14,7 +14,7 @@ export class RegexEnginePlugin extends EnginePluginV1 {
 
     async createEngine(engineName: string, _config: ConfigObject): Promise<Engine> {
         if (engineName === RegexEngine.NAME) {
-            return new RegexEngine()
+            return new RegexEngine();
         }  else {
             throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
         }
