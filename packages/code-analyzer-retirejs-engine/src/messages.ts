@@ -27,7 +27,16 @@ const messageCatalog : { [key: string]: string } = {
         `The function '%s' threw an error: %s`,
 
     AllAttemptsToCopyFileHaveFailed:
-        `All attempts to copy file '%s' to '%s' have failed.`
+        `All attempts to copy file '%s' to '%s' have failed.`,
+
+    CouldNotGetZipEntries:
+        `Failed to get entries from ZIP file %s. Reason: %s.`,
+
+    CouldNotReadZipEntry:
+        `Failed to read entry %s in ZIP file %s. Reason: %s.`,
+
+    CouldNotExtractZip:
+        `Failed to extract ZIP file %s. Reason: %s.`
 }
 
 /**
