@@ -1,0 +1,26 @@
+# Version Catalog (toml file)
+#   Learn about this file at: https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+#   If you make changes to this file, you'll first need either:
+#     * click the "Reload All Gradle Projects" button in IntelliJ
+#     * or run ./gradlew
+#   to regenerate the java files (under the <root>/.gradle folder) which is then used by the build.gradle.kts file(s).
+
+[versions]
+hamcrest = "2.2"
+junit-jupiter = "5.10.2"
+pmd = "7.3.0"
+slf4j-nop = "2.0.13" # For now, we throw slf4j logs away (using this no-op module). We might use an actual logger in the future.
+
+[libraries]
+hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+pmd-apex = { module = "net.sourceforge.pmd:pmd-apex", version.ref = "pmd" }
+pmd-core = { module = "net.sourceforge.pmd:pmd-core", version.ref = "pmd" }
+pmd-html = { module = "net.sourceforge.pmd:pmd-html", version.ref = "pmd" }
+pmd-java = { module = "net.sourceforge.pmd:pmd-java", version.ref = "pmd" }
+pmd-visualforce = { module = "net.sourceforge.pmd:pmd-visualforce", version.ref = "pmd" }
+pmd-xml = { module = "net.sourceforge.pmd:pmd-xml", version.ref = "pmd" }
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
+
+[bundles]
+pmd7 = ["pmd-apex", "pmd-core", "pmd-html", "pmd-java", "pmd-visualforce", "pmd-xml"]
