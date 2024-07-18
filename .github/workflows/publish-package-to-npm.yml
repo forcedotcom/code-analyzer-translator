@@ -16,6 +16,10 @@ on:
         required: false
         default: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   verify-and-publish:
     runs-on: ubuntu-latest

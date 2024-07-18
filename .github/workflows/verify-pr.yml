@@ -3,6 +3,10 @@ on:
   pull_request:
     types: [edited, opened, reopened, synchronize]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   validate_pr_title:
     runs-on: ubuntu-latest
