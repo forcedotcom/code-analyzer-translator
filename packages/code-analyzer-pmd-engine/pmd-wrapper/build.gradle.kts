@@ -37,7 +37,7 @@ java {
 }
 
 application {
-    mainClass = "org.example.App"
+    mainClass = "com.salesforce.sfca.pmdwrapper.PmdWrapper"
 }
 
 
