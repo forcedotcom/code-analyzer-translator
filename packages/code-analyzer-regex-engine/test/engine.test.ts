@@ -2,24 +2,37 @@ import {RegexEngine} from "../src/engine";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
+    CodeLocation,
     EngineRunResults,
     RuleDescription,
     RuleType,
     RunOptions,
     SeverityLevel,
-    Violation,
-    CodeLocation
+    Violation
 } from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {getMessage} from "../src/messages";
+import {DEFAULT_CONFIG, RegexEngineConfig, RegexRuleMap} from "../src/config";
+import {
+    TRAILING_WHITESPACE_RESOURCE_URLS,
+    TRAILING_WHITESPACE_RULE_DESCRIPTION,
+    TRAILING_WHITESPACE_RULE_NAME
+} from "./trailing_whitespace_rule_config";
 
 const FILE_LOCATION_1 = path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
 const FILE_LOCATION_2 = path.resolve(__dirname,  "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls")
+const FILE_LOCATION_3 = path.resolve(__dirname,  "test-data", "workspace_NoCustomConfig", "dummy.ts")
 
-const TRAILING_WHITESPACE_RULE_NAME: string = "NoTrailingWhitespace"
-const TRAILING_WHITESPACE_RULE_DESCRIPTION: string ="Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace."
-const TRAILING_WHITESPACE_RESOURCE_URLS: string[] = []
-const TRAILING_WHITESPACE_REGEX: string = new RegExp('[ \\t]+((?=\\r?\\n)|(?=$))', 'g').toString()
+const EXPECTED_RULE_DESCRIPTION_1: RuleDescription[] = [
+    {
+        name: "NoTodos",
+        description: "Detects TODO comments in code base.",
+        severityLevel: SeverityLevel.Low,
+        type: RuleType.Standard,
+        tags: ["Recommended", "CodeStyle"],
+        resourceUrls: []
+    }
+]
 
 const EXPECTED_CODE_LOCATION_1: CodeLocation = {
     file: FILE_LOCATION_1,
@@ -53,49 +66,40 @@ const EXPECTED_CODE_LOCATION_4: CodeLocation = {
     endColumn: 23
 };
 
+const EXPECTED_CODE_LOCATION_5: CodeLocation = {
+    file: FILE_LOCATION_3,
+    startLine: 1,
+    startColumn: 4,
+    endLine: 1,
+    endColumn: 9
+}
+
 const EXPECTED_VIOLATION_1: Violation[] = [
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_1]
     }
 ];
 
 const EXPECTED_VIOLATION_2: Violation[] = [
-
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_2]
     },
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_3]
 
     },
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_4]
     },
@@ -104,52 +108,51 @@ const EXPECTED_VIOLATION_2: Violation[] = [
 const EXPECTED_VIOLATION_3: Violation[] = [
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_4]
     },
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_1]
     },
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_2]
     },
     {
         ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage(
-            'RuleViolationMessage',
-            TRAILING_WHITESPACE_REGEX,
-            TRAILING_WHITESPACE_RULE_NAME,
-            TRAILING_WHITESPACE_RULE_DESCRIPTION),
+        message: getMessage('TrailingWhitespaceRuleMessage'),
         primaryLocationIndex: 0,
         codeLocations: [EXPECTED_CODE_LOCATION_3]
     },
 ];
+
+const EXPECTED_VIOLATION_4: Violation[] = [
+    {
+        ruleName: "NoTodos",
+        message: getMessage(
+            'RuleViolationMessage',
+            "/TODO:/gi",
+                "NoTodos",
+            "Detects TODO comments in code base."
+        ),
+
+        primaryLocationIndex: 0,
+        codeLocations: [EXPECTED_CODE_LOCATION_5]
+    }
+]
 
 changeWorkingDirectoryToPackageRoot();
 
 describe('Regex Engine Tests', () => {
     let engine: RegexEngine;
     beforeAll(() => {
-        engine = new RegexEngine();
+        engine = new RegexEngine(DEFAULT_CONFIG);
     });
 
     it('Engine name is accessible and correct', () => {
@@ -158,8 +161,8 @@ describe('Regex Engine Tests', () => {
 
     });
 
-    it('Calling describeRules() on an engine should return the single trailing whitespace rule', async () => {
-        const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([])});
+    it('Calling describeRules() on engine with no custom configuration should return the single trailing whitespace rule', async () => {
+        const rules_desc: RuleDescription[] = await engine.describeRules({});
         const engineRules = [
             {
                 name: "NoTrailingWhitespace",
@@ -172,14 +175,62 @@ describe('Regex Engine Tests', () => {
         ];
         expect(rules_desc).toEqual(engineRules)
     });
+
+    it("describeRules() should filter out rules not applicable to workspace", async () => {
+        const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
+        const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([dir])});
+        const expectedRuleDesc: RuleDescription[] = []
+        expect(rules_desc).toStrictEqual(expectedRuleDesc)
+    });
+
+    describe("Regex Engine user config tests",  () => {
+        let customRuleMap: RegexRuleMap;
+        let userConfig: RegexEngineConfig;
+        let engine: RegexEngine;
+        beforeAll(() => {
+            customRuleMap = {
+                "NoTodos": {
+                    regex: /TODO:/gi,
+                    description: "Detects TODO comments in code base.",
+                    file_extensions: [".js", ".ts", ".cls"],
+                    violation_message: getMessage(
+                        'RuleViolationMessage',
+                        /TODO:/gi.toString(),
+                        "NoTodos",
+                        "Detects TODO comments in code base.")
+                }
+            }
+            userConfig = {
+                rules: customRuleMap
+            }
+            engine = new RegexEngine(userConfig)
+
+        });
+
+        it("When user config specifies new rules ensure that they are tracked in describeRules() output", async () => {
+            const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
+            const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([dir])});
+            expect(rules_desc).toHaveLength(EXPECTED_RULE_DESCRIPTION_1.length)
+            expect(rules_desc).toContainEqual(EXPECTED_RULE_DESCRIPTION_1[0])
+        });
+
+        it("When user config specifies a new rule, ensure that runRules() can pick it up and emit violation.", async () => {
+            const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
+            const runOptions: RunOptions = {workspace: testTools.createWorkspace([dir])};
+            const ruleNames: string[] = ["NoTodos"]
+            const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
+            expect(runResults.violations).toHaveLength(EXPECTED_VIOLATION_4.length)
+            expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_4[0])
+        })
+    })
 });
 
-describe('runRules() TrailingWhitespaceRule tests', () => {
+describe('runRules() NoTrailingWhitespaceRule tests', () => {
     let engine: RegexEngine;
     let ruleNames: string[];
     beforeAll(() => {
         ruleNames = ["NoTrailingWhitespace"]
-        engine = new RegexEngine()
+        engine = new RegexEngine(DEFAULT_CONFIG)
     });
 
     it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {

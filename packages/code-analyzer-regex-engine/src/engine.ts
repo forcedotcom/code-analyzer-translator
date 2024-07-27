@@ -1,4 +1,5 @@
 import {
+    CodeLocation,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -10,44 +11,76 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import fs from "node:fs";
-import {getMessage} from "./messages";
 import os from "node:os";
+import {RegexEngineConfig} from "./config";
 
-const APEX_CLASS_FILE_EXT: string = ".cls"
-
-interface Rule {
-    regex: RegExp;
-    fileExtensions: string[];
-    description: string;
-}
-
-type RuleMap = Record<string, Rule>;
+const DEFAULT_TAGS: string[] = ["Recommended", "CodeStyle"]
+const DEFAULT_RULE_TYPE: RuleType = RuleType.Standard
+const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Low
+const DEFAULT_RESOURCE_URLS: string[] = []
 
 export class RegexEngine extends Engine {
-    static readonly NAME = "regex"
-    private readonly regexRules: RuleMap = {
-        "NoTrailingWhitespace": {
-            regex: /[ \t]+((?=\r?\n)|(?=$))/g,
-            fileExtensions: [APEX_CLASS_FILE_EXT],
-            description: getMessage('TrailingWhitespaceRuleDescription'),
-        }
-    };
+    static readonly NAME = "regex";
+    readonly config: RegexEngineConfig;
+
+    constructor(config: RegexEngineConfig) {
+        super();
+        this.config = config;
+    }
 
     getName(): string {
         return RegexEngine.NAME;
     }
-    /*TODO: Use describeOptions so that rules not applicable to the workspace aren't returned and rules extracted from a data structure instead of being hardcoded */
-    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        return [
-            {
-                name: "NoTrailingWhitespace",
-                severityLevel: SeverityLevel.Low,
-                type: RuleType.Standard,
-                tags: ["Recommended", "CodeStyle"],
-                description: getMessage("TrailingWhitespaceRuleDescription"),
-                resourceUrls: []
+
+    getConfig(){
+        return this.config
+    }
+
+    private hasIntersection<T>(list1: T[], list2: T[]): boolean {
+        const set1 = new Set(list1);
+        for (const item of list2) {
+            if (set1.has(item)) {
+                return true;
             }
-        ];
+        }
+        return false;
+    }
+
+    private toRuleDescription(ruleName: string): RuleDescription {
+        return {
+            name: ruleName,
+            severityLevel: DEFAULT_SEVERITY_LEVEL,
+            type: DEFAULT_RULE_TYPE,
+            description: this.config.rules[ruleName].description,
+            tags: DEFAULT_TAGS,
+            resourceUrls: DEFAULT_RESOURCE_URLS
+        }
+    }
+
+    private getUniqueFileExtensions(files: string[]): string[] {
+        return files.reduce((acc: string[], file: string) => {
+            const extension = path.extname(file);
+            if (!acc.includes(extension)) {
+                acc.push(extension);
+            }
+            return acc;
+        }, []);
+    }
+
+    async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+        if (!describeOptions.workspace) {
+            return Object.keys(this.config.rules).map(ruleName => this.toRuleDescription(ruleName));
+        }
+
+        const fullFileList = await describeOptions.workspace.getExpandedFiles();
+        const uniqueFileExtensions = this.getUniqueFileExtensions(fullFileList);
+
+        return Object.entries(this.config.rules).reduce((acc: RuleDescription[], [ruleName, rule]) => {
+            if (this.hasIntersection(uniqueFileExtensions, rule.file_extensions)) {
+                acc.push(this.toRuleDescription(ruleName));
+            }
+            return acc;
+        }, []);
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
@@ -67,13 +100,13 @@ export class RegexEngine extends Engine {
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
         const ext = path.extname(fileName)
-        return this.regexRules[ruleName].fileExtensions.includes(ext)
+        return this.config.rules[ruleName].file_extensions.includes(ext)
     }
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
         const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'});
-        const regex: RegExp = this.regexRules[ruleName].regex;
+        const regex: RegExp = this.config.rules[ruleName].regex;
         const matches = fileContents.matchAll(regex);
         const newlineIndexes = this.getNewlineIndices(fileContents);
 
@@ -82,7 +115,7 @@ export class RegexEngine extends Engine {
             const startColumn = this.getColumnNumber(match.index, newlineIndexes);
             const endLine = this.getLineNumber(match.index + match[0].length, newlineIndexes);
             const endColumn = this.getColumnNumber(match.index + match[0].length, newlineIndexes);
-            const codeLocation = {
+            const codeLocation: CodeLocation = {
                 file: fileName,
                 startLine: startLine,
                 startColumn: startColumn,
@@ -93,7 +126,7 @@ export class RegexEngine extends Engine {
                 ruleName: ruleName,
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
-                message: getMessage('RuleViolationMessage', this.regexRules[ruleName].regex.toString(), ruleName, this.regexRules[ruleName].description)
+                message: this.config.rules[ruleName].violation_message
             })
         }
         return violations;
