@@ -6,7 +6,7 @@ import * as utils from "./utils";
 import path from "node:path";
 import {DecoratedStreamZip} from './zip-decorator';
 import {getMessage} from "./messages";
-import {LogLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
+import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 
 const execAsync = promisify(exec);
 
@@ -16,15 +16,10 @@ export const ZIPPED_FILE_MARKER = '::[ZIPPED_FILE]::';
 
 const RETIRE_JS_VULN_REPO_FILE: string = path.resolve(__dirname, '..', 'vulnerabilities', 'RetireJsVulns.json')
 const RETIRE_COMMAND: string = utils.findCommand('retire');
-const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
-
-// To speed up our AdvancedRetireJsExecutor, we will only target files with extension among EXTENSIONS_TO_TARGET
-// that don't live under one of the FOLDERS_TO_SKIP
-const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
-const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
+export const JS_EXTENSIONS = ['.js', '.mjs', '.cjs'];
 
 export interface RetireJsExecutor {
-    execute(workspace: Workspace): Promise<Finding[]>
+    execute(filesAndFolders: string[]): Promise<Finding[]>
 }
 
 export type EmitLogEventFcn = (logLevel: LogLevel, msg: string) => void;
@@ -49,9 +44,9 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async execute(workspace: Workspace): Promise<Finding[]> {
+    async execute(targetFilesAndFolders: string[]): Promise<Finding[]> {
         let findings: Finding[] = [];
-        for (const fileOrFolder of workspace.getFilesAndFolders()) {
+        for (const fileOrFolder of targetFilesAndFolders) {
             if (fs.statSync(fileOrFolder).isFile()) {
                 findings = findings.concat(await this.scanFile(fileOrFolder));
             } else {
@@ -135,10 +130,14 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async execute(workspace: Workspace): Promise<Finding[]> {
-        const allFiles: string[] = await workspace.getExpandedFiles();
-        const targetFiles: string[] = reduceToTargetFiles(allFiles);
+    /**
+     * Note that this execute function assumes that only files are passed in.
+     */
+    async execute(targetFiles: string[]): Promise<Finding[]> {
         const { textFiles, zipFiles } = separateTextAndZipFiles(targetFiles);
+        if (textFiles.length + zipFiles.length === 0) {
+            return []; // Quick return
+        }
 
         await this.prepareTempDirs(textFiles);
         this.emitLogEvent(LogLevel.Fine, `Created a temporary directory where relevant files will be copied to for scanning: ${this.parentTempDir}`);
@@ -148,7 +147,7 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
             ...zipFiles.map(file => this.processZipFile(file))]);
         this.emitLogEvent(LogLevel.Fine, `Finished copying relevant files to temporary directory: '${this.parentTempDir}'`);
 
-        const findings: Finding[] = await this.simpleExecutor.execute(new SingleFolderWorkspace(this.parentTempDir));
+        const findings: Finding[] = await this.simpleExecutor.execute([this.parentTempDir]);
         for (let i = 0; i < findings.length; i++) {
             findings[i].file = this.tempToOrigFileMap.get(findings[i].file) as string;
         }
@@ -230,23 +229,6 @@ export class AdvancedRetireJsExecutor implements RetireJsExecutor {
     }
 }
 
-function reduceToTargetFiles(files: string[]): string[] {
-    const filesSet: Set<string> = new Set(files);
-    return files.filter(file => shouldTarget(file, filesSet));
-}
-function shouldTarget(file: string, filesSet: Set<string>): boolean {
-    const fileInfo: path.ParsedPath = path.parse(file);
-    if (fileIsInFolderToSkip(file)) {
-        return false;
-    } else if (EXTENSIONS_TO_TARGET.includes(fileInfo.ext.toLowerCase())) {
-        return true;
-    }
-    return filesSet.has(`${fileInfo.dir}${path.sep}${fileInfo.name}.resource-meta.xml`);
-}
-function fileIsInFolderToSkip(file: string): boolean {
-    return FOLDERS_TO_SKIP.some(folderToSkip => file.includes(path.sep + folderToSkip + path.sep));
-}
-
 function separateTextAndZipFiles(files: string[]): {textFiles: string[], zipFiles: string[]} {
     const textFiles: string[] = [];
     const zipFiles: string[] = [];
@@ -258,26 +240,4 @@ function separateTextAndZipFiles(files: string[]): {textFiles: string[], zipFile
         }
     }
     return {textFiles, zipFiles};
-}
-
-class SingleFolderWorkspace implements Workspace {
-    private readonly folder: string;
-
-    constructor(folder: string) {
-        this.folder = folder;
-    }
-
-    /* istanbul ignore next */
-    getWorkspaceId(): string {
-        throw new Error("This method should not be used");
-    }
-
-    getFilesAndFolders(): string[] {
-        return [this.folder];
-    }
-
-    /* istanbul ignore next */
-    getExpandedFiles(): Promise<string[]> {
-        throw new Error("This method should not be used");
-    }
 }

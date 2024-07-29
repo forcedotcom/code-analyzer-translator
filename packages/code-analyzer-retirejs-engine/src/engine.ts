@@ -11,11 +11,24 @@ import {
     RuleType,
     RunOptions,
     SeverityLevel,
-    Violation
+    Violation,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {RetireJsExecutor, AdvancedRetireJsExecutor, ZIPPED_FILE_MARKER, EmitLogEventFcn} from "./executor";
+import {
+    RetireJsExecutor,
+    AdvancedRetireJsExecutor,
+    EmitLogEventFcn,
+    JS_EXTENSIONS,
+    ZIPPED_FILE_MARKER
+} from "./executor";
 import {Finding, Vulnerability} from "retire/lib/types";
 import {getMessage} from "./messages";
+import path from "node:path";
+
+// To speed up execution, we will only target files with extension among EXTENSIONS_TO_TARGET
+// that don't live under one of the FOLDERS_TO_SKIP
+const EXTENSIONS_TO_TARGET = [...JS_EXTENSIONS, '.resource', '.zip'];
+const FOLDERS_TO_SKIP = ['node_modules', 'bower_components'];
 
 enum RetireJsSeverity {
     Critical = 'critical',
@@ -47,6 +60,7 @@ export class RetireJsEnginePlugin extends EnginePluginV1 {
 export class RetireJsEngine extends Engine {
     static readonly NAME = "retire-js";
     private readonly retireJsExecutor: RetireJsExecutor;
+    private targetFilesCache: Map<string, string[]> = new Map();
 
     constructor(retireJsExecutor?: RetireJsExecutor) {
         super();
@@ -59,15 +73,29 @@ export class RetireJsEngine extends Engine {
         return RetireJsEngine.NAME;
     }
 
-    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+    async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+        if (describeOptions.workspace && (await this.getTargetFiles(describeOptions.workspace)).length === 0) {
+            return [];
+        }
         return Object.values(RetireJsSeverity).map(createRuleDescription);
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
-        const findings: Finding[] = await this.retireJsExecutor.execute(runOptions.workspace);
+        const targetFiles: string[] = await this.getTargetFiles(runOptions.workspace);
+        const findings: Finding[] = await this.retireJsExecutor.execute(targetFiles);
         return {
             violations: toViolations(findings).filter(v => ruleNames.includes(v.ruleName))
         };
+    }
+
+    private async getTargetFiles(workspace: Workspace): Promise<string[]> {
+        const cacheKey: string = workspace.getWorkspaceId();
+        if (!this.targetFilesCache.has(cacheKey)) {
+            const allFiles: string[] = await workspace.getExpandedFiles();
+            const targetFiles: string[] = reduceToTargetFiles(allFiles);
+            this.targetFilesCache.set(cacheKey, targetFiles);
+        }
+        return this.targetFilesCache.get(cacheKey)!;
     }
 }
 
@@ -133,4 +161,21 @@ function toViolation(vulnerability: Vulnerability, library: string, fileOrZipArc
         primaryLocationIndex: 0,
         resourceUrls: vulnerability.info
     };
+}
+
+function reduceToTargetFiles(files: string[]): string[] {
+    const filesSet: Set<string> = new Set(files);
+    return files.filter(file => shouldTarget(file, filesSet));
+}
+function shouldTarget(file: string, filesSet: Set<string>): boolean {
+    const fileInfo: path.ParsedPath = path.parse(file);
+    if (fileIsInFolderToSkip(file)) {
+        return false;
+    } else if (EXTENSIONS_TO_TARGET.includes(fileInfo.ext.toLowerCase())) {
+        return true;
+    }
+    return filesSet.has(`${fileInfo.dir}${path.sep}${fileInfo.name}.resource-meta.xml`);
+}
+function fileIsInFolderToSkip(file: string): boolean {
+    return FOLDERS_TO_SKIP.some(folderToSkip => file.includes(path.sep + folderToSkip + path.sep));
 }
