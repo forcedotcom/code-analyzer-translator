@@ -37,9 +37,6 @@ export const SHARED_MESSAGE_CATALOG: MessageCatalog = {
     ConfigValueMustBeOfType:
         `The '%s' configuration value must be of type '%s' instead of type '%s'.`,
 
-    ConfigValueMustBeStringArray:
-        `The '%s' configuration value must an array of strings. Instead received: %s`,
-
     ConfigPathValueDoesNotExist:
         `The'%s' configuration value is invalid. The path '%s' does not exist.`,
 

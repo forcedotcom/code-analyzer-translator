@@ -1,4 +1,4 @@
-import {ConfigObject, ConfigValueExtractor} from '@salesforce/code-analyzer-engine-api';
+import {ConfigObject, ConfigValueExtractor, ValueValidator} from '@salesforce/code-analyzer-engine-api';
 import {getMessage} from "./messages";
 import path from "node:path";
 import {makeUnique} from "./utils";
@@ -79,7 +79,7 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
         const eslintConfigFileField: string = 'eslint_config_file';
         const eslintConfigFile: string | undefined = this.extractFile(eslintConfigFileField, DEFAULT_CONFIG.eslint_config_file);
         if (eslintConfigFile && !LEGACY_ESLINT_CONFIG_FILES.includes(path.basename(eslintConfigFile))) {
-            throw new Error(getMessage('InvalidLegacyConfigFileName', this.getFullFieldName(eslintConfigFileField),
+            throw new Error(getMessage('InvalidLegacyConfigFileName', this.getFieldPath(eslintConfigFileField),
                 path.basename(eslintConfigFile), JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
         }
         return eslintConfigFile;
@@ -94,8 +94,8 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
         const allExts: string[] = jsExts.concat(tsExts);
         if (allExts.length != (new Set(allExts)).size) {
             const currentValuesString: string =
-                `  ${this.getFullFieldName(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
-                `  ${this.getFullFieldName(tsExtsField)}: ${JSON.stringify(tsExts)}`;
+                `  ${this.getFieldPath(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
+                `  ${this.getFieldPath(tsExtsField)}: ${JSON.stringify(tsExts)}`;
             throw new Error(getMessage('ConfigStringArrayValuesMustNotShareElements', currentValuesString));
         }
 
@@ -103,9 +103,9 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
     }
 
     extractExtensionsValue(fieldName: string, defaultValue: string[]): string[] {
-        const fileExts: string[] = this.extractStringArray(fieldName, defaultValue)!;
+        const fileExts: string[] = this.extractArray(fieldName, ValueValidator.validateString, defaultValue)!;
         return fileExts.map((fileExt, i) => validateStringMatches(
-            ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.getFullFieldName(fieldName)}[${i}]`));
+            ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.getFieldPath(fieldName)}[${i}]`));
     }
 }
 
