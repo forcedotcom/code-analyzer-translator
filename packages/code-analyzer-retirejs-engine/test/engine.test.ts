@@ -81,7 +81,7 @@ const EXPECTED_VIOLATION_4: Violation = {
     ]
 }
 
-const DUMMY_WORKSPACE: Workspace = testTools.createWorkspace([]);
+const DUMMY_WORKSPACE: Workspace = testTools.createWorkspace([path.resolve(__dirname,'test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
 const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
 const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
 
@@ -107,8 +107,11 @@ describe('Tests for the RetireJsEnginePlugin', () => {
 
 describe('Tests for the RetireJsEngine', () => {
     let engine: Engine;
-    beforeEach(() => {
+    let allRuleNames: string[];
+
+    beforeEach(async () => {
         engine = new RetireJsEngine(new StubRetireJsExecutor());
+        allRuleNames = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
     });
 
     it('When getName is called, then retire-js is returned', () => {
@@ -157,7 +160,6 @@ describe('Tests for the RetireJsEngine', () => {
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
 
-        const allRuleNames: string[] = (await engine.describeRules(DUMMY_DESCRIBE_OPTIONS)).map(r => r.name);
         const workspace: Workspace = testTools.createWorkspace([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
         const runOptions: RunOptions = {
             workspace: workspace,
@@ -165,7 +167,9 @@ describe('Tests for the RetireJsEngine', () => {
         };
         const results: EngineRunResults = await engine.runRules(allRuleNames, runOptions);
 
-        expect(spyExecutor.executeCallHistory).toEqual([{workspace: workspace}]);
+        expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: [
+            path.resolve('build-tools', 'updateRetireJsVulns.mjs') // This is the only file that should be targeted from workspace
+            ]}]);
         expect(results).toEqual({violations: []}); // Sanity check that zero vulnerabilities gives zero violations.
     });
 
@@ -200,19 +204,44 @@ describe('Tests for the RetireJsEngine', () => {
             ['LibraryWithKnownCriticalSeverityVulnerability'], DUMMY_RUN_OPTIONS);
         expect(engineRunResults3).toEqual({violations: []});
     });
+
+    it('When vulnerable file is underneath a node_modules or bower_components folder, then they are not included in the target files to scan', async () => {
+        const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
+        engine = new RetireJsEngine(spyExecutor);
+        const workspace: Workspace = testTools.createWorkspace([
+            path.resolve('test','test-data','scenarios','8_hasVulnerabilitiesUnderFoldersToSkip')]);
+        await engine.runRules(allRuleNames, {workspace: workspace});
+        expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
+    });
+
+    it('When vulnerable file is a non-targeted text file, then they are not included in the target files to scan', async () => {
+        const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
+        engine = new RetireJsEngine(spyExecutor);
+        const workspace: Workspace = testTools.createWorkspace([
+            path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')]);
+        await engine.runRules(allRuleNames, {workspace: workspace});
+        expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
+    });
+
+    it('When no targeted files are in workspace, then describeRules returns zero rules', async () => {
+        const workspace: Workspace = testTools.createWorkspace([
+            path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')], 'workspaceWithoutTargets');
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        expect(ruleDescriptions).toHaveLength(0);
+    });
 });
 
 class SpyRetireJsExecutor implements RetireJsExecutor {
-    readonly executeCallHistory: {workspace: Workspace}[] = [];
+    readonly executeCallHistory: {targetFiles: string[]}[] = [];
 
-    async execute(workspace: Workspace): Promise<Finding[]> {
-        this.executeCallHistory.push({workspace});
+    async execute(targetFiles: string[]): Promise<Finding[]> {
+        this.executeCallHistory.push({targetFiles});
         return [];
     }
 }
 
 class StubRetireJsExecutor implements RetireJsExecutor {
-    async execute(_workspace: Workspace): Promise<Finding[]> {
+    async execute(_targetFiles: string[]): Promise<Finding[]> {
         const jsonStr: string = fs.readFileSync(path.resolve('test','test-data','sampleRetireJsExecutorFindings.json'),'utf-8');
         return JSON.parse(jsonStr) as Finding[];
     }
