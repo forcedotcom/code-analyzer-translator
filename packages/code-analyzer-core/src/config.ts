@@ -6,6 +6,7 @@ import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
+import {ValueValidator} from "@salesforce/code-analyzer-engine-api";
 
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
@@ -94,7 +95,8 @@ export class CodeAnalyzerConfig {
         const config: TopLevelConfig = {
             config_root: configValueExtractor.extractConfigRoot(),
             log_folder: configValueExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
-            custom_engine_plugin_modules: configValueExtractor.extractStringArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
+            custom_engine_plugin_modules: configValueExtractor.extractArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
+                ValueValidator.validateString,
                 DEFAULT_CONFIG.custom_engine_plugin_modules)!,
             rules: extractRulesValue(configValueExtractor),
             engines: extractEnginesValue(configValueExtractor)
@@ -167,8 +169,9 @@ function extractRuleOverrideFor(ruleOverridesObj: object, engineName: string, ru
             `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.SEVERITY}`);
     }
     if (FIELDS.TAGS in ruleOverrideObj ) {
-        extractedValue.tags = engApi.ValueValidator.validateStringArray(ruleOverrideObj[FIELDS.TAGS],
-            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`);
+        extractedValue.tags = engApi.ValueValidator.validateArray(ruleOverrideObj[FIELDS.TAGS],
+            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`,
+            ValueValidator.validateString);
     }
     return extractedValue;
 }

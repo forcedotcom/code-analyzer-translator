@@ -39,13 +39,18 @@ describe("Tests for ValueValidator", () => {
             getMessage('ConfigValueMustBeOfType', 'someFieldName', 'object', 'array'));
     });
 
-    it("When a string array is given to validateStringArray, then the value is returned", () => {
-        expect(ValueValidator.validateStringArray(['a','b'], 'someFieldName')).toEqual(['a','b']);
+    it("When a non-array is given to validateArray, then error", () => {
+        expect(() => ValueValidator.validateArray(3, 'someFieldName', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'someFieldName', 'array', 'number'));
     });
 
-    it("When a value that is not a string array is given to validateStringArray, then error", () => {
-        expect(() =>  ValueValidator.validateStringArray(['a',2], 'someFieldName')).toThrow(
-            getMessage('ConfigValueMustBeStringArray', 'someFieldName', `["a",2]`));
+    it("When a string array is given to validateArray with a string element validator, then the value is returned", () => {
+        expect(ValueValidator.validateArray(['a','b'], 'someFieldName', ValueValidator.validateString)).toEqual(['a','b']);
+    });
+
+    it("When a value that is not a string array is given to validateArray with a string element validator, then error", () => {
+        expect(() =>  ValueValidator.validateArray(['a',2], 'someFieldName', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'someFieldName[1]', 'string', 'number'));
     });
 
     it("When an absolute file is given to validateFile, then it is returned", () => {
@@ -120,6 +125,26 @@ describe("Tests for ValueValidator", () => {
 });
 
 describe("Tests for ConfigValueExtractor", () => {
+    it("When constructing extractor with no field root, then getFieldPath with no args returns empty string", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({});
+        expect(extractor.getFieldPath()).toEqual('');
+    });
+
+    it("When constructing extractor with no field root, then getFieldPath with a field name returns the field name", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({});
+        expect(extractor.getFieldPath('abc')).toEqual('abc');
+    });
+
+    it("When constructing extractor with a field root, then getFieldPath with no args returns the field root", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'some.field');
+        expect(extractor.getFieldPath()).toEqual('some.field');
+    });
+
+    it("When constructing extractor with a field root, then getFieldPath with a field name returns the full field path", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'some.field');
+        expect(extractor.getFieldPath('abc')).toEqual('some.field.abc');
+    });
+
     it("When config_root is not supplied, then extractConfigRoot returns cwd", () => {
         const config: ConfigObject = {};
         const extractor: ConfigValueExtractor = new ConfigValueExtractor(config);
@@ -160,6 +185,23 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigPathValueMustBeAbsolute','config_root', 'test', path.resolve('test')));
     });
 
+    it("When calling extractRequiredBoolean on a field that contains a boolean, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: false}, 'engines.dummy');
+        expect(extractor.extractRequiredBoolean('some_field')).toEqual(false);
+    });
+
+    it("When calling extractRequiredBoolean on a field is missing, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredBoolean('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'boolean', 'undefined'));
+    });
+
+    it("When calling extractRequiredBoolean on a non-boolean field, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [3]}, 'engines.dummy');
+        expect(() => extractor.extractRequiredBoolean('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'boolean', 'array'));
+    });
+
     it("When calling extractBoolean on field that is not defined, then return default value", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
         expect(extractor.extractBoolean('some_field')).toEqual(undefined);
@@ -179,6 +221,23 @@ describe("Tests for ConfigValueExtractor", () => {
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2:3}, 'engines.dummy');
         expect(() => extractor2.extractBoolean('some_field2')).toThrow(
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'boolean', 'number'));
+    });
+
+    it("When calling extractRequiredNumber on a field that contains a number, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 3}, 'engines.dummy');
+        expect(extractor.extractRequiredNumber('some_field')).toEqual(3);
+    });
+
+    it("When calling extractRequiredNumber on a field is missing, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredNumber('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'number', 'undefined'));
+    });
+
+    it("When calling extractRequiredNumber on a non-number field, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: false}, 'engines.dummy');
+        expect(() => extractor.extractRequiredNumber('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'number', 'boolean'));
     });
 
     it("When calling extractNumber on field that is not defined, then return default value", () => {
@@ -202,6 +261,23 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'number', 'string'));
     });
 
+    it("When calling extractRequiredString on a field that contains a string, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'great'}, 'engines.dummy');
+        expect(extractor.extractRequiredString('some_field')).toEqual('great');
+    });
+
+    it("When calling extractRequiredString on a field is missing, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredString('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'string', 'undefined'));
+    });
+
+    it("When calling extractRequiredString on a non-number field, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 3}, 'engines.dummy');
+        expect(() => extractor.extractRequiredString('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'string', 'number'));
+    });
+
     it("When calling extractString on field that is not defined, then return default value", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
         expect(extractor.extractString('some_field')).toEqual(undefined);
@@ -221,6 +297,23 @@ describe("Tests for ConfigValueExtractor", () => {
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 3}, 'engines.dummy');
         expect(() => extractor2.extractString('some_field2')).toThrow(
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'string', 'number'));
+    });
+
+    it("When calling extractRequiredObject on a field that contains an object, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: {abc: 3}}, 'engines.dummy');
+        expect(extractor.extractRequiredObject('some_field')).toEqual({abc: 3});
+    });
+
+    it("When calling extractRequiredObject on a field is missing, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObject('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'object', 'undefined'));
+    });
+
+    it("When calling extractRequiredObject on a non-object field, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 3}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObject('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'object', 'number'));
     });
 
     it("When calling extractObject on field that is not defined, then return default value", () => {
@@ -244,25 +337,82 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'object', 'array'));
     });
 
-    it("When calling extractStringArray on field that is not defined, then return default value", () => {
+    it("When calling extractRequiredArray with a number element validator on field that is not defined, then error", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
-        expect(extractor.extractStringArray('some_field')).toEqual(undefined);
-        expect(extractor.extractStringArray('some_field', [])).toEqual([]);
+        expect(() => extractor.extractRequiredArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'array', 'undefined'));
+        expect(() => extractor.extractRequiredArray('some_field', ValueValidator.validateNumber)).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'array', 'undefined'));
     });
 
-    it("When calling extractStringArray on a field that is an string array, then return in", () => {
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: ['hello', 'world']});
-        expect(extractor.extractStringArray('some_field')).toEqual(['hello', 'world']);
-        expect(extractor.extractStringArray('some_field', [])).toEqual(['hello', 'world']);
+    it("When calling extractRequiredArray with no validator on a heterogeneous array, then return it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: ['hello', 3]});
+        expect(extractor.extractRequiredArray('some_field')).toEqual(['hello', 3]);
     });
 
-    it("When calling extractStringArray on a field that is not a string array, then error", () => {
+    it("When calling extractRequiredArray with a number element validator on a field that is an number array, then return it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [3, 4]});
+        expect(extractor.extractRequiredArray('some_field', ValueValidator.validateNumber)).toEqual([3, 4]);
+    });
+
+    it("When calling extractRequiredArray with a number element validator on a field that is not a string array, then error", () => {
         const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 4});
-        expect(() => extractor1.extractStringArray('some_field1')).toThrow(
-            getMessage('ConfigValueMustBeStringArray','some_field1', '4'));
+        expect(() => extractor1.extractRequiredArray('some_field1', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType','some_field1', 'array', 'number'));
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: ['a',3]}, 'engines.dummy');
-        expect(() => extractor2.extractStringArray('some_field2')).toThrow(
-            getMessage('ConfigValueMustBeStringArray','engines.dummy.some_field2', '["a",3]'));
+        expect(() => extractor2.extractRequiredArray('some_field2', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2[1]', 'string', 'number'));
+    });
+
+    it("When calling extractArray on field that is not defined, then return default value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(extractor.extractArray('some_field')).toEqual(undefined);
+        expect(extractor.extractArray('some_field', ValueValidator.validateString, [])).toEqual([]);
+    });
+
+    it("When calling extractArray with a string element validator on a field that is an string array, then return it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: ['hello', 'world']});
+        expect(extractor.extractArray('some_field', ValueValidator.validateString)).toEqual(['hello', 'world']);
+        expect(extractor.extractArray('some_field', ValueValidator.validateString, [])).toEqual(['hello', 'world']);
+    });
+
+    it("When calling extractArray with a string element validator on a field that is not a string array, then error", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 4});
+        expect(() => extractor1.extractArray('some_field1', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType','some_field1', 'array', 'number'));
+        const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: ['a',3]}, 'engines.dummy');
+        expect(() => extractor2.extractArray('some_field2', ValueValidator.validateString)).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2[1]', 'string', 'number'));
+    });
+
+    it("When calling extractRequiredFile on a field that does not exist, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({});
+        expect(() => extractor.extractRequiredFile('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'some_field', 'string', 'undefined'));
+    });
+
+    it("When calling extractRequiredFile on valid file, then return it as absolute", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({
+            config_root: __dirname,
+            some_field: 'test-data\\sampleWorkspace\\someFile.txt'
+        }, 'engines.dummy');
+        const expectedFile: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt');
+        expect(extractor.extractRequiredFile('some_field')).toEqual(expectedFile);
+    });
+
+    it("When calling extractRequiredFile on a field that is not a string, then error", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 4});
+        expect(() => extractor1.extractRequiredFile('some_field1')).toThrow(
+            getMessage('ConfigValueMustBeOfType','some_field1', 'string', 'number'));
+    });
+
+    it("When calling extractRequiredFile on a field that is a path that does not exist, then error", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'does.not.exist'});
+        expect(() => extractor1.extractRequiredFile('some_field1')).toThrow(
+            getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'does.not.exist')));
+        const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'does.not.exist'}, 'engines.dummy');
+        expect(() => extractor2.extractRequiredFile('some_field2')).toThrow(
+            getMessage('ConfigPathValueDoesNotExist','engines.dummy.some_field2', path.resolve(process.cwd(), 'does.not.exist')));
     });
 
     it("When calling extractFile on a field that does not exist, then return the default", () => {
@@ -306,6 +456,58 @@ describe("Tests for ConfigValueExtractor", () => {
         }, 'engines.dummy');
         expect(() => extractor.extractFile('some_field')).toThrow(
             getMessage('ConfigFileValueMustNotBeFolder','engines.dummy.some_field', path.resolve(__dirname, 'test-data')));
+    });
+
+    it("When calling extractRequiredFolder on a field that does not exist, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredFolder('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'string', 'undefined'));
+    });
+
+    it("When calling extractRequiredFolder on valid relative folder, then return it as absolute", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({
+            config_root: __dirname,
+            some_field: 'test-data/sampleWorkspace'
+        }, 'engines.dummy');
+        const expectedFolder: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace');
+        expect(extractor.extractRequiredFolder('some_field')).toEqual(expectedFolder);
+    });
+
+    it("When calling extractRequiredFolder on valid absolute folder, then return it as absolute", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({
+            config_root: __dirname,
+            some_field: path.resolve(__dirname, 'test-data')
+        }, 'engines.dummy');
+        const expectedFolder: string = path.resolve(__dirname, 'test-data');
+        expect(extractor.extractRequiredFolder('some_field')).toEqual(expectedFolder);
+    });
+
+    it("When calling extractRequiredFolder on a field that is not a string, then error", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 4});
+        expect(() => extractor1.extractRequiredFolder('some_field1')).toThrow(
+            getMessage('ConfigValueMustBeOfType','some_field1', 'string', 'number'));
+        const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: ['a',3]}, 'engines.dummy');
+        expect(() => extractor2.extractRequiredFolder('some_field2')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'string', 'array'));
+    });
+
+    it("When calling extractRequiredFolder on a field that is a path that does not exist, then error", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'doesNotExist'});
+        expect(() => extractor1.extractRequiredFolder('some_field1')).toThrow(
+            getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'doesNotExist')));
+        const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'doesNotExist'}, 'engines.dummy');
+        expect(() => extractor2.extractRequiredFolder('some_field2')).toThrow(
+            getMessage('ConfigPathValueDoesNotExist','engines.dummy.some_field2', path.resolve(process.cwd(), 'doesNotExist')));
+    });
+
+    it("When calling extractRequiredFolder on a field that is a file, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({
+            config_root: __dirname,
+            some_field: 'test-data/sampleWorkspace/someFile.txt'
+        }, 'engines.dummy');
+        expect(() => extractor.extractRequiredFolder('some_field')).toThrow(
+            getMessage('ConfigFolderValueMustNotBeFile','engines.dummy.some_field',
+                path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt')));
     });
 
     it("When calling extractFolder on a field that does not exist, then return the default", () => {
@@ -360,5 +562,117 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(() => extractor.extractFolder('some_field')).toThrow(
             getMessage('ConfigFolderValueMustNotBeFile','engines.dummy.some_field',
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt')));
+    });
+
+    it("When calling extractRequiredObjectAsExtractor on a field that does not exist, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObjectAsExtractor('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'object', 'undefined'));
+    });
+
+    it("When calling extractRequiredObjectAsExtractor on a field that is not an object, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 3}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObjectAsExtractor('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'object', 'number'));
+    });
+
+    it("When calling extractRequiredObjectAsExtractor on a field that is an object, then return the extractor for it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: {another_field: 3}}, 'engines.dummy');
+        const subValueExtractor: ConfigValueExtractor = extractor.extractRequiredObjectAsExtractor('some_field');
+        expect(subValueExtractor.getFieldPath()).toEqual('engines.dummy.some_field');
+        expect(subValueExtractor.getObject()).toEqual({another_field: 3});
+        expect(subValueExtractor.extractNumber('another_field')).toEqual(3); // sanity check
+    });
+
+    it("When calling extractObjectAsExtractor on a field that does not exist, then return extractor for default object", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        const subValueExtractor1: ConfigValueExtractor = extractor.extractObjectAsExtractor('some_field');
+        expect(subValueExtractor1.getFieldPath()).toEqual('engines.dummy.some_field');
+        expect(subValueExtractor1.getObject()).toEqual({});
+        const subValueExtractor2: ConfigValueExtractor = extractor.extractObjectAsExtractor('some_field', {abc: 1});
+        expect(subValueExtractor2.getFieldPath()).toEqual('engines.dummy.some_field');
+        expect(subValueExtractor2.getObject()).toEqual({abc: 1});
+    });
+
+    it("When calling extractObjectAsExtractor on a field that is not an object, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 3}, 'engines.dummy');
+        expect(() => extractor.extractObjectAsExtractor('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'object', 'number'));
+        expect(() => extractor.extractObjectAsExtractor('some_field', {abc: 1})).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'object', 'number'));
+    });
+
+    it("When calling extractObjectAsExtractor on a field that is an object, then return the extractor for it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: {another_field: 3}}, 'engines.dummy');
+        const subValueExtractor: ConfigValueExtractor = extractor.extractObjectAsExtractor('some_field', {});
+        expect(subValueExtractor.getFieldPath()).toEqual('engines.dummy.some_field');
+        expect(subValueExtractor.getObject()).toEqual({another_field: 3});
+    });
+
+    it("When calling extractRequiredObjectArrayAsExtractorArray on a field that does not exist, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObjectArrayAsExtractorArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'array', 'undefined'));
+    });
+
+    it("When calling extractRequiredObjectArrayAsExtractorArray on a field that is not an array, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: {oops: 3}}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObjectArrayAsExtractorArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'array', 'object'));
+    });
+
+    it("When calling extractRequiredObjectArrayAsExtractorArray on an array that has a non-object element, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [{oops: 3}, 2]}, 'engines.dummy');
+        expect(() => extractor.extractRequiredObjectArrayAsExtractorArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field[1]', 'object', 'number'));
+    });
+
+    it("When calling extractRequiredObjectArrayAsExtractorArray on a field that is an array of objects, then return the extractor for it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [{a: 1}, {a: 2}]}, 'engines.dummy');
+        const subValueExtractors: ConfigValueExtractor[] = extractor.extractRequiredObjectArrayAsExtractorArray('some_field');
+        expect(subValueExtractors).toHaveLength(2);
+        expect(subValueExtractors[0].getFieldPath()).toEqual('engines.dummy.some_field[0]');
+        expect(subValueExtractors[0].getObject()).toEqual({a: 1});
+        expect(subValueExtractors[1].getFieldPath()).toEqual('engines.dummy.some_field[1]');
+        expect(subValueExtractors[1].getObject()).toEqual({a: 2});
+    });
+
+    it("When calling extractObjectArrayAsExtractorArray on a field that does not exist, then return extractor for default value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        const subValueExtractors1: ConfigValueExtractor[] = extractor.extractObjectArrayAsExtractorArray('some_field');
+        expect(subValueExtractors1).toHaveLength(0);
+
+        const subValueExtractors2: ConfigValueExtractor[] = extractor.extractObjectArrayAsExtractorArray('some_field', [{a: 1}, {b: 2}]);
+        expect(subValueExtractors2).toHaveLength(2);
+        expect(subValueExtractors2[0].getFieldPath()).toEqual('engines.dummy.some_field[0]');
+        expect(subValueExtractors2[0].getObject()).toEqual({a: 1});
+        expect(subValueExtractors2[1].getFieldPath()).toEqual('engines.dummy.some_field[1]');
+        expect(subValueExtractors2[1].getObject()).toEqual({b: 2});
+    });
+
+    it("When calling extractObjectArrayAsExtractorArray on a field that is not an array, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: {oops: 3}}, 'engines.dummy');
+        expect(() => extractor.extractObjectArrayAsExtractorArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field', 'array', 'object'));
+    });
+
+    it("When calling extractObjectArrayAsExtractorArray on an array that has a non-object element, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [{oops: 3}, 2]}, 'engines.dummy');
+        expect(() => extractor.extractObjectArrayAsExtractorArray('some_field')).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field[1]', 'object', 'number'));
+        expect(() => extractor.extractObjectArrayAsExtractorArray('some_field', [{a: 3}])).toThrow(
+            getMessage('ConfigValueMustBeOfType','engines.dummy.some_field[1]', 'object', 'number'));
+    });
+
+    it("When calling extractObjectArrayAsExtractorArray on a field that is an array of objects, then return the extractor for it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [{a: 1}, {b: 2}, {c: 3}]}, 'engines.dummy1.dummy2[5]');
+        const subValueExtractors: ConfigValueExtractor[] = extractor.extractObjectArrayAsExtractorArray('some_field');
+        expect(subValueExtractors).toHaveLength(3);
+        expect(subValueExtractors[0].getFieldPath()).toEqual('engines.dummy1.dummy2[5].some_field[0]');
+        expect(subValueExtractors[0].getObject()).toEqual({a: 1});
+        expect(subValueExtractors[1].getFieldPath()).toEqual('engines.dummy1.dummy2[5].some_field[1]');
+        expect(subValueExtractors[1].getObject()).toEqual({b: 2});
+        expect(subValueExtractors[2].getFieldPath()).toEqual('engines.dummy1.dummy2[5].some_field[2]');
+        expect(subValueExtractors[2].getObject()).toEqual({c: 3});
     });
 });

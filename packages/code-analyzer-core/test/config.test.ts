@@ -173,10 +173,10 @@ describe("Tests for creating and accessing configuration values", () => {
                     badTagsRule: {tags: 'oops'},
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeStringArray','rules.someEngine.badTagsRule.tags', '"oops"'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.badTagsRule.tags', 'array', 'string'));
 
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeStringArray','rules.someEngine.badTagsRule.tags', 'null'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.badTagsRule.tags', 'array', 'null'));
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
@@ -204,10 +204,10 @@ describe("Tests for creating and accessing configuration values", () => {
 
     it("When custom_engine_plugin_modules is not a string array, then throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 3})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeStringArray','custom_engine_plugin_modules', '3'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType','custom_engine_plugin_modules', 'array', 'number'));
 
         expect(() => CodeAnalyzerConfig.fromObject({custom_engine_plugin_modules: 'oops'})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeStringArray','custom_engine_plugin_modules', '"oops"'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType','custom_engine_plugin_modules', 'array', 'string'));
     });
 
     it("When supplied config_root path is a valid absolute path, then we use it", () => {

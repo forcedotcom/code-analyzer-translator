@@ -131,8 +131,8 @@ describe('Tests for the ESLintEnginePlugin', () => {
 
     it('When javascript_file_extensions is invalid, then createEngine errors', async () => {
         await expect(plugin.createEngine('eslint', {javascript_file_extensions: [3, '.js']})).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeStringArray',
-                'engines.eslint.javascript_file_extensions', '[3,".js"]'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
+                'engines.eslint.javascript_file_extensions[0]', 'string', 'number'));
     });
 
     it('When a valid typescript_file_extensions value is passed to createEngine, then it is set on the config', async () => {

@@ -13,6 +13,7 @@ export type ConfigValue =
     | ConfigValue[]
     | ConfigObject;
 
+
 export class ConfigValueExtractor {
     private readonly configObj: ConfigObject;
     private readonly fieldRoot?: string;
@@ -23,55 +24,103 @@ export class ConfigValueExtractor {
         this.fieldRoot = fieldRoot;
     }
 
+    getObject(): ConfigObject {
+        return this.configObj;
+    }
+
     extractConfigRoot(): string {
         if (!this.configRoot) {
-            const fieldName: string = 'config_root'; // config_root is always top level, so don't use getFullFieldName
+            const fieldName: string = 'config_root'; // config_root is always top level, so don't use getFieldPath
             this.configRoot = this.isUndefined(fieldName) ? process.cwd() :
                 validateAbsoluteFolder(this.configObj[fieldName], fieldName);
         }
         return this.configRoot;
     }
 
+    extractRequiredBoolean(fieldName: string): boolean {
+        return ValueValidator.validateBoolean(this.configObj[fieldName], this.getFieldPath(fieldName));
+    }
+
     extractBoolean(fieldName: string, defaultValue?: boolean): boolean | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateBoolean(this.configObj[fieldName], this.getFullFieldName(fieldName));
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredBoolean(fieldName);
+    }
+
+    extractRequiredNumber(fieldName: string): number {
+        return ValueValidator.validateNumber(this.configObj[fieldName], this.getFieldPath(fieldName));
     }
 
     extractNumber(fieldName: string, defaultValue?: number): number | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateNumber(this.configObj[fieldName], this.getFullFieldName(fieldName));
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredNumber(fieldName);
+    }
+
+    extractRequiredString(fieldName: string): string {
+        return ValueValidator.validateString(this.configObj[fieldName], this.getFieldPath(fieldName));
     }
 
     extractString(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateString(this.configObj[fieldName], this.getFullFieldName(fieldName));
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredString(fieldName);
+    }
+
+    extractRequiredObject(fieldName: string): ConfigObject {
+        return ValueValidator.validateObject(this.configObj[fieldName], this.getFieldPath(fieldName)) as ConfigObject;
+    }
+
+    extractRequiredObjectAsExtractor(fieldName: string): ConfigValueExtractor {
+        const subObject: ConfigObject = this.extractRequiredObject(fieldName);
+        return new ConfigValueExtractor(subObject, this.getFieldPath(fieldName));
     }
 
     extractObject(fieldName: string, defaultValue?: ConfigObject): ConfigObject | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateObject(this.configObj[fieldName], this.getFullFieldName(fieldName)) as ConfigObject;
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredObject(fieldName);
     }
 
-    extractStringArray(fieldName: string, defaultValue?: string[]): string[] | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateStringArray(this.configObj[fieldName], this.getFullFieldName(fieldName));
+    extractObjectAsExtractor(fieldName: string, defaultValue?: ConfigObject): ConfigValueExtractor {
+        const subObject: ConfigObject = this.extractObject(fieldName, defaultValue) || {};
+        return new ConfigValueExtractor(subObject, this.getFieldPath(fieldName));
+    }
+
+    extractRequiredArray<T>(fieldName: string, elementValidator?: (element: unknown, elementFieldName: string) => T): T[] {
+        return ValueValidator.validateArray<T>(this.configObj[fieldName], this.getFieldPath(fieldName), elementValidator);
+    }
+
+    extractArray<T>(fieldName: string, elementValidator?: (element: unknown, elementFieldName: string) => T, defaultValue?: T[]): T[] | undefined {
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredArray(fieldName, elementValidator);
+    }
+
+    extractRequiredObjectArrayAsExtractorArray(fieldName: string): ConfigValueExtractor[] {
+        const subObjects: ConfigObject[] = this.extractRequiredArray(fieldName, ValueValidator.validateObject);
+        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(fieldName)}[${index}]`));
+    }
+
+    extractObjectArrayAsExtractorArray(fieldName: string, defaultValue?: ConfigObject[]): ConfigValueExtractor[] {
+        const subObjects: ConfigObject[] = this.extractArray(fieldName, ValueValidator.validateObject, defaultValue) || [];
+        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(fieldName)}[${index}]`));
+    }
+
+    extractRequiredFile(fieldName: string): string {
+        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), this.extractConfigRoot());
     }
 
     extractFile(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateFile(this.configObj[fieldName], this.getFullFieldName(fieldName), this.extractConfigRoot());
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredFile(fieldName);
+    }
+
+    extractRequiredFolder(fieldName: string): string {
+        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), this.extractConfigRoot());
     }
 
     extractFolder(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue :
-            ValueValidator.validateFolder(this.configObj[fieldName], this.getFullFieldName(fieldName), this.extractConfigRoot());
+        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredFolder(fieldName);
     }
 
-    getFullFieldName(fieldName: string): string {
+    getFieldPath(fieldName?: string): string {
+        if (!fieldName) {
+            return this.fieldRoot || '';
+        }
         return this.fieldRoot && this.fieldRoot.length > 0 ? `${this.fieldRoot}.${fieldName}` : fieldName;
     }
 
-    private isUndefined(fieldName: string): boolean {
+    protected isUndefined(fieldName: string): boolean {
         // Note a user could provide a boolean false value, which is why we don't just do an if statement on the value
         // but instead check to see if it is undefined or null.
         return this.configObj[fieldName] === undefined || this.configObj[fieldName] === null;
@@ -79,47 +128,50 @@ export class ConfigValueExtractor {
 }
 
 export class ValueValidator {
-    static validateBoolean(value: unknown, fieldName: string): boolean {
-        return validateType<boolean>("boolean", value, fieldName);
+    static validateBoolean(value: unknown, fieldPath: string): boolean {
+        return validateType<boolean>("boolean", value, fieldPath);
     }
 
-    static validateNumber(value: unknown, fieldName: string): number {
-        return validateType<number>("number", value, fieldName);
+    static validateNumber(value: unknown, fieldPath: string): number {
+        return validateType<number>("number", value, fieldPath);
     }
 
-    static validateString(value: unknown, fieldName: string): string {
-        return validateType<string>("string", value, fieldName);
+    static validateString(value: unknown, fieldPath: string): string {
+        return validateType<string>("string", value, fieldPath);
     }
 
-    static validateObject(value: unknown, fieldName: string): object {
-        return validateType<object>("object", value, fieldName);
+    static validateObject(value: unknown, fieldPath: string): ConfigObject {
+        return validateType<ConfigObject>("object", value, fieldPath);
     }
 
-    static validateStringArray(value: unknown, fieldName: string): string[] {
-        if (!Array.isArray(value) || !value.every(item => typeof item === 'string')) {
-            throw new Error(getMessage('ConfigValueMustBeStringArray', fieldName, JSON.stringify(value)));
+    static validateArray<T>(value: unknown, fieldPath: string, elementValidator?: (element: unknown, elementFieldName: string) => T): T[] {
+        if (!Array.isArray(value)) {
+            throw new Error(getMessage('ConfigValueMustBeOfType', fieldPath, 'array', getDataType(value)));
         }
-        return value as string[];
+        if (elementValidator) {
+            value.every((element, index) => elementValidator(element, `${fieldPath}[${index}]`));
+        }
+        return value as T[];
     }
 
-    static validateFile(value: unknown, fieldName: string, possibleFileRoot?: string): string {
-        const fileValue: string = ValueValidator.validatePath(value, fieldName, possibleFileRoot);
+    static validateFile(value: unknown, fieldPath: string, possibleFileRoot?: string): string {
+        const fileValue: string = ValueValidator.validatePath(value, fieldPath, possibleFileRoot);
         if (fs.statSync(fileValue).isDirectory()) {
-            throw new Error(getMessage('ConfigFileValueMustNotBeFolder', fieldName, fileValue));
+            throw new Error(getMessage('ConfigFileValueMustNotBeFolder', fieldPath, fileValue));
         }
         return fileValue;
     }
 
-    static validateFolder(value: unknown, fieldName: string, possibleFolderRoot?: string): string {
-        const folderValue: string = ValueValidator.validatePath(value, fieldName, possibleFolderRoot);
+    static validateFolder(value: unknown, fieldPath: string, possibleFolderRoot?: string): string {
+        const folderValue: string = ValueValidator.validatePath(value, fieldPath, possibleFolderRoot);
         if (!fs.statSync(folderValue).isDirectory()) {
-            throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldName, folderValue));
+            throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
         }
         return folderValue;
     }
 
-    static validatePath(value: unknown, fieldName: string, possiblePathRoot?: string): string {
-        const pathValue: string = ValueValidator.validateString(value, fieldName);
+    static validatePath(value: unknown, fieldPath: string, possiblePathRoot?: string): string {
+        const pathValue: string = ValueValidator.validateString(value, fieldPath);
         const pathsToTry: string[] = [];
         if (possiblePathRoot) {
             // If a possible root is supplied, then we first assume the pathValue is relative to it
@@ -127,14 +179,14 @@ export class ValueValidator {
         }
         // Otherwise we try to resolve it without a possible root
         pathsToTry.push(toAbsolutePath(pathValue));
-        return validateAtLeastOnePathExists(pathsToTry, fieldName);
+        return validateAtLeastOnePathExists(pathsToTry, fieldPath);
     }
 }
 
-function validateType<T>(expectedType: string, value: unknown, fieldName: string): T {
-    const dataType: string = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
+function validateType<T>(expectedType: string, value: unknown, fieldPath: string): T {
+    const dataType: string = getDataType(value);
     if (dataType !== expectedType) {
-        throw new Error(getMessage('ConfigValueMustBeOfType', fieldName, expectedType, dataType));
+        throw new Error(getMessage('ConfigValueMustBeOfType', fieldPath, expectedType, dataType));
     }
     return value as T;
 }
@@ -148,29 +200,33 @@ function toAbsolutePath(pathValue: string, possiblePathRoot?: string): string {
     return pathValue.startsWith(possiblePathRoot) ? pathValue : path.join(possiblePathRoot, pathValue);
 }
 
-function validateAtLeastOnePathExists(paths: string[], fieldName: string): string {
+function validateAtLeastOnePathExists(paths: string[], fieldPath: string): string {
     for (const currPath of paths) {
         if (fs.existsSync(currPath)) {
             return currPath;
         }
     }
-    throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldName, paths[0]));
+    throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldPath, paths[0]));
 }
 
-function validateAbsoluteFolder(value: unknown, fieldName: string): string {
-    const folderValue: string = validateAbsolutePath(value, fieldName);
+function validateAbsoluteFolder(value: unknown, fieldPath: string): string {
+    const folderValue: string = validateAbsolutePath(value, fieldPath);
     if (!fs.statSync(folderValue).isDirectory()) {
-        throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldName, folderValue));
+        throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
     }
     return folderValue;
 }
 
-function validateAbsolutePath(value: unknown, fieldName: string): string {
-    const pathValue: string = ValueValidator.validateString(value, fieldName);
+function validateAbsolutePath(value: unknown, fieldPath: string): string {
+    const pathValue: string = ValueValidator.validateString(value, fieldPath);
     if (pathValue !== toAbsolutePath(pathValue)) {
-        throw new Error(getMessage('ConfigPathValueMustBeAbsolute', fieldName, pathValue, toAbsolutePath(pathValue)));
+        throw new Error(getMessage('ConfigPathValueMustBeAbsolute', fieldPath, pathValue, toAbsolutePath(pathValue)));
     } else if (!fs.existsSync(pathValue)) {
-        throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldName, pathValue));
+        throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldPath, pathValue));
     }
     return pathValue;
+}
+
+function getDataType(value: unknown): string {
+    return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
 }
