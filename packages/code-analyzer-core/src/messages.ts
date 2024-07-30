@@ -30,6 +30,9 @@ const MESSAGE_CATALOG : MessageCatalog = {
     FailedToDynamicallyAddEnginePlugin:
         `Failed to dynamically add engine plugin from module '%s' because the module does not seem to export a 'createEnginePlugin' function.`,
 
+    EngineDisabled:
+        `Did not add engine with name '%s' since the '%s' configuration value is set to true.`,
+
     EngineAdded:
         `Engine with name '%s' was added to Code Analyzer.`,
 

@@ -1,0 +1,6 @@
+engines:
+  stubEngine1:
+    disable_engine: true
+
+  someMiscEngine:
+    disable_engine: false

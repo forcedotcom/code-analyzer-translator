@@ -215,6 +215,11 @@ export class CodeAnalyzer {
         }
 
         const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
+        if (engConf[FIELDS.DISABLE_ENGINE]) {
+            this.emitLogEvent(LogLevel.Debug, getMessage('EngineDisabled', engineName,
+                `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`))
+            return;
+        }
 
         let engine: engApi.Engine;
         try {
@@ -352,7 +357,7 @@ function extractEnginePathStartPoints(pathStartPointStr: string): engApi.PathPoi
     });
 }
 
-function validatePathStartPointsAreInsideWorkspace(engineRunOptions: engApi.RunOptions) {
+function validatePathStartPointsAreInsideWorkspace(engineRunOptions: engApi.RunOptions): void {
     if (!engineRunOptions.pathStartPoints) {
         return;
     }
@@ -377,7 +382,7 @@ function validateEngineRunResults(engineName: string, apiEngineRunResults: engAp
     }
 }
 
-function validateViolationRuleName(violation: engApi.Violation, engineName: string, ruleSelection: RuleSelection) {
+function validateViolationRuleName(violation: engApi.Violation, engineName: string, ruleSelection: RuleSelection): void {
     try {
         ruleSelection.getRule(engineName, violation.ruleName);
     } catch (error) {
@@ -385,14 +390,14 @@ function validateViolationRuleName(violation: engApi.Violation, engineName: stri
     }
 }
 
-function validateViolationPrimaryLocationIndex(violation: engApi.Violation, engineName: string) {
+function validateViolationPrimaryLocationIndex(violation: engApi.Violation, engineName: string): void {
     if (!isIntegerBetween(violation.primaryLocationIndex, 0, violation.codeLocations.length-1)) {
         throw new Error(getMessage('EngineReturnedViolationWithInvalidPrimaryLocationIndex',
             engineName, violation.ruleName, violation.primaryLocationIndex, violation.codeLocations.length));
     }
 }
 
-function validateViolationCodeLocations(violation: engApi.Violation, engineName: string) {
+function validateViolationCodeLocations(violation: engApi.Violation, engineName: string): void {
     for (const codeLocation of violation.codeLocations) {
         const absFile: string = toAbsolutePath(codeLocation.file);
         fs.existsSync(absFile)
@@ -439,7 +444,7 @@ function validateViolationCodeLocations(violation: engApi.Violation, engineName:
     }
 }
 
-function isValidLineOrColumn(value: number) {
+function isValidLineOrColumn(value: number): boolean {
     return isIntegerBetween(value, 1, Number.MAX_VALUE);
 }
 

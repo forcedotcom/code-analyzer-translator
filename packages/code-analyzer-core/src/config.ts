@@ -14,7 +14,8 @@ export const FIELDS = {
     RULES: 'rules',
     ENGINES: 'engines',
     SEVERITY: 'severity',
-    TAGS: 'tags'
+    TAGS: 'tags',
+    DISABLE_ENGINE: 'disable_engine'
 } as const;
 
 export type RuleOverride = {
@@ -193,7 +194,11 @@ function extractEnginesValue(configValueExtractor: engApi.ConfigValueExtractor):
         return DEFAULT_CONFIG.engines;
     }
     for (const [engineName, settingsForEngine] of Object.entries(engineSettingsObj)) {
-        engApi.ValueValidator.validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
+        const settingsForEngineObj: object = engApi.ValueValidator.validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
+        if (FIELDS.DISABLE_ENGINE in settingsForEngineObj) {
+            engApi.ValueValidator.validateBoolean(settingsForEngineObj[FIELDS.DISABLE_ENGINE],
+                `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`);
+        }
     }
     return engineSettingsObj as Record<string, engApi.ConfigObject>;
 }
