@@ -231,4 +231,10 @@ describe("Tests for creating and accessing configuration values", () => {
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueMustBeAbsolute',
                 'config_root', 'test/test-data', path.resolve('test','test-data')));
     });
+
+    it("When engines.stubEngine1.disable_engine is not a boolean, then we error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({engines: {stubEngine1: {disable_engine: null}}})).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
+                'engines.stubEngine1.disable_engine', 'boolean', 'null'));
+    });
 });

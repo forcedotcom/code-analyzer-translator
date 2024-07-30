@@ -1,13 +1,14 @@
 import {CodeAnalyzer, CodeAnalyzerConfig, EventType, LogEvent, LogLevel} from "../src";
 import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import path from "node:path";
 import {StubEngine1, StubEngine2} from "./stubs";
 
 changeWorkingDirectoryToPackageRoot();
 
 const DEFAULT_CONFIG_ROOT: string = process.cwd();
+const TEST_DATA_DIR: string= path.resolve(__dirname, 'test-data');
 
 describe("Tests for adding engines to Code Analyzer", () => {
     let codeAnalyzer: CodeAnalyzer;
@@ -33,8 +34,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
     });
 
     it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', async () => {
-        const testDataFolder: string= path.resolve(__dirname, 'test-data');
-        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(testDataFolder, 'sample-config-02.Yml')));
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-02.Yml')));
 
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(stubEnginePlugin);
@@ -43,7 +43,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
         expect(stubEngine1.getName()).toEqual('stubEngine1');
         expect(stubEngine1.config).toEqual({
-            config_root: testDataFolder,
+            config_root: TEST_DATA_DIR,
             miscSetting1: true,
             miscSetting2: {
                 miscSetting2A: 3,
@@ -52,7 +52,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         });
         const stubEngine2: StubEngine2 = stubEnginePlugin.getCreatedEngine('stubEngine2') as StubEngine2;
         expect(stubEngine2.getName()).toEqual('stubEngine2');
-        expect(stubEngine2.config).toEqual({config_root: testDataFolder});
+        expect(stubEngine2.config).toEqual({config_root: TEST_DATA_DIR});
     });
 
     it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', async () => {
@@ -120,6 +120,22 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const nonModuleFile: string = path.resolve('LICENSE');
         const expectedErrorMessageSubstring: string = getMessage('FailedToDynamicallyLoadModule', nonModuleFile, '');
         await expect(codeAnalyzer.dynamicallyAddEnginePlugin(nonModuleFile)).rejects.toThrow(expectedErrorMessageSubstring);
+    });
+
+    it('When an engine is disabled, then addEnginePlugin does not add that particular engine and gives debug log', async () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-04.yml')));
+        codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        const sampleTimestamp: Date = new Date(2024, 7, 30, 11, 14, 34, 567);
+        codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+
+        expect(codeAnalyzer.getEngineNames()).toEqual(['stubEngine2']);
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Debug,
+            timestamp: sampleTimestamp,
+            message: getMessage('EngineDisabled', 'stubEngine1', 'engines.stubEngine1.disable_engine')
+        });
     });
 });
 
