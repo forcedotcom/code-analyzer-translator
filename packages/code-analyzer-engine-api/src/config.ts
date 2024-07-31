@@ -28,10 +28,14 @@ export class ConfigValueExtractor {
         return this.configObj;
     }
 
+    getKeys(): string[] {
+        return Object.keys(this.configObj);
+    }
+
     extractConfigRoot(): string {
         if (!this.configRoot) {
             const fieldName: string = 'config_root'; // config_root is always top level, so don't use getFieldPath
-            this.configRoot = this.isUndefined(fieldName) ? process.cwd() :
+            this.configRoot = !this.hasValueDefinedFor(fieldName) ? process.cwd() :
                 validateAbsoluteFolder(this.configObj[fieldName], fieldName);
         }
         return this.configRoot;
@@ -42,7 +46,7 @@ export class ConfigValueExtractor {
     }
 
     extractBoolean(fieldName: string, defaultValue?: boolean): boolean | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredBoolean(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredBoolean(fieldName);
     }
 
     extractRequiredNumber(fieldName: string): number {
@@ -50,7 +54,7 @@ export class ConfigValueExtractor {
     }
 
     extractNumber(fieldName: string, defaultValue?: number): number | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredNumber(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredNumber(fieldName);
     }
 
     extractRequiredString(fieldName: string): string {
@@ -58,7 +62,7 @@ export class ConfigValueExtractor {
     }
 
     extractString(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredString(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredString(fieldName);
     }
 
     extractRequiredObject(fieldName: string): ConfigObject {
@@ -71,7 +75,7 @@ export class ConfigValueExtractor {
     }
 
     extractObject(fieldName: string, defaultValue?: ConfigObject): ConfigObject | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredObject(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredObject(fieldName);
     }
 
     extractObjectAsExtractor(fieldName: string, defaultValue?: ConfigObject): ConfigValueExtractor {
@@ -84,7 +88,7 @@ export class ConfigValueExtractor {
     }
 
     extractArray<T>(fieldName: string, elementValidator?: (element: unknown, elementFieldName: string) => T, defaultValue?: T[]): T[] | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredArray(fieldName, elementValidator);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredArray(fieldName, elementValidator);
     }
 
     extractRequiredObjectArrayAsExtractorArray(fieldName: string): ConfigValueExtractor[] {
@@ -102,7 +106,7 @@ export class ConfigValueExtractor {
     }
 
     extractFile(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredFile(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredFile(fieldName);
     }
 
     extractRequiredFolder(fieldName: string): string {
@@ -110,7 +114,7 @@ export class ConfigValueExtractor {
     }
 
     extractFolder(fieldName: string, defaultValue?: string): string | undefined {
-        return this.isUndefined(fieldName) ? defaultValue : this.extractRequiredFolder(fieldName);
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredFolder(fieldName);
     }
 
     getFieldPath(fieldName?: string): string {
@@ -120,10 +124,8 @@ export class ConfigValueExtractor {
         return this.fieldRoot && this.fieldRoot.length > 0 ? `${this.fieldRoot}.${fieldName}` : fieldName;
     }
 
-    protected isUndefined(fieldName: string): boolean {
-        // Note a user could provide a boolean false value, which is why we don't just do an if statement on the value
-        // but instead check to see if it is undefined or null.
-        return this.configObj[fieldName] === undefined || this.configObj[fieldName] === null;
+    hasValueDefinedFor(fieldName: string): boolean {
+        return this.configObj[fieldName] !== undefined && this.configObj[fieldName] !== null;
     }
 }
 

@@ -174,9 +174,6 @@ describe("Tests for creating and accessing configuration values", () => {
                     goodTagsRule2: {tags: ['helloWorld', 'great']}
                 }}})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.badTagsRule.tags', 'array', 'string'));
-
-        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badTagsRule: {tags: null},}}})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.badTagsRule.tags', 'array', 'null'));
     });
 
     it("When tags is an empty array, then use the empty array as provided", () => {
@@ -233,8 +230,8 @@ describe("Tests for creating and accessing configuration values", () => {
     });
 
     it("When engines.stubEngine1.disable_engine is not a boolean, then we error", () => {
-        expect(() => CodeAnalyzerConfig.fromObject({engines: {stubEngine1: {disable_engine: null}}})).toThrow(
+        expect(() => CodeAnalyzerConfig.fromObject({engines: {stubEngine1: {disable_engine: 5}}})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
-                'engines.stubEngine1.disable_engine', 'boolean', 'null'));
+                'engines.stubEngine1.disable_engine', 'boolean', 'number'));
     });
 });

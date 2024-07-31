@@ -91,15 +91,15 @@ export class CodeAnalyzerConfig {
         if (!rawConfig.config_root) {
             rawConfig.config_root = configRoot ? configRoot : process.cwd();
         }
-        const configValueExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig);
+        const configExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig);
         const config: TopLevelConfig = {
-            config_root: configValueExtractor.extractConfigRoot(),
-            log_folder: configValueExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
-            custom_engine_plugin_modules: configValueExtractor.extractArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
+            config_root: configExtractor.extractConfigRoot(),
+            log_folder: configExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
+            custom_engine_plugin_modules: configExtractor.extractArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
                 ValueValidator.validateString,
                 DEFAULT_CONFIG.custom_engine_plugin_modules)!,
-            rules: extractRulesValue(configValueExtractor),
-            engines: extractEnginesValue(configValueExtractor)
+            rules: extractRulesValue(configExtractor),
+            engines: extractEnginesValue(configExtractor)
         }
         return new CodeAnalyzerConfig(config);
     }
@@ -138,42 +138,32 @@ export class CodeAnalyzerConfig {
     }
 }
 
-function extractRulesValue(configValueExtractor: engApi.ConfigValueExtractor): Record<string, Record<string, RuleOverride>> {
-    const rulesObj: engApi.ConfigObject | undefined = configValueExtractor.extractObject(FIELDS.RULES);
-    if (!rulesObj) {
-        return DEFAULT_CONFIG.rules;
+function extractRulesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, Record<string, RuleOverride>> {
+    const rulesExtractor: engApi.ConfigValueExtractor = configExtractor.extractObjectAsExtractor(FIELDS.RULES, DEFAULT_CONFIG.rules);
+    const rulesValue: Record<string, Record<string, RuleOverride>> = {};
+    for (const engineName of rulesExtractor.getKeys()) {
+        rulesValue[engineName] = extractRuleOverridesFrom(rulesExtractor.extractRequiredObjectAsExtractor(engineName));
     }
-    const extractedValue: Record<string, Record<string, RuleOverride>> = {};
-    for (const engineName of Object.keys(rulesObj)) {
-        extractedValue[engineName] = extractRuleOverridesFor(rulesObj, engineName);
-    }
-    return extractedValue;
+    return rulesValue;
 }
 
-function extractRuleOverridesFor(rulesObj: object, engineName: string): Record<string, RuleOverride> {
-    const extractedValue: Record<string, RuleOverride> = {};
-    const ruleOverridesObj: object = engApi.ValueValidator.validateObject(rulesObj[engineName as keyof typeof rulesObj],
-        `${FIELDS.RULES}.${engineName}`);
-    for (const ruleName of Object.keys(ruleOverridesObj)) {
-        extractedValue[ruleName] = extractRuleOverrideFor(ruleOverridesObj, engineName, ruleName);
+function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigValueExtractor): Record<string, RuleOverride> {
+    const ruleOverrides: Record<string, RuleOverride> = {};
+    for (const ruleName of engineRuleOverridesExtractor.getKeys()) {
+        ruleOverrides[ruleName] = extractRuleOverrideFrom(engineRuleOverridesExtractor.extractRequiredObjectAsExtractor(ruleName));
     }
-    return extractedValue;
+    return ruleOverrides;
 }
 
-function extractRuleOverrideFor(ruleOverridesObj: object, engineName: string, ruleName: string): RuleOverride {
-    const extractedValue: RuleOverride = {};
-    const ruleOverrideObj: object = engApi.ValueValidator.validateObject(ruleOverridesObj[ruleName as keyof typeof ruleOverridesObj],
-        `${FIELDS.RULES}.${engineName}.${ruleName}`);
-    if (FIELDS.SEVERITY in ruleOverrideObj) {
-        extractedValue.severity = validateSeverityValue(ruleOverrideObj[FIELDS.SEVERITY],
-            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.SEVERITY}`);
+function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtractor): RuleOverride {
+    const ruleOverride: RuleOverride = {
+        tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, ValueValidator.validateString)
+    };
+    if (ruleOverrideExtractor.hasValueDefinedFor(FIELDS.SEVERITY)) {
+        ruleOverride.severity = validateSeverityValue(ruleOverrideExtractor.getObject()[FIELDS.SEVERITY],
+            ruleOverrideExtractor.getFieldPath(FIELDS.SEVERITY));
     }
-    if (FIELDS.TAGS in ruleOverrideObj ) {
-        extractedValue.tags = engApi.ValueValidator.validateArray(ruleOverrideObj[FIELDS.TAGS],
-            `${FIELDS.RULES}.${engineName}.${ruleName}.${FIELDS.TAGS}`,
-            ValueValidator.validateString);
-    }
-    return extractedValue;
+    return ruleOverride;
 }
 
 function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel {
@@ -191,19 +181,13 @@ function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel 
     return value as SeverityLevel;
 }
 
-function extractEnginesValue(configValueExtractor: engApi.ConfigValueExtractor): Record<string, engApi.ConfigObject> {
-    const engineSettingsObj: engApi.ConfigObject | undefined = configValueExtractor.extractObject(FIELDS.ENGINES);
-    if (!engineSettingsObj) {
-        return DEFAULT_CONFIG.engines;
+function extractEnginesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, engApi.ConfigObject> {
+    const enginesExtractor: engApi.ConfigValueExtractor = configExtractor.extractObjectAsExtractor(FIELDS.ENGINES,
+        DEFAULT_CONFIG.engines);
+    for (const engineName of enginesExtractor.getKeys()) { // Don't need the values, just want to validate them
+        enginesExtractor.extractRequiredObjectAsExtractor(engineName).extractBoolean(FIELDS.DISABLE_ENGINE);
     }
-    for (const [engineName, settingsForEngine] of Object.entries(engineSettingsObj)) {
-        const settingsForEngineObj: object = engApi.ValueValidator.validateObject(settingsForEngine, `${FIELDS.ENGINES}.${engineName}`);
-        if (FIELDS.DISABLE_ENGINE in settingsForEngineObj) {
-            engApi.ValueValidator.validateBoolean(settingsForEngineObj[FIELDS.DISABLE_ENGINE],
-                `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`);
-        }
-    }
-    return engineSettingsObj as Record<string, engApi.ConfigObject>;
+    return enginesExtractor.getObject() as Record<string, engApi.ConfigObject>;
 }
 
 function parseAndValidate(parseFcn: () => unknown): object {

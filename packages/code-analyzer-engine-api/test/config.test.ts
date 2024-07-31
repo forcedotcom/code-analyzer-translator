@@ -145,6 +145,16 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(extractor.getFieldPath('abc')).toEqual('some.field.abc');
     });
 
+    it("When an extractor contains an object with no keys, then getKeys returns an empty array", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({});
+        expect(extractor.getKeys()).toEqual([]);
+    });
+
+    it("When an extractor contains an object with keys, then getKeys returns them", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({a: 1, b: {c: 3}});
+        expect(extractor.getKeys()).toEqual(['a', 'b']);
+    });
+
     it("When config_root is not supplied, then extractConfigRoot returns cwd", () => {
         const config: ConfigObject = {};
         const extractor: ConfigValueExtractor = new ConfigValueExtractor(config);
@@ -674,5 +684,15 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(subValueExtractors[1].getObject()).toEqual({b: 2});
         expect(subValueExtractors[2].getFieldPath()).toEqual('engines.dummy1.dummy2[5].some_field[2]');
         expect(subValueExtractors[2].getObject()).toEqual({c: 3});
+    });
+
+    it("The hasValueDefinedFor method returns true when a field is defined and not null and false otherwise", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({a: 3, b: null, c: false, d: 0, e: ''});
+        expect(extractor.hasValueDefinedFor('a')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('b')).toEqual(false);
+        expect(extractor.hasValueDefinedFor('c')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('d')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('e')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('f')).toEqual(false);
     });
 });
