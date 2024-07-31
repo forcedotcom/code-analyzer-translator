@@ -30,6 +30,15 @@ describe("Tests for ValueValidator", () => {
             getMessage('ConfigValueMustBeOfType', 'someFieldName', 'string', 'array'));
     });
 
+    it("When a value matches the regular expression provided to validateString, then the value is returned", () => {
+        expect(ValueValidator.validateString('Hello', 'someFieldName', /^he.*/i)).toEqual('Hello');
+    });
+
+    it("When a value does not match the regular expression provided to validateString, then error", () => {
+        expect(() => ValueValidator.validateString('oops', 'someFieldName', /^he.*/i)).toThrow(
+            getMessage('ConfigValueMustMatchRegExp', 'someFieldName', '/^he.*/i'));
+    });
+
     it("When an object value is given to validateObject, then the value is returned", () => {
         expect(ValueValidator.validateObject({a:1}, 'someFieldName')).toEqual({a:1});
     });
@@ -143,6 +152,16 @@ describe("Tests for ConfigValueExtractor", () => {
     it("When constructing extractor with a field root, then getFieldPath with a field name returns the full field path", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'some.field');
         expect(extractor.getFieldPath('abc')).toEqual('some.field.abc');
+    });
+
+    it("When an extractor contains an object with no keys, then getKeys returns an empty array", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({});
+        expect(extractor.getKeys()).toEqual([]);
+    });
+
+    it("When an extractor contains an object with keys, then getKeys returns them", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({a: 1, b: {c: 3}});
+        expect(extractor.getKeys()).toEqual(['a', 'b']);
     });
 
     it("When config_root is not supplied, then extractConfigRoot returns cwd", () => {
@@ -278,6 +297,17 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigValueMustBeOfType', 'engines.dummy.some_field', 'string', 'number'));
     });
 
+    it("When the field matches the RegExp provided to extractRequiredString, then return it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'this_matches'}, 'engines.dummy');
+        expect(extractor.extractRequiredString('some_field', /^[a-z]+_[a-z]+$/)).toEqual('this_matches');
+    });
+
+    it("When the field does not match the RegExp provided to extractRequiredString, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'thisDoesNotMatch'}, 'engines.dummy');
+        expect(() => extractor.extractRequiredString('some_field', /^[a-z]+_[a-z]+$/)).toThrow(
+            getMessage('ConfigValueMustMatchRegExp', 'engines.dummy.some_field', '/^[a-z]+_[a-z]+$/'));
+    });
+
     it("When calling extractString on field that is not defined, then return default value", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
         expect(extractor.extractString('some_field')).toEqual(undefined);
@@ -297,6 +327,17 @@ describe("Tests for ConfigValueExtractor", () => {
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 3}, 'engines.dummy');
         expect(() => extractor2.extractString('some_field2')).toThrow(
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2', 'string', 'number'));
+    });
+
+    it("When the field matches the RegExp provided to extractString, then return it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'this_matches'}, 'engines.dummy');
+        expect(extractor.extractString('some_field', 'some_default', /^[a-z]+_[a-z]+$/)).toEqual('this_matches');
+    });
+
+    it("When the field does not match the RegExp provided to extractString, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'thisDoesNotMatch'}, 'engines.dummy');
+        expect(() => extractor.extractString('some_field', 'some_default', /^[a-z]+_[a-z]+$/)).toThrow(
+            getMessage('ConfigValueMustMatchRegExp', 'engines.dummy.some_field', '/^[a-z]+_[a-z]+$/'));
     });
 
     it("When calling extractRequiredObject on a field that contains an object, then return value", () => {
@@ -674,5 +715,15 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(subValueExtractors[1].getObject()).toEqual({b: 2});
         expect(subValueExtractors[2].getFieldPath()).toEqual('engines.dummy1.dummy2[5].some_field[2]');
         expect(subValueExtractors[2].getObject()).toEqual({c: 3});
+    });
+
+    it("The hasValueDefinedFor method returns true when a field is defined and not null and false otherwise", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({a: 3, b: null, c: false, d: 0, e: ''});
+        expect(extractor.hasValueDefinedFor('a')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('b')).toEqual(false);
+        expect(extractor.hasValueDefinedFor('c')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('d')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('e')).toEqual(true);
+        expect(extractor.hasValueDefinedFor('f')).toEqual(false);
     });
 });
