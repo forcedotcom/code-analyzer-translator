@@ -37,6 +37,9 @@ export const SHARED_MESSAGE_CATALOG: MessageCatalog = {
     ConfigValueMustBeOfType:
         `The '%s' configuration value must be of type '%s' instead of type '%s'.`,
 
+    ConfigValueMustMatchRegExp:
+        `The '%s' configuration value is invalid. The string did not match the regular expression pattern: %s`,
+
     ConfigPathValueDoesNotExist:
         `The'%s' configuration value is invalid. The path '%s' does not exist.`,
 

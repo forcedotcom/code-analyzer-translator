@@ -57,12 +57,12 @@ export class ConfigValueExtractor {
         return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredNumber(fieldName);
     }
 
-    extractRequiredString(fieldName: string): string {
-        return ValueValidator.validateString(this.configObj[fieldName], this.getFieldPath(fieldName));
+    extractRequiredString(fieldName: string, regexpToMatch?: RegExp): string {
+        return ValueValidator.validateString(this.configObj[fieldName], this.getFieldPath(fieldName), regexpToMatch);
     }
 
-    extractString(fieldName: string, defaultValue?: string): string | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredString(fieldName);
+    extractString(fieldName: string, defaultValue?: string, regexpToMatch?: RegExp): string | undefined {
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredString(fieldName, regexpToMatch);
     }
 
     extractRequiredObject(fieldName: string): ConfigObject {
@@ -138,8 +138,12 @@ export class ValueValidator {
         return validateType<number>("number", value, fieldPath);
     }
 
-    static validateString(value: unknown, fieldPath: string): string {
-        return validateType<string>("string", value, fieldPath);
+    static validateString(value: unknown, fieldPath: string, regexpToMatch?: RegExp): string {
+        const strValue: string = validateType<string>("string", value, fieldPath);
+        if (regexpToMatch && !regexpToMatch.test(strValue)) {
+            throw new Error(getMessage('ConfigValueMustMatchRegExp', fieldPath, regexpToMatch.toString()));
+        }
+        return strValue;
     }
 
     static validateObject(value: unknown, fieldPath: string): ConfigObject {
