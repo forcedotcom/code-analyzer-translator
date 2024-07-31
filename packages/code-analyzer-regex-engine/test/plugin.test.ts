@@ -15,7 +15,7 @@ import {
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {getMessage} from "../src/messages";
 import path from "node:path";
-import {RegexRuleMap} from "../src/config";
+import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRuleMap, RULE_NAME_PATTERN} from "../src/config";
 import {
     TRAILING_WHITESPACE_REGEX,
     TRAILING_WHITESPACE_RULE_DESCRIPTION,
@@ -204,7 +204,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                     }
                 }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', '/something[/gi', 'engines.regex.custom_rules.BadRule.regex', "Invalid regular expression: /something[/gi: Unterminated character class"));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', '/something[/gi', "Invalid regular expression: /something[/gi: Unterminated character class"));
     });
 
     it("If regex is not given in forward-slash delimited strings, emit appropriate error", async () => {
@@ -217,7 +217,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegexString', 'something[', 'engines.regex.custom_rules.BadRule.regex'));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+            'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
     });
 
     it("If regex is given without two forward slashes, emit appropriate error", async () => {
@@ -231,7 +232,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegexString', 'something[/gi', 'engines.regex.custom_rules.BadRule.regex'));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+            'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
     });
 
 
@@ -245,7 +247,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/lpr", 'engines.regex.custom_rules.NoTodos.regex', 'Invalid flags supplied to RegExp constructor \'lpr\''));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/lpr", 'Invalid flags supplied to RegExp constructor \'lpr\''));
     });
 
     it("If regex modifiers are repeated, ensure proper error is emitted", async () => {
@@ -258,7 +260,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/gig", 'engines.regex.custom_rules.NoTodos.regex','Invalid flags supplied to RegExp constructor \'gig\'' ));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/gig", 'Invalid flags supplied to RegExp constructor \'gig\'' ));
     });
 
     it("If modifiers u, v appear together, ensure proper error is emitted", async () => {
@@ -271,7 +273,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/guv", 'engines.regex.custom_rules.NoTodos.regex', 'Invalid flags supplied to RegExp constructor \'guv\''));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/guv", 'Invalid flags supplied to RegExp constructor \'guv\''));
     });
 
     it("If regex is not given by user, emit error", async () => {
@@ -283,7 +285,13 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.regex', 'string', 'undefined'));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(
+                SHARED_MESSAGE_CATALOG,
+                'ConfigValueMustBeOfType',
+                'engines.regex.custom_rules.NoTodos.regex',
+                'string',
+                'undefined'));
     });
 
     it("If rule name is empty, ensure proper error is emitted", async () => {
@@ -292,7 +300,25 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 "" : BASELINE_NO_TODOS_RULE
             }
         }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'RuleNameCannotBeEmpty', 'engines.regex.custom_rules'));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', '', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
+    });
+
+    it("If rule name has special character at the beginning, ensure proper error is emitted", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "1hello" : BASELINE_NO_TODOS_RULE
+            }
+        }
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', '1hello', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
+    });
+
+    it("If rule name has invalid character after first character, ensure proper error is emitted", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "rule*" : BASELINE_NO_TODOS_RULE
+            }
+        }
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', 'rule*', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
     it("If description is not a string, ensure proper error is emitted", async () => {
@@ -343,8 +369,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         }
-        const regexString: string = "^[.][a-zA-Z0-9]+$"
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('ConfigStringValueMustMatchPattern', 'engines.regex.custom_rules.NoTodos.file_extensions[0]', "js", regexString));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp', 'engines.regex.custom_rules.NoTodos.file_extensions[0]', FILE_EXT_PATTERN.toString()));
     });
 
     it("If user creates a rule with a custom violation message, ensure that is maintained in config", async () => {

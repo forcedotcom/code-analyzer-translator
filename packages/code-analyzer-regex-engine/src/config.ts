@@ -1,23 +1,39 @@
 import {
     ConfigObject,
-    ConfigValueExtractor,
+    ConfigValueExtractor, getMessageFromCatalog, SHARED_MESSAGE_CATALOG,
     ValueValidator
 } from "@salesforce/code-analyzer-engine-api"
 import {getMessage} from "./messages";
 
-const APEX_CLASS_FILE_EXT: string = ".cls"
-
-export type RegexRule = {
-    regex: RegExp;
-    file_extensions: string[];
-    description: string;
-    violation_message: string;
-}
-export type RegexRuleMap = Record<string, RegexRule>;
-
 export type RegexEngineConfig = {
+    // A complete set of regex rules to be executed by the engine.
     rules: RegexRuleMap
 }
+
+export type RegexRuleMap = {
+    // A collection of rules where the key is the rule name and the value is the rule itself.
+    [ruleName: string] : RegexRule
+}
+
+export type RegexRule = {
+    // The regular expression to match against. Emits a violation if a match is found.
+    // Required field.
+    regex: RegExp;
+
+    /// The file extensions to which the rule applies.
+    // Required field.
+    file_extensions: string[];
+
+    // A description of the rule's purpose.
+    // Required field.
+    description: string;
+
+    // The message emitted when a rule violation occurs. This message is intended to help the user rectify the issue.
+    // Default: `A match of the regular expression {regex} was found for rule '{ruleName}': {description}`
+    violation_message: string;
+}
+
+const APEX_CLASS_FILE_EXT: string = ".cls";
 
 export const DEFAULT_CONFIG: RegexEngineConfig = {
     rules: {
@@ -30,32 +46,33 @@ export const DEFAULT_CONFIG: RegexEngineConfig = {
     }
 };
 
-const RULES_FIELD_NAME: string = 'custom_rules'
-const REGEX_ENGINE_ROOT: string = 'engines.regex'
-const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
+export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
+export const RULE_NAME_PATTERN: RegExp = /^[A-Za-z@][A-Za-z_0-9@\-/]*$/;
+export const REGEX_STRING_PATTERN: RegExp = /^\/(.*?)\/(.*)$/;
+
+const RULES_FIELD_NAME: string = 'custom_rules';
+const REGEX_ENGINE_ROOT: string = 'engines.regex';
 
 export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngineConfig {
     const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, REGEX_ENGINE_ROOT);
     const customRulesExtractor: ConfigValueExtractor = valueExtractor.extractObjectAsExtractor(RULES_FIELD_NAME);
     const customRules: RegexRuleMap = {};
-    const keys: string[] = Object.keys(customRulesExtractor.getObject())
 
-    for (const ruleName of keys) {
-        if (!ruleName){
-            throw new Error(getMessage('RuleNameCannotBeEmpty', customRulesExtractor.getFieldPath()))
+    for (const ruleName of customRulesExtractor.getKeys()) {
+        if (!RULE_NAME_PATTERN.test(ruleName)){
+            throw new Error(getMessage('InvalidRuleName', ruleName, customRulesExtractor.getFieldPath(), RULE_NAME_PATTERN.toString()))
         }
         const ruleExtractor: ConfigValueExtractor = customRulesExtractor.extractRequiredObjectAsExtractor(ruleName)
         const description: string = ruleExtractor.extractRequiredString('description')
         const rawRegexString: string = ruleExtractor.extractRequiredString('regex')
         const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'))
-        const rawFileExtensions: string[] = ruleExtractor.extractRequiredArray('file_extensions', ValueValidator.validateString)
 
         customRules[ruleName] = {
             regex: regex,
             description: description,
             violation_message: ruleExtractor.extractString('violation_message', getDefaultRuleViolationMessage(regex, ruleName, description))!,
-            file_extensions: rawFileExtensions.map((fileExt, i) => validateStringMatches(
-                FILE_EXT_PATTERN, fileExt, `${ruleExtractor.getFieldPath('file_extensions')}[${i}]`))
+            file_extensions: ruleExtractor.extractRequiredArray('file_extensions',
+                (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN))
         }
 
     }
@@ -72,9 +89,10 @@ function getDefaultRuleViolationMessage(regex: RegExp, ruleName: string, descrip
 }
 
 function validateRegex(value: string, fieldName: string): RegExp {
-    const match: RegExpMatchArray | null = value.match(/^\/(.*?)\/(.*)$/);
+    const match: RegExpMatchArray | null = value.match(REGEX_STRING_PATTERN);
     if (!match) {
-        throw new Error(getMessage('InvalidRegexString', value, fieldName));
+        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+            fieldName, REGEX_STRING_PATTERN.toString()));
     }
     const pattern = match[1];
     const modifiers = match[2];
@@ -82,19 +100,11 @@ function validateRegex(value: string, fieldName: string): RegExp {
     try {
         return new RegExp(pattern, modifiers);
     } catch (err) {
-        throw new Error(getMessage('InvalidRegex', value, fieldName, getErrorMessage(err)))
+        throw new Error(getMessage('InvalidRegex', value, getErrorMessage(err)))
     }
 }
 
 function getErrorMessage(error: unknown) {
     if (error instanceof Error) return error.message
     return String(error)
-}
-
-/* TODO: Extract to engine API level so there's no code repetition */
-function validateStringMatches(pattern: RegExp, value: string, fieldName: string): string {
-    if (!pattern.test(value)) {
-        throw new Error(getMessage('ConfigStringValueMustMatchPattern', fieldName, value, pattern.source));
-    }
-    return value;
 }
