@@ -51,7 +51,7 @@ export class RegexEngine extends Engine {
             name: ruleName,
             severityLevel: DEFAULT_SEVERITY_LEVEL,
             type: DEFAULT_RULE_TYPE,
-            description: this.config.rules[ruleName].description,
+            description: this.config.custom_rules[ruleName].description,
             tags: DEFAULT_TAGS,
             resourceUrls: DEFAULT_RESOURCE_URLS
         }
@@ -69,13 +69,13 @@ export class RegexEngine extends Engine {
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         if (!describeOptions.workspace) {
-            return Object.keys(this.config.rules).map(ruleName => this.toRuleDescription(ruleName));
+            return Object.keys(this.config.custom_rules).map(ruleName => this.toRuleDescription(ruleName));
         }
 
         const fullFileList = await describeOptions.workspace.getExpandedFiles();
         const uniqueFileExtensions = this.getUniqueFileExtensions(fullFileList);
 
-        return Object.entries(this.config.rules).reduce((acc: RuleDescription[], [ruleName, rule]) => {
+        return Object.entries(this.config.custom_rules).reduce((acc: RuleDescription[], [ruleName, rule]) => {
             if (this.hasIntersection(uniqueFileExtensions, rule.file_extensions)) {
                 acc.push(this.toRuleDescription(ruleName));
             }
@@ -92,21 +92,21 @@ export class RegexEngine extends Engine {
     }
 
     private async runRulesForFile(file: string, ruleNames: string[]): Promise<Violation[]>{
-        const rulesToRun = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
-        const violationPromises = rulesToRun.map(ruleName => this.scanFile(file, ruleName));
+        const custom_rulesToRun = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
+        const violationPromises = custom_rulesToRun.map(ruleName => this.scanFile(file, ruleName));
         const violationsArray = await Promise.all(violationPromises);
         return violationsArray.flat();
     }
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
         const ext = path.extname(fileName)
-        return this.config.rules[ruleName].file_extensions.includes(ext)
+        return this.config.custom_rules[ruleName].file_extensions.includes(ext)
     }
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
         const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'});
-        const regex: RegExp = this.config.rules[ruleName].regex;
+        const regex: RegExp = this.config.custom_rules[ruleName].regex;
         const matches = fileContents.matchAll(regex);
         const newlineIndexes = this.getNewlineIndices(fileContents);
 
@@ -126,7 +126,7 @@ export class RegexEngine extends Engine {
                 ruleName: ruleName,
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
-                message: this.config.rules[ruleName].violation_message
+                message: this.config.custom_rules[ruleName].violation_message
             })
         }
         return violations;

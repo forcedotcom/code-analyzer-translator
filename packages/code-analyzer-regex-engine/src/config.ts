@@ -7,7 +7,8 @@ import {getMessage} from "./messages";
 
 export type RegexEngineConfig = {
     // A complete set of regex rules to be executed by the engine.
-    rules: RegexRuleMap
+    // Includes both default rules defined by engine and user-defined, custom rules.
+    custom_rules: RegexRuleMap
 }
 
 export type RegexRuleMap = {
@@ -36,7 +37,7 @@ export type RegexRule = {
 const APEX_CLASS_FILE_EXT: string = ".cls";
 
 export const DEFAULT_CONFIG: RegexEngineConfig = {
-    rules: {
+    custom_rules: {
         "NoTrailingWhitespace": {
             regex: /[ \t]+((?=\r?\n)|(?=$))/g,
             file_extensions: [APEX_CLASS_FILE_EXT],
@@ -77,8 +78,8 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
 
     }
     return {
-        rules: {
-            ...DEFAULT_CONFIG.rules,
+        custom_rules: {
+            ...DEFAULT_CONFIG.custom_rules,
             ...customRules
         }
     };

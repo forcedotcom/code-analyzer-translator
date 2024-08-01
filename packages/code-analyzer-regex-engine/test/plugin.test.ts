@@ -15,7 +15,11 @@ import {
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {getMessage} from "../src/messages";
 import path from "node:path";
-import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRuleMap, RULE_NAME_PATTERN} from "../src/config";
+import {
+    FILE_EXT_PATTERN,
+    REGEX_STRING_PATTERN,
+    RegexRuleMap,
+    RULE_NAME_PATTERN} from "../src/config";
 import {
     TRAILING_WHITESPACE_REGEX,
     TRAILING_WHITESPACE_RULE_DESCRIPTION,
@@ -138,7 +142,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 violation_message: getMessage('TrailingWhitespaceRuleMessage')
             },
         }
-        expect(pluginEngine.getConfig().rules).toEqual(expEngineConfigRules)
+        expect(pluginEngine.getConfig().custom_rules).toEqual(expEngineConfigRules)
     });
 
     it("Check that engine created from plugin can describe a custom rule", async () => {
@@ -383,7 +387,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             }
         }
         const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine
-        expect(pluginEngine.getConfig().rules["NoTodos"].violation_message).toStrictEqual(custom_message)
+        expect(pluginEngine.getConfig().custom_rules["NoTodos"].violation_message).toStrictEqual(custom_message)
     });
 
     it('Single-Escaped Regex Blitz: ensure custom custom_rules with regex strings match up with intended regular expressions', async () => {
@@ -432,7 +436,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         };
         const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
         for (let i = 0; i < EXPECTED_REGEX_LIST.length; i++) {
-            expect(checkRegexMatches(pluginEngine.getConfig().rules[`Rule${i}`].regex, EXPECTED_REGEX_LIST[i]));
+            expect(checkRegexMatches(pluginEngine.getConfig().custom_rules[`Rule${i}`].regex, EXPECTED_REGEX_LIST[i]));
         }
     }
 });

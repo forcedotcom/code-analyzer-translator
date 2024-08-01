@@ -201,7 +201,7 @@ describe('Regex Engine Tests', () => {
                 }
             }
             userConfig = {
-                rules: customRuleMap
+                custom_rules: customRuleMap
             }
             engine = new RegexEngine(userConfig)
 
