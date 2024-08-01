@@ -1,116 +1,42 @@
 import {RegexEngine} from "../src/engine";
 import {RegexEnginePlugin} from "../src";
 import {
-    CodeLocation,
     ConfigObject,
-    EngineRunResults,
+    Engine,
     getMessageFromCatalog,
-    RuleDescription,
     RuleType,
-    RunOptions,
     SeverityLevel,
-    Violation,
     SHARED_MESSAGE_CATALOG
 } from "@salesforce/code-analyzer-engine-api";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {getMessage} from "../src/messages";
-import path from "node:path";
-import {
-    FILE_EXT_PATTERN,
-    REGEX_STRING_PATTERN,
-    RegexRuleMap,
-    RULE_NAME_PATTERN} from "../src/config";
-import {
-    TRAILING_WHITESPACE_REGEX,
-    TRAILING_WHITESPACE_RULE_DESCRIPTION,
-    TRAILING_WHITESPACE_RULE_FILE_EXTENSIONS
-} from "./trailing_whitespace_rule_config";
-import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRules, RULE_NAME_PATTERN} from "../src/config";
+import {BASE_REGEX_RULES} from "../src/plugin";
 
-const FILE_LOCATION_1 = path.resolve(__dirname,  "test-data", "workspace_NoCustomConfig", "dummy.ts")
-
-const BASELINE_NO_TODOS_RULE = {
+const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
     regex: String.raw`/TODO:\s/gi`,
     description: "Detects TODO comments in code base.",
     file_extensions: [".js", ".ts", ".cls"]
 };
 
-const EXPECTED_CODE_LOCATION_1: CodeLocation = {
-    file: FILE_LOCATION_1,
-    startLine: 1,
-    startColumn: 4,
-    endLine: 1,
-    endColumn: 10
-}
-
-export const EXPECTED_VIOLATION_1: Violation[] = [
-    {
-        ruleName: "NoTodos",
-        message: getMessage(
-            'RuleViolationMessage',
-            /TODO:\s/gi.toString(),
-            "NoTodos",
-            "Detects TODO comments in code base."
-        ),
-
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_1]
-    }
-];
-
-const EXPECTED_REGEX_LIST: RegExp[] = [
-    new RegExp('[a-zA-Z]{2,5}\\d?', 'i'),
-    new RegExp('\\d{1,3}\\s?[A-Z]*', 'g'),
-    new RegExp('[^aeiou]{4,}\\W?', 'm'),
-    new RegExp('(foo|bar){2,3}\\d*', 'g'),
-    new RegExp('\\d{2,4}-[a-z]{3,}', 'g'),
-    new RegExp('(cat|dog)?\\s+[1-9]', 'g'),
-    new RegExp('\\w{3,5}\\.?\\d?', 'g'),
-    new RegExp('[A-Z]{1,4}@[a-z]{2,4}', 'g'),
-    new RegExp('\\d{3,5}[^\\d\\s]', 'g'),
-    new RegExp('[a-zA-Z]+\\d{1,2}', 'g'),
-    new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g'),
-    new RegExp('[^a-zA-Z0-9]{3,6}', 'g'),
-    new RegExp('(alpha|beta)\\d{2,4}?', 'i')
-]
-
-changeWorkingDirectoryToPackageRoot();
-
 describe('RegexEnginePlugin No Custom Config Tests' , () => {
-    let pluginEngine: RegexEngine;
     let enginePlugin: RegexEnginePlugin;
-    beforeAll(async () => {
+    beforeAll(() => {
         enginePlugin = new RegexEnginePlugin()
-        pluginEngine = await enginePlugin.createEngine("regex", {}) as RegexEngine
     });
 
     it('Check that I can get all available engine names', () => {
-        const availableEngines: string[] = ['regex'];
-        expect(enginePlugin.getAvailableEngineNames()).toStrictEqual(availableEngines)
+        expect(enginePlugin.getAvailableEngineNames()).toStrictEqual(['regex']);
     })
 
-    it('Check that engine created from the plugin has expected name', () => {
-        const engineName = "regex";
-        expect(pluginEngine.getName()).toStrictEqual(engineName)
-    });
-
-    it('Check that engine created from the plugin has expected output when describeRules() is called', async () => {
-        const expEngineRules = [
-            {
-                name: "NoTrailingWhitespace",
-                severityLevel: SeverityLevel.Low,
-                type: RuleType.Standard,
-                tags: ["Recommended", "CodeStyle"],
-                description: getMessage('TrailingWhitespaceRuleDescription'),
-                resourceUrls: []
-            },
-        ];
-        const engineRules: RuleDescription[] = await pluginEngine.describeRules({});
-        expect(engineRules).toStrictEqual(expEngineRules)
+    it('Check that engine created from the plugin has expected type and name', async () => {
+        const engine: Engine = await enginePlugin.createEngine('regex', {});
+        expect(engine).toBeInstanceOf(RegexEngine);
+        expect(engine.getName()).toStrictEqual('regex');
     });
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', async () => {
-        await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow("The RegexEnginePlugin does not support creating an engine with name 'OtherEngine'.");
+        await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow(
+            getMessage('CantCreateEngineWithUnknownEngineName', 'OtherEngine'));
     });
 });
 
@@ -120,80 +46,42 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         enginePlugin = new RegexEnginePlugin()
     });
 
-    it("Check that engine created from plugin can take custom rule and add it to config", async () => {
+    it("When valid custom rules are provided, then they are appended to base rules", async () => {
         const rawConfig: ConfigObject = {
             custom_rules: {
-                "NoTodos": BASELINE_NO_TODOS_RULE
+                NoTodos: SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
-        }
-        const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine
+        };
+        const engine: RegexEngine = await enginePlugin.createEngine('regex', rawConfig) as RegexEngine;
         const customRuleRegex: RegExp = /TODO:\s/gi
-        const expEngineConfigRules: RegexRuleMap = {
-            "NoTodos": {
+        const expRegexRules: RegexRules = {
+            ...BASE_REGEX_RULES,
+            NoTodos: {
                 regex: customRuleRegex,
-                description: BASELINE_NO_TODOS_RULE.description,
-                file_extensions: BASELINE_NO_TODOS_RULE.file_extensions,
-                violation_message: getMessage('RuleViolationMessage', customRuleRegex.toString(), "NoTodos", "Detects TODO comments in code base.")
-            },
-            "NoTrailingWhitespace": {
-                description: TRAILING_WHITESPACE_RULE_DESCRIPTION,
-                file_extensions: TRAILING_WHITESPACE_RULE_FILE_EXTENSIONS,
-                regex: TRAILING_WHITESPACE_REGEX,
-                violation_message: getMessage('TrailingWhitespaceRuleMessage')
-            },
-        }
-        expect(pluginEngine.getConfig().custom_rules).toEqual(expEngineConfigRules)
-    });
-
-    it("Check that engine created from plugin can describe a custom rule", async () => {
-        const rawConfig = {
-            custom_rules: {
-                "NoTodos": BASELINE_NO_TODOS_RULE
-            }
-        }
-        const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine
-        const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
-        const describeOptions: RunOptions = {workspace: testTools.createWorkspace([dir])};
-        const expRuleDesc: RuleDescription[] = [
-            {
+                description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
+                violation_message: getMessage('RuleViolationMessage', customRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
                 name: "NoTodos",
-                description: BASELINE_NO_TODOS_RULE.description,
-                severityLevel: SeverityLevel.Low,
                 type: RuleType.Standard,
-                tags: ["Recommended", "CodeStyle"],
+                severityLevel: SeverityLevel.Moderate,
+                tags: ['Recommended'],
                 resourceUrls: []
             }
-        ]
-        const ruleDesc: RuleDescription[] = await pluginEngine.describeRules(describeOptions);
-        expect(ruleDesc).toStrictEqual(expRuleDesc)
-
+        };
+        expect(engine._getRegexRules()).toEqual(expRegexRules);
     });
 
-    it("Check that engine created from plugin can run custom_rules", async () => {
-        const rawConfig = {
-            custom_rules: {
-                "NoTodos": BASELINE_NO_TODOS_RULE
-            }
-        }
-        const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine
-        const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([dir])};
-        const ruleNames: string[] = ["NoTodos"]
-        const runResults: EngineRunResults = await pluginEngine.runRules(ruleNames, runOptions);
-        expect(runResults.violations).toHaveLength(EXPECTED_VIOLATION_1.length)
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_1[0])
-    });
-
-    it('If custom_rules is given via a config object array, emit appropriate error', async () => {
+    it('If custom_rules is given as an array instead of an object, emit appropriate error', async () => {
         const rawConfig: ConfigObject = {
             custom_rules: [
                 {
                     name: "NoTodos",
-                    ...BASELINE_NO_TODOS_RULE
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION
                 }
             ]
-        }
-        await expect(enginePlugin.createEngine('regex', rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules', 'object', 'array'))
+        };
+        await expect(enginePlugin.createEngine('regex', rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules', 'object', 'array'));
     })
 
 
@@ -207,8 +95,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                         file_extensions: [".js", ".ts", ".cls"]
                     }
                 }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', '/something[/gi', "Invalid regular expression: /something[/gi: Unterminated character class"));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRegex', '/something[/gi', "Invalid regular expression: /something[/gi: Unterminated character class"));
     });
 
     it("If regex is not given in forward-slash delimited strings, emit appropriate error", async () => {
@@ -220,9 +109,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                     file_extensions: [".js", ".ts", ".cls"]
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
-            'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+                'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
     });
 
     it("If regex is given without two forward slashes, emit appropriate error", async () => {
@@ -235,9 +125,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                     file_extensions: [".js", ".ts", ".cls"]
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
-            'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+                'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
     });
 
 
@@ -246,12 +137,13 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             custom_rules: {
                 "NoTodos": {
                     regex: "/TODO:/lpr",
-                    description: BASELINE_NO_TODOS_RULE.description,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/lpr", 'Invalid flags supplied to RegExp constructor \'lpr\''));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRegex', "/TODO:/lpr", 'Invalid flags supplied to RegExp constructor \'lpr\''));
     });
 
     it("If regex modifiers are repeated, ensure proper error is emitted", async () => {
@@ -259,12 +151,13 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             custom_rules: {
                 "NoTodos": {
                     regex: "/TODO:/gig",
-                    description: BASELINE_NO_TODOS_RULE.description,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/gig", 'Invalid flags supplied to RegExp constructor \'gig\'' ));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRegex', "/TODO:/gig", 'Invalid flags supplied to RegExp constructor \'gig\''));
     });
 
     it("If modifiers u, v appear together, ensure proper error is emitted", async () => {
@@ -272,108 +165,126 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             custom_rules: {
                 "NoTodos": {
                     regex: "/TODO:/guv",
-                    description: BASELINE_NO_TODOS_RULE.description,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('InvalidRegex', "/TODO:/guv", 'Invalid flags supplied to RegExp constructor \'guv\''));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRegex', "/TODO:/guv", 'Invalid flags supplied to RegExp constructor \'guv\''));
     });
 
     it("If regex is not given by user, emit error", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    description: BASELINE_NO_TODOS_RULE.description,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
+        };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessageFromCatalog(
-                SHARED_MESSAGE_CATALOG,
-                'ConfigValueMustBeOfType',
-                'engines.regex.custom_rules.NoTodos.regex',
-                'string',
-                'undefined'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
+                'engines.regex.custom_rules.NoTodos.regex', 'string', 'undefined'));
     });
 
     it("If rule name is empty, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
-                "" : BASELINE_NO_TODOS_RULE
+                "": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', '', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRuleName', '', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
     it("If rule name has special character at the beginning, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
-                "1hello" : BASELINE_NO_TODOS_RULE
+                "1hello": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', '1hello', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRuleName', '1hello', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
     it("If rule name has invalid character after first character, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
-                "rule*" : BASELINE_NO_TODOS_RULE
+                "rule*": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage( 'InvalidRuleName', 'rule*', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('InvalidRuleName', 'rule*', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
     it("If description is not a string, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    regex: BASELINE_NO_TODOS_RULE.regex,
+                    regex: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.regex,
                     description: 4,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'number'));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'number'));
     });
 
     it("If description is not defined, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    regex: BASELINE_NO_TODOS_RULE.regex,
-                    file_extensions: BASELINE_NO_TODOS_RULE.file_extensions
+                    regex: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.regex,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'undefined'));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'undefined'));
     });
 
     it("If file_extensions are not a string array, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    regex: BASELINE_NO_TODOS_RULE.regex,
-                    description: BASELINE_NO_TODOS_RULE.description,
+                    regex: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.regex,
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                     file_extensions: ".js"
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.file_extensions', 'array', 'string'));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.file_extensions', 'array', 'string'));
     });
 
     it("If file_extensions are not properly formatted, emit appropriate error", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    regex: BASELINE_NO_TODOS_RULE.regex,
-                    description: BASELINE_NO_TODOS_RULE.description,
+                    regex: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.regex,
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                     file_extensions: ["js"]
                 }
             }
-        }
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp', 'engines.regex.custom_rules.NoTodos.file_extensions[0]', FILE_EXT_PATTERN.toString()));
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp', 'engines.regex.custom_rules.NoTodos.file_extensions[0]', FILE_EXT_PATTERN.toString()));
+    });
+
+    it("If file_extensions are not unique or are upper case, then they are normalized to be unique and lower case", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    regex: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.regex,
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: [".JS", ".JS", ".tS", ".Js"]
+                }
+            }
+        };
+        const engine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        expect(engine._getRegexRules()["NoTodos"].file_extensions).toEqual(['.js', '.ts']);
     });
 
     it("If user creates a rule with a custom violation message, ensure that is maintained in config", async () => {
@@ -381,78 +292,46 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    ...BASELINE_NO_TODOS_RULE,
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
                     violation_message: custom_message
                 }
             }
-        }
-        const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine
-        expect(pluginEngine.getConfig().custom_rules["NoTodos"].violation_message).toStrictEqual(custom_message)
-    });
-
-    it('Single-Escaped Regex Blitz: ensure custom custom_rules with regex strings match up with intended regular expressions', async () => {
-        const regexList: string[] = [
-            String.raw`/[a-zA-Z]{2,5}\d?/i`,
-            String.raw`/\d{1,3}\s?[A-Z]*/g`,
-            String.raw`/[^aeiou]{4,}\W?/m`,
-            String.raw`/(foo|bar){2,3}\d*/g`,
-            String.raw`/\d{2,4}-[a-z]{3,}/g`,
-            String.raw`/(cat|dog)?\s+[1-9]/g`,
-            String.raw`/\w{3,5}\.?\d?/g`,
-            String.raw`/[A-Z]{1,4}@[a-z]{2,4}/g`,
-            String.raw`/\d{3,5}[^\d\s]/g`,
-            String.raw`/[a-zA-Z]+\d{1,2}/g`,
-            String.raw`/[0-9]{2,}[A-Z]{2,}?/g`,
-            String.raw`/[^a-zA-Z0-9]{3,6}/g`,
-            String.raw`/(alpha|beta)\d{2,4}?/i`
-        ];
-        await runRegexBlitzTest(regexList)
-
-    });
-
-    it('Double-Escaped Regex Blitz: ensure custom custom_rules with regex strings match up with intended regular expressions', async () => {
-        const regexList: string[] = [
-            '/[a-zA-Z]{2,5}\\d?/i',
-            '/\\d{1,3}\\s?[A-Z]*/g',
-            '/[^aeiou]{4,}\\W?/m',
-            '/(foo|bar){2,3}\\d*/g',
-            '/\\d{2,4}-[a-z]{3,}/g',
-            '/(cat|dog)?\\s+[1-9]/g',
-            '/\\w{3,5}\\.?\\d?/g',
-            '/[A-Z]{1,4}@[a-z]{2,4}/g',
-            '/\\d{3,5}[^\\d\\s]/g',
-            '/[a-zA-Z]+\\d{1,2}/g',
-            '/[0-9]{2,}[A-Z]{2,}?/g',
-            '/[^a-zA-Z0-9]{3,6}/g',
-            '/(alpha|beta)\\d{2,4}?/i'
-        ];
-        await runRegexBlitzTest(regexList)
-    });
-
-    async function runRegexBlitzTest(regexList: string[]) {
-        const custom_rules: ConfigObject = createCustomRulesFromRegexList(regexList);
-        const rawConfig: ConfigObject = {
-            custom_rules: custom_rules
         };
-        const pluginEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
-        for (let i = 0; i < EXPECTED_REGEX_LIST.length; i++) {
-            expect(checkRegexMatches(pluginEngine.getConfig().custom_rules[`Rule${i}`].regex, EXPECTED_REGEX_LIST[i]));
-        }
-    }
+        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        expect(pluginEngine._getRegexRules()["NoTodos"].violation_message).toStrictEqual(custom_message);
+    });
+
+    type PATTERN_TESTCASE = { input: string, expected: RegExp };
+    const patternTestCases: PATTERN_TESTCASE[] = [
+        // Raw regex strings
+        {input: String.raw`/[a-zA-Z]{2,5}\d?/i`, expected: new RegExp('[a-zA-Z]{2,5}\\d?', 'i')},
+        {input: String.raw`/\d{1,3}\s?[A-Z]*/g`, expected: new RegExp('\\d{1,3}\\s?[A-Z]*', 'g')},
+        {input: String.raw`/[^aeiou]{4,}\W?/m`, expected: new RegExp('[^aeiou]{4,}\\W?', 'm')},
+        {input: String.raw`/(foo|bar){2,3}\d*/g`, expected: new RegExp('(foo|bar){2,3}\\d*', 'g')},
+        {input: String.raw`/\d{2,4}-[a-z]{3,}/g`, expected: new RegExp('\\d{2,4}-[a-z]{3,}', 'g')},
+        {input: String.raw`/(cat|dog)?\s+[1-9]/g`, expected: new RegExp('(cat|dog)?\\s+[1-9]', 'g')},
+        {input: String.raw`/\w{3,5}\.?\d?/g`, expected: new RegExp('\\w{3,5}\\.?\\d?', 'g')},
+        // Quoted "double-escaped" strings
+        {input: '/[A-Z]{1,4}@[a-z]{2,4}/g', expected: new RegExp('[A-Z]{1,4}@[a-z]{2,4}', 'g')},
+        {input: '/\\d{3,5}[^\\d\\s]/g', expected: new RegExp('\\d{3,5}[^\\d\\s]', 'g')},
+        {input: '/[a-zA-Z]+\\d{1,2}/g', expected: new RegExp('[a-zA-Z]+\\d{1,2}', 'g')},
+        {input: '/[0-9]{2,}[A-Z]{2,}?/g', expected: new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g')},
+        {input: '/[^a-zA-Z0-9]{3,6}/g', expected: new RegExp('[^a-zA-Z0-9]{3,6}', 'g')},
+        {input: '/(alpha|beta)\\d{2,4}?/i', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'i')},
+        {input: '/noModifiers/', expected: new RegExp('noModifiers')}
+    ];
+    it.each(patternTestCases)('Verify regular expression construction for $input', async (testCase: PATTERN_TESTCASE) => {
+        const rawConfig: ConfigObject = {
+            custom_rules: {
+                SomeRuleName: {
+                    regex: testCase.input,
+                    description: 'Sample description',
+                    file_extensions: ['.js', '.ts']
+                }
+            }
+        };
+        const pluginEngine = await enginePlugin.createEngine('regex', rawConfig) as RegexEngine;
+        const actual: RegExp = pluginEngine._getRegexRules()['SomeRuleName'].regex;
+        expect(actual).toEqual(testCase.expected);
+    });
 });
-
-function createCustomRulesFromRegexList(regexList: string[]): ConfigObject {
-    const rulesMap: ConfigObject = {}
-    regexList.forEach((regex, index) => (
-        rulesMap[`Rule${index}`] = {
-        regex: regex,
-        description: `Detects pattern ${regex}`,
-        file_extensions: [".js", ".ts", ".cls"],
-        violation_message: `Detected pattern ${regex}`
-    }));
-    return rulesMap
-}
-
-function checkRegexMatches(a: RegExp, b: RegExp){
-    return (a.source === b.source) && (a.flags === b.flags)
-}

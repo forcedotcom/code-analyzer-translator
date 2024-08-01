@@ -4,83 +4,46 @@ import {
     Engine,
     EngineRunResults,
     RuleDescription,
-    RuleType,
     RunOptions,
-    SeverityLevel,
     Violation
 } from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
-import {RegexEngineConfig} from "./config";
-
-const DEFAULT_TAGS: string[] = ["Recommended", "CodeStyle"]
-const DEFAULT_RULE_TYPE: RuleType = RuleType.Standard
-const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Low
-const DEFAULT_RESOURCE_URLS: string[] = []
+import {RegexRules} from "./config";
 
 export class RegexEngine extends Engine {
     static readonly NAME = "regex";
-    readonly config: RegexEngineConfig;
+    readonly regexRules: RegexRules;
 
-    constructor(config: RegexEngineConfig) {
+    constructor(regexRules: RegexRules) {
         super();
-        this.config = config;
+        this.regexRules = regexRules;
     }
 
     getName(): string {
         return RegexEngine.NAME;
     }
 
-    getConfig(){
-        return this.config
-    }
-
-    private hasIntersection<T>(list1: T[], list2: T[]): boolean {
-        const set1 = new Set(list1);
-        for (const item of list2) {
-            if (set1.has(item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private toRuleDescription(ruleName: string): RuleDescription {
-        return {
-            name: ruleName,
-            severityLevel: DEFAULT_SEVERITY_LEVEL,
-            type: DEFAULT_RULE_TYPE,
-            description: this.config.custom_rules[ruleName].description,
-            tags: DEFAULT_TAGS,
-            resourceUrls: DEFAULT_RESOURCE_URLS
-        }
-    }
-
-    private getUniqueFileExtensions(files: string[]): string[] {
-        return files.reduce((acc: string[], file: string) => {
-            const extension = path.extname(file);
-            if (!acc.includes(extension)) {
-                acc.push(extension);
-            }
-            return acc;
-        }, []);
+    // For testing purposes only
+    _getRegexRules(): RegexRules {
+        return this.regexRules
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         if (!describeOptions.workspace) {
-            return Object.keys(this.config.custom_rules).map(ruleName => this.toRuleDescription(ruleName));
+            return Object.values(this.regexRules);
         }
+        const fullFileList: string[] = await describeOptions.workspace.getExpandedFiles();
+        const fileExtSet: Set<string> = getSetOfFileExtensionsFrom(fullFileList);
 
-        const fullFileList = await describeOptions.workspace.getExpandedFiles();
-        const uniqueFileExtensions = this.getUniqueFileExtensions(fullFileList);
-
-        return Object.entries(this.config.custom_rules).reduce((acc: RuleDescription[], [ruleName, rule]) => {
-            if (this.hasIntersection(uniqueFileExtensions, rule.file_extensions)) {
-                acc.push(this.toRuleDescription(ruleName));
+        const ruleDescriptions: RuleDescription[] = [];
+        for (const regexRule of Object.values(this.regexRules)) {
+            if (regexRule.file_extensions.some(fileExt => fileExtSet.has(fileExt))) {
+                ruleDescriptions.push(regexRule);
             }
-            return acc;
-        }, []);
+        }
+        return ruleDescriptions;
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
@@ -92,29 +55,27 @@ export class RegexEngine extends Engine {
     }
 
     private async runRulesForFile(file: string, ruleNames: string[]): Promise<Violation[]>{
-        const custom_rulesToRun = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
-        const violationPromises = custom_rulesToRun.map(ruleName => this.scanFile(file, ruleName));
-        const violationsArray = await Promise.all(violationPromises);
-        return violationsArray.flat();
+        const rulesToRun: string[] = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
+        const violationPromises:  Promise<Violation[]>[]  = rulesToRun.map(ruleName => this.scanFile(file, ruleName));
+        return (await Promise.all(violationPromises)).flat();
     }
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
-        const ext = path.extname(fileName)
-        return this.config.custom_rules[ruleName].file_extensions.includes(ext)
+        const ext: string = path.extname(fileName).toLowerCase();
+        return this.regexRules[ruleName].file_extensions.includes(ext);
     }
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
         const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'});
-        const regex: RegExp = this.config.custom_rules[ruleName].regex;
-        const matches = fileContents.matchAll(regex);
-        const newlineIndexes = this.getNewlineIndices(fileContents);
+        const regex: RegExp = this.regexRules[ruleName].regex;
+        const newlineIndexes: number[] = getNewlineIndices(fileContents);
 
-        for (const match of matches) {
-            const startLine = this.getLineNumber(match.index, newlineIndexes);
-            const startColumn = this.getColumnNumber(match.index, newlineIndexes);
-            const endLine = this.getLineNumber(match.index + match[0].length, newlineIndexes);
-            const endColumn = this.getColumnNumber(match.index + match[0].length, newlineIndexes);
+        for (const match of fileContents.matchAll(regex)) {
+            const startLine: number = getLineNumber(match.index, newlineIndexes);
+            const startColumn: number = getColumnNumber(match.index, newlineIndexes);
+            const endLine: number = getLineNumber(match.index + match[0].length, newlineIndexes);
+            const endColumn: number = getColumnNumber(match.index + match[0].length, newlineIndexes);
             const codeLocation: CodeLocation = {
                 file: fileName,
                 startLine: startLine,
@@ -126,36 +87,44 @@ export class RegexEngine extends Engine {
                 ruleName: ruleName,
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
-                message: this.config.custom_rules[ruleName].violation_message
+                message: this.regexRules[ruleName].violation_message
             })
         }
         return violations;
     }
+}
 
-    private getColumnNumber(charIndex: number, newlineIndexes: number[]): number {
-        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
-        const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1;
-        if (idxOfCurrentLine === 0){
-            return charIndex + 1;
-        } else {
-            const eolOffset = os.EOL.length - 1;
-            return charIndex - newlineIndexes.at(idxOfCurrentLine)! - eolOffset;
-        }
+function getSetOfFileExtensionsFrom(files: string[]): Set<string> {
+    const fileExtSet: Set<string> = new Set();
+    for (const file of files) {
+        fileExtSet.add(path.extname(file).toLowerCase());
     }
+    return fileExtSet;
+}
 
-    private getLineNumber(charIndex: number, newlineIndexes: number[]): number{
-        const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
-        return idxOfNextNewline === -1 ? newlineIndexes.length : idxOfNextNewline;
+function getColumnNumber(charIndex: number, newlineIndexes: number[]): number {
+    const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
+    const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1;
+    if (idxOfCurrentLine === 0){
+        return charIndex + 1;
+    } else {
+        const eolOffset = os.EOL.length - 1;
+        return charIndex - newlineIndexes.at(idxOfCurrentLine)! - eolOffset;
     }
+}
 
-    private getNewlineIndices(fileContents: string): number[] {
-        const newlineRegex: RegExp = new RegExp(os.EOL, "g");
-        const matches = fileContents.matchAll(newlineRegex);
-        const newlineIndexes = [0];
+function getLineNumber(charIndex: number, newlineIndexes: number[]): number{
+    const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
+    return idxOfNextNewline === -1 ? newlineIndexes.length : idxOfNextNewline;
+}
 
-        for (const match of matches) {
-            newlineIndexes.push(match.index)
-        }
-        return newlineIndexes;
+function getNewlineIndices(fileContents: string): number[] {
+    const newlineRegex: RegExp = new RegExp(os.EOL, "g");
+    const matches = fileContents.matchAll(newlineRegex);
+    const newlineIndexes = [0];
+
+    for (const match of matches) {
+        newlineIndexes.push(match.index)
     }
+    return newlineIndexes;
 }

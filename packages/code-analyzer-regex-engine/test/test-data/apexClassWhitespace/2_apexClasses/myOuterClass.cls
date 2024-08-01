@@ -1,3 +1,4 @@
+// Some comment
 public class myOuterClass {
    // Additional myOuterClass code here
    class myInnerClass {

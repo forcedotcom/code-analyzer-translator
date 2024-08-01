@@ -2,7 +2,6 @@ import {RegexEngine} from "../src/engine";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
-    CodeLocation,
     EngineRunResults,
     RuleDescription,
     RuleType,
@@ -12,279 +11,229 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {getMessage} from "../src/messages";
-import {DEFAULT_CONFIG, RegexEngineConfig, RegexRuleMap} from "../src/config";
-import {
-    TRAILING_WHITESPACE_RESOURCE_URLS,
-    TRAILING_WHITESPACE_RULE_DESCRIPTION,
-    TRAILING_WHITESPACE_RULE_NAME
-} from "./trailing_whitespace_rule_config";
-
-const FILE_LOCATION_1 = path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls")
-const FILE_LOCATION_2 = path.resolve(__dirname,  "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls")
-const FILE_LOCATION_3 = path.resolve(__dirname,  "test-data", "workspace_NoCustomConfig", "dummy.ts")
-
-const EXPECTED_RULE_DESCRIPTION_1: RuleDescription[] = [
-    {
-        name: "NoTodos",
-        description: "Detects TODO comments in code base.",
-        severityLevel: SeverityLevel.Low,
-        type: RuleType.Standard,
-        tags: ["Recommended", "CodeStyle"],
-        resourceUrls: []
-    }
-]
-
-const EXPECTED_CODE_LOCATION_1: CodeLocation = {
-    file: FILE_LOCATION_1,
-    startLine: 6,
-    startColumn: 2,
-    endLine: 6,
-    endColumn: 4
-};
-
-const EXPECTED_CODE_LOCATION_2: CodeLocation = {
-    file: FILE_LOCATION_2,
-    startLine: 2,
-    startColumn: 40,
-    endLine: 2,
-    endColumn: 41
-};
-
-const EXPECTED_CODE_LOCATION_3: CodeLocation = {
-    file: FILE_LOCATION_2,
-    startLine: 6,
-    startColumn: 2,
-    endLine: 6,
-    endColumn: 4
-};
-
-const EXPECTED_CODE_LOCATION_4: CodeLocation = {
-    file: FILE_LOCATION_2,
-    startLine: 1,
-    startColumn: 21,
-    endLine: 1,
-    endColumn: 23
-};
-
-const EXPECTED_CODE_LOCATION_5: CodeLocation = {
-    file: FILE_LOCATION_3,
-    startLine: 1,
-    startColumn: 4,
-    endLine: 1,
-    endColumn: 9
-}
-
-const EXPECTED_VIOLATION_1: Violation[] = [
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_1]
-    }
-];
-
-const EXPECTED_VIOLATION_2: Violation[] = [
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_2]
-    },
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_3]
-
-    },
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_4]
-    },
-];
-
-const EXPECTED_VIOLATION_3: Violation[] = [
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_4]
-    },
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_1]
-    },
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_2]
-    },
-    {
-        ruleName: TRAILING_WHITESPACE_RULE_NAME,
-        message: getMessage('TrailingWhitespaceRuleMessage'),
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_3]
-    },
-];
-
-const EXPECTED_VIOLATION_4: Violation[] = [
-    {
-        ruleName: "NoTodos",
-        message: getMessage(
-            'RuleViolationMessage',
-            "/TODO:/gi",
-                "NoTodos",
-            "Detects TODO comments in code base."
-        ),
-
-        primaryLocationIndex: 0,
-        codeLocations: [EXPECTED_CODE_LOCATION_5]
-    }
-]
+import {RegexRules} from "../src/config";
+import {BASE_REGEX_RULES} from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
 
-describe('Regex Engine Tests', () => {
+const SAMPLE_CUSTOM_RULES: RegexRules = {
+    NoTodos: {
+        regex: /TODO:/gi,
+        description: "Detects TODO comments in code base.",
+        file_extensions: [".js", ".cls"],
+        violation_message: "sample violation message",
+        name: "NoTodos",
+        type: RuleType.Standard,
+        severityLevel: SeverityLevel.Moderate,
+        tags: ['Recommended'],
+        resourceUrls: []
+    }
+};
+
+const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
+    name: "NoTrailingWhitespace",
+    severityLevel: SeverityLevel.Info,
+    type: RuleType.Standard,
+    tags: ["Recommended", "CodeStyle"],
+    description: getMessage('TrailingWhitespaceRuleDescription'),
+    resourceUrls: []
+};
+
+const EXPECTED_NoTodos_RULE_DESCRIPTION = {
+    name: "NoTodos",
+    severityLevel: SeverityLevel.Moderate,
+    type: RuleType.Standard,
+    tags: ["Recommended"],
+    description: "Detects TODO comments in code base.",
+    resourceUrls: []
+};
+
+describe("Tests for RegexEngine's getName and describeRules methods", () => {
     let engine: RegexEngine;
     beforeAll(() => {
-        engine = new RegexEngine(DEFAULT_CONFIG);
+        engine = new RegexEngine({
+            ... BASE_REGEX_RULES,
+            ... SAMPLE_CUSTOM_RULES
+        });
     });
 
     it('Engine name is accessible and correct', () => {
         const name: string = engine.getName();
         expect(name).toEqual("regex");
-
     });
 
-    it('Calling describeRules() on engine with no custom configuration should return the single trailing whitespace rule', async () => {
-        const rules_desc: RuleDescription[] = await engine.describeRules({});
-        const engineRules = [
-            {
-                name: "NoTrailingWhitespace",
-                severityLevel: SeverityLevel.Low,
-                type: RuleType.Standard,
-                tags: ["Recommended", "CodeStyle"],
-                description: TRAILING_WHITESPACE_RULE_DESCRIPTION,
-                resourceUrls: TRAILING_WHITESPACE_RESOURCE_URLS
-            },
-        ];
-        expect(rules_desc).toEqual(engineRules)
+    it('Calling describeRules without workspace, returns all available rules', async () => {
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
+        expect(rulesDescriptions).toHaveLength(2);
+        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
     });
 
-    it("describeRules() should filter out rules not applicable to workspace", async () => {
-        const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
-        const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([dir])});
-        const expectedRuleDesc: RuleDescription[] = []
-        expect(rules_desc).toStrictEqual(expectedRuleDesc)
+    it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+                path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy2.ts') // .ts files aren't applicable to the rules
+            ])});
+        expect(rulesDescriptions).toHaveLength(0);
     });
 
-    describe("Regex Engine user config tests",  () => {
-        let customRuleMap: RegexRuleMap;
-        let userConfig: RegexEngineConfig;
-        let engine: RegexEngine;
-        beforeAll(() => {
-            customRuleMap = {
-                "NoTodos": {
-                    regex: /TODO:/gi,
-                    description: "Detects TODO comments in code base.",
-                    file_extensions: [".js", ".ts", ".cls"],
-                    violation_message: getMessage(
-                        'RuleViolationMessage',
-                        /TODO:/gi.toString(),
-                        "NoTodos",
-                        "Detects TODO comments in code base.")
-                }
-            }
-            userConfig = {
-                custom_rules: customRuleMap
-            }
-            engine = new RegexEngine(userConfig)
+    it("When workspace contains files only applicable to one of the rules, then describeRules only returns that one rule", async () => {
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+                path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
+            ])});
+        expect(rulesDescriptions).toHaveLength(1);
+        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+    });
 
-        });
-
-        it("When user config specifies new rules ensure that they are tracked in describeRules() output", async () => {
-            const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
-            const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([dir])});
-            expect(rules_desc).toHaveLength(EXPECTED_RULE_DESCRIPTION_1.length)
-            expect(rules_desc).toContainEqual(EXPECTED_RULE_DESCRIPTION_1[0])
-        });
-
-        it("When user config specifies a new rule, ensure that runRules() can pick it up and emit violation.", async () => {
-            const dir = path.resolve("test", "test-data", "workspace_NoCustomConfig")
-            const runOptions: RunOptions = {workspace: testTools.createWorkspace([dir])};
-            const ruleNames: string[] = ["NoTodos"]
-            const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-            expect(runResults.violations).toHaveLength(EXPECTED_VIOLATION_4.length)
-            expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_4[0])
-        })
-    })
+    it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+                path.resolve(__dirname, 'test-data', 'sampleWorkspace')
+            ])});
+        expect(rulesDescriptions).toHaveLength(2);
+        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+    });
 });
 
-describe('runRules() NoTrailingWhitespaceRule tests', () => {
+describe('Tests for runRules', () => {
     let engine: RegexEngine;
-    let ruleNames: string[];
     beforeAll(() => {
-        ruleNames = ["NoTrailingWhitespace"]
-        engine = new RegexEngine(DEFAULT_CONFIG)
+        engine = new RegexEngine({
+            ... BASE_REGEX_RULES,
+            ... SAMPLE_CUSTOM_RULES
+        });
     });
 
     it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        const expViolations: Violation[] = [];
-        expect(runResults.violations).toStrictEqual(expViolations)
+        const runOptions: RunOptions = {
+            workspace: testTools.createWorkspace([
+                path.resolve(__dirname, "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
+            ])
+        };
+        const runResults: EngineRunResults = await engine.runRules( ["NoTrailingWhitespace"], runOptions);
+        expect(runResults.violations).toHaveLength(0);
     });
 
-    it('Confirm runRules() returns correct errors when called on a file', async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])}
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        expect(runResults.violations).toHaveLength(3)
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_2[0])
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_2[1])
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_2[2])
+    it("Ensure runRules when called on a list Apex classes,  properly emits violations", async () => {
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+            path.resolve(__dirname, "test-data", "apexClassWhitespace")
+        ])};
+        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos"], runOptions);
+
+        const expectedViolations: Violation[] = [
+            {
+                ruleName: "NoTrailingWhitespace",
+                message: getMessage('TrailingWhitespaceRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls"),
+                        startLine: 6,
+                        startColumn: 2,
+                        endLine: 6,
+                        endColumn: 4
+                    }
+                ]
+            },
+            {
+                ruleName: "NoTrailingWhitespace",
+                message: getMessage('TrailingWhitespaceRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls"),
+                    startLine: 6,
+                    startColumn: 2,
+                    endLine: 6,
+                    endColumn: 4
+                }]
+            },
+            {
+                ruleName: "NoTrailingWhitespace",
+                message: getMessage('TrailingWhitespaceRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls"),
+                    startLine: 1,
+                    startColumn: 21,
+                    endLine: 1,
+                    endColumn: 23
+                }]
+            },
+            {
+                ruleName: "NoTrailingWhitespace",
+                message: getMessage('TrailingWhitespaceRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls"),
+                    startLine: 7,
+                    startColumn: 2,
+                    endLine: 7,
+                    endColumn: 4
+                }]
+            }
+        ];
+
+        expect(runResults.violations).toHaveLength(expectedViolations.length);
+        for (const expectedViolation of expectedViolations) {
+            expect(runResults.violations).toContainEqual(expectedViolation);
+        }
     });
 
-    it('If runRules() finds no violations when an apex file has no trailing whitespaces', async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace");
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        const expViolations: Violation[] = [];
-        expect(runResults.violations).toStrictEqual(expViolations)
+    it("When workspace contains files that violate custom rules, then emit violation correctly", async () => {
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+            path.resolve(__dirname, "test-data", "sampleWorkspace")
+        ])};
+        const runResults: EngineRunResults = await engine.runRules(["NoTodos"], runOptions);
+
+        const expectedViolations: Violation[] = [
+            {
+                ruleName: "NoTodos",
+                message: "sample violation message",
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "sampleWorkspace", "dummy3.js"),
+                        startLine: 1,
+                        startColumn: 3,
+                        endLine: 1,
+                        endColumn: 8
+                    }
+                ]
+            },
+            {
+                ruleName: "NoTodos",
+                message: "sample violation message",
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "sampleWorkspace", "dummy3.js"),
+                        startLine: 3,
+                        startColumn: 17,
+                        endLine: 3,
+                        endColumn: 22
+                    }
+                ]
+            }
+        ];
+
+        expect(runResults.violations).toHaveLength(expectedViolations.length);
+        for (const expectedViolation of expectedViolations) {
+            expect(runResults.violations).toContainEqual(expectedViolation);
+        }
     });
 
-    it("If runRules() is called with trailing whitespace rule on an Apex class that has trailing whitespace, emit violation", async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls");
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        expect(runResults.violations).toStrictEqual(EXPECTED_VIOLATION_1)
-    });
+    it("When running all rules compared to some rules, then output correctly returns what the correct violations according to specified rules", async () => {
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+                path.resolve(__dirname, "test-data", "sampleWorkspace")
+            ])};
+        const runResults1: EngineRunResults = await engine.runRules(["NoTrailingWhitespace"], runOptions);
+        const runResults2: EngineRunResults = await engine.runRules(["NoTodos"], runOptions);
+        const runResults3: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos"], runOptions);
 
-    it("If trailing whitespace rule is run on an Apex class without trailing whitespace ensure there are no erroneous violations", async () => {
-        const filePath = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls")
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([filePath])};
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        const expViolations: Violation[] = [];
-        expect(runResults.violations).toStrictEqual(expViolations)
-
-    });
-
-    it("Ensure runRules() can be called on a list Apex classes and properly emits errors", async () => {
-        const file1 = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myOuterClass.cls");
-        const file2 = path.resolve("test", "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls");
-        const file3 = path.resolve("test", "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls");
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([file1, file2, file3])};
-        const runResults: EngineRunResults = await engine.runRules(ruleNames, runOptions);
-        expect(runResults.violations).toHaveLength(EXPECTED_VIOLATION_3.length)
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_3[0])
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_3[1])
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_3[2])
-        expect(runResults.violations).toContainEqual(EXPECTED_VIOLATION_3[3])
+        expect(runResults1.violations).toHaveLength(1);
+        expect(runResults2.violations).toHaveLength(2);
+        expect(runResults3.violations).toHaveLength(3);
+        expect(runResults3.violations).toContainEqual(runResults1.violations[0]);
+        expect(runResults3.violations).toContainEqual(runResults2.violations[0]);
+        expect(runResults3.violations).toContainEqual(runResults2.violations[1]);
     });
 });
