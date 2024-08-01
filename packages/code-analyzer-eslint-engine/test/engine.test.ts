@@ -457,7 +457,7 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
         });
     });
 
-    it('When runRules is called on workspace that ignores files by config, then those files are ignored', async () => {
+    it('When runRules is called on workspace with a config that ignores files, then those files are ignored', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             auto_discover_eslint_config: true
         });
