@@ -10,13 +10,34 @@ export interface ESLintWorkspace {
     getFilesToScan(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
     getCandidateFilesForUserConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
     getCandidateFilesForBaseConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]>
-    getLegacyConfigFile(): string | undefined
+    getUserConfigInfo(): UserConfigInfo
 }
 
+export class UserConfigInfo {
+    private readonly engineConfig: ESLintEngineConfig;
+    private readonly autoDiscoveredFile?: string;
+    constructor(config: ESLintEngineConfig, autoDiscoveredFile?: string) {
+        this.engineConfig = config;
+        this.autoDiscoveredFile = autoDiscoveredFile;
+    }
+
+    getUserConfigFile(): string | undefined {
+        return this.engineConfig.eslint_config_file ||
+            (this.engineConfig.auto_discover_eslint_config ? this.autoDiscoveredFile : undefined);
+    }
+
+    userConfigIsRelevant(): boolean {
+        return this.engineConfig.eslint_config_file !== undefined || this.engineConfig.auto_discover_eslint_config;
+    }
+
+    getAutoDiscoveredConfigFile(): string | undefined {
+        return this.autoDiscoveredFile;
+    }
+}
 
 export class MissingESLintWorkspace implements ESLintWorkspace {
     private readonly config: ESLintEngineConfig;
-    private legacyConfigLookupCache?: {file?: string}; // Using object to be able to cache undefined result
+    private cachedUserConfigInfo?: UserConfigInfo;
 
     constructor(config: ESLintEngineConfig) {
         this.config = config;
@@ -40,13 +61,13 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
         )
     }
 
-    getLegacyConfigFile(): string | undefined {
-        if (!this.legacyConfigLookupCache) {
-            this.legacyConfigLookupCache = {
-                file: chooseLegacyConfigFile(this.config, [this.config.config_root, process.cwd()])
-            };
+    getUserConfigInfo(): UserConfigInfo {
+        if (!this.cachedUserConfigInfo) {
+            const autoDiscoveredConfigFile: string | undefined = findLegacyConfigFile(
+                makeUnique([this.config.config_root, process.cwd()]));
+            this.cachedUserConfigInfo = new UserConfigInfo(this.config, autoDiscoveredConfigFile);
         }
-        return this.legacyConfigLookupCache.file;
+        return this.cachedUserConfigInfo;
     }
 }
 
@@ -61,7 +82,7 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
     private readonly config: ESLintEngineConfig;
     private workspaceRoot?: string;
     private filesOfInterest?: FilesOfInterest;
-    private legacyConfigLookupCache?: {file?: string}; // Using object to be able to cache undefined result
+    private cachedUserConfigInfo?: UserConfigInfo;
 
     constructor(delegateWorkspace: Workspace, config: ESLintEngineConfig) {
         this.delegateWorkspace = delegateWorkspace;
@@ -98,13 +119,13 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         return candidateFiles;
     }
 
-    getLegacyConfigFile(): string | undefined {
-        if (!this.legacyConfigLookupCache) {
-            this.legacyConfigLookupCache = {
-                file: chooseLegacyConfigFile(this.config, [this.getWorkspaceRoot(), this.config.config_root, process.cwd()])
-            };
+    getUserConfigInfo(): UserConfigInfo {
+        if (!this.cachedUserConfigInfo) {
+            const autoDiscoveredConfigFile: string | undefined = findLegacyConfigFile(
+                makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()]));
+            this.cachedUserConfigInfo = new UserConfigInfo(this.config, autoDiscoveredConfigFile);
         }
-        return this.legacyConfigLookupCache.file;
+        return this.cachedUserConfigInfo;
     }
 
     private async getFilesOfInterest(filterFcn: AsyncFilterFnc<string>): Promise<FilesOfInterest> {
@@ -130,11 +151,6 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
 
 function createPlaceholderCandidateFiles(fileExtensions: string[], rootFolder: string) {
     return fileExtensions.map(ext => `${rootFolder}${path.sep}placeholderCandidateFile${ext}`);
-}
-
-function chooseLegacyConfigFile(config: ESLintEngineConfig, foldersToCheck: string[]): string | undefined {
-    return config.eslint_config_file || (config.disable_config_lookup ? undefined :
-        findLegacyConfigFile(makeUnique(foldersToCheck)));
 }
 
 function findLegacyConfigFile(foldersToCheck: string[]): string | undefined {

@@ -77,15 +77,15 @@ describe('Tests for the ESLintEnginePlugin', () => {
                 JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
     });
 
-    it('When disable_config_lookup is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {disable_config_lookup: true})) as ESLintEngine;
-        expect(engine.getConfig().disable_config_lookup).toEqual(true);
+    it('When auto_discover_eslint_config is passed to createEngine, then it is set on the config', async () => {
+        const engine: ESLintEngine = (await plugin.createEngine('eslint', {auto_discover_eslint_config: true})) as ESLintEngine;
+        expect(engine.getConfig().auto_discover_eslint_config).toEqual(true);
     });
 
-    it('When disable_config_lookup is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {disable_config_lookup: 3})).rejects.toThrow(
+    it('When auto_discover_eslint_config is invalid, then createEngine errors', async () => {
+        await expect(plugin.createEngine('eslint', {auto_discover_eslint_config: 3})).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
-                'engines.eslint.disable_config_lookup', 'boolean', 'number'));
+                'engines.eslint.auto_discover_eslint_config', 'boolean', 'number'));
     });
 
     it('When disable_javascript_base_config is passed to createEngine, then it is set on the config', async () => {
@@ -93,7 +93,7 @@ describe('Tests for the ESLintEnginePlugin', () => {
         expect(engine.getConfig().disable_javascript_base_config).toEqual(true);
     });
 
-    it('When disable_config_lookup is invalid, then createEngine errors', async () => {
+    it('When disable_javascript_base_config is invalid, then createEngine errors', async () => {
         await expect(plugin.createEngine('eslint', {disable_javascript_base_config: 'abc'})).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.disable_javascript_base_config', 'boolean', 'string'));
