@@ -69,7 +69,7 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         const filterFcn: AsyncFilterFnc<string> = createFilterFcn(eslint);
 
         const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
-        const candidateFiles: string[] = userConfigInfo.userConfigIsRelevant() ?
+        const candidateFiles: string[] = userConfigInfo.userConfigIsEnabled() ?
             await this.workspace.getCandidateFilesForUserConfig(filterFcn) :
             await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
 
@@ -204,13 +204,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
     private emitInfoMessageIfDiscoveredEslintConfigIsNotBeingUsed(): void {
         const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
         const configFileFound: string | undefined = userConfigInfo.getAutoDiscoveredConfigFile();
-        if (!userConfigInfo.userConfigIsRelevant() && configFileFound) {
+        if (!userConfigInfo.userConfigIsEnabled() && configFileFound) {
             const cwdFolder: string = process.cwd() + path.sep;
+
             const relativePathFromCwd: string = configFileFound.startsWith(cwdFolder) ?
-                configFileFound.slice(cwdFolder.length) : configFileFound;
+                configFileFound.slice(cwdFolder.length) : /* istanbul ignore next */ configFileFound;
             const configFolder: string = this.config.config_root + path.sep;
             const relativePathFromConfigRoot: string = configFileFound.startsWith(configFolder) ?
-                configFileFound.slice(configFolder.length) : configFileFound;
+                configFileFound.slice(configFolder.length) : /* istanbul ignore next */  configFileFound;
             this.emitLogEvent(LogLevel.Info, getMessage('UnusedEslintConfigFile', relativePathFromCwd, relativePathFromConfigRoot));
         }
     }

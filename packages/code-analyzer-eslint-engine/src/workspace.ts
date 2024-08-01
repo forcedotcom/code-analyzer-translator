@@ -26,7 +26,7 @@ export class UserConfigInfo {
             (this.engineConfig.auto_discover_eslint_config ? this.autoDiscoveredFile : undefined);
     }
 
-    userConfigIsRelevant(): boolean {
+    userConfigIsEnabled(): boolean {
         return this.engineConfig.eslint_config_file !== undefined || this.engineConfig.auto_discover_eslint_config;
     }
 
