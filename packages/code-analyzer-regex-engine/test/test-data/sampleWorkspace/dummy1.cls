@@ -1,7 +1,6 @@
-// Some comment
-public class myOuterClass {
+public class dummy {
    // Additional myOuterClass code here
    class myInnerClass {
      // myInnerClass code here
    }
-}  
+} 

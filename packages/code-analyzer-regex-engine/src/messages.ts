@@ -5,10 +5,19 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The RegexEnginePlugin does not support creating an engine with name '%s'.`,
 
     TrailingWhitespaceRuleDescription:
-        "Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.",
+        `Detects trailing whitespace (tabs or spaces) at the end of lines of code and lines that are only whitespace.`,
+
+    TrailingWhitespaceRuleMessage:
+        `Found trailing whitespace at the end of a line of code.`,
 
     RuleViolationMessage:
-        `A match of the regular expression %s was found for rule '%s': %s`
+        `A match of the regular expression %s was found for rule '%s': %s`,
+
+    InvalidRegex:
+        `The '%s' configuration value is invalid. The value could not be converted into a regular expression: %s`,
+
+    InvalidRuleName:
+        `The rule name '%s' defined within the '%s' configuration value is invalid. The rule name must match the regular expression: '%s'`
 }
 
 /**
