@@ -30,12 +30,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `      disable_lwc_base_config: true\n` +
         `      disable_typescript_base_config: true\n` +
         `Alternatively, you can use continue to use the base config by disabling your custom config by ` +
-        `setting 'eslint_config_file' to null and setting 'disable_config_lookup' to true inside of your Code ` +
+        `setting 'eslint_config_file' to null and setting 'auto_discover_eslint_config' to false inside of your Code ` +
         `Analyzer configuration:\n` +
         `  engines:\n` +
         `    eslint:\n` +
         `      eslint_config_file: null\n` +
-        `      disable_config_lookup: true\n\n` +
+        `      auto_discover_eslint_config: false\n\n` +
         `Error thrown from %s': %s\n\n` +
         'ESLint options used: %s',
 
@@ -44,7 +44,18 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         'ESLint options used: %s',
 
     ViolationFoundFromUnregisteredRule:
-        `A rule with name '%s' produced a violation, but this rule was not registered with the 'eslint' engine so it will not be included in the results. Ignored Violation:\n%s`
+        `A rule with name '%s' produced a violation, but this rule was not registered with the 'eslint' engine so it will not be included in the results. Ignored Violation:\n%s`,
+
+    UnusedEslintConfigFile:
+        `The ESLint configuration file '%s' was found but not applied.\n` +
+        `To apply this configuration file, set it as the eslint_config_file value in your Code Analyzer configuration:\n` +
+        `  engines:\n` +
+        `    eslint:\n` +
+        `      eslint_config_file: "%s"\n` +
+        'Alternatively, to have Code Analyzer automatically discover and apply any ESLint configuration files found in your workspace, set the auto_discover_eslint_config value to true:\n' +
+        `  engines:\n` +
+        `    eslint:\n` +
+        `      auto_discover_eslint_config: true`
 }
 
 /**

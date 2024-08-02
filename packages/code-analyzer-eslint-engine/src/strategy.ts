@@ -1,6 +1,6 @@
 import {ESLintRuleStatus} from "./enums";
 import {ESLint, Linter, Rule} from "eslint";
-import {AsyncFilterFnc, ESLintWorkspace} from "./workspace";
+import {AsyncFilterFnc, ESLintWorkspace, UserConfigInfo} from "./workspace";
 import path from "node:path";
 import {BaseRuleset, LegacyBaseConfigFactory} from "./base-config";
 import {ESLintEngineConfig} from "./config";
@@ -62,11 +62,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             return this.ruleStatuses;
         }
 
+        this.emitInfoMessageIfDiscoveredEslintConfigIsNotBeingUsed();
+
         const eslintOptions: ESLint.Options = this.createESLintOptions(BaseRuleset.RECOMMENDED);
         const eslint: ESLint = new LegacyESLint(eslintOptions);
         const filterFcn: AsyncFilterFnc<string> = createFilterFcn(eslint);
 
-        const candidateFiles: string[] = this.userConfigEnabled() ?
+        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
+        const candidateFiles: string[] = userConfigInfo.userConfigIsEnabled() ?
             await this.workspace.getCandidateFilesForUserConfig(filterFcn) :
             await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
 
@@ -148,12 +151,6 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         return { rules: rulesRecord };
     }
 
-    private userConfigEnabled(): boolean {
-        // The use of the user's config is based on whether we are allowed to dynamically lookup user config as we go.
-        // If not, then it is determined on whether the user has manually supplied a config file.
-        return !this.config.disable_config_lookup || this.workspace.getLegacyConfigFile() !== undefined;
-    }
-
     private async calculateRuleStatusesFor(files: string[], eslint: ESLint): Promise<Map<string, ESLintRuleStatus>> {
         const configs: Linter.Config[] = await Promise.all(files.map(f => eslint.calculateConfigForFile(f) as Linter.Config));
         const ruleStatuses: Map<string, ESLintRuleStatus> = new Map();
@@ -175,14 +172,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
     }
 
     private createESLintOptions(baseRuleset: BaseRuleset, overrideConfig?: Linter.Config): ESLint.Options {
-        const legacyConfigFile: string | undefined = this.workspace.getLegacyConfigFile();
+        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
         return {
             cwd: __dirname, // This is needed to make the base plugins discoverable. Don't worry, user's plugins are also still discovered.
             errorOnUnmatchedPattern: false,
-            baseConfig: this.baseConfigFactory.createBaseConfig(baseRuleset), // This is applied first (on bottom).
-            useEslintrc: !this.config.disable_config_lookup,                  // This is applied second.
-            overrideConfigFile: legacyConfigFile,                             // This is applied third.
-            overrideConfig: overrideConfig                                    // This is applied fourth (on top).
+            baseConfig: this.baseConfigFactory.createBaseConfig(baseRuleset),   // This is applied first (on bottom).
+            useEslintrc: this.config.auto_discover_eslint_config,               // This is applied second.
+            overrideConfigFile: userConfigInfo.getUserConfigFile(),             // This is applied third.
+            overrideConfig: overrideConfig                                      // This is applied fourth (on top).
         };
     }
 
@@ -202,6 +199,21 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             }
         }
         return baseRulesThatAreOn;
+    }
+
+    private emitInfoMessageIfDiscoveredEslintConfigIsNotBeingUsed(): void {
+        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
+        const configFileFound: string | undefined = userConfigInfo.getAutoDiscoveredConfigFile();
+        if (!userConfigInfo.userConfigIsEnabled() && configFileFound) {
+            const cwdFolder: string = process.cwd() + path.sep;
+
+            const relativePathFromCwd: string = configFileFound.startsWith(cwdFolder) ?
+                configFileFound.slice(cwdFolder.length) : /* istanbul ignore next */ configFileFound;
+            const configFolder: string = this.config.config_root + path.sep;
+            const relativePathFromConfigRoot: string = configFileFound.startsWith(configFolder) ?
+                configFileFound.slice(configFolder.length) : /* istanbul ignore next */  configFileFound;
+            this.emitLogEvent(LogLevel.Info, getMessage('UnusedEslintConfigFile', relativePathFromCwd, relativePathFromConfigRoot));
+        }
     }
 }
 
