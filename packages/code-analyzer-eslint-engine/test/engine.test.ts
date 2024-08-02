@@ -32,6 +32,8 @@ const workspaceThatHasCustomConfigWithNewRules: string =
     path.join(legacyConfigCasesFolder, 'workspace_HasCustomConfigWithNewRules');
 const workspaceThatIgnoresFilesByConfig: string =
     path.join(legacyConfigCasesFolder, 'workspace_HasFilesIgnoredByConfig');
+const workspaceThatHasEslintIgnoreFile: string =
+    path.join(legacyConfigCasesFolder, 'workspace_HasEslintIgnoreFile');
 
 describe('Tests for the getName method of ESLintEngine', () => {
     it('When getName is called, then eslint is returned', () => {
@@ -328,6 +330,52 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             {workspace: testTools.createWorkspace([workspaceThatIgnoresFilesByConfig])});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
     });
+
+    it('When workspace contains .eslintignore that ignores a file but has not be applied, then that file not ignored and an info event is emitted', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname
+        });
+        const logEvents: LogEvent[] = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: testTools.createWorkspace([workspaceThatHasEslintIgnoreFile])});
+        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig.goldfile.json');
+
+        const relPathFromCwd: string = path.join(workspaceThatHasEslintIgnoreFile.slice((process.cwd() + path.sep).length), '.eslintignore');
+        const relPathFromConfigRoot: string = path.join(workspaceThatHasEslintIgnoreFile.slice((__dirname + path.sep).length), '.eslintignore');
+        expect(logEvents).toContainEqual({
+            type: EventType.LogEvent,
+            logLevel: LogLevel.Info,
+            message: getMessage('UnusedEslintIgnoreFile', relPathFromCwd, relPathFromConfigRoot)
+        });
+    });
+
+    it('When workspace contains .eslintignore that ignores a file and auto_discover_eslint_config=true, then that file is ignored', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname,
+            auto_discover_eslint_config: true
+        });
+        const logEvents: LogEvent[] = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: testTools.createWorkspace([workspaceThatHasEslintIgnoreFile])});
+        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+    });
+
+    it('When workspace contains .eslintignore that is set as the eslint_ignore_file value, then that file is ignored', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname,
+            eslint_ignore_file: path.join(workspaceThatHasEslintIgnoreFile, '.eslintignore')
+        });
+        const logEvents: LogEvent[] = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: testTools.createWorkspace([workspaceThatHasEslintIgnoreFile])});
+        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+    });
 });
 
 describe('Typical tests for the runRules method of ESLintEngine', () => {
@@ -457,11 +505,22 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
         });
     });
 
-    it('When runRules is called on workspace with a config that ignores files, then those files are ignored', async () => {
+    it('When runRules is called on workspace with a config that ignores files and auto discover is true, then those files are ignored', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             auto_discover_eslint_config: true
         });
         const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceThatIgnoresFilesByConfig])};
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+        expect(results.violations).toHaveLength(2); // Should not contain js violations but should contain ts violations
+        expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');
+        expect(path.extname(results.violations[1].codeLocations[0].file)).toEqual('.ts');
+    });
+
+    it('When runRules is called and a ".eslintignore" file is provided that ignores files, then those files are ignored', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            eslint_ignore_file: path.join(workspaceThatHasEslintIgnoreFile, '.eslintignore')
+        });
+        const runOptions: RunOptions = {workspace: testTools.createWorkspace([workspaceThatHasEslintIgnoreFile])};
         const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
         expect(results.violations).toHaveLength(2); // Should not contain js violations but should contain ts violations
         expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');

@@ -7,6 +7,9 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     InvalidLegacyConfigFileName:
         `The '%s' configuration value was invalid. Expected the file name '%s' to be one of the following: %s`,
 
+    InvalidLegacyIgnoreFileName:
+        `The '%s' configuration value was invalid. Expected the file name '%s' to be equal to '%s'.`,
+
     ConfigStringValueMustMatchPattern:
         `The '%s' configuration value '%s' must match the pattern: /%s/`,
 
@@ -48,14 +51,19 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     UnusedEslintConfigFile:
         `The ESLint configuration file '%s' was found but not applied.\n` +
-        `To apply this configuration file, set it as the eslint_config_file value in your Code Analyzer configuration:\n` +
+        `To apply this configuration file, set it as the eslint_config_file value in your Code Analyzer configuration. For example:\n` +
         `  engines:\n` +
         `    eslint:\n` +
         `      eslint_config_file: "%s"\n` +
-        'Alternatively, to have Code Analyzer automatically discover and apply any ESLint configuration files found in your workspace, set the auto_discover_eslint_config value to true:\n' +
+        `Alternatively, to have Code Analyzer automatically discover and apply any ESLint configuration and ignore files found in your workspace, set the auto_discover_eslint_config value to true.`,
+
+    UnusedEslintIgnoreFile:
+        `The ESLint ignore file '%s' was found but not applied.\n` +
+        `To apply this ignore file, set it as the eslint_ignore_file value in your Code Analyzer configuration. For example:\n` +
         `  engines:\n` +
         `    eslint:\n` +
-        `      auto_discover_eslint_config: true`
+        `      eslint_ignore_file: "%s"\n` +
+        `Alternatively, to have Code Analyzer automatically discover and apply any ESLint configuration and ignore files found in your workspace, set the auto_discover_eslint_config value to true.`
 }
 
 /**

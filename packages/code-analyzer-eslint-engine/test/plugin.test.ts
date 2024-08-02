@@ -8,7 +8,7 @@ import {
 import {getMessage} from "../src/messages";
 import {ESLintEnginePlugin} from "../src";
 import {ESLintEngine} from "../src/engine";
-import {DEFAULT_CONFIG, LEGACY_ESLINT_CONFIG_FILES} from "../src/config";
+import {DEFAULT_CONFIG, LEGACY_ESLINT_CONFIG_FILES, LEGACY_ESLINT_IGNORE_FILE} from "../src/config";
 import path from "node:path";
 
 describe('Tests for the ESLintEnginePlugin', () => {
@@ -75,6 +75,26 @@ describe('Tests for the ESLintEnginePlugin', () => {
         await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
             getMessage('InvalidLegacyConfigFileName', 'engines.eslint.eslint_config_file', 'eslint.config.mjs',
                 JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
+    });
+
+    it('When eslint_ignore_file value does not exist, then createEngine errors', async () => {
+        const rawConfig: ConfigObject = {
+            config_root: __dirname,
+            eslint_ignore_file: 'test-data/doesNotExist/.eslintignore'
+        };
+        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist',
+                'engines.eslint.eslint_ignore_file', path.resolve(__dirname, 'test-data', 'doesNotExist', '.eslintignore')));
+    });
+
+    it('When eslint_ignore_file does not have a file name of .eslintignore, then createEngine errors', async () => {
+        const rawConfig: ConfigObject = {
+            config_root: __dirname,
+            eslint_ignore_file: path.join('test-data', 'workspaceWithConflictingConfig.zip')
+        };
+        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+            getMessage('InvalidLegacyIgnoreFileName', 'engines.eslint.eslint_ignore_file',
+                'workspaceWithConflictingConfig.zip', LEGACY_ESLINT_IGNORE_FILE));
     });
 
     it('When auto_discover_eslint_config is passed to createEngine, then it is set on the config', async () => {
