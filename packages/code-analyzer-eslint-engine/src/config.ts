@@ -8,11 +8,15 @@ export type ESLintEngineConfig = {
     config_root: string
 
     // Your project's main ESLint configuration file. May be provided as a path relative to the config_root.
-    // If not supplied, and auto_discover_eslint_config=true, then we will attempt to find it.
+    // If not supplied, and auto_discover_eslint_config=true, then Code Analyzer will attempt to find and apply it automatically.
     // Currently, only support legacy config files are supported.
     eslint_config_file?: string
 
-    // If true then ESLint will attempt to look up and apply any ESLint configuration files found in your workspace.
+    // Your project's ".eslintignore" file. May be provided as a path relative to the config_root.
+    // If not supplied, and auto_discover_eslint_config=true, then Code Analyzer will attempt to find and apply it automatically.
+    eslint_ignore_file?: string
+
+    // If true then ESLint will attempt to look up and apply any ESLint configuration and ignore files found in your workspace.
     // Default: false
     auto_discover_eslint_config: boolean
 
@@ -40,6 +44,7 @@ export type ESLintEngineConfig = {
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
     config_root: process.cwd(),
     eslint_config_file: undefined,
+    eslint_ignore_file: undefined,
     auto_discover_eslint_config: false,
     disable_javascript_base_config: false,
     disable_lwc_base_config: false,
@@ -52,6 +57,8 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
 export const LEGACY_ESLINT_CONFIG_FILES: string[] =
     ['.eslintrc.js', '.eslintrc.cjs', '.eslintrc.yaml', '.eslintrc.yml', '.eslintrc.json'];
 
+export const LEGACY_ESLINT_IGNORE_FILE: string = '.eslintignore';
+
 
 export function validateAndNormalizeConfig(rawConfig: ConfigObject): ESLintEngineConfig {
     const valueExtractor: ESLintEngineConfigValueExtractor = new ESLintEngineConfigValueExtractor(rawConfig);
@@ -59,6 +66,7 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): ESLintEngin
     return {
         config_root: valueExtractor.extractConfigRoot(),
         eslint_config_file: valueExtractor.extractESLintConfigFileValue(),
+        eslint_ignore_file: valueExtractor.extractESLintIgnoreFileValue(),
         auto_discover_eslint_config: valueExtractor.extractBoolean('auto_discover_eslint_config', DEFAULT_CONFIG.auto_discover_eslint_config)!,
         disable_javascript_base_config: valueExtractor.extractBoolean('disable_javascript_base_config', DEFAULT_CONFIG.disable_javascript_base_config)!,
         disable_lwc_base_config: valueExtractor.extractBoolean('disable_lwc_base_config', DEFAULT_CONFIG.disable_lwc_base_config)!,
@@ -83,6 +91,16 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
                 path.basename(eslintConfigFile), JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
         }
         return eslintConfigFile;
+    }
+
+    extractESLintIgnoreFileValue(): string | undefined {
+        const eslintIgnoreFileField: string = 'eslint_ignore_file';
+        const eslintIgnoreFile: string | undefined = this.extractFile(eslintIgnoreFileField, DEFAULT_CONFIG.eslint_ignore_file);
+        if (eslintIgnoreFile && path.basename(eslintIgnoreFile) !== LEGACY_ESLINT_IGNORE_FILE) {
+            throw new Error(getMessage('InvalidLegacyIgnoreFileName', this.getFieldPath(eslintIgnoreFileField),
+                path.basename(eslintIgnoreFile), LEGACY_ESLINT_IGNORE_FILE));
+        }
+        return eslintIgnoreFile;
     }
 
     extractFileExtensionsValues(): string[][] {

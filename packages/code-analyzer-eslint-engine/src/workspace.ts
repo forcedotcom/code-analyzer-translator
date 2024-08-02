@@ -1,7 +1,7 @@
 import {Workspace} from "@salesforce/code-analyzer-engine-api";
 import fs from "node:fs";
 import path from "node:path";
-import {ESLintEngineConfig, LEGACY_ESLINT_CONFIG_FILES} from "./config";
+import {ESLintEngineConfig, LEGACY_ESLINT_CONFIG_FILES, LEGACY_ESLINT_IGNORE_FILE} from "./config";
 import {calculateLongestCommonParentFolderOf, makeUnique} from "./utils";
 
 export type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
@@ -15,15 +15,18 @@ export interface ESLintWorkspace {
 
 export class UserConfigInfo {
     private readonly engineConfig: ESLintEngineConfig;
-    private readonly autoDiscoveredFile?: string;
-    constructor(config: ESLintEngineConfig, autoDiscoveredFile?: string) {
+    private readonly autoDiscoveredConfigFile?: string;
+    private readonly autoDiscoveredIgnoreFile?: string;
+
+    constructor(config: ESLintEngineConfig, autoDiscoveredConfigFile?: string, autoDiscoveredIgnoreFile?: string) {
         this.engineConfig = config;
-        this.autoDiscoveredFile = autoDiscoveredFile;
+        this.autoDiscoveredConfigFile = autoDiscoveredConfigFile;
+        this.autoDiscoveredIgnoreFile = autoDiscoveredIgnoreFile;
     }
 
     getUserConfigFile(): string | undefined {
         return this.engineConfig.eslint_config_file ||
-            (this.engineConfig.auto_discover_eslint_config ? this.autoDiscoveredFile : undefined);
+            (this.engineConfig.auto_discover_eslint_config ? this.autoDiscoveredConfigFile : undefined);
     }
 
     userConfigIsEnabled(): boolean {
@@ -31,7 +34,16 @@ export class UserConfigInfo {
     }
 
     getAutoDiscoveredConfigFile(): string | undefined {
-        return this.autoDiscoveredFile;
+        return this.autoDiscoveredConfigFile;
+    }
+
+    getUserIgnoreFile(): string | undefined {
+        return this.engineConfig.eslint_ignore_file ||
+            (this.engineConfig.auto_discover_eslint_config ? this.autoDiscoveredIgnoreFile : undefined);
+    }
+
+    getAutoDiscoveredIgnoreFile(): string | undefined {
+        return this.autoDiscoveredIgnoreFile;
     }
 }
 
@@ -63,9 +75,9 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
 
     getUserConfigInfo(): UserConfigInfo {
         if (!this.cachedUserConfigInfo) {
-            const autoDiscoveredConfigFile: string | undefined = findLegacyConfigFile(
-                makeUnique([this.config.config_root, process.cwd()]));
-            this.cachedUserConfigInfo = new UserConfigInfo(this.config, autoDiscoveredConfigFile);
+            this.cachedUserConfigInfo = new UserConfigInfo(this.config,
+                findLegacyConfigFile(makeUnique([this.config.config_root, process.cwd()])),
+                findLegacyIgnoreFile(makeUnique([this.config.config_root, process.cwd()])));
         }
         return this.cachedUserConfigInfo;
     }
@@ -121,9 +133,9 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
 
     getUserConfigInfo(): UserConfigInfo {
         if (!this.cachedUserConfigInfo) {
-            const autoDiscoveredConfigFile: string | undefined = findLegacyConfigFile(
-                makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()]));
-            this.cachedUserConfigInfo = new UserConfigInfo(this.config, autoDiscoveredConfigFile);
+            this.cachedUserConfigInfo = new UserConfigInfo(this.config,
+                findLegacyConfigFile(makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()])),
+                findLegacyIgnoreFile(makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()])));
         }
         return this.cachedUserConfigInfo;
     }
@@ -156,10 +168,20 @@ function createPlaceholderCandidateFiles(fileExtensions: string[], rootFolder: s
 function findLegacyConfigFile(foldersToCheck: string[]): string | undefined {
     for (const folder of foldersToCheck) {
         for (const legacyConfigFileName of LEGACY_ESLINT_CONFIG_FILES) {
-            const possibleUserConfigFile = path.join(folder, legacyConfigFileName);
-            if (fs.existsSync(possibleUserConfigFile)) { // Using synchronous code to ensure we check for the files in the correct order
-                return possibleUserConfigFile;
+            const legacyConfigFile: string = path.join(folder, legacyConfigFileName);
+            if (fs.existsSync(legacyConfigFile)) { // Using synchronous code to ensure we check for the files in the correct order
+                return legacyConfigFile;
             }
+        }
+    }
+    return undefined;
+}
+
+function findLegacyIgnoreFile(foldersToCheck: string[]): string | undefined {
+    for (const folder of foldersToCheck) {
+        const legacyIgnoreFile: string = path.join(folder, LEGACY_ESLINT_IGNORE_FILE);
+        if (fs.existsSync(legacyIgnoreFile)) { // Using synchronous code to ensure we check for the files in the correct order
+            return legacyIgnoreFile;
         }
     }
     return undefined;

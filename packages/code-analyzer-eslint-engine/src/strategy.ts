@@ -62,13 +62,14 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             return this.ruleStatuses;
         }
 
-        this.emitInfoMessageIfDiscoveredEslintConfigIsNotBeingUsed();
+        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
+        this.emitInfoMessageIfDiscoveredEslintConfigFileIsNotBeingUsed(userConfigInfo);
+        this.emitInfoMessageIfDiscoveredEslintIgnoreFileIsNotBeingUsed(userConfigInfo);
 
         const eslintOptions: ESLint.Options = this.createESLintOptions(BaseRuleset.RECOMMENDED);
         const eslint: ESLint = new LegacyESLint(eslintOptions);
         const filterFcn: AsyncFilterFnc<string> = createFilterFcn(eslint);
 
-        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
         const candidateFiles: string[] = userConfigInfo.userConfigIsEnabled() ?
             await this.workspace.getCandidateFilesForUserConfig(filterFcn) :
             await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
@@ -179,7 +180,8 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             baseConfig: this.baseConfigFactory.createBaseConfig(baseRuleset),   // This is applied first (on bottom).
             useEslintrc: this.config.auto_discover_eslint_config,               // This is applied second.
             overrideConfigFile: userConfigInfo.getUserConfigFile(),             // This is applied third.
-            overrideConfig: overrideConfig                                      // This is applied fourth (on top).
+            overrideConfig: overrideConfig,                                     // This is applied fourth (on top).
+            ignorePath: userConfigInfo.getUserIgnoreFile()
         };
     }
 
@@ -201,20 +203,30 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         return baseRulesThatAreOn;
     }
 
-    private emitInfoMessageIfDiscoveredEslintConfigIsNotBeingUsed(): void {
-        const userConfigInfo: UserConfigInfo = this.workspace.getUserConfigInfo();
+    private emitInfoMessageIfDiscoveredEslintConfigFileIsNotBeingUsed(userConfigInfo: UserConfigInfo): void {
         const configFileFound: string | undefined = userConfigInfo.getAutoDiscoveredConfigFile();
-        if (!userConfigInfo.userConfigIsEnabled() && configFileFound) {
-            const cwdFolder: string = process.cwd() + path.sep;
-
-            const relativePathFromCwd: string = configFileFound.startsWith(cwdFolder) ?
-                configFileFound.slice(cwdFolder.length) : /* istanbul ignore next */ configFileFound;
-            const configFolder: string = this.config.config_root + path.sep;
-            const relativePathFromConfigRoot: string = configFileFound.startsWith(configFolder) ?
-                configFileFound.slice(configFolder.length) : /* istanbul ignore next */  configFileFound;
-            this.emitLogEvent(LogLevel.Info, getMessage('UnusedEslintConfigFile', relativePathFromCwd, relativePathFromConfigRoot));
+        if (this.config.eslint_config_file === undefined && !this.config.auto_discover_eslint_config && configFileFound) {
+            this.emitLogEvent(LogLevel.Info, getMessage('UnusedEslintConfigFile',
+                makeRelativeTo(process.cwd(), configFileFound),
+                makeRelativeTo(this.config.config_root, configFileFound)));
         }
     }
+
+    private emitInfoMessageIfDiscoveredEslintIgnoreFileIsNotBeingUsed(userConfigInfo: UserConfigInfo): void {
+        const ignoreFileFound: string | undefined = userConfigInfo.getAutoDiscoveredIgnoreFile();
+        if (this.config.eslint_ignore_file === undefined && !this.config.auto_discover_eslint_config && ignoreFileFound) {
+            this.emitLogEvent(LogLevel.Info, getMessage('UnusedEslintIgnoreFile',
+                makeRelativeTo(process.cwd(), ignoreFileFound),
+                makeRelativeTo(this.config.config_root, ignoreFileFound)));
+        }
+    }
+}
+
+function makeRelativeTo(absFolderPath: string, absFilePath: string): string {
+    absFolderPath = absFolderPath.endsWith(path.sep) ?
+        /* istanbul ignore next */ absFolderPath : absFolderPath + path.sep;
+    return absFilePath.startsWith(absFolderPath) ?
+        absFilePath.slice(absFolderPath.length) : /* istanbul ignore next */  absFilePath;
 }
 
 async function getAllRuleModules(legacyESLint: ESLint): Promise<Map<string, Rule.RuleModule>> {
