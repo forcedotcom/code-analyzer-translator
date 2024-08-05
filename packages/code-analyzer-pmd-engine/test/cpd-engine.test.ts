@@ -1,6 +1,6 @@
 import {CpdEngine} from "../src/engines";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {Workspace} from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -14,6 +14,6 @@ describe('Tests for the CpdEngine', () => {
         // Will delete this test as soon as we implement the CpdEngine.
         const engine: CpdEngine = new CpdEngine();
         expect(await engine.describeRules({})).toEqual([]);
-        expect(await engine.runRules([],{workspace: testTools.createWorkspace([__dirname])})).toEqual({violations: []});
+        expect(await engine.runRules([],{workspace: new Workspace([__dirname])})).toEqual({violations: []});
     });
 });

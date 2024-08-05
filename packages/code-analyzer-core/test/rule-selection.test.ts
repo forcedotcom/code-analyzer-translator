@@ -18,7 +18,6 @@ import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot, FixedClock, FixedUniqueIdGenerator} from "./test-helpers";
 import {getMessage} from "../src/messages";
 import * as stubs from "./stubs";
-import {WorkspaceImpl} from "../src/workspace";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -266,7 +265,7 @@ describe('Tests for selecting rules', () => {
         await codeAnalyzer.selectRules(['all'], selectOptions);
 
         const expectedDescribeOptions: engApi.DescribeOptions = {
-            workspace: new WorkspaceImpl("FixedId", [path.resolve('src'), path.resolve('test')])
+            workspace: new engApi.Workspace([path.resolve('src'), path.resolve('test')], "FixedId")
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
         expect(stubEngine1.describeRulesCallHistory).toEqual([{describeOptions: expectedDescribeOptions}]);

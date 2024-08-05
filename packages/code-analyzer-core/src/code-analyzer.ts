@@ -20,8 +20,11 @@ import {
     UniqueIdGenerator
 } from "./utils";
 import fs from "node:fs";
-import {Workspace, WorkspaceImpl} from "./workspace";
 
+export interface Workspace {
+    getWorkspaceId(): string
+    getFilesAndFolders(): string[]
+}
 
 export type SelectOptions = {
     workspace?: Workspace
@@ -55,7 +58,9 @@ export class CodeAnalyzer {
 
     public async createWorkspace(filesAndFolders: string[]): Promise<Workspace> {
         const workspaceId: string = this.uniqueIdGenerator.getUniqueId('workspace');
-        return new WorkspaceImpl(workspaceId, filesAndFolders.map(validateFileOrFolder));
+        const fileValidationPromises: Promise<string>[] = filesAndFolders.map(validateFileOrFolder);
+        const validatedFilesAndFolders: string[] = (await Promise.all(fileValidationPromises)).flat();
+        return new WorkspaceImpl(validatedFilesAndFolders, workspaceId);
     }
 
     public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
@@ -118,7 +123,7 @@ export class CodeAnalyzer {
         //  up a bunch of RunResults promises and then does a Promise.all on them. Otherwise, the progress events may
         //  override each other.
 
-        const engineRunOptions: engApi.RunOptions = extractEngineRunOptions(runOptions);
+        const engineRunOptions: engApi.RunOptions = await extractEngineRunOptions(runOptions);
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions,
             (key, value) => key === "expandedFiles" ? undefined : value))); // omit the expandedFiles since it is very large
 
@@ -141,8 +146,9 @@ export class CodeAnalyzer {
         const cacheKey: string = workspace ? workspace.getWorkspaceId() : process.cwd();
         if (!this.rulesCache.has(cacheKey)) {
             this.engineRuleDiscoveryProgressAggregator.reset(this.getEngineNames());
+            const engApiWorkspace: engApi.Workspace | undefined = workspace ? toEngApiWorkspace(workspace) : undefined;
             const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
-                engineName => this.getAllRulesFor(engineName, {workspace: workspace}));
+                engineName => this.getAllRulesFor(engineName, {workspace: engApiWorkspace}));
             this.rulesCache.set(cacheKey, (await Promise.all(rulePromises)).flat());
         }
         return this.rulesCache.get(cacheKey)!;
@@ -284,6 +290,37 @@ export class CodeAnalyzer {
     }
 }
 
+/**
+ * The runtime implementation of the Workspace interface that is returned from CodeAnalyzer's createWorkspace method
+ * This serves as a layer of indirection between the engine api and the client so that if the engine api changes, the
+ * clients do not need to change.
+ */
+class WorkspaceImpl implements Workspace {
+    private readonly delegate: engApi.Workspace;
+    constructor(absFilesAndFolders: string[], workspaceId: string) {
+        this.delegate = new engApi.Workspace(absFilesAndFolders, workspaceId);
+    }
+
+    getWorkspaceId(): string {
+        return this.delegate.getWorkspaceId();
+    }
+
+    getFilesAndFolders(): string[] {
+        return this.delegate.getFilesAndFolders();
+    }
+
+    _toEngApiWorkspace(): engApi.Workspace {
+        return this.delegate;
+    }
+}
+
+function toEngApiWorkspace(workspace: Workspace): engApi.Workspace {
+    if (workspace instanceof WorkspaceImpl) {
+        return (workspace as WorkspaceImpl)._toEngApiWorkspace();
+    }
+    return new engApi.Workspace(workspace.getFilesAndFolders(), workspace.getWorkspaceId());
+}
+
 function getAvailableEngineNamesFromPlugin(enginePlugin: engApi.EnginePluginV1): string[] {
     try {
         return enginePlugin.getAvailableEngineNames();
@@ -302,24 +339,27 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
     }
 }
 
-function extractEngineRunOptions(runOptions: RunOptions): engApi.RunOptions {
+async function extractEngineRunOptions(runOptions: RunOptions): Promise<engApi.RunOptions> {
     if(runOptions.workspace.getFilesAndFolders().length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
-        workspace: runOptions.workspace,
+        workspace: toEngApiWorkspace(runOptions.workspace),
     };
     if (runOptions.pathStartPoints && runOptions.pathStartPoints.length > 0) {
-        engineRunOptions.pathStartPoints = runOptions.pathStartPoints.flatMap(extractEnginePathStartPoints)
+        const pathStartPointPromises: Promise<engApi.PathPoint[]>[] = runOptions.pathStartPoints.map(extractEnginePathStartPoints);
+        engineRunOptions.pathStartPoints = (await Promise.all(pathStartPointPromises)).flat();
     }
     validatePathStartPointsAreInsideWorkspace(engineRunOptions);
     return engineRunOptions;
 }
 
-// TODO: Eventually we should make all these validations async
-function validateFileOrFolder(fileOrFolder: string): string {
+async function validateFileOrFolder(fileOrFolder: string): Promise<string> {
     const absFileOrFolder: string = toAbsolutePath(fileOrFolder);
-    if (!fs.existsSync(absFileOrFolder)) {
+    try {
+        // This is the most efficient way to check if a file or folder exists
+        await fs.promises.access(absFileOrFolder);
+    } catch {
         throw new Error(getMessage('FileOrFolderDoesNotExist', absFileOrFolder));
     }
     return absFileOrFolder;
@@ -335,11 +375,11 @@ function validatePathStartPointFile(file: string, pathStartPointStr: string): st
     return absFile;
 }
 
-function extractEnginePathStartPoints(pathStartPointStr: string): engApi.PathPoint[] {
+async function extractEnginePathStartPoints(pathStartPointStr: string): Promise<engApi.PathPoint[]> {
     const parts: string[] = pathStartPointStr.split('#');
     if (parts.length == 1) {
         return [{
-            file: validateFileOrFolder(pathStartPointStr)
+            file: await validateFileOrFolder(pathStartPointStr)
         }];
     } else if (parts.length > 2) {
         throw new Error(getMessage('InvalidPathStartPoint', pathStartPointStr));

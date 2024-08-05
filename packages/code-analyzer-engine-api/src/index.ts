@@ -15,8 +15,7 @@ export {
     DescribeOptions,
     Engine,
     PathPoint,
-    RunOptions,
-    Workspace
+    RunOptions
 } from "./engines"
 
 export {
@@ -45,3 +44,7 @@ export {
     RuleType,
     SeverityLevel
 } from "./rules"
+
+export {
+    Workspace
+} from "./workspace"

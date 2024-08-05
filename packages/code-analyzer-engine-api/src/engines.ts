@@ -2,12 +2,7 @@ import { RuleDescription } from "./rules";
 import { EngineRunResults } from "./results";
 import {Event, EventType, LogLevel} from "./events";
 import { EventEmitter } from "node:events";
-
-export interface Workspace {
-    getWorkspaceId(): string
-    getFilesAndFolders(): string[]
-    getExpandedFiles(): Promise<string[]>
-}
+import {Workspace} from "./workspace";
 
 export type DescribeOptions = {
     // The workspace may or may not be available. If available then it can be used to give a more accurate list
