@@ -11,8 +11,7 @@
     "directory": "packages/code-analyzer-core"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./testtools": "./dist/testtools/index.js"
+    ".": "./dist/index.js"
   },
   "types": "dist/index.d.ts",
   "dependencies": {
