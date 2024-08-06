@@ -14,7 +14,8 @@ import {
     RunResults,
     SeverityLevel,
     Violation,
-    RuleType
+    RuleType,
+    Workspace
 } from "../src";
 import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
@@ -23,7 +24,6 @@ import {changeWorkingDirectoryToPackageRoot, FixedClock, FixedUniqueIdGenerator}
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {UnexpectedEngineErrorRule} from "../src/rules";
 import {UndefinedCodeLocation} from "../src/results";
-import {WorkspaceImpl} from "../src/workspace";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -38,11 +38,11 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     const expectedStubEngine2RuleNames: string[] = ['stub2RuleA', 'stub2RuleC'];
 
     beforeEach(async () => {
-        sampleRunOptions = {workspace: new WorkspaceImpl('FixedId', [path.resolve('test')])};
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
         codeAnalyzer._setUniqueIdGenerator(new FixedUniqueIdGenerator());
+        sampleRunOptions = {workspace: await codeAnalyzer.createWorkspace([__dirname])};
         const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(stubPlugin);
         stubEngine1 = stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
@@ -52,7 +52,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
     it("When run options contains a path start point (without method) with a file that does not exist, then error", async () => {
         const runOptions: RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
+            ... sampleRunOptions,
             pathStartPoints: [path.resolve(__dirname, 'doesNotExist.xml')],
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
@@ -62,7 +62,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When run options contains a path start point (with method) with a file that does not exist, then error", async () => {
         const badPathStartPoint: string = path.resolve(__dirname, 'doesNotExist.xml#someMethod');
         const runOptions: RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
+            ... sampleRunOptions,
             pathStartPoints: [path.resolve(__dirname, 'run.test.ts'), badPathStartPoint]
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
@@ -72,7 +72,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When path starting point is a folder with methods specified, then error", async () => {
         const badPathStartPoint: string = "test/test-data#method1;method2";
         const runOptions: RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve(__dirname)]),
+            ... sampleRunOptions,
             pathStartPoints: [badPathStartPoint],
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
@@ -82,7 +82,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When path starting point has too many hashtags specified, then error", async () => {
         const badPathStartPoint: string = "test/test-helpers.ts#method1#method2";
         const runOptions: RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace(['test']),
+            ... sampleRunOptions,
             pathStartPoints: [badPathStartPoint],
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
@@ -92,7 +92,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When specifying a path starting point that has an invalid character in its method name, then error", async () => {
         const badPathStartPoint: string = "test/test-helpers.ts#someMethod,oopsCommaIsInvalidHere";
         const runOptions: RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace(['test']),
+            ... sampleRunOptions,
             pathStartPoints: [badPathStartPoint],
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
@@ -125,7 +125,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve('src')])
+            workspace: new engApi.Workspace([path.resolve('src')], "FixedId")
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
@@ -144,7 +144,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve('test')]),
+            workspace: new engApi.Workspace([path.resolve('test')], "FixedId"),
             pathStartPoints: [
                 { file: path.resolve("test", "test-data") },
                 { file: path.resolve("test", "run.test.ts")}
@@ -167,7 +167,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace([path.resolve("src", "index.ts"), path.resolve("src", "utils.ts"), path.resolve('test')]),
+            workspace: new engApi.Workspace([
+                    path.resolve("src", "index.ts"),
+                    path.resolve("src", "utils.ts"),
+                    path.resolve('test')
+                ],
+                "FixedId"),
             pathStartPoints: [
                 {
                     file: path.resolve("test", "run.test.ts"),
@@ -200,12 +205,26 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         }]);
     });
 
+    it("When the workspace provided is one that is not constructed from CodeAnalyzer's createWorkspace method, then it should still work", async () => {
+        const dummyWorkspace: Workspace = new DummyWorkspace();
+        await codeAnalyzer.run(selection, {
+            workspace: new DummyWorkspace()
+        });
+
+        expect(stubEngine1.runRulesCallHistory).toEqual([{
+            ruleNames: expectedStubEngine1RuleNames,
+            runOptions: {
+                workspace: new engApi.Workspace(dummyWorkspace.getFilesAndFolders(), dummyWorkspace.getWorkspaceId())
+            }
+        }]);
+    });
+
     it("When no rules are selected for an engine, then when running, that engine is skipped", async () => {
         selection = await codeAnalyzer.selectRules(['stubEngine1:Recommended']);
         await codeAnalyzer.run(selection, sampleRunOptions);
 
         const expectedEngineRunOptions: engApi.RunOptions = {
-            workspace: await codeAnalyzer.createWorkspace(['test'])
+            workspace: new engApi.Workspace([__dirname], "FixedId")
         };
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
@@ -603,4 +622,14 @@ function assertCodeLocation(codeLocation: CodeLocation, file: string, startLine:
     expect(codeLocation.getStartColumn()).toEqual(startColumn);
     expect(codeLocation.getEndLine()).toEqual(endLine);
     expect(codeLocation.getEndColumn()).toEqual(endColumn);
+}
+
+class DummyWorkspace implements Workspace {
+    getWorkspaceId(): string {
+        return "dummy";
+    }
+
+    getFilesAndFolders(): string[] {
+        return [__dirname];
+    }
 }

@@ -8,7 +8,6 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
@@ -29,9 +28,7 @@ describe('End to end test', () => {
             }
         }
         const engine: Engine = await plugin.createEngine(availableEngineNames[0], customConfig);
-        const workspace: Workspace = testTools.createWorkspace([
-            path.resolve(__dirname, 'test-data', 'sampleWorkspace')
-        ]);
+        const workspace: Workspace = new Workspace([path.resolve(__dirname, 'test-data', 'sampleWorkspace')]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         const recommendedRuleNames: string[] = ruleDescriptions.filter(rd => rd.tags.includes('Recommended')).map(rd => rd.name);
         const engineRunResults: EngineRunResults = await engine.runRules(recommendedRuleNames, {workspace: workspace});

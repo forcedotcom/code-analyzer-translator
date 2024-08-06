@@ -1,21 +1,24 @@
-import * as engApi from "@salesforce/code-analyzer-engine-api"
 import fs from "node:fs";
 import path from "node:path";
 
-export interface Workspace {
-    getWorkspaceId(): string
-    getFilesAndFolders(): string[]
-    getExpandedFiles(): Promise<string[]>
-}
+const UNWANTED_FOLDERS: string[] = ['node_modules', '.git', '.github'];
+const UNWANTED_FILES: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml', '.gitignore'];
 
-export class WorkspaceImpl implements Workspace, engApi.Workspace {
+export class Workspace {
+    private static nextId: number = 0;
     private readonly workspaceId: string;
     private readonly filesAndFolders: string[];
     private expandedFiles?: string[];
 
-    constructor(workspaceId: string, absFilesAndFolders: string[]) {
-        this.workspaceId = workspaceId;
-        this.filesAndFolders = removeRedundantPaths(absFilesAndFolders).filter(isWantedPath);
+    /**
+     * Constructs a workspace with a list of absolute file and folder paths
+     * * This constructor assumes that the list of files and folder paths exists and that they are absolute paths
+     * @param absoluteFileAndFolderPaths Absolute file and folder paths
+     * @param workspaceId Optional workspace identifier
+     */
+    constructor(absoluteFileAndFolderPaths: string[], workspaceId?: string) {
+        this.workspaceId = workspaceId || `workspace${++Workspace.nextId}`;
+        this.filesAndFolders = removeRedundantPaths(absoluteFileAndFolderPaths).filter(isWantedPath);
     }
 
     getWorkspaceId(): string {
@@ -58,10 +61,8 @@ function removeRedundantPaths(absolutePaths: string[]): string[] {
  * Idea: in the future, we might consider having a .code_analyzer_ignore file or something that users can create
  */
 function isWantedPath(absolutePath: string): boolean {
-    const unwantedFolders: string[] = ['node_modules', '.git', '.github'];
-    const unwantedFiles: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml', '.gitignore'];
-    return !unwantedFolders.some(f => absolutePath.includes(`${path.sep}${f}${path.sep}`)) &&
-        !unwantedFiles.includes(path.basename(absolutePath));
+    return !UNWANTED_FOLDERS.some(f => absolutePath.includes(`${path.sep}${f}${path.sep}`)) &&
+        !UNWANTED_FILES.includes(path.basename(absolutePath));
 }
 
 /**

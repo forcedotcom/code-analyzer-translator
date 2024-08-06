@@ -7,9 +7,9 @@ import {
     RuleType,
     RunOptions,
     SeverityLevel,
-    Violation
+    Violation,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {getMessage} from "../src/messages";
 import {RegexRules} from "../src/config";
 import {BASE_REGEX_RULES} from "../src/plugin";
@@ -70,14 +70,14 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
-        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy2.ts') // .ts files aren't applicable to the rules
             ])});
         expect(rulesDescriptions).toHaveLength(0);
     });
 
     it("When workspace contains files only applicable to one of the rules, then describeRules only returns that one rule", async () => {
-        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
         expect(rulesDescriptions).toHaveLength(1);
@@ -85,7 +85,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
-        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([
+        const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
         expect(rulesDescriptions).toHaveLength(2);
@@ -105,7 +105,7 @@ describe('Tests for runRules', () => {
 
     it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {
         const runOptions: RunOptions = {
-            workspace: testTools.createWorkspace([
+            workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
             ])
         };
@@ -114,7 +114,7 @@ describe('Tests for runRules', () => {
     });
 
     it("Ensure runRules when called on a list Apex classes,  properly emits violations", async () => {
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+        const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "apexClassWhitespace")
         ])};
         const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos"], runOptions);
@@ -179,7 +179,7 @@ describe('Tests for runRules', () => {
     });
 
     it("When workspace contains files that violate custom rules, then emit violation correctly", async () => {
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+        const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "sampleWorkspace")
         ])};
         const runResults: EngineRunResults = await engine.runRules(["NoTodos"], runOptions);
@@ -222,7 +222,7 @@ describe('Tests for runRules', () => {
     });
 
     it("When running all rules compared to some rules, then output correctly returns what the correct violations according to specified rules", async () => {
-        const runOptions: RunOptions = {workspace: testTools.createWorkspace([
+        const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "sampleWorkspace")
             ])};
         const runResults1: EngineRunResults = await engine.runRules(["NoTrailingWhitespace"], runOptions);

@@ -11,7 +11,6 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
 import {RetireJsExecutor} from "../src/executor";
@@ -81,7 +80,7 @@ const EXPECTED_VIOLATION_4: Violation = {
     ]
 }
 
-const DUMMY_WORKSPACE: Workspace = testTools.createWorkspace([path.resolve(__dirname,'test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
+const DUMMY_WORKSPACE: Workspace = new Workspace([path.resolve(__dirname,'test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
 const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
 const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
 
@@ -160,7 +159,7 @@ describe('Tests for the RetireJsEngine', () => {
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
 
-        const workspace: Workspace = testTools.createWorkspace([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
+        const workspace: Workspace = new Workspace([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
         const runOptions: RunOptions = {
             workspace: workspace,
             pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
@@ -208,7 +207,7 @@ describe('Tests for the RetireJsEngine', () => {
     it('When vulnerable file is underneath a node_modules or bower_components folder, then they are not included in the target files to scan', async () => {
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
-        const workspace: Workspace = testTools.createWorkspace([
+        const workspace: Workspace = new Workspace([
             path.resolve('test','test-data','scenarios','8_hasVulnerabilitiesUnderFoldersToSkip')]);
         await engine.runRules(allRuleNames, {workspace: workspace});
         expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
@@ -217,15 +216,16 @@ describe('Tests for the RetireJsEngine', () => {
     it('When vulnerable file is a non-targeted text file, then they are not included in the target files to scan', async () => {
         const spyExecutor: SpyRetireJsExecutor = new SpyRetireJsExecutor();
         engine = new RetireJsEngine(spyExecutor);
-        const workspace: Workspace = testTools.createWorkspace([
+        const workspace: Workspace = new Workspace([
             path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')]);
         await engine.runRules(allRuleNames, {workspace: workspace});
         expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
     });
 
     it('When no targeted files are in workspace, then describeRules returns zero rules', async () => {
-        const workspace: Workspace = testTools.createWorkspace([
-            path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')], 'workspaceWithoutTargets');
+        const workspace: Workspace = new Workspace([
+            path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')
+        ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         expect(ruleDescriptions).toHaveLength(0);
     });

@@ -25,6 +25,11 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
             getMessage('FileOrFolderDoesNotExist', toAbsolutePath('does/not/exist.cls')));
     });
 
+    it("When provided a windows based path, it resolves correctly", async () => {
+        const workspace: Workspace = await codeAnalyzer.createWorkspace(['test\\run.test.ts']);
+        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test/run.test.ts')]);
+    });
+
     it("When including a relative file and a folder then they both converted to absolute paths", async () => {
         const workspace: Workspace = await codeAnalyzer.createWorkspace(['src', 'test/run.test.ts']);
         expect(workspace.getFilesAndFolders()).toEqual([path.resolve('src'), path.resolve('test/run.test.ts')]);
@@ -42,15 +47,4 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
             'test/test-data/sampleWorkspace/.gitignore',]);
         expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test', 'test-data', 'sampleWorkspace', 'someFile.txt')]);
     });
-
-    it("When calling getExpandedFiles, then all files underneath all subfolders are found", async () => {
-        const workspace: Workspace = await codeAnalyzer.createWorkspace(["test\\test-data\\sampleWorkspace"]);
-        expect(await workspace.getExpandedFiles()).toEqual([
-            path.resolve('test', 'test-data', 'sampleWorkspace', 'someFile.txt'),
-            path.resolve('test', 'test-data', 'sampleWorkspace', 'sub1', 'someFileInSub1.txt'),
-            path.resolve('test', 'test-data', 'sampleWorkspace', 'sub1', 'sub2', 'someFile1InSub2.txt'),
-            path.resolve('test', 'test-data', 'sampleWorkspace', 'sub1', 'sub2', 'someFile2InSub2.txt'),
-            path.resolve('test', 'test-data', 'sampleWorkspace', 'sub1', 'sub3', 'someFileInSub3.txt'),
-        ]);
-    })
 });

@@ -7,7 +7,6 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools";
 import path from "node:path";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
@@ -26,7 +25,7 @@ describe('End to end test', () => {
         const availableEngineNames: string[] = plugin.getAvailableEngineNames();
         expect(availableEngineNames).toHaveLength(1);
         const engine: Engine = await plugin.createEngine(availableEngineNames[0], {});
-        const workspace: Workspace = testTools.createWorkspace([
+        const workspace: Workspace = new Workspace([
             path.resolve('test', 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});

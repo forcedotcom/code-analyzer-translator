@@ -1,11 +1,10 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {MetadataEngine, MetadataEnginePlugin} from "../src/plugin";
-import * as testTools from "@salesforce/code-analyzer-engine-api/testtools"
 import {
-    EngineRunResults,
     RuleDescription,
     RuleType,
-    SeverityLevel
+    SeverityLevel,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 
@@ -29,7 +28,7 @@ describe('Metadata Engine Tests', () => {
     });
 
     it('Calling describeRules() on an engine should return the single trailing whitespace rule', async () => {
-        const rules_desc: RuleDescription[] = await engine.describeRules({workspace: testTools.createWorkspace([])});
+        const rules_desc: RuleDescription[] = await engine.describeRules({workspace: new Workspace([])});
         const engineRules = [
             {
                 name: VIRTUAL_ABSTRACT_CLASS_API_RULE_NAME,
@@ -74,7 +73,7 @@ describe('MetadataEnginePlugin Tests' , () => {
                 resourceUrls: VIRTUAL_ABSTRACT_CLASS_API_RULE_RESOURCE_URLS
             }
         ];
-        const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: testTools.createWorkspace([])})
+        const engineRules: RuleDescription[] = await pluginEngine.describeRules({workspace: new Workspace([])})
         expect(engineRules).toStrictEqual(expEngineRules)
     });
 

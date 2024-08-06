@@ -37,7 +37,7 @@ describe('Tests for v1', () => {
             runRulesProgressEvents.push(event);
         });
 
-        const workspace: Workspace = new DummyWorkspace();
+        const workspace: Workspace = new Workspace([]);
         await dummyEngine.describeRules({workspace: workspace});
         await dummyEngine.runRules(["dummy"], {workspace: workspace});
 
@@ -106,19 +106,5 @@ class DummyEngineV1 extends Engine {
         return {
             violations: []
         };
-    }
-}
-
-class DummyWorkspace implements Workspace {
-    getWorkspaceId(): string {
-        return "dummy";
-    }
-
-    async getExpandedFiles(): Promise<string[]> {
-        return [];
-    }
-
-    getFilesAndFolders(): string[] {
-        return [];
     }
 }
