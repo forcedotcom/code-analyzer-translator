@@ -1,13 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const UNWANTED_FOLDERS: string[] = ['node_modules', '.git', '.github'];
-const UNWANTED_FILES: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml', '.gitignore'];
+const NON_DOT_FOLDERS_TO_EXCLUDE: string[] = ['node_modules'];
+const NON_DOT_FILES_TO_EXCLUDE: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml'];
 
 export class Workspace {
     private static nextId: number = 0;
     private readonly workspaceId: string;
-    private readonly filesAndFolders: string[];
+    private readonly rawFilesAndFolders: string[];
+
+    private normalizedFilesAndFolders?: string[];
     private expandedFiles?: string[];
     private workspaceRoot?: string | null;
 
@@ -19,9 +21,7 @@ export class Workspace {
      */
     constructor(absoluteFileAndFolderPaths: string[], workspaceId?: string) {
         this.workspaceId = workspaceId || `workspace${++Workspace.nextId}`;
-        this.filesAndFolders = removeRedundantPaths(absoluteFileAndFolderPaths)
-            .filter(isWantedPath)
-            .map(removeTrailingPathSep);
+        this.rawFilesAndFolders =removeRedundantPaths(absoluteFileAndFolderPaths).map(removeTrailingPathSep);
     }
 
     /**
@@ -33,11 +33,14 @@ export class Workspace {
 
     /**
      * Returns the unique list of files and folders that were used to construct the workspace.
-     *   Any files or folders that Code Analyzer chooses to ignore (like .gitignore files, node_modules folders, etc.)
-     *   are excluded from the list.
+     *   Any files or folders underneath the workspace root that Code Analyzer chooses to ignore (like .gitignore files,
+     *   node_modules folders, etc.) are automatically excluded.
      */
     getFilesAndFolders(): string[] {
-        return this.filesAndFolders;
+        if (!this.normalizedFilesAndFolders) {
+            this.normalizedFilesAndFolders = this.rawFilesAndFolders.filter(f => !this.shouldExclude(f));
+        }
+        return this.normalizedFilesAndFolders;
     }
 
     /**
@@ -49,7 +52,7 @@ export class Workspace {
      */
     getWorkspaceRoot(): string | null {
         if (this.workspaceRoot === undefined) {
-            this.workspaceRoot = calculateLongestCommonParentFolderOf(this.getFilesAndFolders());
+            this.workspaceRoot = calculateLongestCommonParentFolderOf(this.rawFilesAndFolders);
         }
         return this.workspaceRoot;
     }
@@ -59,14 +62,53 @@ export class Workspace {
      *   This list is composed of the files that getFilesAndFolders() returns plus any files found recursively inside
      *   any of the folders that getFilesAndFolders() returns. That is, the folders are expanded so that the resulting
      *   list only contains file paths.
-     *   Any files that Code Analyzer chooses to ignore (like .gitignore files, files in node_modules folders, etc.)
-     *   are excluded from the list.
+     *   Any files underneath the workspace root that Code Analyzer chooses to ignore (like .gitignore files,
+     *   files in node_modules folders, etc.) are automatically excluded.
      */
     async getExpandedFiles(): Promise<string[]> {
         if (!this.expandedFiles) {
-            this.expandedFiles = (await expandToListAllFiles(this.filesAndFolders)).filter(isWantedPath);
+            this.expandedFiles = (await expandToListAllFiles(this.getFilesAndFolders())).filter(f => !this.shouldExclude(f));
         }
         return this.expandedFiles as string[];
+    }
+
+    /**
+     * Returns whether a path should be excluded or not (like paths under a "node_modules" folder should be excluded)
+     *   Idea: In the future, we might consider having a .code_analyzer_ignore file or something that users can create
+     *         which could help the user have better control over what files are excluded.
+     *
+     *   Note: When determining whether to exclude a file or not, we base it entirely off looking only at the
+     *   portion of the path underneath the workspace root. This allows us to not accidentally remove all files if the
+     *   workspace happens to live under a dot folder for example. But since we calculate this workspace root folder
+     *   based off of the provided paths, and have no way for the user to explicitly provide the workspace root, we
+     *   end up with what looks like possible inconsistencies. For example, consider the case that we had the following
+     *   paths:
+     *      (1) '/some/folder/node_modules/someFolder/someFile1.txt'
+     *      (2) '/some/folder/someFile2.txt'
+     *   Then if workspace consisted of (1) only then it would not be excluded since the workspace root would be
+     *   '/some/folder/node_modules/someFolder'. But if the workspace consisted of (1) and (2) then the workspace root
+     *   would be '/some/folder' and since (1) is a file that lives in a node_modules folder underneath the workspace
+     *   root then (1) would be excluded but (2) would remain in the workspace. Keep in mind that the files that we are
+     *   given may have come as the output of a glob pattern, so there truly isn't a way to know what the workspace root
+     *   is unless it is given by the user. But these are all super edge cases that most likely will never happen, so
+     *   I think we are safe to use the calculated workspace root for now. If in the future, this becomes a problem,
+     *   then we can add an enhancement to receive the workspace root explicitly from the user.
+     */
+    private shouldExclude(fileOrFolder: string): boolean {
+        const relativeFileOrFolder: string = this.makeRelativeToWorkspaceRoot(fileOrFolder);
+        if (relativeFileOrFolder.length === 0) { // folder is equal to the workspace root
+            return false;
+        }
+        return NON_DOT_FOLDERS_TO_EXCLUDE.some(f => relativeFileOrFolder.includes(`${path.sep}${f}${path.sep}`)) ||
+            NON_DOT_FILES_TO_EXCLUDE.includes(path.basename(relativeFileOrFolder)) ||
+            relativeFileOrFolder.includes(`${path.sep}.`);
+    }
+
+    private makeRelativeToWorkspaceRoot(fileOrFolder: string): string {
+        if(this.getWorkspaceRoot()) {
+            return fileOrFolder.slice(this.getWorkspaceRoot()!.length);
+        }
+        return fileOrFolder;
     }
 }
 
@@ -95,15 +137,6 @@ function removeRedundantPaths(absolutePaths: string[]): string[] {
 function removeTrailingPathSep(absolutePath: string): string {
     return absolutePath.length > path.sep.length && absolutePath.endsWith(path.sep) ?
         absolutePath.slice(0, absolutePath.length - path.sep.length) : absolutePath;
-}
-
-/**
- * Returns whether a path should be included or not (like those that live under a "node_modules" folder should not be)
- *   Idea: in the future, we might consider having a .code_analyzer_ignore file or something that users can create
- */
-function isWantedPath(absolutePath: string): boolean {
-    return !UNWANTED_FOLDERS.some(f => absolutePath.includes(`${path.sep}${f}${path.sep}`)) &&
-        !UNWANTED_FILES.includes(path.basename(absolutePath));
 }
 
 /**

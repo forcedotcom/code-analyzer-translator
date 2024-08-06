@@ -40,7 +40,7 @@ describe('Tests for the Workspace class', () => {
         expect(workspace.getFilesAndFolders()).toEqual([path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt')]);
     });
 
-    it('When calling getExpandedFiles, then all files underneath all subfolders are found', async () => {
+    it('When calling getExpandedFiles, then all files underneath all subfolders are found while excluding dot files/folders and node_modules', async () => {
         const workspace: Workspace = new Workspace([path.join(__dirname, 'test-data', 'sampleWorkspace')]);
         expect(await workspace.getExpandedFiles()).toEqual([
             path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt'),
@@ -144,6 +144,47 @@ describe('Tests for the Workspace class', () => {
     it('When workspace folder ends in path.sep, then getWorkspaceRoot removes the path.sep', () => {
         const workspace: Workspace = new Workspace([__dirname + path.sep]);
         expect(workspace.getWorkspaceRoot()).toEqual(__dirname);
+    });
+
+    it('When a workspace consists a dot file/folder as a direct child underneath the workspace root (as opposed to indirectly) in it, then it should be excluded', async () => {
+        const folderDirectlyContainingDotFileAndDotFolder: string = path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3');
+        const workspace: Workspace = new Workspace([folderDirectlyContainingDotFileAndDotFolder]);
+        // Sanity checks:
+        expect(workspace.getWorkspaceRoot()).toEqual(folderDirectlyContainingDotFileAndDotFolder);
+        expect(workspace.getFilesAndFolders()).toEqual([folderDirectlyContainingDotFileAndDotFolder]);
+        // Actual verification - should not include dot files or folders:
+        expect(await workspace.getExpandedFiles()).toEqual([path.join(folderDirectlyContainingDotFileAndDotFolder, 'someFileInSub3.txt')]);
+    });
+
+    it('When a workspace root happens to live under a dot folder, then the files are not excluded', async () => {
+        const dotFolder: string = path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', '.someDotFolder');
+        const workspace: Workspace = new Workspace([
+            path.join(dotFolder, 'subFolder'),
+            path.join(dotFolder, 'someFile.txt')]);
+        expect(workspace.getFilesAndFolders()).toEqual([
+            path.join(dotFolder, 'subFolder'),
+            path.join(dotFolder, 'someFile.txt',)
+        ].sort());
+        expect(await workspace.getExpandedFiles()).toEqual([
+            path.join(dotFolder, 'subFolder', 'someOtherFile.txt'),
+            path.join(dotFolder, 'someFile.txt',)
+        ].sort());
+    });
+
+    it('When a workspace root happens to live under a node_modules folder, then the files are not excluded', async () => {
+        const nodeModulesFolder: string = path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'node_modules');
+        const workspace: Workspace = new Workspace([
+            path.join(nodeModulesFolder, 'placeholder.txt'),
+            path.join(nodeModulesFolder, 'subFolder'),
+        ]);
+        expect(workspace.getFilesAndFolders()).toEqual([
+            path.join(nodeModulesFolder, 'placeholder.txt'),
+            path.join(nodeModulesFolder, 'subFolder')
+        ].sort());
+        expect(await workspace.getExpandedFiles()).toEqual([
+            path.join(nodeModulesFolder, 'placeholder.txt'),
+            path.join(nodeModulesFolder, 'subFolder', 'someFile.txt')
+        ].sort());
     });
 });
 
