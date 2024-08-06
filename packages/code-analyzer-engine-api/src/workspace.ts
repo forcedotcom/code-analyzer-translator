@@ -141,7 +141,7 @@ export function calculateLongestCommonParentFolderOf(paths: string[]): string | 
     if (longestCommonStr.length > 1 && longestCommonStr.endsWith(path.sep)) {
         return longestCommonStr.slice(0, longestCommonStr.length - 1);
     }
-    return fs.existsSync(longestCommonStr) && fs.statSync(longestCommonStr).isDirectory() && !isPartialFileName(longestCommonStr, paths) ?
+    return fs.existsSync(longestCommonStr) && fs.statSync(longestCommonStr).isDirectory() && !includesAFileThatIsNotAFolderThatStartsWith(longestCommonStr, paths) ?
         longestCommonStr : path.dirname(longestCommonStr);
 }
 function getLongestCommonPrefix(strs: string[]): string {
@@ -157,9 +157,9 @@ function getLongestCommonPrefix(strs: string[]): string {
     }
     return shortestStr;
 }
-function isPartialFileName(fileOrFolder:string, paths: string[]) {
+function includesAFileThatIsNotAFolderThatStartsWith(partialPathStr:string, allPaths: string[]) {
     // This handles the edge case when the workspace contains a folder that is part of the name of another file.
     // For example if "/root/abc/def.txt" and "/root/abcDef.txt" both exist, then we need to know when we can select
     // "/root/abc" as a folder or when we should be selecting "/root" because "/root/abc" just came from "/root/abcDef.txt"
-    return paths.some(p => p.startsWith(fileOrFolder) && p.length > fileOrFolder.length && p[fileOrFolder.length] !== path.sep);
+    return allPaths.some(p => p.startsWith(partialPathStr) && p.length > partialPathStr.length && p[partialPathStr.length] !== path.sep);
 }
