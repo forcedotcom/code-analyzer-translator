@@ -2,7 +2,7 @@ import {Workspace} from "@salesforce/code-analyzer-engine-api";
 import fs from "node:fs";
 import path from "node:path";
 import {ESLintEngineConfig, LEGACY_ESLINT_CONFIG_FILES, LEGACY_ESLINT_IGNORE_FILE} from "./config";
-import {calculateLongestCommonParentFolderOf, makeUnique} from "./utils";
+import {makeUnique} from "./utils";
 
 export type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
 
@@ -101,14 +101,6 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         this.config = config;
     }
 
-    private getWorkspaceRoot(): string {
-        if (!this.workspaceRoot) {
-            const filesAndFolders: string[] = this.delegateWorkspace.getFilesAndFolders();
-            this.workspaceRoot = calculateLongestCommonParentFolderOf(filesAndFolders) || this.config.config_root;
-        }
-        return this.workspaceRoot;
-    }
-
     async getFilesToScan(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest(filterFcn);
         return filesOfInterest.javascriptFiles.concat(filesOfInterest.typescriptFiles);
@@ -138,6 +130,10 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
                 findLegacyIgnoreFile(makeUnique([this.getWorkspaceRoot(), this.config.config_root, process.cwd()])));
         }
         return this.cachedUserConfigInfo;
+    }
+
+    private getWorkspaceRoot(): string {
+        return this.delegateWorkspace.getWorkspaceRoot() || this.config.config_root;
     }
 
     private async getFilesOfInterest(filterFcn: AsyncFilterFnc<string>): Promise<FilesOfInterest> {
