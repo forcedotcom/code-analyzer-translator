@@ -108,6 +108,7 @@ export class Workspace {
         if(this.getWorkspaceRoot()) {
             return fileOrFolder.slice(this.getWorkspaceRoot()!.length);
         }
+        /* istanbul ignore next */
         return fileOrFolder;
     }
 }
