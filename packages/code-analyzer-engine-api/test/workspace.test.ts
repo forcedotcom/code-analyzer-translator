@@ -32,14 +32,6 @@ describe('Tests for the Workspace class', () => {
         expect(workspace.getFilesAndFolders()).toEqual([__dirname]);
     });
 
-    it("When including files we don't care to process like .gitignore file or a node_modules folder, then they are removed", async () => {
-        const workspace: Workspace = new Workspace([
-            path.join(SAMPLE_WORKSPACE_FOLDER ,'node_modules', 'place_holder.txt'),
-            path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt'),
-            path.join(SAMPLE_WORKSPACE_FOLDER ,'.gitignore')]);
-        expect(workspace.getFilesAndFolders()).toEqual([path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt')]);
-    });
-
     it('When calling getExpandedFiles, then all files underneath all subfolders are found while excluding dot files/folders and node_modules', async () => {
         const workspace: Workspace = new Workspace([path.join(__dirname, 'test-data', 'sampleWorkspace')]);
         expect(await workspace.getExpandedFiles()).toEqual([
@@ -49,8 +41,20 @@ describe('Tests for the Workspace class', () => {
             path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub2', 'someFile', 'dummy.txt'),
             path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub2', 'someFile1InSub2.txt'),
             path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub2', 'someFile2InSub2.txt'),
-            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someFileInSub3.txt')
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someFileInSub3.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someOtherFileInSub3.txt')
         ].sort());
+    });
+
+    it("When explicitly including files we normally don't care to process like .gitignore file or a node_modules folder, then we still include them", async () => {
+        const sampleFiles: string[] = [
+            path.join(SAMPLE_WORKSPACE_FOLDER ,'sub1', 'sub3', 'node_modules', 'placeholder.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someFileInSub3.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER ,'sub1', 'sub3', '.gitignore')
+        ].sort();
+        const workspace: Workspace = new Workspace(sampleFiles);
+        expect(workspace.getFilesAndFolders()).toEqual(sampleFiles);
+        expect(await workspace.getExpandedFiles()).toEqual(sampleFiles);
     });
 
     it('When workspace is empty, then getExpandedFiles is empty', async () => {
@@ -147,13 +151,19 @@ describe('Tests for the Workspace class', () => {
     });
 
     it('When a workspace consists a dot file/folder as a direct child underneath the workspace root (as opposed to indirectly) in it, then it should be excluded', async () => {
+        // This case is really a sanity check against a specific implementation that we have. It may seem like an
+        // arbitrary test, but it will help catch things if our implementation does special handling around direct vs
+        // indirect children.
         const folderDirectlyContainingDotFileAndDotFolder: string = path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3');
         const workspace: Workspace = new Workspace([folderDirectlyContainingDotFileAndDotFolder]);
         // Sanity checks:
         expect(workspace.getWorkspaceRoot()).toEqual(folderDirectlyContainingDotFileAndDotFolder);
         expect(workspace.getFilesAndFolders()).toEqual([folderDirectlyContainingDotFileAndDotFolder]);
         // Actual verification - should not include dot files or folders:
-        expect(await workspace.getExpandedFiles()).toEqual([path.join(folderDirectlyContainingDotFileAndDotFolder, 'someFileInSub3.txt')]);
+        expect(await workspace.getExpandedFiles()).toEqual([
+            path.join(folderDirectlyContainingDotFileAndDotFolder, 'someFileInSub3.txt'),
+            path.join(folderDirectlyContainingDotFileAndDotFolder, 'someOtherFileInSub3.txt')
+        ]);
     });
 
     it('When a workspace root happens to live under a dot folder, then the files are not excluded', async () => {
@@ -184,6 +194,31 @@ describe('Tests for the Workspace class', () => {
         expect(await workspace.getExpandedFiles()).toEqual([
             path.join(nodeModulesFolder, 'placeholder.txt'),
             path.join(nodeModulesFolder, 'subFolder', 'someFile.txt')
+        ].sort());
+    });
+
+    it('When explicitly including paths that lives in a .dotFolder or a node_modules folder then it should still be included even if the .dotFolder is underneath the workspace root', async () => {
+        const workspace: Workspace = new Workspace([
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3'), // We want everything from the parent folder and to exclude the normal candidates except for the explicitly included files:
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', '.someDotFolder', 'subFolder'), // This is not redundant since normally it would be excluded
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'node_modules', 'subFolder', 'someFile.txt'), // This is not redundant since normally it would be excluded
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someFileInSub3.txt'), // This is redundant since we already have its parent
+        ]);
+        expect(workspace.getFilesAndFolders()).toEqual([
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', '.someDotFolder', 'subFolder'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'node_modules', 'subFolder', 'someFile.txt'),
+        ].sort());
+
+        // This should not contain the .someDotFolder/someFile.txt file since it wasn't explicitly listed
+        expect(await workspace.getExpandedFiles()).toEqual([
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'someFile.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', '.someDotFolder', 'subFolder', 'someOtherFile.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'node_modules', 'subFolder', 'someFile.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someFileInSub3.txt'),
+            path.join(SAMPLE_WORKSPACE_FOLDER, 'sub1', 'sub3', 'someOtherFileInSub3.txt')
         ].sort());
     });
 });

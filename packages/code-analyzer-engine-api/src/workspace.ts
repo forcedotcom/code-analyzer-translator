@@ -9,7 +9,7 @@ export class Workspace {
     private readonly workspaceId: string;
     private readonly rawFilesAndFolders: string[];
 
-    private normalizedFilesAndFolders?: string[];
+    private filesAndFolders?: string[];
     private expandedFiles?: string[];
     private workspaceRoot?: string | null;
 
@@ -21,7 +21,7 @@ export class Workspace {
      */
     constructor(absoluteFileAndFolderPaths: string[], workspaceId?: string) {
         this.workspaceId = workspaceId || `workspace${++Workspace.nextId}`;
-        this.rawFilesAndFolders =removeRedundantPaths(absoluteFileAndFolderPaths).map(removeTrailingPathSep);
+        this.rawFilesAndFolders = absoluteFileAndFolderPaths;
     }
 
     /**
@@ -33,14 +33,14 @@ export class Workspace {
 
     /**
      * Returns the unique list of files and folders that were used to construct the workspace.
-     *   Any files or folders underneath the workspace root that Code Analyzer chooses to ignore (like .gitignore files,
-     *   node_modules folders, etc.) are automatically excluded.
+     *   Note that besides removing redundant paths, no other filtering is done. For example, if a user explicitly
+     *   provided to the Workspace constructor a .dotFile then we will not exclude this file.
      */
     getFilesAndFolders(): string[] {
-        if (!this.normalizedFilesAndFolders) {
-            this.normalizedFilesAndFolders = this.rawFilesAndFolders.filter(f => !this.shouldExclude(f));
+        if (!this.filesAndFolders) {
+            this.filesAndFolders = this.removeRedundantPaths(this.rawFilesAndFolders).map(removeTrailingPathSep);
         }
-        return this.normalizedFilesAndFolders;
+        return this.filesAndFolders;
     }
 
     /**
@@ -63,7 +63,8 @@ export class Workspace {
      *   any of the folders that getFilesAndFolders() returns. That is, the folders are expanded so that the resulting
      *   list only contains file paths.
      *   Any files underneath the workspace root that Code Analyzer chooses to ignore (like .gitignore files,
-     *   files in node_modules folders, etc.) are automatically excluded.
+     *   files in node_modules folders, etc.) are automatically excluded unless they were explicitly provided when
+     *   constructing the workspace.
      */
     async getExpandedFiles(): Promise<string[]> {
         if (!this.expandedFiles) {
@@ -77,24 +78,16 @@ export class Workspace {
      *   Idea: In the future, we might consider having a .code_analyzer_ignore file or something that users can create
      *         which could help the user have better control over what files are excluded.
      *
-     *   Note: When determining whether to exclude a file or not, we base it entirely off looking only at the
+     *   Note: When determining whether to exclude a file or not, we base it entirely off looking at the
      *   portion of the path underneath the workspace root. This allows us to not accidentally remove all files if the
-     *   workspace happens to live under a dot folder for example. But since we calculate this workspace root folder
-     *   based off of the provided paths, and have no way for the user to explicitly provide the workspace root, we
-     *   end up with what looks like possible inconsistencies. For example, consider the case that we had the following
-     *   paths:
-     *      (1) '/some/folder/node_modules/someFolder/someFile1.txt'
-     *      (2) '/some/folder/someFile2.txt'
-     *   Then if workspace consisted of (1) only then it would not be excluded since the workspace root would be
-     *   '/some/folder/node_modules/someFolder'. But if the workspace consisted of (1) and (2) then the workspace root
-     *   would be '/some/folder' and since (1) is a file that lives in a node_modules folder underneath the workspace
-     *   root then (1) would be excluded but (2) would remain in the workspace. Keep in mind that the files that we are
-     *   given may have come as the output of a glob pattern, so there truly isn't a way to know what the workspace root
-     *   is unless it is given by the user. But these are all super edge cases that most likely will never happen, so
-     *   I think we are safe to use the calculated workspace root for now. If in the future, this becomes a problem,
-     *   then we can add an enhancement to receive the workspace root explicitly from the user.
+     *   workspace happens to live under a dot folder for example. Additionally, we do not remove any files that have
+     *   been explicitly provided to the Workspace constructor, which allows users to target .dot folders and files if
+     *   they choose to do so.
      */
     private shouldExclude(fileOrFolder: string): boolean {
+        return this.isExcludeCandidate(fileOrFolder) && !this.excludeCandidateWasExplicitlyProvided(fileOrFolder);
+    }
+    private isExcludeCandidate(fileOrFolder: string): boolean {
         const relativeFileOrFolder: string = this.makeRelativeToWorkspaceRoot(fileOrFolder);
         if (relativeFileOrFolder.length === 0) { // folder is equal to the workspace root
             return false;
@@ -103,7 +96,20 @@ export class Workspace {
             NON_DOT_FILES_TO_EXCLUDE.includes(path.basename(relativeFileOrFolder)) ||
             relativeFileOrFolder.includes(`${path.sep}.`);
     }
+    private excludeCandidateWasExplicitlyProvided(fileOrFolder: string): boolean {
+        if (this.rawFilesAndFolders.includes(fileOrFolder)) {
+            return true;
+        }
+        const parentFolder: string = path.dirname(fileOrFolder);
+        if (this.isExcludeCandidate(parentFolder)) {
+            return this.excludeCandidateWasExplicitlyProvided(parentFolder);
+        }
+        return false;
+    }
 
+    /**
+     * Returns the file or folder as a relative path, relative to the workspace root
+     */
     private makeRelativeToWorkspaceRoot(fileOrFolder: string): string {
         if(this.getWorkspaceRoot()) {
             return fileOrFolder.slice(this.getWorkspaceRoot()!.length);
@@ -111,25 +117,26 @@ export class Workspace {
         /* istanbul ignore next */
         return fileOrFolder;
     }
-}
 
-/**
- *  Removes redundant paths.
- *    If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
- *    remove that subfolder or file. Also, if we find duplicate entries, we remove those as well.
- */
-function removeRedundantPaths(absolutePaths: string[]): string[] {
-    const pathsSortedByLength: string[] = absolutePaths.sort((a, b) => a.length - b.length);
-    const filteredPaths: string[] = [];
-    for (const currentPath of pathsSortedByLength) {
-        const isAlreadyContained = filteredPaths.some(existingPath =>
-            currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
-        );
-        if (!isAlreadyContained) {
-            filteredPaths.push(currentPath);
+    /**
+     *  Removes redundant paths.
+     *    If a user supplies a parent folder and subfolder of file underneath the parent folder, then we can safely
+     *    remove that subfolder or file (unless it is an excludeCandidate that has been explicitly requested to keep).
+     *    Also, if we find duplicate entries, we remove those as well.
+     */
+    private removeRedundantPaths(absolutePaths: string[]): string[] {
+        const pathsSortedByLength: string[] = [...absolutePaths].sort((a, b) => a.length - b.length);
+        const filteredPaths: string[] = [];
+        for (const currentPath of pathsSortedByLength) {
+            const isAlreadyContained = filteredPaths.some(existingPath =>
+                currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
+            );
+            if (!isAlreadyContained || this.isExcludeCandidate(currentPath)) {
+                filteredPaths.push(currentPath);
+            }
         }
+        return filteredPaths.sort(); // sort alphabetically
     }
-    return filteredPaths.sort(); // sort alphabetically
 }
 
 /**
@@ -144,18 +151,18 @@ function removeTrailingPathSep(absolutePath: string): string {
  * Expands a list of files and/or folders to be a list of all contained files, including the files found in subfolders
  */
 export async function expandToListAllFiles(absoluteFileOrFolderPaths: string[]): Promise<string[]> {
-    const allFiles: string[] = [];
+    const allFiles: Set<string> = new Set(); // Using a set to guarantee uniqueness
     async function processPath(currentPath: string): Promise<void> {
         if ((await fs.promises.stat(currentPath)).isDirectory()) {
             const subPaths: string[] = await fs.promises.readdir(currentPath);
             const absSubPaths: string[] = subPaths.map(f => path.join(currentPath, f));
             await Promise.all(absSubPaths.map(processPath)); // Process subdirectories recursively
         } else {
-            allFiles.push(currentPath);
+            allFiles.add(currentPath);
         }
     }
     await Promise.all(absoluteFileOrFolderPaths.map(processPath));
-    return allFiles.sort();
+    return [... allFiles].sort();
 }
 
 /**
