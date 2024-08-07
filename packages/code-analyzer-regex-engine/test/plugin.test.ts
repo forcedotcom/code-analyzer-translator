@@ -132,18 +132,19 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
     });
 
 
-    it("If regex modifiers are invalid, ensure proper error is emitted", async () => {
+    it("If regex has invalid modifiers, ensure proper error is emitted", async () => {
         const rawConfig = {
             custom_rules: {
                 "NoTodos": {
-                    regex: "/TODO:/lpr",
+                    regex: "/TODO:/glpr",
                     description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                     file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
                 }
             }
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'lpr\''));
+            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'glpr\''));
+
     });
 
     it("If regex modifiers are repeated, ensure proper error is emitted", async () => {
@@ -172,6 +173,20 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
             getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'guv\''));
+    });
+
+    it('If global modifier does not appear in regex, emit appropriate error', async () => {
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    regex: "/TODO:/i",
+                    description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
+                    file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions
+                }
+            }
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessage('GlobalModifierNotProvided', "engines.regex.custom_rules.NoTodos.regex", "/TODO:/gi" , "/TODO:/i"));
     });
 
     it("If regex is not given by user, emit error", async () => {
@@ -304,9 +319,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
     type PATTERN_TESTCASE = { input: string, expected: RegExp };
     const patternTestCases: PATTERN_TESTCASE[] = [
         // Raw regex strings
-        {input: String.raw`/[a-zA-Z]{2,5}\d?/i`, expected: new RegExp('[a-zA-Z]{2,5}\\d?', 'i')},
+        {input: String.raw`/[a-zA-Z]{2,5}\d?/gi`, expected: new RegExp('[a-zA-Z]{2,5}\\d?', 'gi')},
         {input: String.raw`/\d{1,3}\s?[A-Z]*/g`, expected: new RegExp('\\d{1,3}\\s?[A-Z]*', 'g')},
-        {input: String.raw`/[^aeiou]{4,}\W?/m`, expected: new RegExp('[^aeiou]{4,}\\W?', 'm')},
+        {input: String.raw`/[^aeiou]{4,}\W?/gm`, expected: new RegExp('[^aeiou]{4,}\\W?', 'gm')},
         {input: String.raw`/(foo|bar){2,3}\d*/g`, expected: new RegExp('(foo|bar){2,3}\\d*', 'g')},
         {input: String.raw`/\d{2,4}-[a-z]{3,}/g`, expected: new RegExp('\\d{2,4}-[a-z]{3,}', 'g')},
         {input: String.raw`/(cat|dog)?\s+[1-9]/g`, expected: new RegExp('(cat|dog)?\\s+[1-9]', 'g')},
@@ -317,8 +332,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         {input: '/[a-zA-Z]+\\d{1,2}/g', expected: new RegExp('[a-zA-Z]+\\d{1,2}', 'g')},
         {input: '/[0-9]{2,}[A-Z]{2,}?/g', expected: new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g')},
         {input: '/[^a-zA-Z0-9]{3,6}/g', expected: new RegExp('[^a-zA-Z0-9]{3,6}', 'g')},
-        {input: '/(alpha|beta)\\d{2,4}?/i', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'i')},
-        {input: '/noModifiers/', expected: new RegExp('noModifiers')}
+        {input: '/(alpha|beta)\\d{2,4}?/gi', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'gi')},
     ];
     it.each(patternTestCases)('Verify regular expression construction for $input', async (testCase: PATTERN_TESTCASE) => {
         const rawConfig: ConfigObject = {

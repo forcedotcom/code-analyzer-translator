@@ -91,6 +91,11 @@ function validateRegex(value: string, fieldName: string): RegExp {
     }
     const pattern: string = match[1];
     const modifiers: string = match[2];
+
+    if (!modifiers.includes('g')){
+        throw new Error(getMessage('GlobalModifierNotProvided', fieldName, `/${pattern}/g${modifiers}`, value));
+    }
+
     try {
         return new RegExp(pattern, modifiers);
     } catch (err) {
