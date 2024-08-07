@@ -127,14 +127,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const expectedEngineRunOptions: engApi.RunOptions = {
             workspace: new engApi.Workspace([path.resolve('src')], "FixedId")
         };
-        expect(stubEngine1.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine1RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
-        expect(stubEngine2.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine2RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
+        expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine1.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine1RuleNames);
+        expectEquivalentRunOptions(stubEngine1.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
+        expect(stubEngine2.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine2.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine2RuleNames);
+        expectEquivalentRunOptions(stubEngine2.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
     });
 
     it("When specifying path start points as files and subfolders, then they are passed to each engine successfully", async () => {
@@ -150,14 +148,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
                 { file: path.resolve("test", "run.test.ts")}
             ]
         };
-        expect(stubEngine1.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine1RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
-        expect(stubEngine2.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine2RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
+        expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine1.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine1RuleNames);
+        expectEquivalentRunOptions(stubEngine1.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
+        expect(stubEngine2.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine2.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine2RuleNames);
+        expectEquivalentRunOptions(stubEngine2.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
     });
 
     it("When specifying path start points individual methods, then they are passed to each engine successfully", async () => {
@@ -195,14 +191,12 @@ describe("Tests for the run method of CodeAnalyzer", () => {
                 }
             ]
         };
-        expect(stubEngine1.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine1RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
-        expect(stubEngine2.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine2RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
+        expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine1.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine1RuleNames);
+        expectEquivalentRunOptions(stubEngine1.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
+        expect(stubEngine2.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine2.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine2RuleNames);
+        expectEquivalentRunOptions(stubEngine2.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
     });
 
     it("When the workspace provided is one that is not constructed from CodeAnalyzer's createWorkspace method, then it should still work", async () => {
@@ -226,11 +220,10 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const expectedEngineRunOptions: engApi.RunOptions = {
             workspace: new engApi.Workspace([__dirname], "FixedId")
         };
-        expect(stubEngine1.runRulesCallHistory).toEqual([{
-            ruleNames: expectedStubEngine1RuleNames,
-            runOptions: expectedEngineRunOptions
-        }]);
-        expect(stubEngine2.runRulesCallHistory).toEqual([]);
+        expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
+        expect(stubEngine1.runRulesCallHistory[0].ruleNames).toEqual(expectedStubEngine1RuleNames);
+        expectEquivalentRunOptions(stubEngine1.runRulesCallHistory[0].runOptions, expectedEngineRunOptions);
+        expect(stubEngine2.runRulesCallHistory).toHaveLength(0);
     });
 
     it("When zero rules are selected, then all engines should be skipped and returned results contain no violations", async () => {
@@ -632,4 +625,14 @@ class DummyWorkspace implements Workspace {
     getFilesAndFolders(): string[] {
         return [__dirname];
     }
+}
+
+function expectEquivalentRunOptions(actual: engApi.RunOptions, expected: engApi.RunOptions): void {
+    expectEquivalentWorkspaces(actual.workspace, expected.workspace);
+    expect(actual.pathStartPoints).toEqual(expected.pathStartPoints);
+}
+
+function expectEquivalentWorkspaces(actual: engApi.Workspace, expected: engApi.Workspace): void {
+    expect(actual.getWorkspaceId()).toEqual(expected.getWorkspaceId());
+    expect(actual.getFilesAndFolders()).toEqual(expected.getFilesAndFolders());
 }

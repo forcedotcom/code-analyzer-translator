@@ -40,11 +40,15 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
         expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test')]);
     });
 
-    it("When including files we care not to process like .gitignore file or a node_modules folder, then they are removed", async () => {
+    it("When explicitly including files that we normally would ignore, then they are still included since they were explicitely added", async () => {
         const workspace: Workspace = await codeAnalyzer.createWorkspace([
             'test/test-data/sampleWorkspace/node_modules/place_holder.txt',
             'test/test-data/sampleWorkspace/someFile.txt',
-            'test/test-data/sampleWorkspace/.gitignore',]);
-        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test', 'test-data', 'sampleWorkspace', 'someFile.txt')]);
+            'test/test-data/sampleWorkspace/.gitignore']);
+        expect(workspace.getFilesAndFolders()).toEqual([
+            path.resolve('test', 'test-data', 'sampleWorkspace', 'node_modules', 'place_holder.txt'),
+            path.resolve('test', 'test-data', 'sampleWorkspace', 'someFile.txt'),
+            path.resolve('test', 'test-data', 'sampleWorkspace', '.gitignore')
+        ].sort());
     });
 });
