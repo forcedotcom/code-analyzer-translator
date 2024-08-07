@@ -10,6 +10,7 @@ import {
 import {getMessage} from "../src/messages";
 import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRules, RULE_NAME_PATTERN} from "../src/config";
 import {BASE_REGEX_RULES} from "../src/plugin";
+import {getDeprecatedApiVersionRegex} from "../src/utils";
 
 const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
     regex: String.raw`/TODO:\s/gi`,

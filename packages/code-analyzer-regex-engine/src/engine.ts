@@ -26,10 +26,12 @@ export class RegexEngine extends Engine {
     static readonly NAME = "regex";
     readonly regexRules: RegexRules;
     private readonly textFilesCache: Map<string, string[]> = new Map();
+    private readonly ruleResourceUrls: Map<string, string[]>;
 
-    constructor(regexRules: RegexRules) {
+    constructor(regexRules: RegexRules, ruleResourceUrls: Map<string, string[]>) {
         super();
         this.regexRules = regexRules;
+        this.ruleResourceUrls = ruleResourceUrls
     }
 
     getName(): string {
@@ -47,7 +49,7 @@ export class RegexEngine extends Engine {
         const ruleDescriptions: RuleDescription[] = [];
         for (const [ruleName, regexRule] of Object.entries(this.regexRules)) {
             if (!textFiles || textFiles.some(fileName => this.shouldScanFile(fileName, ruleName))){
-                ruleDescriptions.push(toRuleDescription(ruleName, regexRule));
+                ruleDescriptions.push(this.toRuleDescription(ruleName, regexRule));
             }
         }
         return ruleDescriptions;
@@ -62,6 +64,17 @@ export class RegexEngine extends Engine {
         const workspaceTextFiles: string[] =  await filterAsync(fullFileList, isTextFile);
         this.textFilesCache.set(cacheKey, workspaceTextFiles);
         return workspaceTextFiles;
+    }
+
+    private toRuleDescription(ruleName: string, regexRule: RegexRule): RuleDescription {
+        return {
+            name: ruleName,
+            severityLevel: regexRule.severity,
+            type: RuleType.Standard,
+            tags: regexRule.tags,
+            description: regexRule.description,
+            resourceUrls: this.ruleResourceUrls.get(ruleName) ?? []
+        }
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
@@ -151,15 +164,4 @@ type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
 async function filterAsync<T>(array: T[], filterFcn: AsyncFilterFnc<T>): Promise<T[]> {
     const mask: boolean[] = await Promise.all(array.map(filterFcn));
     return array.filter((_, index) => mask[index]);
-}
-
-function toRuleDescription(ruleName: string, regexRule: RegexRule): RuleDescription {
-    return {
-        name: ruleName,
-        severityLevel: regexRule.severity,
-        type: RuleType.Standard,
-        tags: regexRule.tags,
-        description: regexRule.description,
-        resourceUrls: [] // Empty for now. We might allow users to add in resourceUrls if we see a valid use case in the future.
-    }
 }

@@ -12,11 +12,14 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 import {
-    RegexRules, 
-    DEFAULT_TAGS, 
+    RegexRules,
+    DEFAULT_TAGS,
     DEFAULT_SEVERITY_LEVEL
 } from "../src/config";
-import {BASE_REGEX_RULES} from "../src/plugin";
+import {
+    BASE_REGEX_RULES,
+    RULE_RESOURCE_URLS
+} from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -47,7 +50,7 @@ const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
     resourceUrls: []
 };
 
-const EXPECTED_NoTodos_RULE_DESCRIPTION = {
+const EXPECTED_NoTodos_RULE_DESCRIPTION: RuleDescription = {
     name: "NoTodos",
     severityLevel: DEFAULT_SEVERITY_LEVEL,
     type: RuleType.Standard,
@@ -65,13 +68,50 @@ const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     resourceUrls: []
 };
 
+const EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION: RuleDescription = {
+    name: "UseInclusiveOutageTerms",
+    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['brownout', 'blackout'])),
+    severityLevel: SeverityLevel.Info,
+    type: RuleType.Standard,
+    tags: ['Recommended'],
+    resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
+}
+
+const EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION: RuleDescription = {
+    name: "UseInclusiveHierarchicalTerms",
+    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['slave'])),
+    severityLevel: SeverityLevel.Info,
+    type: RuleType.Standard,
+    tags: ['Recommended'],
+    resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
+}
+
+const EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION: RuleDescription = {
+    name: "UseInclusiveSecurityTerms",
+    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['whitelist', 'blacklist'])),
+    severityLevel: SeverityLevel.Info,
+    type: RuleType.Standard,
+    tags: ['Recommended'],
+    resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
+
+}
+
+const EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
+    name: "UpdateOldApexApiVersion",
+    description: getMessage('UpdateOldApexApiVersionRuleDescription'),
+    severityLevel: SeverityLevel.High,
+    type: RuleType.Standard,
+    tags: ['Recommended', 'Security'],
+    resourceUrls: []
+}
+
 describe("Tests for RegexEngine's getName and describeRules methods", () => {
     let engine: RegexEngine;
     beforeAll(() => {
         engine = new RegexEngine({
             ... BASE_REGEX_RULES,
             ... SAMPLE_CUSTOM_RULES
-        });
+        }, RULE_RESOURCE_URLS);
     });
 
     it('Engine name is accessible and correct', () => {
@@ -81,15 +121,19 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
 
     it('Calling describeRules without workspace, returns all available rules', async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
-        expect(rulesDescriptions).toHaveLength(3);
+        expect(rulesDescriptions).toHaveLength(7);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
-                path.resolve(__dirname, 'test-data', 'workspaceWithNoTextFiles') //
+                path.resolve(__dirname, 'test-data', 'workspaceWithNoTextFiles')
             ])});
         expect(rulesDescriptions).toHaveLength(0);
     });
@@ -98,19 +142,27 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
-        expect(rulesDescriptions).toHaveLength(2);
-        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+
+        expect(rulesDescriptions).toHaveLength(5);
+        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION);
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
-        expect(rulesDescriptions).toHaveLength(3);
+        expect(rulesDescriptions).toHaveLength(7);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION)
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -120,10 +172,10 @@ describe('Tests for runRules', () => {
         engine = new RegexEngine({
             ... BASE_REGEX_RULES,
             ... SAMPLE_CUSTOM_RULES
-        });
+        }, RULE_RESOURCE_URLS);
     });
 
-    it('if runRules() is called on a directory with no apex files, it should correctly return no violations', async () => {
+    it('if runRules() is called on a directory with no Apex files, it should correctly return no violations', async () => {
         const runOptions: RunOptions = {
             workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
@@ -132,11 +184,11 @@ describe('Tests for runRules', () => {
         expect(runResults.violations).toHaveLength(0);
     });
 
-    it("Ensure runRules when called on a list Apex classes, properly emits violations", async () => {
+    it("Ensure runRules when called on a directory of Apex classes, it properly emits violations", async () => {
         const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "apexClassWhitespace")
         ])};
-        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos"], runOptions);
+        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos", "UpdateOldApexApiVersion"], runOptions);
 
         const expectedViolations: Violation[] = [
             {
@@ -188,13 +240,288 @@ describe('Tests for runRules', () => {
                     endLine: 7,
                     endColumn: 4
                 }]
-            }
+            },
+            {
+                ruleName: "UpdateOldApexApiVersion",
+                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls-meta.xml"),
+                    startLine: 4,
+                    startColumn: 17,
+                    endLine: 4,
+                    endColumn: 21
+                }]
+            },
+            {
+                ruleName: "UpdateOldApexApiVersion",
+                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls-meta.xml"),
+                    startLine: 3,
+                    startColumn: 17,
+                    endLine: 3,
+                    endColumn: 21
+                }]
+            },
+            {
+                ruleName: "UpdateOldApexApiVersion",
+                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [{
+                    file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "lwc_component.js-meta.xml"),
+                    startLine: 3,
+                    startColumn: 17,
+                    endLine: 3,
+                    endColumn: 21
+                }]
+            },
+
         ];
 
         expect(runResults.violations).toHaveLength(expectedViolations.length);
         for (const expectedViolation of expectedViolations) {
             expect(runResults.violations).toContainEqual(expectedViolation);
         }
+    });
+
+    it("Ensure when runRules is called on a directory of files with inclusivity rule violations, engine emits violations correctly", async () => {
+        const runOptions: RunOptions = {workspace: new Workspace([
+                path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace")
+            ])};
+        const runResults: EngineRunResults = await engine.runRules(["UseInclusiveSecurityTerms", "UseInclusiveOutageTerms", "UseInclusiveHierarchicalTerms"], runOptions);
+        const expectedViolations: Violation[] = [
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy1.cls'),
+                        startLine: 8,
+                        startColumn: 4,
+                        endLine: 8,
+                        endColumn: 13
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy1.cls'),
+                        startLine: 8,
+                        startColumn: 15,
+                        endLine: 8,
+                        endColumn: 26
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveHierarchicalTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy1.cls'),
+                        startLine: 6,
+                        startColumn: 6,
+                        endLine: 6,
+                        endColumn: 11
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy2.ts'),
+                        startLine: 2,
+                        startColumn: 17,
+                        endLine: 2,
+                        endColumn: 28
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy2.ts'),
+                        startLine: 4,
+                        startColumn: 7,
+                        endLine: 4,
+                        endColumn: 21
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy2.ts'),
+                        startLine: 5,
+                        startColumn: 13,
+                        endLine: 5,
+                        endColumn: 27
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy2.ts'),
+                        startLine: 5,
+                        startColumn: 32,
+                        endLine: 5,
+                        endColumn: 41
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy2.ts'),
+                        startLine: 5,
+                        startColumn: 43,
+                        endLine: 5,
+                        endColumn: 52
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy3.js'),
+                        startLine: 1,
+                        startColumn: 17,
+                        endLine: 1,
+                        endColumn: 25
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveHierarchicalTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy3.js'),
+                        startLine: 3,
+                        startColumn: 18,
+                        endLine: 3,
+                        endColumn: 23
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy4.txt'),
+                        startLine: 1,
+                        startColumn: 1,
+                        endLine: 1,
+                        endColumn: 9
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy4.txt'),
+                        startLine: 5,
+                        startColumn: 1,
+                        endLine: 5,
+                        endColumn: 11
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveHierarchicalTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy6.mjs'),
+                        startLine: 3,
+                        startColumn: 18,
+                        endLine: 3,
+                        endColumn: 23
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveOutageTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy7.trigger'),
+                        startLine: 1,
+                        startColumn: 4,
+                        endLine: 1,
+                        endColumn: 16
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveSecurityTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy8.tsx'),
+                        startLine: 3,
+                        startColumn: 7,
+                        endLine: 3,
+                        endColumn: 21
+                    }
+                ]
+            },
+            {
+                ruleName: "UseInclusiveHierarchicalTerms",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace", 'dummy9.jsx'),
+                        startLine: 3,
+                        startColumn: 22,
+                        endLine: 3,
+                        endColumn: 28
+                    }
+                ]
+            },
+        ]
+        expect(runResults.violations).toHaveLength(expectedViolations.length);
+        for (const expectedViolation of expectedViolations) {
+            expect(runResults.violations).toContainEqual(expectedViolation);
+        }
+
     });
 
     it("When workspace contains files that violate custom rules, then emit violation correctly", async () => {
@@ -273,15 +600,17 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "sampleWorkspace")
             ])};
-        const runResults1: EngineRunResults = await engine.runRules(["NoTrailingWhitespace"], runOptions);
-        const runResults2: EngineRunResults = await engine.runRules(["NoTodos"], runOptions);
-        const runResults3: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos"], runOptions);
+        const ruleNames: string[] = ['NoTrailingWhitespace', 'UseInclusiveSecurityTerms', 'UseInclusiveHierarchicalTerms', 'UseInclusiveOutageTerms', 'UpdateOldApexApiVersion', 'NoHellos', 'NoTodos']
+        const individualRunViolations: Violation[] = []
 
-        expect(runResults1.violations).toHaveLength(1);
-        expect(runResults2.violations).toHaveLength(2);
-        expect(runResults3.violations).toHaveLength(3);
-        expect(runResults3.violations).toContainEqual(runResults1.violations[0]);
-        expect(runResults3.violations).toContainEqual(runResults2.violations[0]);
-        expect(runResults3.violations).toContainEqual(runResults2.violations[1]);
+        for (const rule of ruleNames) {
+            individualRunViolations.push(... (await engine.runRules([rule], runOptions)).violations);
+        }
+
+        const combinedRunViolations: Violation[] = (await engine.runRules(ruleNames, runOptions)).violations
+        expect(individualRunViolations.length).toEqual(combinedRunViolations.length)
+        for (const individualRunViolation of individualRunViolations) {
+            expect(combinedRunViolations).toContainEqual(individualRunViolation);
+        }
     });
 });

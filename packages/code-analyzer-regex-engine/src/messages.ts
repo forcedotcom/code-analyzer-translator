@@ -10,6 +10,18 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     TrailingWhitespaceRuleMessage:
         `Found trailing whitespace at the end of a line of code.`,
 
+    AvoidTermsWithImplicitBiasRuleDescription:
+        `"Detects usage of terms: %s which reinforce implicit bias.`,
+
+    AvoidTermsWithImplicitBiasRuleMessage:
+        `A term from the following: '%s' was found. Replace it with a more inclusive term like one of the following: %s.`,
+
+    UpdateOldApexApiVersionRuleDescription:
+        `Detects Apex classes relying on API versions that are below 52.0.`,
+
+    UpdateOldApexApiVersionRuleMessage:
+        `Found an Apex class relying on an API version 3 years or older. Update your API version.`,
+
     RuleViolationMessage:
         `A match of the regular expression %s was found for rule '%s': %s`,
 
