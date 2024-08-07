@@ -18,6 +18,10 @@ const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
     file_extensions: [".js", ".ts", ".cls"]
 };
 
+const SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION = {
+    regex: String.raw`/hello/gi`,
+    description: "Detects hellos in project",
+}
 describe('RegexEnginePlugin No Custom Config Tests' , () => {
     let enginePlugin: RegexEnginePlugin;
     beforeAll(() => {
@@ -49,19 +53,31 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
     it("When valid custom rules are provided, then they are appended to base rules", async () => {
         const rawConfig: ConfigObject = {
             custom_rules: {
-                NoTodos: SAMPLE_RAW_CUSTOM_RULE_DEFINITION
+                NoTodos: SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                NoHellos: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION
             }
         };
         const engine: RegexEngine = await enginePlugin.createEngine('regex', rawConfig) as RegexEngine;
-        const customRuleRegex: RegExp = /TODO:\s/gi
+        const customNoTodoRuleRegex: RegExp = /TODO:\s/gi;
+        const customNoHelloRuleRegex: RegExp = /hello/gi;
         const expRegexRules: RegexRules = {
             ...BASE_REGEX_RULES,
             NoTodos: {
-                regex: customRuleRegex,
+                regex: customNoTodoRuleRegex,
                 description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                 file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
-                violation_message: getMessage('RuleViolationMessage', customRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
+                violation_message: getMessage('RuleViolationMessage', customNoTodoRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
                 name: "NoTodos",
+                type: RuleType.Standard,
+                severityLevel: SeverityLevel.Moderate,
+                tags: ['Recommended'],
+                resourceUrls: []
+            },
+            NoHellos: {
+                regex: customNoHelloRuleRegex,
+                description: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION.description,
+                violation_message: getMessage('RuleViolationMessage', customNoHelloRuleRegex.toString(), 'NoHellos', 'Detects hellos in project'),
+                name: "NoHellos",
                 type: RuleType.Standard,
                 severityLevel: SeverityLevel.Moderate,
                 tags: ['Recommended'],

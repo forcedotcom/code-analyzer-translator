@@ -11,6 +11,14 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import {RegexRules} from "./config";
+import {isBinaryFileSync} from "isbinaryfile";
+
+const TEXT_BASED_FILE_EXTS = new Set<string>(
+    [
+        '.cjs', '.cls', '.cmp', '.css', '.csv', '.htm', '.html', '.js', '.json', '.jsx', '.md', '.mdt', '.mjs', '.page',
+        '.rtf', '.trigger', '.ts', '.tsx', '.txt', '.xml', '.xsl', '.xslt', '.yaml', '.yml'
+    ]
+)
 
 export class RegexEngine extends Engine {
     static readonly NAME = "regex";
@@ -34,12 +42,12 @@ export class RegexEngine extends Engine {
         if (!describeOptions.workspace) {
             return Object.values(this.regexRules);
         }
-        const fullFileList: string[] = await describeOptions.workspace.getExpandedFiles();
-        const fileExtSet: Set<string> = getSetOfFileExtensionsFrom(fullFileList);
 
+        const fullFileList: string[] = await describeOptions.workspace.getExpandedFiles();
         const ruleDescriptions: RuleDescription[] = [];
+
         for (const regexRule of Object.values(this.regexRules)) {
-            if (regexRule.file_extensions.some(fileExt => fileExtSet.has(fileExt))) {
+            if (fullFileList.some(fileName => this.shouldScanFile(fileName, regexRule.name))){
                 ruleDescriptions.push(regexRule);
             }
         }
@@ -62,7 +70,9 @@ export class RegexEngine extends Engine {
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
         const ext: string = path.extname(fileName).toLowerCase();
-        return this.regexRules[ruleName].file_extensions.includes(ext);
+        return this.regexRules[ruleName].file_extensions ?
+            this.regexRules[ruleName].file_extensions.includes(ext) :
+            TEXT_BASED_FILE_EXTS.has(ext) || isTextFile(fileName);
     }
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
@@ -94,14 +104,6 @@ export class RegexEngine extends Engine {
     }
 }
 
-function getSetOfFileExtensionsFrom(files: string[]): Set<string> {
-    const fileExtSet: Set<string> = new Set();
-    for (const file of files) {
-        fileExtSet.add(path.extname(file).toLowerCase());
-    }
-    return fileExtSet;
-}
-
 function getColumnNumber(charIndex: number, newlineIndexes: number[]): number {
     const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
     const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1;
@@ -121,10 +123,15 @@ function getLineNumber(charIndex: number, newlineIndexes: number[]): number{
 function getNewlineIndices(fileContents: string): number[] {
     const newlineRegex: RegExp = new RegExp(os.EOL, "g");
     const matches = fileContents.matchAll(newlineRegex);
-    const newlineIndexes = [0];
+    const newlineIndexes = [-1];
 
     for (const match of matches) {
         newlineIndexes.push(match.index)
     }
     return newlineIndexes;
+}
+
+// TODO: Make this async and cache results to improve performance
+function isTextFile(fileName: string): boolean {
+    return !isBinaryFileSync(fileName);
 }

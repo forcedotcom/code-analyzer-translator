@@ -27,6 +27,16 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         severityLevel: SeverityLevel.Moderate,
         tags: ['Recommended'],
         resourceUrls: []
+    },
+    NoHellos: {
+        regex: /hello/gi,
+        description: "Detects hellos in project.",
+        violation_message: "sample violation message",
+        name: "NoHellos",
+        type: RuleType.Standard,
+        severityLevel: SeverityLevel.Moderate,
+        tags: ['Recommended'],
+        resourceUrls: []
     }
 };
 
@@ -48,6 +58,15 @@ const EXPECTED_NoTodos_RULE_DESCRIPTION = {
     resourceUrls: []
 };
 
+const EXPECTED_NoHellos_RULE_DESCRIPTION = {
+    name: "NoHellos",
+    severityLevel: SeverityLevel.Moderate,
+    type: RuleType.Standard,
+    tags: ["Recommended"],
+    description: "Detects hellos in project.",
+    resourceUrls: []
+};
+
 describe("Tests for RegexEngine's getName and describeRules methods", () => {
     let engine: RegexEngine;
     beforeAll(() => {
@@ -64,34 +83,38 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
 
     it('Calling describeRules without workspace, returns all available rules', async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
-        expect(rulesDescriptions).toHaveLength(2);
+        expect(rulesDescriptions).toHaveLength(3);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
-                path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy2.ts') // .ts files aren't applicable to the rules
+                path.resolve(__dirname, 'test-data', 'workspaceWithNoTextFiles') //
             ])});
         expect(rulesDescriptions).toHaveLength(0);
     });
 
-    it("When workspace contains files only applicable to one of the rules, then describeRules only returns that one rule", async () => {
+    it("When workspace contains files only applicable to only some of the rules, then describeRules only returns those rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
-        expect(rulesDescriptions).toHaveLength(1);
+        expect(rulesDescriptions).toHaveLength(2);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
-        expect(rulesDescriptions).toHaveLength(2);
+        expect(rulesDescriptions).toHaveLength(3);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION)
     });
+
 });
 
 describe('Tests for runRules', () => {
@@ -113,7 +136,7 @@ describe('Tests for runRules', () => {
         expect(runResults.violations).toHaveLength(0);
     });
 
-    it("Ensure runRules when called on a list Apex classes,  properly emits violations", async () => {
+    it("Ensure runRules when called on a list Apex classes, properly emits violations", async () => {
         const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "apexClassWhitespace")
         ])};
@@ -182,7 +205,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "sampleWorkspace")
         ])};
-        const runResults: EngineRunResults = await engine.runRules(["NoTodos"], runOptions);
+        const runResults: EngineRunResults = await engine.runRules(["NoTodos", "NoHellos"], runOptions);
 
         const expectedViolations: Violation[] = [
             {
@@ -212,7 +235,36 @@ describe('Tests for runRules', () => {
                         endColumn: 22
                     }
                 ]
+            },
+            {
+                ruleName: "NoHellos",
+                message: "sample violation message",
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "sampleWorkspace", "dummy3.js"),
+                        startLine: 3,
+                        startColumn: 29,
+                        endLine: 3,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "NoHellos",
+                message: "sample violation message",
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "sampleWorkspace", "dummy4.txt"),
+                        startLine: 1,
+                        startColumn: 1,
+                        endLine: 1,
+                        endColumn: 6
+                    }
+                ]
             }
+
         ];
 
         expect(runResults.violations).toHaveLength(expectedViolations.length);
