@@ -32,11 +32,13 @@ describe('End to end test', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         const recommendedRuleNames: string[] = ruleDescriptions.filter(rd => rd.tags.includes('Recommended')).map(rd => rd.name);
         const engineRunResults: EngineRunResults = await engine.runRules(recommendedRuleNames, {workspace: workspace});
-
         const violationsFromTsFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.ts');
+
         expect(violationsFromTsFile).toHaveLength(1);
         expect(violationsFromTsFile.map(v => v.ruleName)).toEqual(['NoTodos']);
+
         const violationsFromClsFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.cls');
+
         expect(violationsFromClsFile).toHaveLength(1);
         expect(violationsFromClsFile.map(v => v.ruleName)).toEqual(['NoTrailingWhitespace']);
     });

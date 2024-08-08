@@ -59,6 +59,7 @@ export function isZipFile(file: string) {
  * Determines if a file is a non-binary text file
  * @param file a file path or the Buffer of its contents
  */
+/* TODO: Make this function async */
 export function isTextFile(file: string | Buffer): boolean {
     return !isBinaryFileSync(file);
 }

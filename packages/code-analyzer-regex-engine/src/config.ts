@@ -27,8 +27,9 @@ export type RegexRules = {
         // The regular expression that triggers a violation when matched against the contents of a file.
         regex: RegExp;
 
-        /// The extensions of the files that you would like to test the regular expression against.
-        file_extensions: string[];
+        // The extensions of the files that you would like to test the regular expression against.
+        // If not defined, or equal to null, then all text-based files of any file extension will be tested.
+        file_extensions?: string[];
 
         // A description of the rule's purpose.
         description: string;
@@ -55,7 +56,7 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
         const description: string = ruleExtractor.extractRequiredString('description')
         const rawRegexString: string = ruleExtractor.extractRequiredString('regex')
         const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'))
-        const rawFileExtensions: string[] = ruleExtractor.extractRequiredArray('file_extensions',
+        const rawFileExtensions: string[] | undefined = ruleExtractor.extractArray('file_extensions',
             (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN));
 
         customRules[ruleName] = {
@@ -63,7 +64,7 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
             description: description,
             violation_message: ruleExtractor.extractString('violation_message',
                 getDefaultRuleViolationMessage(regex, ruleName, description))!,
-            file_extensions: normalizeFileExtensions(rawFileExtensions),
+            ...(rawFileExtensions ? { file_extensions: normalizeFileExtensions(rawFileExtensions) } : {}),
 
             // Additional fields to complete the RuleDescription:
             name: ruleName,

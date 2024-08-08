@@ -6,58 +6,59 @@
     "license": "BSD-3-Clause",
     "homepage": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview",
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/forcedotcom/code-analyzer-core.git",
-      "directory": "packages/code-analyzer-regex-engine"
+        "type": "git",
+        "url": "git+https://github.com/forcedotcom/code-analyzer-core.git",
+        "directory": "packages/code-analyzer-regex-engine"
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-      "@types/node": "^20.0.0",
-      "@salesforce/code-analyzer-engine-api": "0.8.0"
+        "@salesforce/code-analyzer-engine-api": "0.8.0",
+        "@types/node": "^20.0.0",
+        "isbinaryfile": "^5.0.2"
     },
     "devDependencies": {
-      "@eslint/js": "^8.57.0",
-      "@types/jest": "^29.0.0",
-      "eslint": "^8.57.0",
-      "jest": "^29.0.0",
-      "rimraf": "*",
-      "ts-jest": "^29.0.0",
-      "typescript": "^5.4.5",
-      "typescript-eslint": "^7.8.0"
+        "@eslint/js": "^8.57.0",
+        "@types/jest": "^29.0.0",
+        "eslint": "^8.57.0",
+        "jest": "^29.0.0",
+        "rimraf": "*",
+        "ts-jest": "^29.0.0",
+        "typescript": "^5.4.5",
+        "typescript-eslint": "^7.8.0"
     },
     "engines": {
-      "node": ">=20.0.0"
+        "node": ">=20.0.0"
     },
     "files": [
-      "dist",
-      "LICENSE",
-      "package.json"
+        "dist",
+        "LICENSE",
+        "package.json"
     ],
     "scripts": {
-      "build": "tsc --build tsconfig.build.json --verbose",
-      "test": "jest --coverage",
-      "lint": "eslint src/**/*.ts",
-      "package": "npm pack",
-      "all": "npm run build && npm run test && npm run lint && npm run package",
-      "clean": "tsc --build tsconfig.build.json --clean",
-      "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz && rimraf vulnerabilities",
-      "scrub": "npm run clean && rimraf node_modules",
-      "showcoverage": "open ./coverage/lcov-report/index.html"
+        "build": "tsc --build tsconfig.build.json --verbose",
+        "test": "jest --coverage",
+        "lint": "eslint src/**/*.ts",
+        "package": "npm pack",
+        "all": "npm run build && npm run test && npm run lint && npm run package",
+        "clean": "tsc --build tsconfig.build.json --clean",
+        "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz && rimraf vulnerabilities",
+        "scrub": "npm run clean && rimraf node_modules",
+        "showcoverage": "open ./coverage/lcov-report/index.html"
     },
     "jest": {
-      "preset": "ts-jest",
-      "testEnvironment": "node",
-      "testMatch": [
-        "**/*.test.ts"
-      ],
-      "testPathIgnorePatterns": [
-        "/node_modules/",
-        "/dist/"
-      ],
-      "collectCoverageFrom": [
-        "src/**/*.ts",
-        "!src/index.ts"
-      ]
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/*.test.ts"
+        ],
+        "testPathIgnorePatterns": [
+            "/node_modules/",
+            "/dist/"
+        ],
+        "collectCoverageFrom": [
+            "src/**/*.ts",
+            "!src/index.ts"
+        ]
     }
-  }
+}
