@@ -97,7 +97,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', '/something[/gi', "Invalid regular expression: /something[/gi: Unterminated character class"));
+            getMessage('InvalidRegex', 'engines.regex.custom_rules.BadRule.regex', "Invalid regular expression: /something[/gi: Unterminated character class"));
     });
 
     it("If regex is not given in forward-slash delimited strings, emit appropriate error", async () => {
@@ -143,7 +143,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             }
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "/TODO:/lpr", 'Invalid flags supplied to RegExp constructor \'lpr\''));
+            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'lpr\''));
     });
 
     it("If regex modifiers are repeated, ensure proper error is emitted", async () => {
@@ -157,7 +157,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             }
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "/TODO:/gig", 'Invalid flags supplied to RegExp constructor \'gig\''));
+            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'gig\''));
     });
 
     it("If modifiers u, v appear together, ensure proper error is emitted", async () => {
@@ -171,7 +171,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             }
         };
         await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "/TODO:/guv", 'Invalid flags supplied to RegExp constructor \'guv\''));
+            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'guv\''));
     });
 
     it("If regex is not given by user, emit error", async () => {

@@ -96,7 +96,7 @@ function validateRegex(value: string, fieldName: string): RegExp {
     } catch (err) {
         /* istanbul ignore next */
         const errMsg: string = err instanceof Error ? err.message : String(err);
-        throw new Error(getMessage('InvalidRegex', value, errMsg), {cause: err});
+        throw new Error(getMessage('InvalidRegex', fieldName, errMsg), {cause: err});
     }
 }
 
