@@ -1,5 +1,5 @@
 import {
-    ConfigObject,
+    ConfigObject, ConfigValue,
     ConfigValueExtractor,
     getMessageFromCatalog,
     RuleDescription,
@@ -37,12 +37,24 @@ export type RegexRules = {
         // The message emitted when a rule violation occurs. This message is intended to help the user understand the violation.
         // Default: `A match of the regular expression {regex} was found for rule '{ruleName}': {description}`
         violation_message: string;
+
+        // A list of labels to help categorize the rule. Rules can also be filtered by these tags.
+        // Default: ['Recommended']
+        tags: string[];
+
+        // Determines the severity level of a rule. You can assign a severity level to a rule to indicate how important the rule is.
+        // The severity levels correspond to numbers as follows: Critical = 1, High = 2, Moderate = 3, Low = 4, Info = 5
+        // Default: Moderate
+        severityLevel: SeverityLevel;
     }
 }
 
 export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
 export const RULE_NAME_PATTERN: RegExp = /^[A-Za-z@][A-Za-z_0-9@\-/]*$/;
 export const REGEX_STRING_PATTERN: RegExp = /^\/(.*?)\/(.*)$/;
+
+export const DEFAULT_TAGS: string[] = ['Recommended']
+export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate
 
 export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngineConfig {
     const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
@@ -58,20 +70,22 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
         const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'))
         const rawFileExtensions: string[] | undefined = ruleExtractor.extractArray('file_extensions',
             (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN));
+        const rawSeverityLevelValue: ConfigValue = ruleExtractor.getObject()['severity_level']
 
         customRules[ruleName] = {
             regex: regex,
             description: description,
             violation_message: ruleExtractor.extractString('violation_message',
                 getDefaultRuleViolationMessage(regex, ruleName, description))!,
+            severityLevel: rawSeverityLevelValue ? validateSeverityValue(rawSeverityLevelValue, ruleExtractor.getFieldPath('severity_level')) : DEFAULT_SEVERITY_LEVEL,
+            tags: ruleExtractor.extractArray('tags', ValueValidator.validateString, DEFAULT_TAGS)!,
             ...(rawFileExtensions ? { file_extensions: normalizeFileExtensions(rawFileExtensions) } : {}),
+
 
             // Additional fields to complete the RuleDescription:
             name: ruleName,
             type: RuleType.Standard,
-            severityLevel: SeverityLevel.Moderate, // This is the default, but user can control this via rule overrides instead of engine config.
-            tags: ['Recommended'],                 // This is the default, but user can control this via rule overrides instead of engine config.
-            resourceUrls: []                       // Empty for now. We might allow users to add in resourceUrls if we see a valid use case in the future.
+            resourceUrls: []  // Empty for now. We might allow users to add in resourceUrls if we see a valid use case in the future.
         }
 
     }
@@ -104,6 +118,21 @@ function validateRegex(value: string, fieldName: string): RegExp {
         const errMsg: string = err instanceof Error ? err.message : String(err);
         throw new Error(getMessage('InvalidRegex', fieldName, errMsg), {cause: err});
     }
+}
+
+function validateSeverityValue(value: unknown, fieldName: string): SeverityLevel {
+    // Note that Object.values(SeverityLevel) returns [1,2,3,4,5,"Critical","High","Moderate","Low","Info"]
+    if ((typeof value !== 'string' && typeof value !== 'number')
+        || !Object.values(SeverityLevel).includes(value as string | number)) {
+        throw new Error(getMessage('ConfigValueNotAValidSeverityLevel', fieldName,
+            JSON.stringify(Object.values(SeverityLevel)), JSON.stringify(value)));
+    }
+    if (typeof value === 'string') {
+        // We can't type cast to enum from a string, so instead we choose the enum based on the string as a key.
+        value = SeverityLevel[value as keyof typeof SeverityLevel];
+    }
+    // We can type cast to enum safely from a number
+    return value as SeverityLevel;
 }
 
 function normalizeFileExtensions(rawFileExts: string[]): string[] {

@@ -11,7 +11,11 @@ import {
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
-import {RegexRules} from "../src/config";
+import {
+    RegexRules, 
+    DEFAULT_TAGS, 
+    DEFAULT_SEVERITY_LEVEL
+} from "../src/config";
 import {BASE_REGEX_RULES} from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
@@ -24,8 +28,8 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         violation_message: "sample violation message",
         name: "NoTodos",
         type: RuleType.Standard,
-        severityLevel: SeverityLevel.Moderate,
-        tags: ['Recommended'],
+        severityLevel: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS,
         resourceUrls: []
     },
     NoHellos: {
@@ -34,8 +38,8 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         violation_message: "sample violation message",
         name: "NoHellos",
         type: RuleType.Standard,
-        severityLevel: SeverityLevel.Moderate,
-        tags: ['Recommended'],
+        severityLevel: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS,
         resourceUrls: []
     }
 };
@@ -51,18 +55,18 @@ const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
 
 const EXPECTED_NoTodos_RULE_DESCRIPTION = {
     name: "NoTodos",
-    severityLevel: SeverityLevel.Moderate,
+    severityLevel: DEFAULT_SEVERITY_LEVEL,
     type: RuleType.Standard,
-    tags: ["Recommended"],
+    tags: DEFAULT_TAGS,
     description: "Detects TODO comments in code base.",
     resourceUrls: []
 };
 
 const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     name: "NoHellos",
-    severityLevel: SeverityLevel.Moderate,
+    severityLevel: DEFAULT_SEVERITY_LEVEL,
     type: RuleType.Standard,
-    tags: ["Recommended"],
+    tags: DEFAULT_TAGS,
     description: "Detects hellos in project.",
     resourceUrls: []
 };
