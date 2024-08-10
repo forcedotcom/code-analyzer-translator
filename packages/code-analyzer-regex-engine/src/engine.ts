@@ -5,13 +5,14 @@ import {
     EngineRunResults,
     RuleDescription,
     RunOptions,
-    Violation
+    Violation,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import {RegexRules} from "./config";
-import {isBinaryFileSync} from "isbinaryfile";
+import {isBinaryFile} from "isbinaryfile";
 
 const TEXT_BASED_FILE_EXTS = new Set<string>(
     [
@@ -23,6 +24,7 @@ const TEXT_BASED_FILE_EXTS = new Set<string>(
 export class RegexEngine extends Engine {
     static readonly NAME = "regex";
     readonly regexRules: RegexRules;
+    private readonly textFilesCache: Map<string, string[]> = new Map();
 
     constructor(regexRules: RegexRules) {
         super();
@@ -42,37 +44,46 @@ export class RegexEngine extends Engine {
         if (!describeOptions.workspace) {
             return Object.values(this.regexRules);
         }
-
-        const fullFileList: string[] = await describeOptions.workspace.getExpandedFiles();
+        const textFiles: string[] = await this.getTextFiles(describeOptions.workspace)
         const ruleDescriptions: RuleDescription[] = [];
 
         for (const regexRule of Object.values(this.regexRules)) {
-            if (fullFileList.some(fileName => this.shouldScanFile(fileName, regexRule.name))){
+            if (textFiles.some(fileName => this.shouldScanFile(fileName, regexRule.name))){
                 ruleDescriptions.push(regexRule);
             }
         }
         return ruleDescriptions;
     }
 
+    private async getTextFiles(workspace: Workspace): Promise<string[]>{
+        const cacheKey: string = workspace.getWorkspaceId();
+        if (this.textFilesCache.has(cacheKey)){
+            return this.textFilesCache.get(cacheKey)!;
+        }
+        const fullFileList: string[] = await workspace.getExpandedFiles();
+        const workspaceTextFiles: string[] =  await filterAsync(fullFileList, isTextFile);
+        this.textFilesCache.set(cacheKey, workspaceTextFiles);
+        return workspaceTextFiles;
+    }
+
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
-        const fullFileList: string[] = await runOptions.workspace.getExpandedFiles();
-        const ruleRunPromises: Promise<Violation[]>[] = fullFileList.map(file => this.runRulesForFile(file, ruleNames));
+        const textFiles: string[] = await this.getTextFiles(runOptions.workspace);
+        const ruleRunPromises: Promise<Violation[]>[] = textFiles.map(file => this.runRulesForFile(file, ruleNames));
         return {
             violations: (await Promise.all(ruleRunPromises)).flat()
         };
     }
 
     private async runRulesForFile(file: string, ruleNames: string[]): Promise<Violation[]>{
-        const rulesToRun: string[] = ruleNames.filter(ruleName => this.shouldScanFile(file, ruleName));
+        const rulesToRun: string[] = ruleNames.filter(rule => this.shouldScanFile(file, rule));
         const violationPromises:  Promise<Violation[]>[]  = rulesToRun.map(ruleName => this.scanFile(file, ruleName));
         return (await Promise.all(violationPromises)).flat();
     }
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
-        const ext: string = path.extname(fileName).toLowerCase();
-        return this.regexRules[ruleName].file_extensions ?
-            this.regexRules[ruleName].file_extensions.includes(ext) :
-            TEXT_BASED_FILE_EXTS.has(ext) || isTextFile(fileName);
+        const ext = path.extname(fileName).toLowerCase();
+        const fileExtensions = this.regexRules[ruleName].file_extensions;
+        return !fileExtensions || fileExtensions.includes(ext);
     }
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
@@ -104,6 +115,7 @@ export class RegexEngine extends Engine {
     }
 }
 
+
 function getColumnNumber(charIndex: number, newlineIndexes: number[]): number {
     const idxOfNextNewline = newlineIndexes.findIndex(el => el >= charIndex);
     const idxOfCurrentLine = idxOfNextNewline === -1 ? newlineIndexes.length - 1: idxOfNextNewline - 1;
@@ -131,7 +143,14 @@ function getNewlineIndices(fileContents: string): number[] {
     return newlineIndexes;
 }
 
-// TODO: Make this async and cache results to improve performance
-function isTextFile(fileName: string): boolean {
-    return !isBinaryFileSync(fileName);
+async function isTextFile(fileName: string): Promise<boolean> {
+    const ext: string = path.extname(fileName).toLowerCase()
+    return TEXT_BASED_FILE_EXTS.has(ext) || !(await isBinaryFile(fileName));
+}
+
+type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
+
+async function filterAsync<T>(array: T[], filterFcn: AsyncFilterFnc<T>): Promise<T[]> {
+    const mask: boolean[] = await Promise.all(array.map(filterFcn));
+    return array.filter((_, index) => mask[index]);
 }
