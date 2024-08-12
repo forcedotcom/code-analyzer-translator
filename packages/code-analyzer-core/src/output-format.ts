@@ -158,7 +158,7 @@ class HtmlOutputFormatter implements OutputFormatter {
     private static readonly VIOLATIONS_HOLE: string = '{{###VIOLATIONS###}}';
     private readonly clock: Clock;
 
-    constructor(/* istanbul ignore next */ clock: Clock = new RealClock()) {
+    constructor(clock: Clock) {
         this.clock = clock;
     }
 

@@ -213,17 +213,13 @@ export class UnexpectedErrorEngineRunResults implements EngineRunResults {
 }
 
 export class RunResultsImpl implements RunResults {
+    private readonly clock: Clock;
     private readonly runDir: string;
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
-    private clock: Clock = new RealClock();
 
-    constructor(runDir: string = process.cwd() + path.sep) {
-        this.runDir = runDir;
-    }
-
-    // For testing purposes only
-    _setClock(clock: Clock) {
+    constructor(clock: Clock = new RealClock(), runDir: string = process.cwd() + path.sep) {
         this.clock = clock;
+        this.runDir = runDir;
     }
 
     getRunDirectory() {

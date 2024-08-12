@@ -49,8 +49,7 @@ describe("Tests for the CSV output format", () => {
 
 describe("Tests for the HTML output format", () => {
     it("When an empty result is provided, we create html text correctly", () => {
-        const results: RunResultsImpl = new RunResultsImpl();
-        results._setClock(new FixedClock(fixedTime));
+        const results: RunResultsImpl = new RunResultsImpl(new FixedClock(fixedTime));
         const formattedText: string = results.toFormattedOutput(OutputFormat.HTML).replaceAll('\r\n','\n');
         const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.html', true);
         expect(formattedText).toEqual(expectedText);
