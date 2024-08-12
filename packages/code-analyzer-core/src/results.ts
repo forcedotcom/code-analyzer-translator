@@ -1,7 +1,7 @@
 import {Rule, RuleSelection, SeverityLevel, UnexpectedEngineErrorRule} from "./rules"
 import * as engApi from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
-import {toAbsolutePath} from "./utils";
+import {Clock, RealClock, toAbsolutePath} from "./utils";
 import {OutputFormat, OutputFormatter} from "./output-format";
 import path from "node:path";
 
@@ -215,9 +215,15 @@ export class UnexpectedErrorEngineRunResults implements EngineRunResults {
 export class RunResultsImpl implements RunResults {
     private readonly runDir: string;
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
+    private clock: Clock = new RealClock();
 
     constructor(runDir: string = process.cwd() + path.sep) {
         this.runDir = runDir;
+    }
+
+    // For testing purposes only
+    _setClock(clock: Clock) {
+        this.clock = clock;
     }
 
     getRunDirectory() {
@@ -259,7 +265,7 @@ export class RunResultsImpl implements RunResults {
     }
 
     toFormattedOutput(format: OutputFormat): string {
-        return OutputFormatter.forFormat(format).format(this);
+        return OutputFormatter.forFormat(format, this.clock).format(this);
     }
 
     addEngineRunResults(engineRunResults: EngineRunResults): void {

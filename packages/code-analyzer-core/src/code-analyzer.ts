@@ -132,6 +132,7 @@ export class CodeAnalyzer {
         const engineRunResultsList: EngineRunResults[] = await Promise.all(runPromises);
 
         const runResults: RunResultsImpl = new RunResultsImpl();
+        runResults._setClock(this.clock);
         for (const engineRunResults of engineRunResultsList) {
             runResults.addEngineRunResults(engineRunResults);
         }

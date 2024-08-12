@@ -3,17 +3,21 @@ import {Rule, RuleType, SeverityLevel} from "./rules";
 import {stringify as stringifyToCsv} from "csv-stringify/sync";
 import {Options as CsvOptions} from "csv-stringify";
 import * as xmlbuilder from "xmlbuilder";
+import * as fs from 'fs';
+import path from "node:path";
+import {Clock, RealClock} from "./utils";
 
 export enum OutputFormat {
     CSV = "CSV",
     JSON = "JSON",
-    XML = "XML"
+    XML = "XML",
+    HTML = "HTML"
 }
 
 export abstract class OutputFormatter {
     abstract format(results: RunResults): string
 
-    static forFormat(format: OutputFormat) {
+    static forFormat(format: OutputFormat, /* istanbul ignore next */ clock: Clock = new RealClock()) {
         switch (format) {
             case OutputFormat.CSV:
                 return new CsvOutputFormatter();
@@ -21,6 +25,8 @@ export abstract class OutputFormatter {
                 return new JsonOutputFormatter();
             case OutputFormat.XML:
                 return new XmlOutputFormatter();
+            case OutputFormat.HTML:
+                return new HtmlOutputFormatter(clock);
             default:
                 throw new Error(`Unsupported output format: ${format}`);
         }
@@ -141,6 +147,33 @@ class XmlOutputFormatter implements OutputFormatter {
         }
 
         return violationsNode.end({ pretty: true, allowEmpty: true });
+    }
+}
+
+const HTML_TEMPLATE_VERSION: string = '0.0.1';
+const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
+class HtmlOutputFormatter implements OutputFormatter {
+    private static readonly TIMESTAMP_HOLE: string = '{{###TIMESTAMP###}}';
+    private static readonly RUNDIR_HOLE: string = '{{###RUNDIR###}}';
+    private static readonly VIOLATIONS_HOLE: string = '{{###VIOLATIONS###}}';
+    private readonly clock: Clock;
+
+    constructor(/* istanbul ignore next */ clock: Clock = new RealClock()) {
+        this.clock = clock;
+    }
+
+    format(results: RunResults): string {
+        const resultsOutput: ResultsOutput = toResultsOutput(results);
+        const htmlTemplate: string = fs.readFileSync(HTML_TEMPLATE_FILE, 'utf-8');
+        const timestampString: string = this.clock.now().toLocaleString('en-us', {year: "numeric", month: "short",
+            day: "numeric", hour: "numeric", minute: "numeric", hour12: true});
+
+        // Note that value.replace(a,b) has special handling if b has '$' characters in it, so to avoid this special
+        // handling, we use value.replace(a, (match) => b) instead so that we always replace with exact text.
+        return htmlTemplate
+            .replace(HtmlOutputFormatter.TIMESTAMP_HOLE, (_m) => timestampString)
+            .replace(HtmlOutputFormatter.RUNDIR_HOLE, (_m) => resultsOutput.runDir)
+            .replace(HtmlOutputFormatter.VIOLATIONS_HOLE, (_m) => JSON.stringify(resultsOutput.violations));
     }
 }
 
