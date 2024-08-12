@@ -131,7 +131,7 @@ export class CodeAnalyzer {
             engineName => this.runEngineAndValidateResults(engineName, ruleSelection, engineRunOptions));
         const engineRunResultsList: EngineRunResults[] = await Promise.all(runPromises);
 
-        const runResults: RunResultsImpl = new RunResultsImpl();
+        const runResults: RunResultsImpl = new RunResultsImpl(this.clock);
         for (const engineRunResults of engineRunResultsList) {
             runResults.addEngineRunResults(engineRunResults);
         }

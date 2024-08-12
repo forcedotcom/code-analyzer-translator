@@ -8,9 +8,12 @@ import * as stubs from "./stubs";
 changeWorkingDirectoryToPackageRoot();
 
 let runResults: RunResults;
+let fixedTime: Date;
+
 beforeAll(async () => {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
-    codeAnalyzer._setClock(new FixedClock(new Date(2024, 6, 3, 9, 14, 34, 567)));
+    fixedTime = new Date(2024, 6, 3, 9, 14, 34, 567);
+    codeAnalyzer._setClock(new FixedClock(fixedTime));
     const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
     await codeAnalyzer.addEnginePlugin(stubPlugin);
     (stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1).resultsToReturn = {
@@ -44,24 +47,46 @@ describe("Tests for the CSV output format", () => {
     });
 });
 
+describe("Tests for the HTML output format", () => {
+    it("When an empty result is provided, we create html text correctly", () => {
+        const results: RunResultsImpl = new RunResultsImpl(new FixedClock(fixedTime));
+        const formattedText: string = results.toFormattedOutput(OutputFormat.HTML).replaceAll('\r\n','\n');
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.html', true);
+        expect(formattedText).toEqual(expectedText);
+    });
+
+    it("When results contain multiple violations, we create html text correctly", async () => {
+        const formattedText: string = runResults.toFormattedOutput(OutputFormat.HTML).replaceAll('\r\n','\n');
+        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.html', true);
+        expect(formattedText).toEqual(expectedText);
+    });
+
+    it("When results contain violation of type UnexpectedError, we create html text correctly", async () => {
+        const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.HTML).replaceAll('\r\n','\n');
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.html', true);
+        expect(formattedText).toEqual(expectedText);
+    });
+});
+
 describe("Tests for the JSON output format", () => {
     it("When an empty result is provided, we create a json text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.json', true, true);
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain multiple violations , we create json text correctly", async () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.json', true, true);
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain violation of type UnexpectedError, we create json text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
-        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.json', true);
+        const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.json', true, true);
         expect(formattedText).toEqual(expectedText);
     });
 });
@@ -107,12 +132,14 @@ describe("Other misc output formatting tests", () => {
     });
 });
 
-function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeBackslashes: boolean = false): string {
+function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeBackslashesOnPaths: boolean = false, escapeBackslashesOnRunDir: boolean = false): string {
     const contents: string = fs.readFileSync(path.resolve('test','test-data','expectedOutputFiles',expectedOutputFileName), 'utf-8');
     let pathSepVar: string = path.sep;
     let runDirVar: string = process.cwd() + path.sep;
-    if (escapeBackslashes) {
+    if (escapeBackslashesOnPaths) {
         pathSepVar = pathSepVar.replaceAll('\\','\\\\');
+    }
+    if (escapeBackslashesOnRunDir) {
         runDirVar = runDirVar.replaceAll('\\','\\\\');
     }
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
@@ -121,6 +148,7 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
 
 async function createResultsWithUnexpectedError(): Promise<RunResults> {
     const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+    codeAnalyzer._setClock(new FixedClock(fixedTime));
     await codeAnalyzer.addEnginePlugin(new stubs.ThrowingEnginePlugin());
     return codeAnalyzer.run(await codeAnalyzer.selectRules([]), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 }
