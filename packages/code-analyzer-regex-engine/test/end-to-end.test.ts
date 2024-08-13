@@ -22,20 +22,19 @@ describe('End to end test', () => {
             custom_rules: {
                 "NoTodos": {
                     description: "Detects TODO comments in code",
-                    file_extensions: ['.ts', '.cls'],
                     regex: String.raw`/TODO/gi`
                 }
             }
         }
         const engine: Engine = await plugin.createEngine(availableEngineNames[0], customConfig);
-        const workspace: Workspace = new Workspace([path.resolve(__dirname, 'test-data', 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.resolve(__dirname, 'test-data', 'workspaceWithPythonFile')]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         const recommendedRuleNames: string[] = ruleDescriptions.filter(rd => rd.tags.includes('Recommended')).map(rd => rd.name);
         const engineRunResults: EngineRunResults = await engine.runRules(recommendedRuleNames, {workspace: workspace});
-        const violationsFromTsFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.ts');
+        const violationsFromPyFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.py');
 
-        expect(violationsFromTsFile).toHaveLength(1);
-        expect(violationsFromTsFile.map(v => v.ruleName)).toEqual(['NoTodos']);
+        expect(violationsFromPyFile).toHaveLength(1);
+        expect(violationsFromPyFile.map(v => v.ruleName)).toEqual(['NoTodos']);
 
         const violationsFromClsFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.cls');
 

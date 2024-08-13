@@ -114,7 +114,6 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
         expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION)
     });
-
 });
 
 describe('Tests for runRules', () => {
