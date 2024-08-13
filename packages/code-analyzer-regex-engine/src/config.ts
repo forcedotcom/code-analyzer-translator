@@ -1,5 +1,6 @@
 import {
-    ConfigObject, ConfigValue,
+    ConfigObject,
+    ConfigValue,
     ConfigValueExtractor,
     getMessageFromCatalog,
     RuleDescription,
@@ -53,8 +54,8 @@ export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
 export const RULE_NAME_PATTERN: RegExp = /^[A-Za-z@][A-Za-z_0-9@\-/]*$/;
 export const REGEX_STRING_PATTERN: RegExp = /^\/(.*?)\/(.*)$/;
 
-export const DEFAULT_TAGS: string[] = ['Recommended']
-export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate
+export const DEFAULT_TAGS: string[] = ['Recommended'];
+export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate;
 
 export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngineConfig {
     const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
@@ -62,15 +63,15 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
     const customRules: RegexRules = {};
     for (const ruleName of customRulesExtractor.getKeys()) {
         if (!RULE_NAME_PATTERN.test(ruleName)){
-            throw new Error(getMessage('InvalidRuleName', ruleName, customRulesExtractor.getFieldPath(), RULE_NAME_PATTERN.toString()))
+            throw new Error(getMessage('InvalidRuleName', ruleName, customRulesExtractor.getFieldPath(), RULE_NAME_PATTERN.toString()));
         }
-        const ruleExtractor: ConfigValueExtractor = customRulesExtractor.extractRequiredObjectAsExtractor(ruleName)
-        const description: string = ruleExtractor.extractRequiredString('description')
-        const rawRegexString: string = ruleExtractor.extractRequiredString('regex')
-        const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'))
+        const ruleExtractor: ConfigValueExtractor = customRulesExtractor.extractRequiredObjectAsExtractor(ruleName);
+        const description: string = ruleExtractor.extractRequiredString('description');
+        const rawRegexString: string = ruleExtractor.extractRequiredString('regex');
+        const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'));
         const rawFileExtensions: string[] | undefined = ruleExtractor.extractArray('file_extensions',
             (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN));
-        const rawSeverityLevelValue: ConfigValue = ruleExtractor.getObject()['severity_level']
+        const rawSeverityLevelValue: ConfigValue = ruleExtractor.getObject()['severity_level'];
 
         customRules[ruleName] = {
             regex: regex,
