@@ -109,7 +109,7 @@ export class RegexEngine extends Engine {
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
                 message: this.regexRules[ruleName].violation_message
-            })
+            });
         }
         return violations;
     }
@@ -138,13 +138,13 @@ function getNewlineIndices(fileContents: string): number[] {
     const newlineIndexes = [-1];
 
     for (const match of matches) {
-        newlineIndexes.push(match.index)
+        newlineIndexes.push(match.index);
     }
     return newlineIndexes;
 }
 
 async function isTextFile(fileName: string): Promise<boolean> {
-    const ext: string = path.extname(fileName).toLowerCase()
+    const ext: string = path.extname(fileName).toLowerCase();
     return TEXT_BASED_FILE_EXTS.has(ext) || !(await isBinaryFile(fileName));
 }
 

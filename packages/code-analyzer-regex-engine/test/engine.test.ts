@@ -116,7 +116,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(3);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -133,8 +133,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {
             workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
-            ])
-        };
+            ])};
         const runResults: EngineRunResults = await engine.runRules( ["NoTrailingWhitespace"], runOptions);
         expect(runResults.violations).toHaveLength(0);
     });

@@ -17,13 +17,16 @@ export type RegexEngineConfig = {
 }
 
 export type RegexRules = {
-    // Rule to be added to the regex engine where the key is the rule name and the value contains the rule definition.
+    // Custom rules to be added to the 'regex' engine of the format custom_rules.<rule_name>.<rule_property_name> = <value> where
+    // <rule_name> is the name you would like to give to your custom rule
     // Example (in yaml format):
     //     NoTodoComments:
     //       regex: /\/\/[ \t]*TODO/gi
     //       file_extensions: [".cls", ".trigger"]
-    //       description: "Prevents TODO comments from being in apex code."
-    //       violation: "A comment with a TODO statement was found. Please remove TODO statements from your apex code."
+    //       description: "Prevents TODO comments from being in Apex code."
+    //       violation: "A comment with a TODO statement was found. Please remove TODO statements from your Apex code."
+    //       severity: "Info"
+    //       tags: ['TechDebt']
     [ruleName: string] : RuleDescription & {
         // The regular expression that triggers a violation when matched against the contents of a file.
         regex: RegExp;
@@ -35,17 +38,17 @@ export type RegexRules = {
         // A description of the rule's purpose.
         description: string;
 
-        // The message emitted when a rule violation occurs. This message is intended to help the user understand the violation.
-        // Default: `A match of the regular expression {regex} was found for rule '{ruleName}': {description}`
+        // [Optional] The message emitted when a rule violation occurs. This message is intended to help the user understand the violation.
+        // Default: `A match of the regular expression <regex> was found for rule '<ruleName>': <description>`
         violation_message: string;
 
-        // A list of labels to help categorize the rule. Rules can also be filtered by these tags.
+        // [Optional] The string array of tag values to apply to this rule by default.
         // Default: ['Recommended']
         tags: string[];
 
-        // Determines the severity level of a rule. You can assign a severity level to a rule to indicate how important the rule is.
-        // The severity levels correspond to numbers as follows: Critical = 1, High = 2, Moderate = 3, Low = 4, Info = 5
-        // Default: Moderate
+        // [Optional] The severity level to apply to this rule by default.
+        // Possible values: 1 or 'Critical', 2 or 'High', 3 or 'Moderate', 4 or 'Low', 5 or 'Info'
+        // Default: 'Moderate'
         severityLevel: SeverityLevel;
     }
 }
