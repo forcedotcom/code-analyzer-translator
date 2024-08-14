@@ -3,11 +3,11 @@ function getSalesforceApiVersion(date: Date): number {
     const year = date.getFullYear();
     const month = date.getMonth();
 
-    if (month >= 0 && month < 4) {
+    if (month >= 1 && month < 5) { // Feb through May
         return (year - 2004) * 3;
-    } else if (month >= 4 && month < 8) {
+    } else if (month >= 5 && month < 9) { // Jun through Sep
         return (year - 2004) * 3 + 1;
-    } else {
+    } else { // Oct through Jan
         return (year - 2004) * 3 + 2;
     }
 }
