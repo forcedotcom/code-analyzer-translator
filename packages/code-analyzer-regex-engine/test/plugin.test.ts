@@ -10,7 +10,6 @@ import {
 import {getMessage} from "../src/messages";
 import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRules, RULE_NAME_PATTERN} from "../src/config";
 import {BASE_REGEX_RULES} from "../src/plugin";
-import {getDeprecatedApiVersionRegex} from "../src/utils";
 
 const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
     regex: String.raw`/TODO:\s/gi`,
@@ -401,6 +400,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         {input: '/[0-9]{2,}[A-Z]{2,}?/g', expected: new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g')},
         {input: '/[^a-zA-Z0-9]{3,6}/g', expected: new RegExp('[^a-zA-Z0-9]{3,6}', 'g')},
         {input: '/(alpha|beta)\\d{2,4}?/gi', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'gi')},
+        {input: '/\\/\\/[ \\t]*TODO/gi', expected: new RegExp('\\/\\/[ \\t]*TODO', 'gi')},
     ];
     it.each(patternTestCases)('Verify regular expression construction for $input', async (testCase: PATTERN_TESTCASE) => {
         const rawConfig: ConfigObject = {

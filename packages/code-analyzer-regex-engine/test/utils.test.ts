@@ -27,8 +27,8 @@ describe('getDeprecatedApiVersionRegex', () => {
         );
     });
 
-    it('Test will generate a valid API version now, but will throw error for API versions >100', () => {
+    it('Test will generate a valid API version now, but will throw error if 3 year old API version is >100', () => {
         const now = new Date();
-        expect(() => getDeprecatedApiVersionRegex(now)).not.toThrow() // if this throws "the maxNumber must be between 0 and 99", rewrite utility;
+        expect(() => getDeprecatedApiVersionRegex(now)).not.toThrow() // if this throws "the maxNumber must be between 0 and 99", rewrite utility
     });
 });

@@ -18,7 +18,7 @@ import {
 } from "../src/config";
 import {
     BASE_REGEX_RULES,
-    RULE_RESOURCE_URLS
+    RULE_RESOURCE_URLS, TERMS_WITH_IMPLICIT_BIAS, TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP
 } from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
@@ -68,32 +68,13 @@ const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     resourceUrls: []
 };
 
-const EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION: RuleDescription = {
-    name: "UseInclusiveOutageTerms",
-    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['brownout', 'blackout'])),
+const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
+    name: "AvoidTermsWithImplicitBias",
+    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
     severityLevel: SeverityLevel.Info,
     type: RuleType.Standard,
     tags: ['Recommended'],
     resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
-}
-
-const EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION: RuleDescription = {
-    name: "UseInclusiveHierarchicalTerms",
-    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['slave'])),
-    severityLevel: SeverityLevel.Info,
-    type: RuleType.Standard,
-    tags: ['Recommended'],
-    resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
-}
-
-const EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION: RuleDescription = {
-    name: "UseInclusiveSecurityTerms",
-    description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(['whitelist', 'blacklist'])),
-    severityLevel: SeverityLevel.Info,
-    type: RuleType.Standard,
-    tags: ['Recommended'],
-    resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
-
 }
 
 const EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
@@ -121,14 +102,12 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
 
     it('Calling describeRules without workspace, returns all available rules', async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
-        expect(rulesDescriptions).toHaveLength(7);
+        expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
-        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
@@ -143,26 +122,22 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
 
-        expect(rulesDescriptions).toHaveLength(5);
-        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION);
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions).toHaveLength(3);
+        expect(rulesDescriptions[0]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
-        expect(rulesDescriptions).toHaveLength(7);
+        expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_UseInclusiveSecurityTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UseInclusiveOutageTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_UseInclusiveHierarchicalTerms_RULE_DESCRIPTION)
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
-        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -290,11 +265,11 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "inclusivityRuleWorkspace")
             ])};
-        const runResults: EngineRunResults = await engine.runRules(["UseInclusiveSecurityTerms", "UseInclusiveOutageTerms", "UseInclusiveHierarchicalTerms"], runOptions);
+        const runResults: EngineRunResults = await engine.runRules(["AvoidTermsWithImplicitBias"], runOptions);
         const expectedViolations: Violation[] = [
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -307,8 +282,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -321,8 +296,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveHierarchicalTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -335,8 +310,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -349,8 +324,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -363,8 +338,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -377,8 +352,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -391,8 +366,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -405,8 +380,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -419,8 +394,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveHierarchicalTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -433,8 +408,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -447,8 +422,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -461,8 +436,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveHierarchicalTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -475,8 +450,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveOutageTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['brownout', 'blackout']), JSON.stringify(['reduced availability', 'blockout'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -489,8 +464,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveSecurityTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['whitelist', 'blacklist']), JSON.stringify(['allowlist', 'blocklist'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -503,8 +478,8 @@ describe('Tests for runRules', () => {
                 ]
             },
             {
-                ruleName: "UseInclusiveHierarchicalTerms",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(['slave']), JSON.stringify(['secondary', 'follower'])),
+                ruleName: "AvoidTermsWithImplicitBias",
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -600,7 +575,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "sampleWorkspace")
             ])};
-        const ruleNames: string[] = ['NoTrailingWhitespace', 'UseInclusiveSecurityTerms', 'UseInclusiveHierarchicalTerms', 'UseInclusiveOutageTerms', 'UpdateOldApexApiVersion', 'NoHellos', 'NoTodos']
+        const ruleNames: string[] = ['NoTrailingWhitespace', 'AvoidTermsWithImplicitBias', 'UpdateOldApexApiVersion', 'NoHellos', 'NoTodos']
         const individualRunViolations: Violation[] = []
 
         for (const rule of ruleNames) {

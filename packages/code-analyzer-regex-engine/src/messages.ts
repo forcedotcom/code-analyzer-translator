@@ -14,7 +14,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `"Detects usage of terms: %s which reinforce implicit bias.`,
 
     AvoidTermsWithImplicitBiasRuleMessage:
-        `A term from the following: '%s' was found. Replace it with a more inclusive term like one of the following: %s.`,
+        `A term from the following: '%s' was found. Replace it with a more inclusive term according to the following: %s.`,
 
     UpdateOldApexApiVersionRuleDescription:
         `Detects Apex classes relying on API versions that are below 52.0.`,
