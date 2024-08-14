@@ -4,7 +4,6 @@ import {
     ConfigObject,
     Engine,
     getMessageFromCatalog,
-    RuleType,
     SeverityLevel,
     SHARED_MESSAGE_CATALOG
 } from "@salesforce/code-analyzer-engine-api";
@@ -67,21 +66,15 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                 file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
                 violation_message: getMessage('RuleViolationMessage', customNoTodoRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
-                name: "NoTodos",
-                type: RuleType.Standard,
-                severityLevel: SeverityLevel.Moderate,
-                tags: ['Recommended'],
-                resourceUrls: []
+                severity: SeverityLevel.Moderate,
+                tags: ['Recommended']
             },
             NoHellos: {
                 regex: customNoHelloRuleRegex,
                 description: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION.description,
                 violation_message: getMessage('RuleViolationMessage', customNoHelloRuleRegex.toString(), 'NoHellos', 'Detects hellos in project'),
-                name: "NoHellos",
-                type: RuleType.Standard,
-                severityLevel: SeverityLevel.Moderate,
-                tags: ['Recommended'],
-                resourceUrls: []
+                severity: SeverityLevel.Moderate,
+                tags: ['Recommended']
             }
         };
         expect(engine._getRegexRules()).toEqual(expRegexRules);
@@ -337,17 +330,17 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             custom_rules: {
                 "NoTodos": {
                     ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
-                    severity_level: SeverityLevel.Critical
+                    severity: SeverityLevel.Critical
                 },
                 "OtherRule": {
                     ... SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
-                    severity_level: "Critical"
+                    severity: "Critical"
                 }
             }
         };
         const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
-        expect(pluginEngine._getRegexRules()["NoTodos"].severityLevel).toStrictEqual(SeverityLevel.Critical);
-        expect(pluginEngine._getRegexRules()["OtherRule"].severityLevel).toStrictEqual(SeverityLevel.Critical);
+        expect(pluginEngine._getRegexRules()["NoTodos"].severity).toStrictEqual(SeverityLevel.Critical);
+        expect(pluginEngine._getRegexRules()["OtherRule"].severity).toStrictEqual(SeverityLevel.Critical);
     });
 
 
@@ -356,12 +349,12 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
             custom_rules: {
                 "NoTodos": {
                     ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
-                    severity_level: 7
+                    severity: 7
                 }
             }
         };
         const severityLevelValues: (string | SeverityLevel)[] = Object.values(SeverityLevel)
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('ConfigValueNotAValidSeverityLevel', 'engines.regex.custom_rules.NoTodos.severity_level', JSON.stringify(severityLevelValues), '7'));
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('ConfigValueNotAValidSeverityLevel', 'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(severityLevelValues), '7'));
     });
 
     it("If user creates a rule with a custom tags, ensure they are maintained in config", async () => {

@@ -26,21 +26,15 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         description: "Detects TODO comments in code base.",
         file_extensions: [".js", ".cls"],
         violation_message: "sample violation message",
-        name: "NoTodos",
-        type: RuleType.Standard,
-        severityLevel: DEFAULT_SEVERITY_LEVEL,
-        tags: DEFAULT_TAGS,
-        resourceUrls: []
+        severity: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS
     },
     NoHellos: {
         regex: /hello/gi,
         description: "Detects hellos in project.",
         violation_message: "sample violation message",
-        name: "NoHellos",
-        type: RuleType.Standard,
-        severityLevel: DEFAULT_SEVERITY_LEVEL,
-        tags: DEFAULT_TAGS,
-        resourceUrls: []
+        severity: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS
     }
 };
 

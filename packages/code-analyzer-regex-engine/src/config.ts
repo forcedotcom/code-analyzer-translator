@@ -3,8 +3,6 @@ import {
     ConfigValue,
     ConfigValueExtractor,
     getMessageFromCatalog,
-    RuleDescription,
-    RuleType,
     SeverityLevel,
     SHARED_MESSAGE_CATALOG,
     ValueValidator
@@ -27,30 +25,32 @@ export type RegexRules = {
     //       violation: "A comment with a TODO statement was found. Please remove TODO statements from your Apex code."
     //       severity: "Info"
     //       tags: ['TechDebt']
-    [ruleName: string] : RuleDescription & {
-        // The regular expression that triggers a violation when matched against the contents of a file.
-        regex: RegExp;
+    [ruleName: string] : RegexRule
+}
 
-        // The extensions of the files that you would like to test the regular expression against.
-        // If not defined, or equal to null, then all text-based files of any file extension will be tested.
-        file_extensions?: string[];
+export type RegexRule = {
+    // The regular expression that triggers a violation when matched against the contents of a file.
+    regex: RegExp;
 
-        // A description of the rule's purpose.
-        description: string;
+    // The extensions of the files that you would like to test the regular expression against.
+    // If not defined, or equal to null, then all text-based files of any file extension will be tested.
+    file_extensions?: string[];
 
-        // [Optional] The message emitted when a rule violation occurs. This message is intended to help the user understand the violation.
-        // Default: `A match of the regular expression <regex> was found for rule '<ruleName>': <description>`
-        violation_message: string;
+    // A description of the rule's purpose.
+    description: string;
 
-        // [Optional] The string array of tag values to apply to this rule by default.
-        // Default: ['Recommended']
-        tags: string[];
+    // [Optional] The message emitted when a rule violation occurs. This message is intended to help the user understand the violation.
+    // Default: `A match of the regular expression <regex> was found for rule '<ruleName>': <description>`
+    violation_message: string;
 
-        // [Optional] The severity level to apply to this rule by default.
-        // Possible values: 1 or 'Critical', 2 or 'High', 3 or 'Moderate', 4 or 'Low', 5 or 'Info'
-        // Default: 'Moderate'
-        severityLevel: SeverityLevel;
-    }
+    // [Optional] The string array of tag values to apply to this rule by default.
+    // Default: ['Recommended']
+    tags: string[];
+
+    // [Optional] The severity level to apply to this rule by default.
+    // Possible values: 1 or 'Critical', 2 or 'High', 3 or 'Moderate', 4 or 'Low', 5 or 'Info'
+    // Default: 'Moderate'
+    severity: SeverityLevel;
 }
 
 export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
@@ -74,24 +74,18 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
         const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'));
         const rawFileExtensions: string[] | undefined = ruleExtractor.extractArray('file_extensions',
             (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN));
-        const rawSeverityLevelValue: ConfigValue = ruleExtractor.getObject()['severity_level'];
+        const rawSeverityLevelValue: ConfigValue = ruleExtractor.getObject()['severity'];
 
         customRules[ruleName] = {
             regex: regex,
             description: description,
             violation_message: ruleExtractor.extractString('violation_message',
                 getDefaultRuleViolationMessage(regex, ruleName, description))!,
-            severityLevel: rawSeverityLevelValue ? validateSeverityValue(rawSeverityLevelValue, ruleExtractor.getFieldPath('severity_level')) : DEFAULT_SEVERITY_LEVEL,
+            severity: rawSeverityLevelValue ?
+                validateSeverityValue(rawSeverityLevelValue, ruleExtractor.getFieldPath('severity')) : DEFAULT_SEVERITY_LEVEL,
             tags: ruleExtractor.extractArray('tags', ValueValidator.validateString, DEFAULT_TAGS)!,
             ...(rawFileExtensions ? { file_extensions: normalizeFileExtensions(rawFileExtensions) } : {}),
-
-
-            // Additional fields to complete the RuleDescription:
-            name: ruleName,
-            type: RuleType.Standard,
-            resourceUrls: []  // Empty for now. We might allow users to add in resourceUrls if we see a valid use case in the future.
         }
-
     }
     return {
         custom_rules: customRules
