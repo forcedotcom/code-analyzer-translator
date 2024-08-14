@@ -18,7 +18,8 @@ import {
 } from "../src/config";
 import {
     BASE_REGEX_RULES,
-    RULE_RESOURCE_URLS
+    RULE_RESOURCE_URLS,
+    TERMS_WITH_IMPLICIT_BIAS
 } from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
@@ -79,7 +80,7 @@ const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
 
 const EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
     name: "AvoidOldApexApiVersion",
-    description: getMessage('AvoidOldApexApiVersionRuleDescription'),
+    description: getMessage('AvoidOldApexApiVersionRuleDescription', 52),
     severityLevel: SeverityLevel.High,
     type: RuleType.Standard,
     tags: ['Recommended', 'Security'],
@@ -269,7 +270,7 @@ describe('Tests for runRules', () => {
         const expectedViolations: Violation[] = [
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -283,7 +284,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -297,7 +298,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -311,7 +312,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -325,7 +326,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -339,7 +340,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -353,7 +354,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -367,7 +368,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -381,7 +382,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -395,7 +396,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -409,7 +410,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -423,7 +424,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -437,7 +438,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -451,7 +452,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -465,7 +466,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {
@@ -479,7 +480,7 @@ describe('Tests for runRules', () => {
             },
             {
                 ruleName: "AvoidTermsWithImplicitBias",
-                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+                message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
                 primaryLocationIndex: 0,
                 codeLocations: [
                     {

@@ -12,13 +12,13 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Found trailing whitespace at the end of a line of code.`,
 
     AvoidTermsWithImplicitBiasRuleDescription:
-        `"Detects usage of a term that reinforces implicit bias.`,
+        `"Detects usage of terms that reinforce implicit bias.`,
 
     AvoidTermsWithImplicitBiasRuleMessage:
-        `A term with implicit bias was found. We suggest you replace it with a more inclusive term.`,
+        `A term with implicit bias was found. Avoid using any of the following terms: %s`,
 
     AvoidOldApexApiVersionRuleDescription:
-        `Detects Apex classes relying on API versions that are below ${getDeprecatedApiVersionRegex(new Date())}.0.`,
+        `Detects Apex classes relying on API versions that are below %d.0.`,
 
     AvoidOldApexApiVersionRuleMessage:
         `Found an Apex class relying on an API version 3 years or older. Update your API version.`,

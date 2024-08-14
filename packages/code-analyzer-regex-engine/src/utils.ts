@@ -1,4 +1,4 @@
-function getSalesforceApiVersion(date: Date): number {
+export function getSalesforceApiVersion(date: Date): number {
     // Salesforce releases 3 versions per year (Winter, Spring, Summer)
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth();
@@ -31,9 +31,14 @@ function generateRegexStringForNumbersBelow(maxNumber: number): string {
     return `(${lessThanMaxTens}|${lessThanMaxUnits})${decimalMatch}`;
 }
 
-export function getDeprecatedApiVersionRegex(date: Date): string {
-    const pastDate = new Date(date);
-    pastDate.setFullYear(pastDate.getFullYear() - 3);
+export function getDeprecatedApiVersionRegex(today: Date): string {
+    const pastDate = subtractThreeYears(today);
     const oldApiVersion = getSalesforceApiVersion(pastDate);
     return generateRegexStringForNumbersBelow(oldApiVersion);
+}
+
+export function subtractThreeYears(date: Date): Date{
+    const pastDate = new Date(date);
+    pastDate.setFullYear(pastDate.getFullYear() - 3);
+    return pastDate;
 }

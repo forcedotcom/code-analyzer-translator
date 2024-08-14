@@ -4,6 +4,8 @@ import {RegexEngine} from "./engine";
 import {RegexEngineConfig, RegexRules, validateAndNormalizeConfig} from "./config";
 import {getDeprecatedApiVersionRegex} from "./utils";
 
+export const TERMS_WITH_IMPLICIT_BIAS: string[] = ['whitelist', 'blacklist', 'brownout', 'blackout', 'slave'];
+
 export const BASE_REGEX_RULES: RegexRules = {
     NoTrailingWhitespace: {
         regex: /[ \t]+((?=\r?\n)|(?=$))/g,
@@ -16,15 +18,16 @@ export const BASE_REGEX_RULES: RegexRules = {
     AvoidTermsWithImplicitBias: {
         regex: /\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi,
         description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
-        violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
+        violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
         severity: SeverityLevel.Info,
         tags: ['Recommended']
     },
     AvoidOldApexApiVersion: {
+        /*TODO: update to dynamically fill in number for regex */
         regex: new RegExp(`(?<=<apiVersion>)${getDeprecatedApiVersionRegex(new Date())}(?=<\\/apiVersion>)`, 'g'),
         file_extensions: ['.xml'],
-        description: getMessage('AvoidOldApexApiVersionRuleDescription'),
-        violation_message: getMessage('AvoidOldApexApiVersionRuleMessage'),
+        description: getMessage('AvoidOldApexApiVersionRuleDescription', 52),
+        violation_message: getMessage('AvoidOldApexApiVersionRuleMessage',),
         tags: ["Recommended", "Security"],
         severity: SeverityLevel.High
     }
