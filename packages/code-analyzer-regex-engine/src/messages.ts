@@ -1,4 +1,5 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
+import {getDeprecatedApiVersionRegex} from "./utils";
 
 const MESSAGE_CATALOG : { [key: string]: string } = {
     CantCreateEngineWithUnknownEngineName:
@@ -11,13 +12,13 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Found trailing whitespace at the end of a line of code.`,
 
     AvoidTermsWithImplicitBiasRuleDescription:
-        `"Detects usage of terms: %s which reinforce implicit bias.`,
+        `"Detects usage of a term that reinforces implicit bias.`,
 
     AvoidTermsWithImplicitBiasRuleMessage:
-        `A term from the following: '%s' was found. Replace it with a more inclusive term according to the following: %s.`,
+        `A term with implicit bias was found. We suggest you replace it with a more inclusive term.`,
 
     UpdateOldApexApiVersionRuleDescription:
-        `Detects Apex classes relying on API versions that are below 52.0.`,
+        `Detects Apex classes relying on API versions that are below ${getDeprecatedApiVersionRegex(new Date())}.0.`,
 
     UpdateOldApexApiVersionRuleMessage:
         `Found an Apex class relying on an API version 3 years or older. Update your API version.`,

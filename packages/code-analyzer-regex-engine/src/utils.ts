@@ -1,7 +1,7 @@
 function getSalesforceApiVersion(date: Date): number {
     // Salesforce releases 3 versions per year (Winter, Spring, Summer)
-    const year = date.getFullYear();
-    const month = date.getMonth();
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth();
 
     if (month >= 1 && month < 5) { // Feb through May
         return (year - 2004) * 3;

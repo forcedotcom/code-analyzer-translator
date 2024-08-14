@@ -4,15 +4,6 @@ import {RegexEngine} from "./engine";
 import {RegexEngineConfig, RegexRules, validateAndNormalizeConfig} from "./config";
 import {getDeprecatedApiVersionRegex} from "./utils";
 
-export const TERMS_WITH_IMPLICIT_BIAS: string[] = ['whitelist', 'blacklist', 'brownout', 'blackout', 'slave']
-export const TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP: Record<string, string[]> = {
-    whitelist: ['allowlist'],
-    blacklist: ['blocklist'],
-    brownout: ['reduced availability'],
-    blackout: ['blockout'],
-    slave: ['secondary', 'follower']
-}
-
 export const BASE_REGEX_RULES: RegexRules = {
     NoTrailingWhitespace: {
         regex: /[ \t]+((?=\r?\n)|(?=$))/g,
@@ -24,8 +15,8 @@ export const BASE_REGEX_RULES: RegexRules = {
     },
     AvoidTermsWithImplicitBias: {
         regex: /\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi,
-        description: getMessage('AvoidTermsWithImplicitBiasRuleDescription', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
-        violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS), JSON.stringify(TERMS_WITH_IMPLICIT_BIAS_REPLACEMENT_MAP)),
+        description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
+        violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage'),
         severity: SeverityLevel.Info,
         tags: ['Recommended']
     },
