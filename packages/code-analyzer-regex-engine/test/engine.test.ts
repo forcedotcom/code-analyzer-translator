@@ -77,9 +77,9 @@ const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
     resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
 }
 
-const EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
-    name: "UpdateOldApexApiVersion",
-    description: getMessage('UpdateOldApexApiVersionRuleDescription'),
+const EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
+    name: "AvoidOldApexApiVersion",
+    description: getMessage('AvoidOldApexApiVersionRuleDescription'),
     severityLevel: SeverityLevel.High,
     type: RuleType.Standard,
     tags: ['Recommended', 'Security'],
@@ -105,7 +105,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION)
         expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
         expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
@@ -135,7 +135,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_UpdateOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION)
         expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
         expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
@@ -163,7 +163,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "apexClassWhitespace")
         ])};
-        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos", "UpdateOldApexApiVersion"], runOptions);
+        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos", "AvoidOldApexApiVersion"], runOptions);
 
         const expectedViolations: Violation[] = [
             {
@@ -217,8 +217,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "UpdateOldApexApiVersion",
-                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldApexApiVersion",
+                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls-meta.xml"),
@@ -229,8 +229,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "UpdateOldApexApiVersion",
-                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldApexApiVersion",
+                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls-meta.xml"),
@@ -241,8 +241,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "UpdateOldApexApiVersion",
-                message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldApexApiVersion",
+                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "lwc_component.js-meta.xml"),
@@ -575,7 +575,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "sampleWorkspace")
             ])};
-        const ruleNames: string[] = ['NoTrailingWhitespace', 'AvoidTermsWithImplicitBias', 'UpdateOldApexApiVersion', 'NoHellos', 'NoTodos']
+        const ruleNames: string[] = ['NoTrailingWhitespace', 'AvoidTermsWithImplicitBias', 'AvoidOldApexApiVersion', 'NoHellos', 'NoTodos']
         const individualRunViolations: Violation[] = []
 
         for (const rule of ruleNames) {

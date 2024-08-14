@@ -20,11 +20,11 @@ export const BASE_REGEX_RULES: RegexRules = {
         severity: SeverityLevel.Info,
         tags: ['Recommended']
     },
-    UpdateOldApexApiVersion: {
+    AvoidOldApexApiVersion: {
         regex: new RegExp(`(?<=<apiVersion>)${getDeprecatedApiVersionRegex(new Date())}(?=<\\/apiVersion>)`, 'g'),
         file_extensions: ['.xml'],
-        description: getMessage('UpdateOldApexApiVersionRuleDescription'),
-        violation_message: getMessage('UpdateOldApexApiVersionRuleMessage'),
+        description: getMessage('AvoidOldApexApiVersionRuleDescription'),
+        violation_message: getMessage('AvoidOldApexApiVersionRuleMessage'),
         tags: ["Recommended", "Security"],
         severity: SeverityLevel.High
     }

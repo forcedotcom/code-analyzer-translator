@@ -17,10 +17,10 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     AvoidTermsWithImplicitBiasRuleMessage:
         `A term with implicit bias was found. We suggest you replace it with a more inclusive term.`,
 
-    UpdateOldApexApiVersionRuleDescription:
+    AvoidOldApexApiVersionRuleDescription:
         `Detects Apex classes relying on API versions that are below ${getDeprecatedApiVersionRegex(new Date())}.0.`,
 
-    UpdateOldApexApiVersionRuleMessage:
+    AvoidOldApexApiVersionRuleMessage:
         `Found an Apex class relying on an API version 3 years or older. Update your API version.`,
 
     RuleViolationMessage:
