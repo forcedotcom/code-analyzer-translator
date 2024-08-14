@@ -11,7 +11,11 @@ import {
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
-import {RegexRules} from "../src/config";
+import {
+    RegexRules, 
+    DEFAULT_TAGS, 
+    DEFAULT_SEVERITY_LEVEL
+} from "../src/config";
 import {BASE_REGEX_RULES} from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
@@ -22,21 +26,15 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         description: "Detects TODO comments in code base.",
         file_extensions: [".js", ".cls"],
         violation_message: "sample violation message",
-        name: "NoTodos",
-        type: RuleType.Standard,
-        severityLevel: SeverityLevel.Moderate,
-        tags: ['Recommended'],
-        resourceUrls: []
+        severity: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS
     },
     NoHellos: {
         regex: /hello/gi,
         description: "Detects hellos in project.",
         violation_message: "sample violation message",
-        name: "NoHellos",
-        type: RuleType.Standard,
-        severityLevel: SeverityLevel.Moderate,
-        tags: ['Recommended'],
-        resourceUrls: []
+        severity: DEFAULT_SEVERITY_LEVEL,
+        tags: DEFAULT_TAGS
     }
 };
 
@@ -51,18 +49,18 @@ const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
 
 const EXPECTED_NoTodos_RULE_DESCRIPTION = {
     name: "NoTodos",
-    severityLevel: SeverityLevel.Moderate,
+    severityLevel: DEFAULT_SEVERITY_LEVEL,
     type: RuleType.Standard,
-    tags: ["Recommended"],
+    tags: DEFAULT_TAGS,
     description: "Detects TODO comments in code base.",
     resourceUrls: []
 };
 
 const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     name: "NoHellos",
-    severityLevel: SeverityLevel.Moderate,
+    severityLevel: DEFAULT_SEVERITY_LEVEL,
     type: RuleType.Standard,
-    tags: ["Recommended"],
+    tags: DEFAULT_TAGS,
     description: "Detects hellos in project.",
     resourceUrls: []
 };
@@ -112,7 +110,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(3);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -129,8 +127,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {
             workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "apexClassWhitespace", "1_notApexClassWithWhitespace")
-            ])
-        };
+            ])};
         const runResults: EngineRunResults = await engine.runRules( ["NoTrailingWhitespace"], runOptions);
         expect(runResults.violations).toHaveLength(0);
     });

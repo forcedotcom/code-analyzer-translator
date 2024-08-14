@@ -4,7 +4,6 @@ import {
     ConfigObject,
     Engine,
     getMessageFromCatalog,
-    RuleType,
     SeverityLevel,
     SHARED_MESSAGE_CATALOG
 } from "@salesforce/code-analyzer-engine-api";
@@ -67,21 +66,15 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                 file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
                 violation_message: getMessage('RuleViolationMessage', customNoTodoRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
-                name: "NoTodos",
-                type: RuleType.Standard,
-                severityLevel: SeverityLevel.Moderate,
-                tags: ['Recommended'],
-                resourceUrls: []
+                severity: SeverityLevel.Moderate,
+                tags: ['Recommended']
             },
             NoHellos: {
                 regex: customNoHelloRuleRegex,
                 description: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION.description,
                 violation_message: getMessage('RuleViolationMessage', customNoHelloRuleRegex.toString(), 'NoHellos', 'Detects hellos in project'),
-                name: "NoHellos",
-                type: RuleType.Standard,
-                severityLevel: SeverityLevel.Moderate,
-                tags: ['Recommended'],
-                resourceUrls: []
+                severity: SeverityLevel.Moderate,
+                tags: ['Recommended']
             }
         };
         expect(engine._getRegexRules()).toEqual(expRegexRules);
@@ -330,6 +323,64 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         };
         const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
         expect(pluginEngine._getRegexRules()["NoTodos"].violation_message).toStrictEqual(custom_message);
+    });
+
+    it("If user creates a rule with a custom severity level, ensure that is maintained in config", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                    severity: SeverityLevel.Critical
+                },
+                "OtherRule": {
+                    ... SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                    severity: "Critical"
+                }
+            }
+        };
+        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        expect(pluginEngine._getRegexRules()["NoTodos"].severity).toStrictEqual(SeverityLevel.Critical);
+        expect(pluginEngine._getRegexRules()["OtherRule"].severity).toStrictEqual(SeverityLevel.Critical);
+    });
+
+
+    it("If user creates a rule with an invalid severity level, ensure correct error is emitted", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                    severity: 7
+                }
+            }
+        };
+        const severityLevelValues: (string | SeverityLevel)[] = Object.values(SeverityLevel)
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('ConfigValueNotAValidSeverityLevel', 'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(severityLevelValues), '7'));
+    });
+
+    it("If user creates a rule with a custom tags, ensure they are maintained in config", async () => {
+        const customTags: string[] = ["RandomTag"]
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                    tags: customTags
+                }
+            }
+        };
+        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        expect(pluginEngine._getRegexRules()["NoTodos"].tags).toStrictEqual(customTags);
+    });
+
+    it("If user creates a rule with tags that are not a string array, ensure correct error is emitted", async () => {
+        const rawConfig = {
+            custom_rules: {
+                "NoTodos": {
+                    ...SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
+                    tags: "RandomTag"
+                }
+            }
+        };
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.tags', 'array', 'string'));
     });
 
     type PATTERN_TESTCASE = { input: string, expected: RegExp };

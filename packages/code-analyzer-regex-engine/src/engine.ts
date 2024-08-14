@@ -4,6 +4,7 @@ import {
     Engine,
     EngineRunResults,
     RuleDescription,
+    RuleType,
     RunOptions,
     Violation,
     Workspace
@@ -11,7 +12,7 @@ import {
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
-import {RegexRules} from "./config";
+import {RegexRule, RegexRules} from "./config";
 import {isBinaryFile} from "isbinaryfile";
 
 const TEXT_BASED_FILE_EXTS = new Set<string>(
@@ -41,15 +42,12 @@ export class RegexEngine extends Engine {
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        if (!describeOptions.workspace) {
-            return Object.values(this.regexRules);
-        }
-        const textFiles: string[] = await this.getTextFiles(describeOptions.workspace)
+        const textFiles: string[] | undefined = describeOptions.workspace ?
+            (await this.getTextFiles(describeOptions.workspace)) : undefined;
         const ruleDescriptions: RuleDescription[] = [];
-
-        for (const regexRule of Object.values(this.regexRules)) {
-            if (textFiles.some(fileName => this.shouldScanFile(fileName, regexRule.name))){
-                ruleDescriptions.push(regexRule);
+        for (const [ruleName, regexRule] of Object.entries(this.regexRules)) {
+            if (!textFiles || textFiles.some(fileName => this.shouldScanFile(fileName, ruleName))){
+                ruleDescriptions.push(toRuleDescription(ruleName, regexRule));
             }
         }
         return ruleDescriptions;
@@ -109,7 +107,7 @@ export class RegexEngine extends Engine {
                 codeLocations: [codeLocation],
                 primaryLocationIndex: 0,
                 message: this.regexRules[ruleName].violation_message
-            })
+            });
         }
         return violations;
     }
@@ -138,13 +136,13 @@ function getNewlineIndices(fileContents: string): number[] {
     const newlineIndexes = [-1];
 
     for (const match of matches) {
-        newlineIndexes.push(match.index)
+        newlineIndexes.push(match.index);
     }
     return newlineIndexes;
 }
 
 async function isTextFile(fileName: string): Promise<boolean> {
-    const ext: string = path.extname(fileName).toLowerCase()
+    const ext: string = path.extname(fileName).toLowerCase();
     return TEXT_BASED_FILE_EXTS.has(ext) || !(await isBinaryFile(fileName));
 }
 
@@ -153,4 +151,15 @@ type AsyncFilterFnc<T> = (value: T) => Promise<boolean>;
 async function filterAsync<T>(array: T[], filterFcn: AsyncFilterFnc<T>): Promise<T[]> {
     const mask: boolean[] = await Promise.all(array.map(filterFcn));
     return array.filter((_, index) => mask[index]);
+}
+
+function toRuleDescription(ruleName: string, regexRule: RegexRule): RuleDescription {
+    return {
+        name: ruleName,
+        severityLevel: regexRule.severity,
+        type: RuleType.Standard,
+        tags: regexRule.tags,
+        description: regexRule.description,
+        resourceUrls: [] // Empty for now. We might allow users to add in resourceUrls if we see a valid use case in the future.
+    }
 }
