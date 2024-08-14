@@ -1,8 +1,8 @@
 import {ConfigObject, Engine, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "./engine";
 import {getMessage} from './messages';
-import {validateAndNormalizeConfig} from "./config";
-import {PythonVersionIdentifierImpl} from "./lib/python-versioning/PythonVersionIdentifier";
+import {FlowTestConfigFactory, FlowTestConfigFactoryImpl} from "./config";
+import {PythonVersionIdentifierImpl} from "./lib/python/PythonVersionIdentifier";
 
 
 export class FlowTestEnginePlugin extends EnginePluginV1 {
@@ -14,7 +14,13 @@ export class FlowTestEnginePlugin extends EnginePluginV1 {
         if (engineName !== FlowTestEngine.NAME) {
             throw new Error(getMessage('CantCreateEngineWithUnknownName', engineName));
         }
-        return new FlowTestEngine(validateAndNormalizeConfig(engineConfig), {
+        const configFactory: FlowTestConfigFactory = this._getConfigFactory();
+        return new FlowTestEngine(await configFactory.create(engineConfig));
+    }
+
+    /* istanbul ignore next: Difficult to test */
+    public _getConfigFactory(): FlowTestConfigFactory {
+        return new FlowTestConfigFactoryImpl({
             pythonVersionIdentifier: new PythonVersionIdentifierImpl()
         });
     }

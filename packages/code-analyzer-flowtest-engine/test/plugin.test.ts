@@ -3,12 +3,17 @@ import {FlowTestEnginePlugin} from "../src";
 import {FlowTestEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {StubFlowTestConfigFactory} from "../stubs/stub-config";
 
 changeWorkingDirectoryToPackageRoot();
 
 describe('FlowTestEnginePlugin', () => {
     let plugin: EnginePluginV1;
     beforeAll(() => {
+        // Stub out the plugin's `_getConfigFactory()` method.
+        jest.spyOn(FlowTestEnginePlugin.prototype, '_getConfigFactory').mockImplementation(() => {
+            return new StubFlowTestConfigFactory('dummy command');
+        });
         plugin = new FlowTestEnginePlugin();
     });
 
