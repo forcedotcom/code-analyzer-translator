@@ -16,11 +16,7 @@ import {
     DEFAULT_TAGS,
     DEFAULT_SEVERITY_LEVEL
 } from "../src/config";
-import {
-    BASE_REGEX_RULES,
-    RULE_RESOURCE_URLS,
-    TERMS_WITH_IMPLICIT_BIAS
-} from "../src/plugin";
+import {createBaseRegexRules, RULE_RESOURCE_URLS, TERMS_WITH_IMPLICIT_BIAS} from "../src/plugin";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -78,24 +74,26 @@ const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
     resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
 }
 
-const EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION: RuleDescription = {
-    name: "AvoidOldApexApiVersion",
-    description: getMessage('AvoidOldApexApiVersionRuleDescription', 52),
+const EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION: RuleDescription = {
+    name: "AvoidOldSalesforceApiVersions",
+    description: getMessage('AvoidOldSalesforceApiVersionsRuleDescription'),
     severityLevel: SeverityLevel.High,
     type: RuleType.Standard,
     tags: ['Recommended', 'Security'],
     resourceUrls: []
 }
 
-describe("Tests for RegexEngine's getName and describeRules methods", () => {
-    let engine: RegexEngine;
-    beforeAll(() => {
-        engine = new RegexEngine({
-            ... BASE_REGEX_RULES,
-            ... SAMPLE_CUSTOM_RULES
-        }, RULE_RESOURCE_URLS);
-    });
+const SAMPLE_DATE: Date = new Date(Date.UTC(2024, 8, 1, 0, 0, 0));
 
+let engine: RegexEngine;
+beforeAll(() => {
+    engine = new RegexEngine({
+        ... createBaseRegexRules(SAMPLE_DATE),
+        ... SAMPLE_CUSTOM_RULES
+    }, RULE_RESOURCE_URLS);
+});
+
+describe("Tests for RegexEngine's getName and describeRules methods", () => {
     it('Engine name is accessible and correct', () => {
         const name: string = engine.getName();
         expect(name).toEqual("regex");
@@ -106,7 +104,7 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
         expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
         expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
@@ -136,21 +134,13 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         expect(rulesDescriptions).toHaveLength(5);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldApexApiVersion_RULE_DESCRIPTION)
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
         expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
         expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
 describe('Tests for runRules', () => {
-    let engine: RegexEngine;
-    beforeAll(() => {
-        engine = new RegexEngine({
-            ... BASE_REGEX_RULES,
-            ... SAMPLE_CUSTOM_RULES
-        }, RULE_RESOURCE_URLS);
-    });
-
     it('if runRules() is called on a directory with no Apex files, it should correctly return no violations', async () => {
         const runOptions: RunOptions = {
             workspace: new Workspace([
@@ -164,7 +154,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
             path.resolve(__dirname, "test-data", "apexClassWhitespace")
         ])};
-        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos", "AvoidOldApexApiVersion"], runOptions);
+        const runResults: EngineRunResults = await engine.runRules(["NoTrailingWhitespace", "NoTodos", "AvoidOldSalesforceApiVersions"], runOptions);
 
         const expectedViolations: Violation[] = [
             {
@@ -218,8 +208,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "AvoidOldApexApiVersion",
-                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldSalesforceApiVersions",
+                message: getMessage('AvoidOldSalesforceApiVersionsRuleMessage', 52),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "2_apexClasses", "myClass.cls-meta.xml"),
@@ -230,8 +220,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "AvoidOldApexApiVersion",
-                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldSalesforceApiVersions",
+                message: getMessage('AvoidOldSalesforceApiVersionsRuleMessage', 52),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "3_apexClassWithoutWhitespace", "myOuterClass.cls-meta.xml"),
@@ -242,8 +232,8 @@ describe('Tests for runRules', () => {
                 }]
             },
             {
-                ruleName: "AvoidOldApexApiVersion",
-                message: getMessage('AvoidOldApexApiVersionRuleMessage'),
+                ruleName: "AvoidOldSalesforceApiVersions",
+                message: getMessage('AvoidOldSalesforceApiVersionsRuleMessage', 52),
                 primaryLocationIndex: 0,
                 codeLocations: [{
                     file: path.resolve(__dirname, "test-data", "apexClassWhitespace", "lwc_component.js-meta.xml"),
@@ -576,7 +566,7 @@ describe('Tests for runRules', () => {
         const runOptions: RunOptions = {workspace: new Workspace([
                 path.resolve(__dirname, "test-data", "sampleWorkspace")
             ])};
-        const ruleNames: string[] = ['NoTrailingWhitespace', 'AvoidTermsWithImplicitBias', 'AvoidOldApexApiVersion', 'NoHellos', 'NoTodos']
+        const ruleNames: string[] = ['NoTrailingWhitespace', 'AvoidTermsWithImplicitBias', 'AvoidOldSalesforceApiVersions', 'NoHellos', 'NoTodos']
         const individualRunViolations: Violation[] = []
 
         for (const rule of ruleNames) {

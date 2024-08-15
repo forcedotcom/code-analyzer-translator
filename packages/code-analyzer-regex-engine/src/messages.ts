@@ -1,5 +1,4 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
-import {getDeprecatedApiVersionRegex} from "./utils";
 
 const MESSAGE_CATALOG : { [key: string]: string } = {
     CantCreateEngineWithUnknownEngineName:
@@ -17,11 +16,11 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     AvoidTermsWithImplicitBiasRuleMessage:
         `A term with implicit bias was found. Avoid using any of the following terms: %s`,
 
-    AvoidOldApexApiVersionRuleDescription:
-        `Detects Apex classes relying on API versions that are below %d.0.`,
+    AvoidOldSalesforceApiVersionsRuleDescription:
+        `Detects usages of Salesforce API versions that are 3 or more years old.`,
 
-    AvoidOldApexApiVersionRuleMessage:
-        `Found an Apex class relying on an API version 3 years or older. Update your API version.`,
+    AvoidOldSalesforceApiVersionsRuleMessage:
+        `Found the use of a Salesforce API version that is 3 or more years old. Avoid using an API version that is <= %d.0.`,
 
     RuleViolationMessage:
         `A match of the regular expression %s was found for rule '%s': %s`,

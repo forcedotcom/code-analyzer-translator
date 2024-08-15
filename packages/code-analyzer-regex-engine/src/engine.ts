@@ -92,8 +92,8 @@ export class RegexEngine extends Engine {
     }
 
     private shouldScanFile(fileName: string, ruleName: string): boolean {
-        const ext = path.extname(fileName).toLowerCase();
-        const fileExtensions = this.regexRules[ruleName].file_extensions;
+        const ext: string = path.extname(fileName).toLowerCase();
+        const fileExtensions: string[] | undefined = this.regexRules[ruleName].file_extensions;
         return !fileExtensions || fileExtensions.includes(ext);
     }
 
