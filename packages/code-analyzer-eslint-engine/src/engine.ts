@@ -103,8 +103,8 @@ export class ESLintEngine extends Engine {
                 if (ruleNames.has(ruleName)) {
                     violations.push(toViolation(eslintResult.filePath, resultMsg));
                 } else {
-                    // This theoretically should never be possible. But for sanity sakes, we'll emit a warning if this ever happens.
-                    this.emitLogEvent(LogLevel.Warn, getMessage('ViolationFoundFromUnregisteredRule', ruleName, JSON.stringify(violation,null,2)))
+                    // This may be possible if a user tries to suppress an eslint rule in their code that isn't available. We just ignore it but debug it just in case.
+                    this.emitLogEvent(LogLevel.Debug, getMessage('ViolationFoundFromUnregisteredRule', ruleName, JSON.stringify(violation,null,2)))
                 }
             }
         }

@@ -526,6 +526,22 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
         expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');
         expect(path.extname(results.violations[1].codeLocations[0].file)).toEqual('.ts');
     });
+
+    it('When runRules is called on a workspace that has a babel configuration file, then the file is ignored and no error events are thrown', async () => {
+        const folderContainingBabelConfigFile: string = path.join(__dirname, 'test-data','workspaceWithBabelConfigFile');
+        const logEvents: LogEvent[] = [];
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const origWorkingDir: string = process.cwd();
+        process.chdir(folderContainingBabelConfigFile);
+        try {
+            const runOptions: RunOptions = {workspace: new Workspace([folderContainingBabelConfigFile])};
+            engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+            await engine.runRules(['@lwc/lwc/no-unexpected-wire-adapter-usages'], runOptions);
+            expect(logEvents.filter(ev => ev.logLevel === LogLevel.Error)).toHaveLength(0);
+        } finally {
+            process.chdir(origWorkingDir);
+        }
+    });
 });
 
 describe('Tests for emitting events', () => {

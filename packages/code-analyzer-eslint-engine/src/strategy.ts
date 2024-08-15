@@ -36,8 +36,7 @@ export class LegacyESLintStrategy implements ESLintStrategy {
      */
     async calculateRulesMetadata(): Promise<Map<string, Rule.RuleMetaData>> {
         const eslintOptions: ESLint.Options = this.createESLintOptions(BaseRuleset.ALL);
-        this.emitLogEvent(LogLevel.Fine, 'Calculating metadata for rules using an ESLint instance with options:\n' +
-            JSON.stringify(eslintOptions,null,2));
+        this.emitLogEvent(LogLevel.Fine, `Calculating metadata for rules with ESLint options: ${JSON.stringify(eslintOptions)}`);
         const ruleModulesMap: Map<string, Rule.RuleModule> = await getAllRuleModules(new LegacyESLint(eslintOptions));
         const rulesMetadata: Map<string, Rule.RuleMetaData> = new Map();
         for (const [ruleName, ruleModule] of ruleModulesMap) {
@@ -74,9 +73,8 @@ export class LegacyESLintStrategy implements ESLintStrategy {
             await this.workspace.getCandidateFilesForUserConfig(filterFcn) :
             await this.workspace.getCandidateFilesForBaseConfig(filterFcn);
 
-        this.emitLogEvent(LogLevel.Fine,
-            `Calculating rule statuses using files ${JSON.stringify(candidateFiles)}\n` +
-            `and an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`);
+        this.emitLogEvent(LogLevel.Fine, `Calculating rule statuses using files: ${JSON.stringify(candidateFiles)}`);
+        this.emitLogEvent(LogLevel.Fine, `Calculating rule statuses with ESLint options: ${JSON.stringify(eslintOptions)}`);
         this.ruleStatuses = await this.calculateRuleStatusesFor(candidateFiles, eslint);
 
         // Since we have no easy way of turning on a rule that has been explicitly turned off in the config
@@ -118,8 +116,8 @@ export class LegacyESLintStrategy implements ESLintStrategy {
 
         const filesToScan: string[] = await this.workspace.getFilesToScan(filterFcn);
 
-        this.emitLogEvent(LogLevel.Fine, `Running the ESLint.lintFiles method on files ${JSON.stringify(filesToScan)}\n` +
-            `using an ESLint instance with options:\n${JSON.stringify(eslintOptions,null,2)}`);
+        this.emitLogEvent(LogLevel.Fine, `Running the ESLint.lintFiles method on files: ${JSON.stringify(filesToScan)}`);
+        this.emitLogEvent(LogLevel.Fine, `Running the ESLint.lintFiles method with ESLint options: ${JSON.stringify(eslintOptions)}`);
 
         const worker: Worker = new Worker(path.resolve(__dirname,'..', 'worker-scripts', 'run-eslint.mjs'), {
             workerData: {
@@ -177,6 +175,7 @@ export class LegacyESLintStrategy implements ESLintStrategy {
         return {
             cwd: __dirname, // This is needed to make the base plugins discoverable. Don't worry, user's plugins are also still discovered.
             errorOnUnmatchedPattern: false,
+            reportUnusedDisableDirectives: 'off',
             baseConfig: this.baseConfigFactory.createBaseConfig(baseRuleset),   // This is applied first (on bottom).
             useEslintrc: this.config.auto_discover_eslint_config,               // This is applied second.
             overrideConfigFile: userConfigInfo.getUserConfigFile(),             // This is applied third.
