@@ -8,8 +8,10 @@ import {
     SHARED_MESSAGE_CATALOG
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
-import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRules, RULE_NAME_PATTERN} from "../src/config";
-import {BASE_REGEX_RULES} from "../src/plugin";
+import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRule, RegexRules, RULE_NAME_PATTERN} from "../src/config";
+import {createBaseRegexRules} from "../src/plugin";
+import {FixedClock} from "./test-helpers";
+import {RealClock} from "../src/utils";
 
 const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
     regex: String.raw`/TODO:\s/gi`,
@@ -21,10 +23,14 @@ const SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION = {
     regex: String.raw`/hello/gi`,
     description: "Detects hellos in project",
 }
+
+const SAMPLE_DATE: Date = new Date(Date.UTC(2024, 8, 1, 0, 0, 0));
+
 describe('RegexEnginePlugin No Custom Config Tests' , () => {
     let enginePlugin: RegexEnginePlugin;
     beforeAll(() => {
         enginePlugin = new RegexEnginePlugin()
+        enginePlugin._setClock(new FixedClock(SAMPLE_DATE));
     });
 
     it('Check that I can get all available engine names', () => {
@@ -40,6 +46,45 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', async () => {
         await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow(
             getMessage('CantCreateEngineWithUnknownEngineName', 'OtherEngine'));
+    });
+
+    type ApiVersionTestCase = {
+        date: Date
+        expectedSource: string
+        expectedVersion: number
+    };
+    const apiVersionTestCases: ApiVersionTestCase[] = [
+        { date: new Date(Date.UTC(2024,8,15)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-2])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 52 }, // Summer'24 - 3 years = Summer'21 (52.0)
+        { date: new Date(Date.UTC(2022,2,1)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-5])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 45 },  // Spring'22 - 3 years = Spring'19 (45.0)
+        { date: new Date(Date.UTC(2023,5,2)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-9])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 49 },  // Summer'23 - 3 years = Summer'20 (49.0)
+        { date: new Date(Date.UTC(2025,9,3)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-6])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 56 },  // Winter'26 - 3 years = Winter'23 (56.0)
+        { date: new Date(Date.UTC(2028,3,7)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-5][0-9]|6[0-3])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 63 }   // Spring'28 - 3 years = Spring'25 (63.0)
+    ];
+    it.each(apiVersionTestCases)('RegexEnginePlugin produces engine with AvoidOldSalesforceApiVersions that depends on current date', async (testCase: ApiVersionTestCase) => {
+        enginePlugin._setClock(new FixedClock(testCase.date));
+        const engine: RegexEngine = await enginePlugin.createEngine('regex', {}) as RegexEngine;
+        const regexRules: RegexRules = engine._getRegexRules();
+        const apiVersionRule: RegexRule = regexRules['AvoidOldSalesforceApiVersions'];
+        expect(apiVersionRule).toBeDefined();
+        expect(apiVersionRule.regex.source).toEqual(testCase.expectedSource);
+        expect(apiVersionRule.violation_message).toEqual(getMessage('AvoidOldSalesforceApiVersionsRuleMessage', testCase.expectedVersion));
+    });
+
+
+    it('Throw an error, if date is outside valid range to generate a valid API version regular expression for AvoidOldSalesforceApiVersions rule', async () => {
+        enginePlugin._setClock(new FixedClock(new Date(Date.UTC(2006,1,1))));
+        await expect(enginePlugin.createEngine('regex', {})).rejects.toThrow(
+            "This method only works for API versions that are >= 20.0 and < 100.0. Please contact Salesforce to fix this method."
+        );
+        enginePlugin._setClock(new FixedClock(new Date(Date.UTC(2050,1,1))));
+        await expect(enginePlugin.createEngine('regex', {})).rejects.toThrow(
+            "This method only works for API versions that are >= 20.0 and < 100.0. Please contact Salesforce to fix this method."
+        );
+    });
+
+    it('Test will generate a valid API version now, but will throw error if 3 year old API version is >100', async () => {
+        enginePlugin._setClock(new RealClock());
+        await expect(enginePlugin.createEngine('regex', {})).resolves.toBeDefined(); // if this throws at some point in the future, then at that time we will need to rewrite our rule
     });
 });
 
@@ -60,7 +105,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         const customNoTodoRuleRegex: RegExp = /TODO:\s/gi;
         const customNoHelloRuleRegex: RegExp = /hello/gi;
         const expRegexRules: RegexRules = {
-            ...BASE_REGEX_RULES,
+            ...createBaseRegexRules(SAMPLE_DATE),
             NoTodos: {
                 regex: customNoTodoRuleRegex,
                 description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
@@ -400,6 +445,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         {input: '/[0-9]{2,}[A-Z]{2,}?/g', expected: new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g')},
         {input: '/[^a-zA-Z0-9]{3,6}/g', expected: new RegExp('[^a-zA-Z0-9]{3,6}', 'g')},
         {input: '/(alpha|beta)\\d{2,4}?/gi', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'gi')},
+        {input: '/\\/\\/[ \\t]*TODO/gi', expected: new RegExp('\\/\\/[ \\t]*TODO', 'gi')},
     ];
     it.each(patternTestCases)('Verify regular expression construction for $input', async (testCase: PATTERN_TESTCASE) => {
         const rawConfig: ConfigObject = {

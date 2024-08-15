@@ -1,6 +1,8 @@
-public class myCls {  
+public class dummy {
    // Additional myOuterClass code here
    class myInnerClass {
      // myInnerClass code here
    }
-}  
+} // slave
+
+/* blackouts, whitelisted*/
