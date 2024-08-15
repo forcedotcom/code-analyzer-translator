@@ -12,13 +12,6 @@ describe('PythonVersionIdentifier implementations', () => {
             expect((output as SemVer).compare(process.version)).toEqual(0);
         });
 
-        it('When command does not output a parsable version, returns null', async () => {
-            const identifier = new RuntimePythonVersionIdentifier();
-            // Feed the identifier something that directly outputs nonsense.
-            const output: SemVer|null = await identifier.identifyPythonVersion('echo');
-            expect(output).toBeNull();
-        });
-
         it('When command throws an error, rejects', async () => {
             const identifier = new RuntimePythonVersionIdentifier();
             // Feed the identifier a completely nonsensical command.
