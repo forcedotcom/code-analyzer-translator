@@ -3,29 +3,31 @@ import {FlowTestEnginePlugin} from "../src";
 import {FlowTestEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {StubFlowTestConfigFactory} from "../stubs/stub-config";
+import {StubPythonVersionIdentifier} from "../stubs/lib/python/StubPythonVersionIdentifier";
+import {SemVer} from "semver";
 
 changeWorkingDirectoryToPackageRoot();
 
 describe('FlowTestEnginePlugin', () => {
-    let plugin: EnginePluginV1;
-    beforeAll(() => {
-        // Stub out the plugin's `_getConfigFactory()` method.
-        jest.spyOn(FlowTestEnginePlugin.prototype, '_getConfigFactory').mockImplementation(() => {
-            return new StubFlowTestConfigFactory('dummy command');
-        });
-        plugin = new FlowTestEnginePlugin();
-    });
 
     it('#getAvailableNames() returns the FlowTestEngine name', () => {
+        const plugin: EnginePluginV1 = new FlowTestEnginePlugin();
         expect(plugin.getAvailableEngineNames()).toEqual([FlowTestEngine.NAME]);
     });
 
     it('#createEngine() returns a FlowTestEngine when asked for one', async () => {
+        const plugin: EnginePluginV1 = new FlowTestEnginePlugin(new StubPythonVersionIdentifier(new Map([
+            // Simulate the machine having a viable version of Python on it.
+            ['python3', new SemVer('3.10.0')]
+        ])));
         expect(await plugin.createEngine('flowtest', {})).toBeInstanceOf(FlowTestEngine);
     });
 
     it('#createEngine() throws error when asked for an unsupported engine', async () => {
+        const plugin: EnginePluginV1 = new FlowTestEnginePlugin(new StubPythonVersionIdentifier(new Map([
+            // Simulate the machine having a viable version of Python on it.
+            ['python3', new SemVer('3.10.0')]
+        ])));
         await expect(plugin.createEngine('oops', {})).rejects.toThrow(getMessage('CantCreateEngineWithUnknownName', 'oops'));
     });
 

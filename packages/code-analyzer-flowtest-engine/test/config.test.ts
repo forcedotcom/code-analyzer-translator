@@ -1,6 +1,6 @@
 import {SemVer} from "semver";
 import {ConfigObject} from "@salesforce/code-analyzer-engine-api";
-import {FlowTestConfig, FlowTestConfigFactoryImpl, PYTHON_COMMAND_PATH} from "../src/config";
+import {FlowTestConfig, ConfigNormalizer, PYTHON_COMMAND_PATH} from "../src/config";
 import {StubPythonVersionIdentifier} from "../stubs/lib/python/StubPythonVersionIdentifier";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
@@ -19,11 +19,11 @@ describe('FlowTestConfigFactory implementations', () => {
                 const pythonVersionIdentifier = new StubPythonVersionIdentifier(new Map([
                     [fakePythonCommand, new SemVer('3.10.0')]
                 ]));
-                const factory = new FlowTestConfigFactoryImpl({
+                const normalizer = new ConfigNormalizer({
                     pythonVersionIdentifier
                 });
 
-                const validatedConfig: FlowTestConfig = await factory.create(rawConfig);
+                const validatedConfig: FlowTestConfig = await normalizer.normalize(rawConfig);
                 expect(validatedConfig.python_command_path).toEqual(fakePythonCommand);
             });
 
@@ -40,11 +40,11 @@ describe('FlowTestConfigFactory implementations', () => {
                 }
             ])('When config-specified Python is $problem, an error is thrown', async ({versionMap, expectedError}) => {
                 const pythonVersionIdentifier = new StubPythonVersionIdentifier(versionMap);
-                const factory = new FlowTestConfigFactoryImpl({
+                const normalizer = new ConfigNormalizer({
                     pythonVersionIdentifier
                 });
 
-                await expect(factory.create(rawConfig)).rejects.toThrow(expectedError);
+                await expect(normalizer.normalize(rawConfig)).rejects.toThrow(expectedError);
             });
         });
 
@@ -55,11 +55,11 @@ describe('FlowTestConfigFactory implementations', () => {
                     ['python3', new SemVer('3.10.0')],
                     ['python', new SemVer('3.10.0')]
                 ]));
-                const factory = new FlowTestConfigFactoryImpl({
+                const normalizer = new ConfigNormalizer({
                     pythonVersionIdentifier
                 });
 
-                const validatedConfig: FlowTestConfig = await factory.create({});
+                const validatedConfig: FlowTestConfig = await normalizer.normalize({});
                 expect(validatedConfig.python_command_path).toEqual('python3');
             });
 
@@ -70,11 +70,11 @@ describe('FlowTestConfigFactory implementations', () => {
                     // Map python to a valid version.
                     ['python', new SemVer('3.10.0')]
                 ]));
-                const factory = new FlowTestConfigFactoryImpl({
+                const normalizer = new ConfigNormalizer({
                     pythonVersionIdentifier
                 });
 
-                const validatedConfig: FlowTestConfig = await factory.create({});
+                const validatedConfig: FlowTestConfig = await normalizer.normalize({});
                 expect(validatedConfig.python_command_path).toEqual('python');
             });
 
@@ -84,11 +84,11 @@ describe('FlowTestConfigFactory implementations', () => {
                     ['python3', null],
                     ['python', null]
                 ]));
-                const factory = new FlowTestConfigFactoryImpl({
+                const normalizer = new ConfigNormalizer({
                     pythonVersionIdentifier
                 });
 
-                await expect(factory.create({})).rejects.toThrow(getMessage('CouldNotLocatePython','3.10.0', 'python3, python', PYTHON_COMMAND_PATH));
+                await expect(normalizer.normalize({})).rejects.toThrow(getMessage('CouldNotLocatePython','3.10.0', 'python3, python', PYTHON_COMMAND_PATH));
             });
         });
     });

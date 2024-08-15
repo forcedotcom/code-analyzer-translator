@@ -18,18 +18,14 @@ type FactoryDependencies = {
     pythonVersionIdentifier: PythonVersionIdentifier;
 }
 
-export interface FlowTestConfigFactory {
-    create(rawConfig: ConfigObject): Promise<FlowTestConfig>;
-}
-
-export class FlowTestConfigFactoryImpl implements FlowTestConfigFactory {
+export class ConfigNormalizer {
     private readonly pythonVersionIdentifier: PythonVersionIdentifier;
 
     public constructor(dependencies: FactoryDependencies) {
         this.pythonVersionIdentifier = dependencies.pythonVersionIdentifier;
     }
 
-    public async create(rawConfig: ConfigObject): Promise<FlowTestConfig> {
+    public async normalize(rawConfig: ConfigObject): Promise<FlowTestConfig> {
         const valueExtractor = new ConfigValueExtractor(rawConfig);
         const configSpecifiedPython: string|undefined = valueExtractor.extractString('python_command_path');
 

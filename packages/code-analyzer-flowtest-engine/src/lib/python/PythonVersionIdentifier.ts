@@ -5,7 +5,7 @@ export interface PythonVersionIdentifier {
     identifyPythonVersion(pythonCommand: string): Promise<SemVer|null>;
 }
 
-export class PythonVersionIdentifierImpl implements PythonVersionIdentifier{
+export class RuntimePythonVersionIdentifier implements PythonVersionIdentifier{
     /**
      * Resolves to a {@link SemVer} representing the version of the Python instance invoked by the provided
      * command

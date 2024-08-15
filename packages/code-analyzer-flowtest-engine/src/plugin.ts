@@ -1,11 +1,18 @@
 import {ConfigObject, Engine, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "./engine";
 import {getMessage} from './messages';
-import {FlowTestConfigFactory, FlowTestConfigFactoryImpl} from "./config";
-import {PythonVersionIdentifierImpl} from "./lib/python/PythonVersionIdentifier";
+import {ConfigNormalizer} from "./config";
+import {PythonVersionIdentifier, RuntimePythonVersionIdentifier} from "./lib/python/PythonVersionIdentifier";
 
 
 export class FlowTestEnginePlugin extends EnginePluginV1 {
+    private readonly configNormalizer: ConfigNormalizer;
+
+    public constructor(pythonVersionIdentifier: PythonVersionIdentifier = new RuntimePythonVersionIdentifier()) {
+        super();
+        this.configNormalizer = new ConfigNormalizer({pythonVersionIdentifier});
+    }
+
     public getAvailableEngineNames(): string[] {
         return [FlowTestEngine.NAME];
     }
@@ -14,15 +21,8 @@ export class FlowTestEnginePlugin extends EnginePluginV1 {
         if (engineName !== FlowTestEngine.NAME) {
             throw new Error(getMessage('CantCreateEngineWithUnknownName', engineName));
         }
-        const configFactory: FlowTestConfigFactory = this._getConfigFactory();
-        return new FlowTestEngine(await configFactory.create(engineConfig));
+        return new FlowTestEngine(await this.configNormalizer.normalize(engineConfig));
     }
 
-    /* istanbul ignore next: Difficult to test */
-    public _getConfigFactory(): FlowTestConfigFactory {
-        return new FlowTestConfigFactoryImpl({
-            pythonVersionIdentifier: new PythonVersionIdentifierImpl()
-        });
-    }
 }
 
