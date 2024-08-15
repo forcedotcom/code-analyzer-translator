@@ -14,15 +14,11 @@ export type FlowTestConfig = {
     [PYTHON_COMMAND_PATH]: string;
 }
 
-type FactoryDependencies = {
-    pythonVersionIdentifier: PythonVersionIdentifier;
-}
-
 export class ConfigNormalizer {
     private readonly pythonVersionIdentifier: PythonVersionIdentifier;
 
-    public constructor(dependencies: FactoryDependencies) {
-        this.pythonVersionIdentifier = dependencies.pythonVersionIdentifier;
+    public constructor(pythonVersionIdentifier: PythonVersionIdentifier) {
+        this.pythonVersionIdentifier = pythonVersionIdentifier;
     }
 
     public async normalize(rawConfig: ConfigObject): Promise<FlowTestConfig> {

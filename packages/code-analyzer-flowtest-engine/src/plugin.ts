@@ -10,7 +10,7 @@ export class FlowTestEnginePlugin extends EnginePluginV1 {
 
     public constructor(pythonVersionIdentifier: PythonVersionIdentifier = new RuntimePythonVersionIdentifier()) {
         super();
-        this.configNormalizer = new ConfigNormalizer({pythonVersionIdentifier});
+        this.configNormalizer = new ConfigNormalizer(pythonVersionIdentifier);
     }
 
     public getAvailableEngineNames(): string[] {
