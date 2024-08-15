@@ -67,6 +67,8 @@ export class LegacyBaseConfigFactory {
             parserOptions: {
                 requireConfigFile: false,
                 babelOptions: {
+                    babelrc: false,
+                    configFile: false,
                     parserOpts: {
                         plugins: [
                             "classProperties",
