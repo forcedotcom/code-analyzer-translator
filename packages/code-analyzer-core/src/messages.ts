@@ -22,7 +22,12 @@ const MESSAGE_CATALOG : MessageCatalog = {
         `Failed to add engine plugin. The plugin's getAvailableNames method threw an error:\n%s`,
 
     PluginErrorFromCreateEngine:
-        `Failed to create engine with name '%s'. The plugin's createEngine method threw an error:\n%s`,
+        `Failed to create engine with name '%s'. The plugin's createEngine method threw the following error:\n` +
+        `%s\n\n` +
+        `If you wish to ignore this error and disable this engine, then update your Code Analyzer configuration with:\n` +
+        `engines:\n` +
+        `  %s:\n` +
+        `    disable_engine: true\n`,
 
     FailedToDynamicallyLoadModule:
         `Failed to dynamically load module '%s'. Error: %s`,
