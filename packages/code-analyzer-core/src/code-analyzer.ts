@@ -231,8 +231,7 @@ export class CodeAnalyzer {
         try {
             engine = await enginePluginV1.createEngine(engineName, engConf);
         } catch (err) {
-            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message));
-            return;
+            throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message, engineName));
         }
 
         if (engineName != engine.getName()) {
