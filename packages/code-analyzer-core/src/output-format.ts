@@ -163,7 +163,7 @@ class HtmlOutputFormatter implements OutputFormatter {
     }
 
     format(results: RunResults): string {
-        const resultsOutput: ResultsOutput = toResultsOutput(results);
+        const resultsOutput: ResultsOutput = toResultsOutput(results, escapeHtml);
         const htmlTemplate: string = fs.readFileSync(HTML_TEMPLATE_FILE, 'utf-8');
         const timestampString: string = this.clock.now().toLocaleString('en-us', {year: "numeric", month: "short",
             day: "numeric", hour: "numeric", minute: "numeric", hour12: true});
@@ -177,8 +177,8 @@ class HtmlOutputFormatter implements OutputFormatter {
     }
 }
 
-function toResultsOutput(results: RunResults) {
-    const resultsOutput: ResultsOutput = {
+function toResultsOutput(results: RunResults, sanitizeFcn: (text: string) => string = t => t): ResultsOutput {
+    return {
         runDir: results.getRunDirectory(),
         violationCounts: {
             total: results.getViolationCount(),
@@ -188,33 +188,32 @@ function toResultsOutput(results: RunResults) {
             sev4: results.getViolationCountOfSeverity(SeverityLevel.Low),
             sev5: results.getViolationCountOfSeverity(SeverityLevel.Info),
         },
-        violations: toViolationOutputs(results.getViolations(), results.getRunDirectory())
+        violations: toViolationOutputs(results.getViolations(), results.getRunDirectory(), sanitizeFcn)
     };
-    return resultsOutput;
 }
 
-function toViolationOutputs(violations: Violation[], runDir: string): ViolationOutput[] {
-    return violations.map(v => createViolationOutput(v, runDir));
+function toViolationOutputs(violations: Violation[], runDir: string, sanitizeFcn: (text: string) => string = t => t): ViolationOutput[] {
+    return violations.map(v => createViolationOutput(v, runDir, sanitizeFcn));
 }
 
-function createViolationOutput(violation: Violation, runDir: string): ViolationOutput {
+function createViolationOutput(violation: Violation, runDir: string, sanitizeFcn: (text: string) => string): ViolationOutput {
     const rule: Rule = violation.getRule();
     const codeLocations: CodeLocation[] = violation.getCodeLocations();
     const primaryLocation: CodeLocation = codeLocations[violation.getPrimaryLocationIndex()];
 
     return {
-        rule: rule.getName(),
-        engine: rule.getEngineName(),
+        rule: sanitizeFcn(rule.getName()),
+        engine: sanitizeFcn(rule.getEngineName()),
         severity: rule.getSeverityLevel(),
         type: rule.getType(),
-        tags: rule.getTags(),
+        tags: rule.getTags().map(sanitizeFcn),
         file: primaryLocation.getFile() ? makeRelativeIfPossible(primaryLocation.getFile() as string, runDir) : undefined,
         line: primaryLocation.getStartLine(),
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
         pathLocations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createPathLocations(codeLocations, runDir) : undefined,
-        message: violation.getMessage(),
+        message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
 }
@@ -242,4 +241,18 @@ function makeRelativeIfPossible(file: string, rootDir: string): string {
         file = file.substring(rootDir.length);
     }
     return file;
+}
+
+function escapeHtml(text: string) {
+    return text.replace(/[&<>"']/g, function (match: string) {
+        /* istanbul ignore next */
+        switch (match) {
+            case '&': return '&amp;';
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '"': return '&quot;';
+            case "'": return '&#39;';
+            default: return match;
+        }
+    });
 }
