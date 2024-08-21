@@ -3,7 +3,7 @@ import {FlowTestEnginePlugin} from "../src";
 import {FlowTestEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {StubPythonVersionIdentifier} from "../stubs/lib/python/StubPythonVersionIdentifier";
+import {StubPythonVersionIdentifier} from "./stubs/StubPythonVersionIdentifier";
 import {SemVer} from "semver";
 
 changeWorkingDirectoryToPackageRoot();

@@ -1,7 +1,7 @@
 import {SemVer} from "semver";
 import {ConfigObject} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestConfig, ConfigNormalizer, PYTHON_COMMAND_PATH} from "../src/config";
-import {StubPythonVersionIdentifier} from "../stubs/lib/python/StubPythonVersionIdentifier";
+import {StubPythonVersionIdentifier} from "./stubs/StubPythonVersionIdentifier";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
