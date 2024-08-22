@@ -45,16 +45,10 @@ describe("Tests for ValueValidator", () => {
         expect(ValueValidator.validateSeverityLevel('high', 'someFieldName')).toEqual(SeverityLevel.High);
     });
 
-    it("When an invalid value is given to validateSeverityLevel, then error", () => {
-        expect(() =>  ValueValidator.validateSeverityLevel([3], 'someFieldName')).toThrow(
+    it.each([[3],0,'Medium'])("When an invalid value is given to validateSeverityLevel, then error", (value) => {
+        expect(() =>  ValueValidator.validateSeverityLevel(value, 'someFieldName')).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'someFieldName',
-                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '[3]'));
-        expect(() =>  ValueValidator.validateSeverityLevel(0, 'someFieldName')).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'someFieldName',
-                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '0'));
-        expect(() =>  ValueValidator.validateSeverityLevel('Medium', 'someFieldName')).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'someFieldName',
-                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '"Medium"'));
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', JSON.stringify(value)));
     });
 
     it("When a value matches the regular expression provided to validateString, then the value is returned", () => {
