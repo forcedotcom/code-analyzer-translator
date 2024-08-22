@@ -2,12 +2,12 @@ import {
     ConfigObject,
     ConfigValueExtractor,
     getMessageFromCatalog,
+    SeverityLevel,
     SHARED_MESSAGE_CATALOG,
     ValueValidator
 } from "../src";
 import {getMessage} from "../src/messages";
 import path from "node:path";
-import {SeverityLevel} from "@salesforce/code-analyzer-core";
 
 describe("Tests for ValueValidator", () => {
     it("When a boolean value is given to validateBoolean, then the value is returned", () => {
