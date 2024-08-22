@@ -1,6 +1,7 @@
-import {getMessage} from "./messages";
+import {getMessage, getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "./messages";
 import path from "node:path";
 import fs from "node:fs";
+import {SeverityLevel} from "./rules";
 
 export type ConfigObject = {
     [key: string]: ConfigValue
@@ -63,6 +64,14 @@ export class ConfigValueExtractor {
 
     extractString(fieldName: string, defaultValue?: string, regexpToMatch?: RegExp): string | undefined {
         return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredString(fieldName, regexpToMatch);
+    }
+
+    extractRequiredSeverityLevel(fieldName: string): SeverityLevel {
+        return ValueValidator.validateSeverityLevel(this.configObj[fieldName], this.getFieldPath(fieldName));
+    }
+
+    extractSeverityLevel(fieldName: string, defaultValue?: SeverityLevel): SeverityLevel | undefined {
+        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredSeverityLevel(fieldName);
     }
 
     extractRequiredObject(fieldName: string): ConfigObject {
@@ -144,6 +153,24 @@ export class ValueValidator {
             throw new Error(getMessage('ConfigValueMustMatchRegExp', fieldPath, regexpToMatch.toString()));
         }
         return strValue;
+    }
+
+    static validateSeverityLevel(rawValue: unknown, fieldPath: string): SeverityLevel {
+        let value: unknown = typeof rawValue === 'string' && rawValue.length > 1 ?
+            rawValue.charAt(0).toUpperCase() + rawValue.slice(1).toLowerCase() : rawValue;
+
+        // Note that Object.values(SeverityLevel) returns [1,2,3,4,5,"Critical","High","Moderate","Low","Info"]
+        if ((typeof value !== 'string' && typeof value !== 'number')
+            || !Object.values(SeverityLevel).includes(value as string | number)) {
+            throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', fieldPath,
+                JSON.stringify(Object.values(SeverityLevel)), JSON.stringify(rawValue) || 'undefined'));
+        }
+        if (typeof value === 'string') {
+            // We can't type cast to enum from a string, so instead we choose the enum based on the string as a key.
+            value = SeverityLevel[value as keyof typeof SeverityLevel];
+        }
+        // We can type cast to enum safely from a number
+        return value as SeverityLevel;
     }
 
     static validateObject(value: unknown, fieldPath: string): ConfigObject {

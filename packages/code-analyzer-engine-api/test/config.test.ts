@@ -1,6 +1,13 @@
-import {ConfigObject, ConfigValueExtractor, ValueValidator} from "../src";
+import {
+    ConfigObject,
+    ConfigValueExtractor,
+    getMessageFromCatalog,
+    SHARED_MESSAGE_CATALOG,
+    ValueValidator
+} from "../src";
 import {getMessage} from "../src/messages";
 import path from "node:path";
+import {SeverityLevel} from "@salesforce/code-analyzer-core";
 
 describe("Tests for ValueValidator", () => {
     it("When a boolean value is given to validateBoolean, then the value is returned", () => {
@@ -28,6 +35,20 @@ describe("Tests for ValueValidator", () => {
     it("When a non-string value is given to validateString, then error", () => {
         expect(() =>  ValueValidator.validateString(['hello'], 'someFieldName')).toThrow(
             getMessage('ConfigValueMustBeOfType', 'someFieldName', 'string', 'array'));
+    });
+
+    it("When a good number value is given to validateSeverityLevel, then the severity level is returned", () => {
+        expect(ValueValidator.validateSeverityLevel(3, 'someFieldName')).toEqual(SeverityLevel.Moderate);
+    });
+
+    it("When a good string value is given to validateSeverityLevel, then the severity level is returned", () => {
+        expect(ValueValidator.validateSeverityLevel('high', 'someFieldName')).toEqual(SeverityLevel.High);
+    });
+
+    it.each([[3],0,'Medium'])("When an invalid value is given to validateSeverityLevel, then error", (value) => {
+        expect(() =>  ValueValidator.validateSeverityLevel(value, 'someFieldName')).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'someFieldName',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', JSON.stringify(value)));
     });
 
     it("When a value matches the regular expression provided to validateString, then the value is returned", () => {
@@ -338,6 +359,43 @@ describe("Tests for ConfigValueExtractor", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'thisDoesNotMatch'}, 'engines.dummy');
         expect(() => extractor.extractString('some_field', 'some_default', /^[a-z]+_[a-z]+$/)).toThrow(
             getMessage('ConfigValueMustMatchRegExp', 'engines.dummy.some_field', '/^[a-z]+_[a-z]+$/'));
+    });
+
+    it("When calling extractRequiredSeverityLevel on a field that contains a valid string, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'INFO'}, 'engines.dummy');
+        expect(extractor.extractRequiredSeverityLevel('some_field')).toEqual(SeverityLevel.Info);
+    });
+
+    it("When calling extractRequiredSeverityLevel on a field is missing, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(() => extractor.extractRequiredSeverityLevel('some_field')).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'engines.dummy.some_field',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', 'undefined'));
+    });
+
+    it("When calling extractRequiredSeverityLevel on a field that contains a invalid value, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 'oops'}, 'engines.dummy');
+        expect(() => extractor.extractRequiredSeverityLevel('some_field')).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'engines.dummy.some_field',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '"oops"'));
+    });
+
+    it("When calling extractSeverityLevel on a field that contains a valid number, then return value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: 4}, 'engines.dummy');
+        expect(extractor.extractSeverityLevel('some_field')).toEqual(SeverityLevel.Low);
+    });
+
+    it("When calling extractSeverityLevel on a non-string non-number, then error", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({some_field: [3]}, 'engines.dummy');
+        expect(() =>  extractor.extractSeverityLevel('some_field')).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel', 'engines.dummy.some_field',
+                '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '[3]'));
+    });
+
+    it("When calling extractSeverityLevel on field that is not defined, then return default value", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
+        expect(extractor.extractSeverityLevel('some_field')).toEqual(undefined);
+        expect(extractor.extractSeverityLevel('some_field', SeverityLevel.Moderate)).toEqual(SeverityLevel.Moderate);
     });
 
     it("When calling extractRequiredObject on a field that contains an object, then return value", () => {

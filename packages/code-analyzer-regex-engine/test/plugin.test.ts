@@ -379,13 +379,13 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 },
                 "OtherRule": {
                     ... SAMPLE_RAW_CUSTOM_RULE_DEFINITION,
-                    severity: "Critical"
+                    severity: "hiGH" // Also testing for case insensitivity
                 }
             }
         };
         const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
         expect(pluginEngine._getRegexRules()["NoTodos"].severity).toStrictEqual(SeverityLevel.Critical);
-        expect(pluginEngine._getRegexRules()["OtherRule"].severity).toStrictEqual(SeverityLevel.Critical);
+        expect(pluginEngine._getRegexRules()["OtherRule"].severity).toStrictEqual(SeverityLevel.High);
     });
 
 
@@ -398,8 +398,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const severityLevelValues: (string | SeverityLevel)[] = Object.values(SeverityLevel)
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessage('ConfigValueNotAValidSeverityLevel', 'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(severityLevelValues), '7'));
+        const severityLevelValues: (string | SeverityLevel)[] = Object.values(SeverityLevel);
+        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel',
+                'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(severityLevelValues), '7'));
     });
 
     it("If user creates a rule with a custom tags, ensure they are maintained in config", async () => {
