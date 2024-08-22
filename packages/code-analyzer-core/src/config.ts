@@ -156,29 +156,11 @@ function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigVal
 }
 
 function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtractor): RuleOverride {
-    const ruleOverride: RuleOverride = {
-        tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, ValueValidator.validateString)
-    };
-    if (ruleOverrideExtractor.hasValueDefinedFor(FIELDS.SEVERITY)) {
-        ruleOverride.severity = validateSeverityValue(ruleOverrideExtractor.getObject()[FIELDS.SEVERITY],
-            ruleOverrideExtractor.getFieldPath(FIELDS.SEVERITY));
+    const engSeverity: engApi.SeverityLevel | undefined = ruleOverrideExtractor.extractSeverityLevel(FIELDS.SEVERITY);
+    return {
+        tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, ValueValidator.validateString),
+        severity: engSeverity === undefined ? undefined : engSeverity as SeverityLevel
     }
-    return ruleOverride;
-}
-
-function validateSeverityValue(value: unknown, valueKey: string): SeverityLevel {
-    // Note that Object.values(SeverityLevel) returns [1,2,3,4,5,"Critical","High","Moderate","Low","Info"]
-    if ((typeof value !== 'string' && typeof value !== 'number')
-        || !Object.values(SeverityLevel).includes(value as string | number)) {
-        throw new Error(getMessage('ConfigValueNotAValidSeverityLevel', valueKey,
-            JSON.stringify(Object.values(SeverityLevel)), JSON.stringify(value)));
-    }
-    if (typeof value === 'string') {
-        // We can't type cast to enum from a string, so instead we choose the enum based on the string as a key.
-        value = SeverityLevel[value as keyof typeof SeverityLevel];
-    }
-    // We can type cast to enum safely from a number
-    return value as SeverityLevel;
 }
 
 function extractEnginesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, engApi.ConfigObject> {

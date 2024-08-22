@@ -53,9 +53,6 @@ const MESSAGE_CATALOG : MessageCatalog = {
     ConfigContentNotAnObject:
         `The configuration content is invalid since it is of type %s instead of type object.`,
 
-    ConfigValueNotAValidSeverityLevel:
-        `The '%s' configuration value must be one of the following: %s. Instead received: %s`,
-
     RulePropertyOverridden:
         `The %s value of rule '%s' of engine '%s' was overridden according to the specified configuration. The old value '%s' was replaced with the new value '%s'.`,
 

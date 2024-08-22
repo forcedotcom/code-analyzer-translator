@@ -32,10 +32,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The rule name '%s' defined within the '%s' configuration value is invalid. The rule name must match the regular expression: '%s'`,
 
     GlobalModifierNotProvided:
-        `The '%s' configuration value is invalid. The regex engine does not currently support rules without the 'g' modifier. Please use '%s' instead of '%s'.`,
-
-    ConfigValueNotAValidSeverityLevel:
-        `The '%s' configuration value must be one of the following: %s. Instead received: %s`
+        `The '%s' configuration value is invalid. The regex engine does not currently support rules without the 'g' modifier. Please use '%s' instead of '%s'.`
 }
 
 /**

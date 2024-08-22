@@ -60,6 +60,19 @@ describe("Tests for creating and accessing configuration values", () => {
         expect(conf.getEngineConfigFor('stubEngine2')).toEqual({config_root: TEST_DATA_DIR});
     });
 
+    it("When case insensitive severity levels are provided, they get correctly mapped to SeverityLevel", () => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({rules: {eslint: {
+            r1: {severity: "critical"},
+            r2: {severity: "mOdEraTE"},
+            r3: {severity: "LOW"}
+        }}});
+        expect(conf.getRuleOverridesFor('eslint')).toEqual({
+            r1: {severity: SeverityLevel.Critical},
+            r2: {severity: SeverityLevel.Moderate},
+            r3: {severity: SeverityLevel.Low}
+        });
+    });
+
     it("When constructing config from file with yml extension then it is parsed as a yaml file", () => {
         // Also note that Yml should work just like yml. Case doesn't matter.
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-02.Yml'));
@@ -159,11 +172,13 @@ describe("Tests for creating and accessing configuration values", () => {
             goodSevRule2: {severity: "High"},
             badSevRule: {severity: 0}
         }}})).toThrow(
-            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel',
+                'rules.someEngine.badSevRule.severity',
                 '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '0'));
 
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {badSevRule: {severity: "oops"}}}})).toThrow(
-            getMessage('ConfigValueNotAValidSeverityLevel','rules.someEngine.badSevRule.severity',
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel',
+                'rules.someEngine.badSevRule.severity',
                 '["Critical","High","Moderate","Low","Info",1,2,3,4,5]', '"oops"'));
     });
 
