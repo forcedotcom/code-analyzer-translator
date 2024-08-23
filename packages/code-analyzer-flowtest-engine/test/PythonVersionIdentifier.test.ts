@@ -1,5 +1,5 @@
 import {SemVer} from 'semver';
-import {RuntimePythonVersionIdentifier} from '../../../src/lib/python/PythonVersionIdentifier';
+import {RuntimePythonVersionIdentifier} from "../src/PythonVersionIdentifier";
 
 describe('PythonVersionIdentifier implementations', () => {
     describe('PythonVersionIdentifierImpl', () => {

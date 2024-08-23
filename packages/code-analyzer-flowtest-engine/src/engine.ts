@@ -21,9 +21,13 @@ export class FlowTestEngine extends Engine {
         return FlowTestEngine.NAME;
     }
 
+    getConfig(): FlowTestConfig {
+        return this.config;
+    }
+
     public async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
-        const pythonCommand: string = this.config.python_command_path;
+        const pythonCommand: string = this.config.python_command;
         this.emitDescribeRulesProgressEvent(10);
         this.emitLogEvent(LogLevel.Info, `Temporary message: Python command identified as ${pythonCommand}`);
         this.emitRunRulesProgressEvent(100);
@@ -32,7 +36,7 @@ export class FlowTestEngine extends Engine {
 
     public async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitRunRulesProgressEvent(0);
-        const pythonCommand = this.config.python_command_path;
+        const pythonCommand = this.config.python_command;
 
         this.emitRunRulesProgressEvent(10);
         this.emitLogEvent(LogLevel.Info, `Temporary message: Python command identified as ${pythonCommand}`);

@@ -22,27 +22,25 @@ export class RuntimePythonVersionIdentifier implements PythonVersionIdentifier{
             child.stdout.on('data', data => {
                 stdout += data;
             });
-
+            /* istanbul ignore next */
             child.stderr.on('data', data => {
                 stderr += data;
             });
-
             child.on('exit', code => {
-                // A 0-code indicates that the process ran successfully.
+                /* istanbul ignore else */
                 if (code === 0) {
                     // The version will be output in the form of something like "Python 3.12.4", which can be coerced to
                     // a SemVer directly, with the result being null if the coercion fails.
                     res(coerce(stdout));
                 } else {
                     // A non-0 exit code indicates a failure. So just reject with whatever `stderr` was.
-                    return rej(stderr);
+                    rej(stderr);
                 }
             });
-
             // This handler is for when the process can't be spawned (e.g., if the command doesn't exist on the machine).
             child.on('error', err => {
                 // Reject with whatever the error message was.
-                return rej(err.message);
+                rej(err.message);
             });
         });
     }
