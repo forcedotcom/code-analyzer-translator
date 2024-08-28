@@ -1,5 +1,5 @@
 import {
-    ConfigObject,
+    ConfigObject, ConfigValueExtractor,
     Engine,
     EnginePluginV1,
     getMessageFromCatalog,
@@ -8,7 +8,12 @@ import {
 import {getMessage} from "../src/messages";
 import {ESLintEnginePlugin} from "../src";
 import {ESLintEngine} from "../src/engine";
-import {DEFAULT_CONFIG, LEGACY_ESLINT_CONFIG_FILES, LEGACY_ESLINT_IGNORE_FILE} from "../src/config";
+import {
+    DEFAULT_CONFIG,
+    ESLINT_ENGINE_CONFIG_DESCRIPTION,
+    LEGACY_ESLINT_CONFIG_FILES,
+    LEGACY_ESLINT_IGNORE_FILE
+} from "../src/config";
 import path from "node:path";
 
 describe('Tests for the ESLintEnginePlugin', () => {
@@ -21,158 +26,208 @@ describe('Tests for the ESLintEnginePlugin', () => {
         expect(plugin.getAvailableEngineNames()).toEqual(['eslint']);
     });
 
-    it('When createEngine is passed eslint and empty config then an ESLintEngine instance is returned with default values', async () => {
-        const engine: Engine = await plugin.createEngine('eslint', {});
-        expect(engine).toBeInstanceOf(ESLintEngine);
-        expect((engine as ESLintEngine).getConfig()).toEqual(DEFAULT_CONFIG);
+    it('When createEngineConfigDescription is called with an invalid engine name, then error is thrown', () => {
+        expect(() => plugin.describeEngineConfig('oops')).toThrow(getMessage('UnsupportedEngineName','oops'));
     });
 
-    it('When createEngine is passed anything else then an error is thrown', async () => {
-        await expect(plugin.createEngine('oops', {})).rejects.toThrow(
-            getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
+    it('When createEngineConfigDescription is with a valid engine name, then return the correct ConfigDescription', async () => {
+        expect(plugin.describeEngineConfig(ESLintEngine.NAME)).toEqual(ESLINT_ENGINE_CONFIG_DESCRIPTION);
     });
 
-    it('When value we do not care about is on config, then we ignore it', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {dummy: 3})) as ESLintEngine;
-        expect(engine.getConfig()).toEqual(DEFAULT_CONFIG);
+    it('When createEngineConfig is called with an invalid engine name, then error is thrown', async () => {
+        await expect(plugin.createEngineConfig('oops', new ConfigValueExtractor({}))).rejects.toThrow(
+            getMessage('UnsupportedEngineName','oops'));
     });
 
-    it('When non-default config_root is provided to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {config_root: __dirname})) as ESLintEngine;
-        expect(engine.getConfig().config_root).toEqual(__dirname);
+    it('When createEngineConfig a valid engine name is empty overrides, then the default config is returned', async () => {
+        expect(await callCreateEngineConfig(plugin, {})).toEqual(DEFAULT_CONFIG);
     });
 
-    it('When config_root is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {config_root: 3})).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'config_root', 'string', 'number'));
+    it('When value we do not care about is passed to createEngineConfig, then we ignore it', async () => {
+        const userProvidedOverrides: ConfigObject = {dummy: 3};
+        expect(await callCreateEngineConfig(plugin, userProvidedOverrides)).toEqual(DEFAULT_CONFIG);
     });
 
-    it('When a valid eslint_config_file is passed to createEngine, then it is set on the config', async () => {
-        const rawConfig: ConfigObject = {
-            config_root: __dirname,
+    it('When a valid eslint_config_file is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides: ConfigObject = {
             eslint_config_file: 'test-data/legacyConfigCases/workspace_HasCustomConfigWithNewRules/.eslintrc.yml'
         };
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', rawConfig)) as ESLintEngine;
-        expect(engine.getConfig().eslint_config_file).toEqual(
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides, __dirname);
+        expect(resolvedConfig['eslint_config_file']).toEqual(
             path.resolve(__dirname, 'test-data', 'legacyConfigCases', 'workspace_HasCustomConfigWithNewRules', '.eslintrc.yml'));
     });
 
-    it('When eslint_config_file value does not exist, then createEngine errors', async () => {
-        const rawConfig: ConfigObject = {
-            config_root: __dirname,
+    it('When eslint_config_file value does not exist, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
             eslint_config_file: 'test-data/doesNotExist'
         };
-        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+        const configRoot: string = __dirname;
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides, configRoot)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist',
-                'engines.eslint.eslint_config_file', path.resolve(__dirname, 'test-data', 'doesNotExist')));
+                'engines.eslint.eslint_config_file', path.resolve(configRoot, 'test-data', 'doesNotExist')));
     });
 
-    it('When eslint_config_file is not one of the supported legacy config file names, then createEngine errors', async () => {
-        const rawConfig: ConfigObject = {
-            config_root: path.resolve(__dirname, '..'),
+    it('When eslint_config_file is not one of the supported legacy config file names, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
             eslint_config_file: 'eslint.config.mjs'
         };
-        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+        const configRoot: string = path.resolve(__dirname, '..');
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides, configRoot)).rejects.toThrow(
             getMessage('InvalidLegacyConfigFileName', 'engines.eslint.eslint_config_file', 'eslint.config.mjs',
                 JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
     });
 
-    it('When eslint_ignore_file value does not exist, then createEngine errors', async () => {
-        const rawConfig: ConfigObject = {
-            config_root: __dirname,
+    it('When eslint_ignore_file value does not exist, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
             eslint_ignore_file: 'test-data/doesNotExist/.eslintignore'
         };
-        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+        const configRoot: string = __dirname;
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides, configRoot)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist',
-                'engines.eslint.eslint_ignore_file', path.resolve(__dirname, 'test-data', 'doesNotExist', '.eslintignore')));
+                'engines.eslint.eslint_ignore_file', path.resolve(configRoot, 'test-data', 'doesNotExist', '.eslintignore')));
     });
 
-    it('When eslint_ignore_file does not have a file name of .eslintignore, then createEngine errors', async () => {
-        const rawConfig: ConfigObject = {
-            config_root: __dirname,
+    it('When eslint_ignore_file does not have a file name of .eslintignore, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
             eslint_ignore_file: path.join('test-data', 'workspaceWithConflictingConfig.zip')
         };
-        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+        const configRoot: string = __dirname;
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides, configRoot)).rejects.toThrow(
             getMessage('InvalidLegacyIgnoreFileName', 'engines.eslint.eslint_ignore_file',
                 'workspaceWithConflictingConfig.zip', LEGACY_ESLINT_IGNORE_FILE));
     });
 
-    it('When auto_discover_eslint_config is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {auto_discover_eslint_config: true})) as ESLintEngine;
-        expect(engine.getConfig().auto_discover_eslint_config).toEqual(true);
+    it('When auto_discover_eslint_config is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            auto_discover_eslint_config: true
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
+        expect(resolvedConfig['auto_discover_eslint_config']).toEqual(true);
     });
 
-    it('When auto_discover_eslint_config is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {auto_discover_eslint_config: 3})).rejects.toThrow(
+    it('When auto_discover_eslint_config is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            auto_discover_eslint_config: 3
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.auto_discover_eslint_config', 'boolean', 'number'));
     });
 
-    it('When disable_javascript_base_config is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {disable_javascript_base_config: true})) as ESLintEngine;
-        expect(engine.getConfig().disable_javascript_base_config).toEqual(true);
+    it('When disable_javascript_base_config is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            disable_javascript_base_config: true
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
+        expect(resolvedConfig['disable_javascript_base_config']).toEqual(true);
     });
 
-    it('When disable_javascript_base_config is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {disable_javascript_base_config: 'abc'})).rejects.toThrow(
+    it('When disable_javascript_base_config is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            disable_javascript_base_config: 'abc'
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.disable_javascript_base_config', 'boolean', 'string'));
     });
 
-    it('When disable_lwc_base_config is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {disable_lwc_base_config: true})) as ESLintEngine;
-        expect(engine.getConfig().disable_lwc_base_config).toEqual(true);
+    it('When disable_lwc_base_config is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides1: ConfigObject = {
+            disable_lwc_base_config: true
+        };
+        const resolvedConfig1: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides1);
+        expect(resolvedConfig1['disable_lwc_base_config']).toEqual(true);
+
         // Sanity check that false is handled correctly as well
-        const engine2: ESLintEngine = (await plugin.createEngine('eslint', {disable_lwc_base_config: false})) as ESLintEngine;
-        expect(engine2.getConfig().disable_lwc_base_config).toEqual(false);
+        const userProvidedOverrides2: ConfigObject = {
+            disable_lwc_base_config: false
+        };
+        const resolvedConfig2: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides2);
+        expect(resolvedConfig2['disable_lwc_base_config']).toEqual(false);
     });
 
-    it('When disable_lwc_base_config is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {disable_lwc_base_config: {}})).rejects.toThrow(
+    it('When disable_lwc_base_config is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            disable_lwc_base_config: {}
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.disable_lwc_base_config', 'boolean', 'object'));
     });
 
-    it('When disable_typescript_base_config is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {disable_typescript_base_config: true})) as ESLintEngine;
-        expect(engine.getConfig().disable_typescript_base_config).toEqual(true);
+    it('When disable_typescript_base_config is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides1: ConfigObject = {
+            disable_typescript_base_config: true
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides1);
+        expect(resolvedConfig['disable_typescript_base_config']).toEqual(true);
     });
 
-    it('When disable_typescript_base_config is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {disable_typescript_base_config: 'abc'})).rejects.toThrow(
+    it('When disable_typescript_base_config is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            disable_typescript_base_config: 'abc'
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.disable_typescript_base_config', 'boolean', 'string'));
     });
 
-    it('When a valid javascript_file_extensions value is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {javascript_file_extensions: ['.js', '.jsx', '.js']})) as ESLintEngine;
-        expect(engine.getConfig().javascript_file_extensions).toEqual(['.js', '.jsx']); // Also checks that duplicates are removed
+    it('When a valid javascript_file_extensions value is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            javascript_file_extensions: ['.js', '.jsx', '.js']
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
+        expect(resolvedConfig['javascript_file_extensions']).toEqual(['.js', '.jsx']); // Also checks that duplicates are removed
     });
 
-    it('When javascript_file_extensions is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {javascript_file_extensions: [3, '.js']})).rejects.toThrow(
+    it('When javascript_file_extensions is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            javascript_file_extensions: [3, '.js']
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.eslint.javascript_file_extensions[0]', 'string', 'number'));
     });
 
-    it('When a valid typescript_file_extensions value is passed to createEngine, then it is set on the config', async () => {
-        const engine: ESLintEngine = (await plugin.createEngine('eslint', {typescript_file_extensions: ['.ts', '.tsx']})) as ESLintEngine;
-        expect(engine.getConfig().typescript_file_extensions).toEqual(['.ts', '.tsx']);
+    it('When a valid typescript_file_extensions value is passed to createEngineConfig, then it is set on the config', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            typescript_file_extensions: ['.ts', '.tsx']
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
+        expect(resolvedConfig['typescript_file_extensions']).toEqual(['.ts', '.tsx']);
     });
 
-    it('When typescript_file_extensions is invalid, then createEngine errors', async () => {
-        await expect(plugin.createEngine('eslint', {typescript_file_extensions: ['.ts', 'missingDot']})).rejects.toThrow(
+    it('When typescript_file_extensions is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            typescript_file_extensions: ['.ts', 'missingDot']
+        };
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessage('ConfigStringValueMustMatchPattern',
                 'engines.eslint.typescript_file_extensions[1]', 'missingDot', '^[.][a-zA-Z0-9]+$'));
     });
 
-    it('When an extension is listed in more than one *_file_extensions field, then createEngine errors', async () => {
-        const rawConfig: ConfigObject = {
+    it('When an extension is listed in more than one *_file_extensions field, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
             typescript_file_extensions: ['.ts', '.js']
         };
-        await expect(plugin.createEngine('eslint', rawConfig)).rejects.toThrow(
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessage('ConfigStringArrayValuesMustNotShareElements',
                 `  engines.eslint.javascript_file_extensions: [".js",".cjs",".mjs"]\n` +
                 `  engines.eslint.typescript_file_extensions: [".ts",".js"]`));
     });
+
+    it('When createEngine is passed an invalid engine name, then an error is thrown', async () => {
+        await expect(plugin.createEngine('oops', DEFAULT_CONFIG)).rejects.toThrow(
+            getMessage('UnsupportedEngineName' ,'oops'));
+    });
+
+    it('When createEngine is passed eslint and a valid config, then an ESLintEngine instance is returned', async () => {
+        const engine: Engine = await plugin.createEngine('eslint', DEFAULT_CONFIG);
+        expect(engine).toBeInstanceOf(ESLintEngine);
+    });
 });
+
+async function callCreateEngineConfig(plugin: EnginePluginV1, userProvidedOverrides: ConfigObject, configRoot?: string): Promise<ConfigObject> {
+    const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(userProvidedOverrides, `engines.${ESLintEngine.NAME}`, configRoot);
+    return await plugin.createEngineConfig(ESLintEngine.NAME, configValueExtractor);
+}

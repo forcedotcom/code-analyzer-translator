@@ -10,7 +10,7 @@ import {EngineLogEvent, EngineResultsEvent, EngineRunProgressEvent, Event, Event
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {EventEmitter} from "node:events";
-import {CodeAnalyzerConfig, FIELDS, RuleOverride} from "./config";
+import {CodeAnalyzerConfig, ConfigDescription, EngineOverrides, FIELDS, RuleOverride} from "./config";
 import {
     Clock,
     EngineProgressAggregator,
@@ -35,12 +35,16 @@ export type RunOptions = {
     pathStartPoints?: string[]
 }
 
+export type EngineConfig = engApi.ConfigObject;
+
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
     private uniqueIdGenerator: UniqueIdGenerator = new SimpleUniqueIdGenerator();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
+    private readonly engineConfigs: Map<string, EngineConfig> = new Map();
+    private readonly engineConfigDescriptions: Map<string, ConfigDescription> = new Map();
     private readonly rulesCache: Map<string, RuleImpl[]> = new Map();
     private readonly engineRuleDiscoveryProgressAggregator: EngineProgressAggregator = new EngineProgressAggregator();
 
@@ -93,6 +97,20 @@ export class CodeAnalyzer {
 
     public getEngineNames(): string[] {
         return Array.from(this.engines.keys());
+    }
+
+    public getEngineConfig(engineName: string): EngineConfig {
+        if (this.engineConfigs.has(engineName)) {
+            return this.engineConfigs.get(engineName)!;
+        }
+        throw new Error(getMessage('FailedToGetEngineConfig', engineName));
+    }
+
+    public getEngineConfigDescription(engineName: string): ConfigDescription {
+        if (this.engineConfigDescriptions.has(engineName)) {
+            return this.engineConfigDescriptions.get(engineName)!;
+        }
+        throw new Error(getMessage('FailedToGetEngineConfigDescription', engineName));
     }
 
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
@@ -220,28 +238,41 @@ export class CodeAnalyzer {
             return;
         }
 
-        const engConf: engApi.ConfigObject = this.config.getEngineConfigFor(engineName);
-        if (engConf[FIELDS.DISABLE_ENGINE]) {
+        try {
+            const engineConfigDescription: engApi.ConfigDescription = enginePluginV1.describeEngineConfig(engineName);
+            addDisableEngineFieldDescription(engineConfigDescription, engineName);
+            this.engineConfigDescriptions.set(engineName, engineConfigDescription);
+        } catch (err) {
+            throw new Error(getMessage('PluginErrorWhenCreatingEnginePriorToDisableEngineCheck', engineName, (err as Error).message));
+        }
+
+        const engineOverrides: EngineOverrides = this.config.getEngineOverridesFor(engineName);
+        if (engineOverrides[FIELDS.DISABLE_ENGINE]) {
             this.emitLogEvent(LogLevel.Debug, getMessage('EngineDisabled', engineName,
                 `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`))
+            this.engineConfigs.set(engineName, engineOverrides);
             return;
         }
 
-        let engine: engApi.Engine;
+        const engineConfigValueExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(
+            engineOverrides as engApi.ConfigObject, `${FIELDS.ENGINES}.${engineName}`, this.config.getConfigRoot());
+
         try {
-            engine = await enginePluginV1.createEngine(engineName, engConf);
+            const engineConfig: engApi.ConfigObject = await enginePluginV1.createEngineConfig(engineName, engineConfigValueExtractor);
+            const engine: engApi.Engine = await enginePluginV1.createEngine(engineName, engineConfig);
+            if (engineName != engine.getName()) {
+                this.emitLogEvent(LogLevel.Error, getMessage('EngineNameContradiction', engineName, engine.getName()));
+                return;
+            }
+            this.engines.set(engineName, engine);
+            this.engineConfigs.set(engineName, {...engineConfig, [FIELDS.DISABLE_ENGINE]: false});
+            this.listenToEngineEvents(engine);
+
         } catch (err) {
-            throw new Error(getMessage('PluginErrorFromCreateEngine', engineName, (err as Error).message, engineName));
+            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message, engineName));
         }
 
-        if (engineName != engine.getName()) {
-            this.emitLogEvent(LogLevel.Error, getMessage('EngineNameContradiction', engineName, engine.getName()));
-            return;
-        }
-
-        this.engines.set(engineName, engine);
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));
-        this.listenToEngineEvents(engine);
     }
 
     private listenToEngineEvents(engine: engApi.Engine) {
@@ -489,4 +520,12 @@ function isValidLineOrColumn(value: number): boolean {
 
 function isIntegerBetween(value: number, leftBound: number, rightBound: number): boolean {
     return value >= leftBound && value <= rightBound && Number.isInteger(value);
+}
+
+function addDisableEngineFieldDescription(engineConfigDescription: ConfigDescription, engineName: string): void {
+    if (!engineConfigDescription.fieldDescriptions) {
+        engineConfigDescription.fieldDescriptions = {};
+    }
+    engineConfigDescription.fieldDescriptions[FIELDS.DISABLE_ENGINE] =
+        getMessage('EngineConfigFieldDescription_disable_engine', engineName);
 }

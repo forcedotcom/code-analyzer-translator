@@ -1,14 +1,21 @@
 import {RegexEngine} from "../src/engine";
 import {RegexEnginePlugin} from "../src";
 import {
-    ConfigObject,
+    ConfigObject, ConfigValueExtractor,
     Engine,
     getMessageFromCatalog,
     SeverityLevel,
     SHARED_MESSAGE_CATALOG
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
-import {FILE_EXT_PATTERN, REGEX_STRING_PATTERN, RegexRule, RegexRules, RULE_NAME_PATTERN} from "../src/config";
+import {
+    FILE_EXT_PATTERN,
+    REGEX_ENGINE_CONFIG_DESCRIPTION,
+    REGEX_STRING_PATTERN,
+    RegexRule,
+    RegexRules,
+    RULE_NAME_PATTERN
+} from "../src/config";
 import {createBaseRegexRules} from "../src/plugin";
 import {FixedClock} from "./test-helpers";
 import {RealClock} from "../src/utils";
@@ -37,6 +44,10 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
         expect(enginePlugin.getAvailableEngineNames()).toStrictEqual(['regex']);
     })
 
+    it('When describeEngineConfig is called, then it returns the expected ConfigDescription', () => {
+        expect(enginePlugin.describeEngineConfig('regex')).toEqual(REGEX_ENGINE_CONFIG_DESCRIPTION);
+    });
+
     it('Check that engine created from the plugin has expected type and name', async () => {
         const engine: Engine = await enginePlugin.createEngine('regex', {});
         expect(engine).toBeInstanceOf(RegexEngine);
@@ -45,20 +56,20 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
 
     it('If I make an engine with an invalid name, it should throw an error with the proper error message', async () => {
         await expect(enginePlugin.createEngine('OtherEngine', {})).rejects.toThrow(
-            getMessage('CantCreateEngineWithUnknownEngineName', 'OtherEngine'));
+            getMessage('UnsupportedEngineName', 'OtherEngine'));
     });
 
     type ApiVersionTestCase = {
         date: Date
-        expectedSource: string
+        expectedRegexString: string
         expectedVersion: number
     };
     const apiVersionTestCases: ApiVersionTestCase[] = [
-        { date: new Date(Date.UTC(2024,8,15)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-2])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 52 }, // Summer'24 - 3 years = Summer'21 (52.0)
-        { date: new Date(Date.UTC(2022,2,1)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-5])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 45 },  // Spring'22 - 3 years = Spring'19 (45.0)
-        { date: new Date(Date.UTC(2023,5,2)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-9])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 49 },  // Summer'23 - 3 years = Summer'20 (49.0)
-        { date: new Date(Date.UTC(2025,9,3)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-6])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 56 },  // Winter'26 - 3 years = Winter'23 (56.0)
-        { date: new Date(Date.UTC(2028,3,7)), expectedSource: '(?<=<apiVersion>)([1-9]|[1-5][0-9]|6[0-3])(\\.[0-9])?(?=<\\/apiVersion>)', expectedVersion: 63 }   // Spring'28 - 3 years = Spring'25 (63.0)
+        { date: new Date(Date.UTC(2024,8,15)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-2])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 52 }, // Summer'24 - 3 years = Summer'21 (52.0)
+        { date: new Date(Date.UTC(2022,2,1)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-5])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 45 },  // Spring'22 - 3 years = Spring'19 (45.0)
+        { date: new Date(Date.UTC(2023,5,2)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-9])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 49 },  // Summer'23 - 3 years = Summer'20 (49.0)
+        { date: new Date(Date.UTC(2025,9,3)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-6])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 56 },  // Winter'26 - 3 years = Winter'23 (56.0)
+        { date: new Date(Date.UTC(2028,3,7)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-5][0-9]|6[0-3])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 63 }   // Spring'28 - 3 years = Spring'25 (63.0)
     ];
     it.each(apiVersionTestCases)('RegexEnginePlugin produces engine with AvoidOldSalesforceApiVersions that depends on current date', async (testCase: ApiVersionTestCase) => {
         enginePlugin._setClock(new FixedClock(testCase.date));
@@ -66,7 +77,7 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
         const regexRules: RegexRules = engine._getRegexRules();
         const apiVersionRule: RegexRule = regexRules['AvoidOldSalesforceApiVersions'];
         expect(apiVersionRule).toBeDefined();
-        expect(apiVersionRule.regex.source).toEqual(testCase.expectedSource);
+        expect(apiVersionRule.regex).toEqual(testCase.expectedRegexString);
         expect(apiVersionRule.violation_message).toEqual(getMessage('AvoidOldSalesforceApiVersionsRuleMessage', testCase.expectedVersion));
     });
 
@@ -89,9 +100,9 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
 });
 
 describe('RegexEnginePlugin Custom Config Tests', () => {
-    let enginePlugin: RegexEnginePlugin;
+    let plugin: RegexEnginePlugin;
     beforeAll(async () => {
-        enginePlugin = new RegexEnginePlugin()
+        plugin = new RegexEnginePlugin()
     });
 
     it("When valid custom rules are provided, then they are appended to base rules", async () => {
@@ -101,13 +112,15 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 NoHellos: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION
             }
         };
-        const engine: RegexEngine = await enginePlugin.createEngine('regex', rawConfig) as RegexEngine;
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig('regex', valueExtractor);
+        const engine: RegexEngine = await plugin.createEngine('regex', resolvedConfig) as RegexEngine;
         const customNoTodoRuleRegex: RegExp = /TODO:\s/gi;
         const customNoHelloRuleRegex: RegExp = /hello/gi;
         const expRegexRules: RegexRules = {
             ...createBaseRegexRules(SAMPLE_DATE),
             NoTodos: {
-                regex: customNoTodoRuleRegex,
+                regex: customNoTodoRuleRegex.toString(),
                 description: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.description,
                 file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
                 violation_message: getMessage('RuleViolationMessage', customNoTodoRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
@@ -115,7 +128,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 tags: ['Recommended']
             },
             NoHellos: {
-                regex: customNoHelloRuleRegex,
+                regex: customNoHelloRuleRegex.toString(),
                 description: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION.description,
                 violation_message: getMessage('RuleViolationMessage', customNoHelloRuleRegex.toString(), 'NoHellos', 'Detects hellos in project'),
                 severity: SeverityLevel.Moderate,
@@ -134,7 +147,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             ]
         };
-        await expect(enginePlugin.createEngine('regex', rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig('regex', valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules', 'object', 'array'));
     })
 
@@ -150,8 +164,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                     }
                 }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', 'engines.regex.custom_rules.BadRule.regex', "Invalid regular expression: /something[/gi: Unterminated character class"));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.BadRule.regex',
+                getMessage('InvalidRegexDueToError', '/something[/gi', "Invalid regular expression: /something[/gi: Unterminated character class")));
     });
 
     it("If regex is not given in forward-slash delimited strings, emit appropriate error", async () => {
@@ -164,9 +180,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
-                'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.BadRule.regex',
+                getMessage('InvalidRegexDueToBadPattern', 'something[', REGEX_STRING_PATTERN.toString())));
     });
 
     it("If regex is given without two forward slashes, emit appropriate error", async () => {
@@ -180,9 +197,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
-                'engines.regex.custom_rules.BadRule.regex', REGEX_STRING_PATTERN.toString()));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.BadRule.regex',
+                getMessage('InvalidRegexDueToBadPattern', 'something[/gi', REGEX_STRING_PATTERN.toString())));
     });
 
 
@@ -196,8 +214,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'glpr\''));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.NoTodos.regex',
+                getMessage('InvalidRegexDueToError', '/TODO:/glpr', "Invalid flags supplied to RegExp constructor 'glpr'")));
 
     });
 
@@ -211,8 +231,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'gig\''));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.NoTodos.regex',
+                getMessage('InvalidRegexDueToError', '/TODO:/gig', "Invalid flags supplied to RegExp constructor 'gig'")));
     });
 
     it("If modifiers u, v appear together, ensure proper error is emitted", async () => {
@@ -225,8 +247,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('InvalidRegex', "engines.regex.custom_rules.NoTodos.regex", 'Invalid flags supplied to RegExp constructor \'guv\''));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.NoTodos.regex',
+                getMessage('InvalidRegexDueToError', '/TODO:/guv', "Invalid flags supplied to RegExp constructor 'guv'")));
     });
 
     it('If global modifier does not appear in regex, emit appropriate error', async () => {
@@ -239,8 +263,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
-            getMessage('GlobalModifierNotProvided', "engines.regex.custom_rules.NoTodos.regex", "/TODO:/gi" , "/TODO:/i"));
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessage('InvalidConfigurationValueWithReason', 'engines.regex.custom_rules.NoTodos.regex',
+                getMessage('InvalidRegexDueToGlobalModifierNotProvided', '/TODO:/i','/TODO:/gi')));
     });
 
     it("If regex is not given by user, emit error", async () => {
@@ -252,7 +278,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.regex.custom_rules.NoTodos.regex', 'string', 'undefined'));
     });
@@ -263,7 +290,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 "": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleName', '', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
@@ -273,7 +301,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 "1hello": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleName', '1hello', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
@@ -283,7 +312,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 "rule*": SAMPLE_RAW_CUSTOM_RULE_DEFINITION
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleName', 'rule*', 'engines.regex.custom_rules', RULE_NAME_PATTERN.toString()));
     });
 
@@ -297,7 +327,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'number'));
     });
 
@@ -310,7 +341,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'undefined'));
     });
 
@@ -324,7 +356,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.file_extensions', 'array', 'string'));
     });
 
@@ -338,7 +371,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp', 'engines.regex.custom_rules.NoTodos.file_extensions[0]', FILE_EXT_PATTERN.toString()));
     });
 
@@ -352,7 +386,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const engine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig("regex", valueExtractor);
+        const engine: RegexEngine = await plugin.createEngine("regex", resolvedConfig) as RegexEngine;
         expect(engine._getRegexRules()["NoTodos"].file_extensions).toEqual(['.js', '.ts']);
     });
 
@@ -366,7 +402,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig("regex", valueExtractor);
+        const pluginEngine: RegexEngine = await plugin.createEngine("regex", resolvedConfig) as RegexEngine;
         expect(pluginEngine._getRegexRules()["NoTodos"].violation_message).toStrictEqual(custom_message);
     });
 
@@ -383,7 +421,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig("regex", valueExtractor);
+        const pluginEngine: RegexEngine = await plugin.createEngine("regex", resolvedConfig) as RegexEngine;
         expect(pluginEngine._getRegexRules()["NoTodos"].severity).toStrictEqual(SeverityLevel.Critical);
         expect(pluginEngine._getRegexRules()["OtherRule"].severity).toStrictEqual(SeverityLevel.High);
     });
@@ -398,10 +438,10 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const severityLevelValues: (string | SeverityLevel)[] = Object.values(SeverityLevel);
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueNotAValidSeverityLevel',
-                'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(severityLevelValues), '7'));
+                'engines.regex.custom_rules.NoTodos.severity', JSON.stringify(Object.values(SeverityLevel)), '7'));
     });
 
     it("If user creates a rule with a custom tags, ensure they are maintained in config", async () => {
@@ -414,7 +454,9 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        const pluginEngine: RegexEngine = await enginePlugin.createEngine("regex", rawConfig) as RegexEngine;
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig("regex", valueExtractor);
+        const pluginEngine: RegexEngine = await plugin.createEngine("regex", resolvedConfig) as RegexEngine;
         expect(pluginEngine._getRegexRules()["NoTodos"].tags).toStrictEqual(customTags);
     });
 
@@ -427,40 +469,8 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 }
             }
         };
-        await expect(enginePlugin.createEngine("regex", rawConfig)).rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.tags', 'array', 'string'));
-    });
-
-    type PATTERN_TESTCASE = { input: string, expected: RegExp };
-    const patternTestCases: PATTERN_TESTCASE[] = [
-        // Raw regex strings
-        {input: String.raw`/[a-zA-Z]{2,5}\d?/gi`, expected: new RegExp('[a-zA-Z]{2,5}\\d?', 'gi')},
-        {input: String.raw`/\d{1,3}\s?[A-Z]*/g`, expected: new RegExp('\\d{1,3}\\s?[A-Z]*', 'g')},
-        {input: String.raw`/[^aeiou]{4,}\W?/gm`, expected: new RegExp('[^aeiou]{4,}\\W?', 'gm')},
-        {input: String.raw`/(foo|bar){2,3}\d*/g`, expected: new RegExp('(foo|bar){2,3}\\d*', 'g')},
-        {input: String.raw`/\d{2,4}-[a-z]{3,}/g`, expected: new RegExp('\\d{2,4}-[a-z]{3,}', 'g')},
-        {input: String.raw`/(cat|dog)?\s+[1-9]/g`, expected: new RegExp('(cat|dog)?\\s+[1-9]', 'g')},
-        {input: String.raw`/\w{3,5}\.?\d?/g`, expected: new RegExp('\\w{3,5}\\.?\\d?', 'g')},
-        // Quoted "double-escaped" strings
-        {input: '/[A-Z]{1,4}@[a-z]{2,4}/g', expected: new RegExp('[A-Z]{1,4}@[a-z]{2,4}', 'g')},
-        {input: '/\\d{3,5}[^\\d\\s]/g', expected: new RegExp('\\d{3,5}[^\\d\\s]', 'g')},
-        {input: '/[a-zA-Z]+\\d{1,2}/g', expected: new RegExp('[a-zA-Z]+\\d{1,2}', 'g')},
-        {input: '/[0-9]{2,}[A-Z]{2,}?/g', expected: new RegExp('[0-9]{2,}[A-Z]{2,}?', 'g')},
-        {input: '/[^a-zA-Z0-9]{3,6}/g', expected: new RegExp('[^a-zA-Z0-9]{3,6}', 'g')},
-        {input: '/(alpha|beta)\\d{2,4}?/gi', expected: new RegExp('(alpha|beta)\\d{2,4}?', 'gi')},
-        {input: '/\\/\\/[ \\t]*TODO/gi', expected: new RegExp('\\/\\/[ \\t]*TODO', 'gi')},
-    ];
-    it.each(patternTestCases)('Verify regular expression construction for $input', async (testCase: PATTERN_TESTCASE) => {
-        const rawConfig: ConfigObject = {
-            custom_rules: {
-                SomeRuleName: {
-                    regex: testCase.input,
-                    description: 'Sample description',
-                    file_extensions: ['.js', '.ts']
-                }
-            }
-        };
-        const pluginEngine = await enginePlugin.createEngine('regex', rawConfig) as RegexEngine;
-        const actual: RegExp = pluginEngine._getRegexRules()['SomeRuleName'].regex;
-        expect(actual).toEqual(testCase.expected);
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+        await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.tags', 'array', 'string'));
     });
 });

@@ -1,11 +1,18 @@
 import {SemVer} from 'semver';
-import {ConfigObject, ConfigValueExtractor} from "@salesforce/code-analyzer-engine-api";
+import {ConfigDescription, ConfigValueExtractor} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {FlowTestEngine} from "./engine";
 import {PythonVersionIdentifier} from "./PythonVersionIdentifier";
 
 const MINIMUM_PYTHON_VERSION = '3.10.0';
 export const PYTHON_COMMAND = 'python_command';
+
+export const FLOWTEST_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        custom_rules: getMessage('ConfigFieldDescription_python_command')
+    }
+}
 
 export type FlowTestConfig = {
     // Indicates the specific Python command to use for the 'flowtest' engine.
@@ -15,24 +22,26 @@ export type FlowTestConfig = {
     python_command: string;
 }
 
-export async function validateAndNormalizeConfig(rawConfig: ConfigObject,
+export async function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor,
                                                  pythonVersionIdentifier: PythonVersionIdentifier): Promise<FlowTestConfig> {
-    const valueExtractor: FlowTestEngineConfigValueExtractor = new FlowTestEngineConfigValueExtractor(rawConfig, pythonVersionIdentifier);
+    const valueExtractor: FlowTestEngineConfigValueExtractor = new FlowTestEngineConfigValueExtractor(
+        configValueExtractor, pythonVersionIdentifier);
     return {
         python_command: await valueExtractor.extractPythonCommandPath()
     }
 }
 
-class FlowTestEngineConfigValueExtractor extends ConfigValueExtractor {
+class FlowTestEngineConfigValueExtractor {
     private readonly pythonVersionIdentifier: PythonVersionIdentifier;
+    private readonly delegateExtractor: ConfigValueExtractor;
 
-    constructor(rawConfig: ConfigObject, pythonVersionIdentifier: PythonVersionIdentifier) {
-        super(rawConfig, `engines.${FlowTestEngine.NAME}`);
+    constructor(delegateExtractor: ConfigValueExtractor, pythonVersionIdentifier: PythonVersionIdentifier) {
+        this.delegateExtractor = delegateExtractor;
         this.pythonVersionIdentifier = pythonVersionIdentifier;
     }
 
     async extractPythonCommandPath(): Promise<string> {
-        const configSpecifiedPython: string|undefined = this.extractString(PYTHON_COMMAND);
+        const configSpecifiedPython: string|undefined = this.delegateExtractor.extractString(PYTHON_COMMAND);
         return configSpecifiedPython ? await this.validatePythonCommandPath(configSpecifiedPython) :
             await this.findPythonCommandPathFromEnvironment();
     }
@@ -42,16 +51,17 @@ class FlowTestEngineConfigValueExtractor extends ConfigValueExtractor {
         try {
             version = await this.pythonVersionIdentifier.identifyPythonVersion(configSpecifiedPython);
         } catch (err) {
+            /* istanbul ignore next */
             const errMsg: string = err instanceof Error ? err.message : String(err);
             throw new Error(getMessage('UserSpecifiedPythonCommandProducedError',
-                this.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, errMsg));
+                this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, errMsg));
         }
         if (!version) {
             throw new Error(getMessage('UserSpecifiedPythonCommandProducedUnrecognizableVersion',
-                this.getFieldPath(PYTHON_COMMAND), configSpecifiedPython));
+                this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython));
         } else if (version.compare(MINIMUM_PYTHON_VERSION) < 0) {
             throw new Error(getMessage('UserSpecifiedPythonBelowMinimumVersion',
-                this.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, version.format(), MINIMUM_PYTHON_VERSION));
+                this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, version.format(), MINIMUM_PYTHON_VERSION));
         }
         return configSpecifiedPython;
     }
@@ -69,7 +79,7 @@ class FlowTestEngineConfigValueExtractor extends ConfigValueExtractor {
             }
         }
         throw new Error(getMessage('CouldNotLocatePython', MINIMUM_PYTHON_VERSION,
-            JSON.stringify(possiblePythonCommands), this.getFieldPath(PYTHON_COMMAND),
+            JSON.stringify(possiblePythonCommands), this.delegateExtractor.getFieldPath(PYTHON_COMMAND),
             FlowTestEngine.NAME, FlowTestEngine.NAME));
     }
 }

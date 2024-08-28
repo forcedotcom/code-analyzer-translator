@@ -1,7 +1,20 @@
-import {ConfigObject, Engine, EnginePluginV1, SeverityLevel,} from "@salesforce/code-analyzer-engine-api";
+import {
+    ConfigDescription,
+    ConfigObject,
+    ConfigValueExtractor,
+    Engine,
+    EnginePluginV1,
+    SeverityLevel,
+} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
 import {RegexEngine} from "./engine";
-import {RegexEngineConfig, RegexRule, RegexRules, validateAndNormalizeConfig} from "./config";
+import {
+    REGEX_ENGINE_CONFIG_DESCRIPTION,
+    RegexEngineConfig,
+    RegexRule,
+    RegexRules,
+    validateAndNormalizeConfig
+} from "./config";
 import {Clock, RealClock} from "./utils";
 
 export const RULE_RESOURCE_URLS: Map<string, string[]> = new Map([
@@ -21,35 +34,48 @@ export class RegexEnginePlugin extends EnginePluginV1 {
         return [RegexEngine.NAME];
     }
 
-    async createEngine(engineName: string, rawConfig: ConfigObject): Promise<Engine> {
-        if (engineName !== RegexEngine.NAME) {
-            throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
-        }
-        const config: RegexEngineConfig = validateAndNormalizeConfig(rawConfig);
+    describeEngineConfig(engineName: string): ConfigDescription {
+        validateEngineName(engineName);
+        return REGEX_ENGINE_CONFIG_DESCRIPTION;
+    }
+
+    async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+        validateEngineName(engineName);
+        return validateAndNormalizeConfig(configValueExtractor) as ConfigObject;
+    }
+
+    async createEngine(engineName: string, resolvedConfig: ConfigObject): Promise<Engine> {
+        validateEngineName(engineName);
         const allRules: RegexRules = {
             ... createBaseRegexRules(this.clock.now()),
-            ... config.custom_rules
+            ... (resolvedConfig as RegexEngineConfig).custom_rules
         }
         return new RegexEngine(allRules, RULE_RESOURCE_URLS);
     }
 }
 
-export function createBaseRegexRules(now: Date) {
+function validateEngineName(engineName: string) {
+    if (engineName !== RegexEngine.NAME) {
+        throw new Error(getMessage('UnsupportedEngineName', engineName));
+    }
+}
+
+export function createBaseRegexRules(now: Date): RegexRules {
     return {
         NoTrailingWhitespace: {
-            regex: /[ \t]+((?=\r?\n)|(?=$))/g,
-                file_extensions: ['.cls', '.trigger'],
-                description: getMessage('TrailingWhitespaceRuleDescription'),
-                violation_message: getMessage('TrailingWhitespaceRuleMessage'),
-                severity: SeverityLevel.Info,
-                tags: ['Recommended', 'CodeStyle']
+            regex: (/[ \t]+((?=\r?\n)|(?=$))/g).toString(),
+            file_extensions: ['.cls', '.trigger'],
+            description: getMessage('TrailingWhitespaceRuleDescription'),
+            violation_message: getMessage('TrailingWhitespaceRuleMessage'),
+            severity: SeverityLevel.Info,
+            tags: ['Recommended', 'CodeStyle']
         },
         AvoidTermsWithImplicitBias: {
-            regex: /\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi,
-                description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
-                violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
-                severity: SeverityLevel.Info,
-                tags: ['Recommended']
+            regex: (/\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi).toString(),
+            description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
+            violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
+            severity: SeverityLevel.Info,
+            tags: ['Recommended']
         },
         AvoidOldSalesforceApiVersions: createAvoidOldSalesforceApiVersionsRule(now)
     }
@@ -58,7 +84,7 @@ export function createBaseRegexRules(now: Date) {
 function createAvoidOldSalesforceApiVersionsRule(now: Date): RegexRule {
     const apiVersionFromThreeYearsAgo: number = getSalesforceApiVersionFor(subtractThreeYears(now));
     return {
-        regex: generateRegexForAvoidOldSalesforceApiVersionsRule(apiVersionFromThreeYearsAgo),
+        regex: generateRegexForAvoidOldSalesforceApiVersionsRule(apiVersionFromThreeYearsAgo).toString(),
         file_extensions: ['.xml'],
         description: getMessage('AvoidOldSalesforceApiVersionsRuleDescription'),
         violation_message: getMessage('AvoidOldSalesforceApiVersionsRuleMessage', apiVersionFromThreeYearsAgo),

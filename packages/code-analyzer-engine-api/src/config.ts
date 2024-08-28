@@ -14,15 +14,26 @@ export type ConfigValue =
     | ConfigValue[]
     | ConfigObject;
 
+export type ConfigDescription = {
+    // A brief overview of the configuration. It is recommended to include a link to documentation when possible.
+    overview?: string
+
+    // Description messages of the top-level fields in the configuration
+    fieldDescriptions?: Record<string, string>
+
+    // Set of fields that should not be exposed from the client back to the end user. These fields are for internal use only.
+    internalUseOnlyFields?: Set<string>
+}
 
 export class ConfigValueExtractor {
     private readonly configObj: ConfigObject;
-    private readonly fieldRoot?: string;
-    private configRoot?: string;
+    private readonly fieldPathRoot: string;
+    private readonly configRoot: string;
 
-    constructor(configObject: ConfigObject, fieldRoot?: string) {
+    constructor(configObject: ConfigObject, fieldPathRoot: string = '', configRoot: string = process.cwd(), ) {
         this.configObj = configObject;
-        this.fieldRoot = fieldRoot;
+        this.fieldPathRoot = fieldPathRoot;
+        this.configRoot = configRoot;
     }
 
     getObject(): ConfigObject {
@@ -33,12 +44,7 @@ export class ConfigValueExtractor {
         return Object.keys(this.configObj);
     }
 
-    extractConfigRoot(): string {
-        if (!this.configRoot) {
-            const fieldName: string = 'config_root'; // config_root is always top level, so don't use getFieldPath
-            this.configRoot = !this.hasValueDefinedFor(fieldName) ? process.cwd() :
-                validateAbsoluteFolder(this.configObj[fieldName], fieldName);
-        }
+    getConfigRoot(): string {
         return this.configRoot;
     }
 
@@ -111,7 +117,7 @@ export class ConfigValueExtractor {
     }
 
     extractRequiredFile(fieldName: string): string {
-        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), this.extractConfigRoot());
+        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), this.getConfigRoot());
     }
 
     extractFile(fieldName: string, defaultValue?: string): string | undefined {
@@ -119,7 +125,7 @@ export class ConfigValueExtractor {
     }
 
     extractRequiredFolder(fieldName: string): string {
-        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), this.extractConfigRoot());
+        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), this.getConfigRoot());
     }
 
     extractFolder(fieldName: string, defaultValue?: string): string | undefined {
@@ -128,9 +134,9 @@ export class ConfigValueExtractor {
 
     getFieldPath(fieldName?: string): string {
         if (!fieldName) {
-            return this.fieldRoot || '';
+            return this.fieldPathRoot;
         }
-        return this.fieldRoot && this.fieldRoot.length > 0 ? `${this.fieldRoot}.${fieldName}` : fieldName;
+        return this.fieldPathRoot.length > 0 ? `${this.fieldPathRoot}.${fieldName}` : fieldName;
     }
 
     hasValueDefinedFor(fieldName: string): boolean {
@@ -240,24 +246,6 @@ function validateAtLeastOnePathExists(paths: string[], fieldPath: string): strin
         }
     }
     throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldPath, paths[0]));
-}
-
-function validateAbsoluteFolder(value: unknown, fieldPath: string): string {
-    const folderValue: string = validateAbsolutePath(value, fieldPath);
-    if (!fs.statSync(folderValue).isDirectory()) {
-        throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
-    }
-    return folderValue;
-}
-
-function validateAbsolutePath(value: unknown, fieldPath: string): string {
-    const pathValue: string = ValueValidator.validateString(value, fieldPath);
-    if (pathValue !== toAbsolutePath(pathValue)) {
-        throw new Error(getMessage('ConfigPathValueMustBeAbsolute', fieldPath, pathValue, toAbsolutePath(pathValue)));
-    } else if (!fs.existsSync(pathValue)) {
-        throw new Error(getMessage('ConfigPathValueDoesNotExist', fieldPath, pathValue));
-    }
-    return pathValue;
 }
 
 function getDataType(value: unknown): string {

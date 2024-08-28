@@ -6,7 +6,7 @@ import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
-import {ValueValidator} from "@salesforce/code-analyzer-engine-api";
+import {getMessageFromCatalog, SHARED_MESSAGE_CATALOG, ValueValidator} from "@salesforce/code-analyzer-engine-api";
 
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
@@ -19,37 +19,43 @@ export const FIELDS = {
     DISABLE_ENGINE: 'disable_engine'
 } as const;
 
+export type EngineOverrides = engApi.ConfigObject;
+
+export type RuleOverrides = Record<string, RuleOverride>;
+
 export type RuleOverride = {
     severity?: SeverityLevel
     tags?: string[]
 }
 
 type TopLevelConfig = {
-    // The absolute folder path where other paths values in the config may be relative to.
-    // Default: The location of the config file if supplied and the current working directory otherwise.
     config_root: string
-
-    // Folder where the user would like to store log files. May be relative to config_root.
-    // Default: The default temporary directory on the user's machine.
     log_folder: string
-
-    // List of EnginePlugin modules to be dynamically added. Paths may be relative to the config_root.
+    rules: Record<string, RuleOverrides>
+    engines: Record<string, EngineOverrides>
     custom_engine_plugin_modules: string[]
-
-    // Rule override entries of the format rules.<engine_name>.<rule_name>.<property_name> = <override_value>
-    rules: Record<string, Record<string, RuleOverride>>
-
-    // Engine specific configuration entries of the format engines.<engine_name>.<engine_specific_property> = <value>
-    engines: Record<string, engApi.ConfigObject>
 }
 
 const DEFAULT_CONFIG: TopLevelConfig = {
     config_root: process.cwd(),
     log_folder: os.tmpdir(),
-    custom_engine_plugin_modules: [],
     rules: {},
-    engines: {}
+    engines: {},
+    custom_engine_plugin_modules: [],
 };
+
+export const TOP_LEVEL_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        config_root: getMessage('ConfigFieldDescription_config_root'),
+        log_folder: getMessage('ConfigFieldDescription_log_folder'),
+        rules: getMessage('ConfigFieldDescription_rules'),
+        engines: getMessage('ConfigFieldDescription_engines'),
+    },
+    internalUseOnlyFields: new Set(['custom_engine_plugin_modules'])
+}
+
+export type ConfigDescription = engApi.ConfigDescription;
 
 export class CodeAnalyzerConfig {
     private readonly config: TopLevelConfig;
@@ -88,12 +94,11 @@ export class CodeAnalyzerConfig {
 
     public static fromObject(data: object, configRoot?: string): CodeAnalyzerConfig {
         const rawConfig: engApi.ConfigObject = data as engApi.ConfigObject;
-        if (!rawConfig.config_root) {
-            rawConfig.config_root = configRoot ? configRoot : process.cwd();
-        }
-        const configExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig);
+        configRoot = !rawConfig.config_root ? (configRoot ?? process.cwd()) :
+            validateAbsoluteFolder(rawConfig.config_root, FIELDS.CONFIG_ROOT);
+        const configExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig, '', configRoot);
         const config: TopLevelConfig = {
-            config_root: configExtractor.extractConfigRoot(),
+            config_root: configRoot,
             log_folder: configExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
             custom_engine_plugin_modules: configExtractor.extractArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
                 ValueValidator.validateString,
@@ -108,6 +113,10 @@ export class CodeAnalyzerConfig {
         this.config = config;
     }
 
+    public getConfigDescription(): ConfigDescription {
+        return TOP_LEVEL_CONFIG_DESCRIPTION;
+    }
+
     public getLogFolder(): string {
         return this.config.log_folder;
     }
@@ -120,7 +129,7 @@ export class CodeAnalyzerConfig {
         return this.config.custom_engine_plugin_modules;
     }
 
-    public getRuleOverridesFor(engineName: string): Record<string, RuleOverride> {
+    public getRuleOverridesFor(engineName: string): RuleOverrides {
         return this.config.rules[engineName] || {};
     }
 
@@ -128,17 +137,12 @@ export class CodeAnalyzerConfig {
         return this.getRuleOverridesFor(engineName)[ruleName] || {};
     }
 
-    public getEngineConfigFor(engineName: string): engApi.ConfigObject {
-        // Each engine should have access to the config folder location and its own engine specific config, so that it
-        // can resolve any relative paths in its engine specific config with this location. Thus, we always add the
-        // config folder to the engine specific config.
-        const configToGiveToEngine: engApi.ConfigObject = this.config.engines[engineName] || {};
-        configToGiveToEngine.config_root = this.getConfigRoot();
-        return configToGiveToEngine;
+    public getEngineOverridesFor(engineName: string): EngineOverrides {
+        return this.config.engines[engineName] || {};
     }
 }
 
-function extractRulesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, Record<string, RuleOverride>> {
+function extractRulesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, RuleOverrides> {
     const rulesExtractor: engApi.ConfigValueExtractor = configExtractor.extractObjectAsExtractor(FIELDS.RULES, DEFAULT_CONFIG.rules);
     const rulesValue: Record<string, Record<string, RuleOverride>> = {};
     for (const engineName of rulesExtractor.getKeys()) {
@@ -147,7 +151,7 @@ function extractRulesValue(configExtractor: engApi.ConfigValueExtractor): Record
     return rulesValue;
 }
 
-function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigValueExtractor): Record<string, RuleOverride> {
+function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigValueExtractor): RuleOverrides {
     const ruleOverrides: Record<string, RuleOverride> = {};
     for (const ruleName of engineRuleOverridesExtractor.getKeys()) {
         ruleOverrides[ruleName] = extractRuleOverrideFrom(engineRuleOverridesExtractor.extractRequiredObjectAsExtractor(ruleName));
@@ -163,13 +167,13 @@ function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtrac
     }
 }
 
-function extractEnginesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, engApi.ConfigObject> {
+function extractEnginesValue(configExtractor: engApi.ConfigValueExtractor): Record<string, EngineOverrides> {
     const enginesExtractor: engApi.ConfigValueExtractor = configExtractor.extractObjectAsExtractor(FIELDS.ENGINES,
         DEFAULT_CONFIG.engines);
     for (const engineName of enginesExtractor.getKeys()) { // Don't need the values, just want to validate them
         enginesExtractor.extractRequiredObjectAsExtractor(engineName).extractBoolean(FIELDS.DISABLE_ENGINE);
     }
-    return enginesExtractor.getObject() as Record<string, engApi.ConfigObject>;
+    return enginesExtractor.getObject() as Record<string, EngineOverrides>;
 }
 
 function parseAndValidate(parseFcn: () => unknown): object {
@@ -184,4 +188,22 @@ function parseAndValidate(parseFcn: () => unknown): object {
         throw new Error(getMessage('ConfigContentNotAnObject', dataType));
     }
     return data as object;
+}
+
+function validateAbsoluteFolder(value: unknown, fieldPath: string): string {
+    const folderValue: string = validateAbsolutePath(value, fieldPath);
+    if (!fs.statSync(folderValue).isDirectory()) {
+        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
+    }
+    return folderValue;
+}
+
+function validateAbsolutePath(value: unknown, fieldPath: string): string {
+    const pathValue: string = ValueValidator.validateString(value, fieldPath);
+    if (pathValue !== toAbsolutePath(pathValue)) {
+        throw new Error(getMessage('ConfigPathValueMustBeAbsolute', fieldPath, pathValue, toAbsolutePath(pathValue)));
+    } else if (!fs.existsSync(pathValue)) {
+        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist', fieldPath, pathValue));
+    }
+    return pathValue;
 }

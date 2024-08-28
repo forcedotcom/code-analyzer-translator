@@ -1,9 +1,14 @@
 export {
-    CodeAnalyzerConfig
+    CodeAnalyzerConfig,
+    ConfigDescription,
+    EngineOverrides,
+    RuleOverrides,
+    RuleOverride
 } from "./config"
 
 export {
     CodeAnalyzer,
+    EngineConfig,
     RunOptions,
     SelectOptions,
     Workspace

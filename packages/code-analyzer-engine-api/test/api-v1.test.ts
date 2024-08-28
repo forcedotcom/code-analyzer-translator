@@ -1,5 +1,6 @@
 import {
     ConfigObject,
+    ConfigValueExtractor,
     DescribeOptions,
     DescribeRulesProgressEvent,
     Engine,
@@ -18,6 +19,16 @@ describe('Tests for v1', () => {
     it('EnginePluginV1 getApiVersion should return 1.0', () => {
         const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
         expect(dummyPlugin.getApiVersion()).toEqual(1.0);
+    });
+
+    it("EnginePluginV1's default's implementation of describeEngineConfig should return empty ConfigDescription object", () => {
+        const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
+        expect(dummyPlugin.describeEngineConfig('dummy')).toEqual({});
+    });
+
+    it("EnginePluginV1's default's implementation of createEngineConfig should return just return the unresolved overrides", async () => {
+        const dummyPlugin: EnginePluginV1 = new DummyEnginePluginV1();
+        expect(await dummyPlugin.createEngineConfig('dummy', new ConfigValueExtractor({a: 1}, 'engines.dummy', __dirname))).toEqual({a: 1});
     });
 
     it('Engine onEvent should receive events correctly from emitEvent', async () => {

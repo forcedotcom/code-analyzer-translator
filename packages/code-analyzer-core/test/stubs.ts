@@ -1,6 +1,7 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {
     ConfigObject,
+    ConfigValueExtractor,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -19,8 +20,31 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
         return ["stubEngine1", "stubEngine2"];
     }
 
+
+    describeEngineConfig(engineName: string): engApi.ConfigDescription {
+        if (engineName === "stubEngine1") {
+            return {
+                overview: 'OverviewForStub1',
+                fieldDescriptions: {
+                    miscSetting1: "someDescriptionFor_miscSetting1"
+                }
+            }
+        }
+        return {
+            overview: 'OverviewForStub2'
+        }
+    }
+
+    async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+        return {
+            ...configValueExtractor.getObject(),
+            engine_name: engineName,
+            config_root: configValueExtractor.getConfigRoot()
+        }
+    }
+
     async createEngine(engineName: string, config: engApi.ConfigObject): Promise<engApi.Engine> {
-        if (engineName == "stubEngine1") {
+        if (engineName === "stubEngine1") {
             this.createdEngines.set(engineName, new StubEngine1(config));
         } else if (engineName == "stubEngine2") {
             this.createdEngines.set(engineName, new StubEngine2(config));
@@ -324,9 +348,43 @@ export class ThrowingPlugin1 extends engApi.EnginePluginV1 {
 }
 
 /**
- * ThrowingPlugin2 - A plugin that throws an exception during a call to createEngine
+ * ThrowingPlugin2 - A plugin that throws an exception during a call to describeEngineConfig
  */
 export class ThrowingPlugin2 extends engApi.EnginePluginV1 {
+    getAvailableEngineNames(): string[] {
+        return ['someEngine'];
+    }
+
+    describeEngineConfig(_engineName: string): engApi.ConfigDescription {
+        throw new Error('SomeErrorFromDescribeEngineConfig')
+    }
+
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
+        throw new Error('Should not be called');
+    }
+}
+
+/**
+ * ThrowingPlugin3 - A plugin that throws an exception during a call to createEngineConfig
+ */
+export class ThrowingPlugin3 extends engApi.EnginePluginV1 {
+    getAvailableEngineNames(): string[] {
+        return ['someEngine'];
+    }
+
+    async createEngineConfig(_engineName: string, _configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+        throw new Error('SomeErrorFromCreateEngineConfig')
+    }
+
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
+        throw new Error('Should not be called');
+    }
+}
+
+/**
+ * ThrowingPlugin4 - A plugin that throws an exception during a call to createEngine
+ */
+export class ThrowingPlugin4 extends engApi.EnginePluginV1 {
     getAvailableEngineNames(): string[] {
         return ['someEngine'];
     }

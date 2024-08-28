@@ -4,6 +4,7 @@ import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import path from "node:path";
 import {StubEngine1, StubEngine2} from "./stubs";
+import {ConfigDescription} from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -27,10 +28,18 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"]);
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
         expect(stubEngine1.getName()).toEqual('stubEngine1');
-        expect(stubEngine1.config).toEqual({config_root: DEFAULT_CONFIG_ROOT});
+        expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
+            disable_engine: false,
+            engine_name: "stubEngine1",
+            config_root: DEFAULT_CONFIG_ROOT
+        });
         const stubEngine2: StubEngine2 = stubEnginePlugin.getCreatedEngine('stubEngine2') as StubEngine2;
         expect(stubEngine2.getName()).toEqual('stubEngine2');
-        expect(stubEngine2.config).toEqual({config_root: DEFAULT_CONFIG_ROOT});
+        expect(codeAnalyzer.getEngineConfig('stubEngine2')).toEqual({
+            disable_engine: false,
+            engine_name: "stubEngine2",
+            config_root: DEFAULT_CONFIG_ROOT
+        });
     });
 
     it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', async () => {
@@ -42,17 +51,23 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
         expect(stubEngine1.getName()).toEqual('stubEngine1');
-        expect(stubEngine1.config).toEqual({
-            config_root: TEST_DATA_DIR,
+        expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
+            disable_engine: false,
             miscSetting1: true,
             miscSetting2: {
                 miscSetting2A: 3,
                 miscSetting2B: ["hello", "world"]
-            }
+            },
+            config_root: TEST_DATA_DIR,
+            engine_name: "stubEngine1"
         });
         const stubEngine2: StubEngine2 = stubEnginePlugin.getCreatedEngine('stubEngine2') as StubEngine2;
         expect(stubEngine2.getName()).toEqual('stubEngine2');
-        expect(stubEngine2.config).toEqual({config_root: TEST_DATA_DIR});
+        expect(codeAnalyzer.getEngineConfig('stubEngine2')).toEqual({
+            disable_engine: false,
+            engine_name: "stubEngine2",
+            config_root: TEST_DATA_DIR
+        });
     });
 
     it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', async () => {
@@ -90,9 +105,21 @@ describe("Tests for adding engines to Code Analyzer", () => {
         );
     })
 
-    it('When plugin throws error during createEngine, then we throw error', async () => {
+    it('When plugin throws error during describeEngineConfig, then we throw error', async () => {
         await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).rejects.toThrow(
-            getMessage('PluginErrorFromCreateEngine', 'someEngine', 'SomeErrorFromCreateEngine', 'someEngine')
+            getMessage('PluginErrorWhenCreatingEnginePriorToDisableEngineCheck', 'someEngine', 'SomeErrorFromDescribeEngineConfig')
+        );
+    });
+
+    it('When plugin throws error during createEngineConfig, then we throw error', async () => {
+        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin3())).rejects.toThrow(
+            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngineConfig', 'someEngine')
+        );
+    });
+
+    it('When plugin throws error during createEngine, then we throw error', async () => {
+        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin4())).rejects.toThrow(
+            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngine', 'someEngine')
         );
     });
 
@@ -132,6 +159,53 @@ describe("Tests for adding engines to Code Analyzer", () => {
             logLevel: LogLevel.Debug,
             timestamp: sampleTimestamp,
             message: getMessage('EngineDisabled', 'stubEngine1', 'engines.stubEngine1.disable_engine')
+        });
+    });
+
+    it('After engine is added, then getEngineConfigDescription returns the correct description', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+        const engineConfigDescription1: ConfigDescription = codeAnalyzer.getEngineConfigDescription('stubEngine1');
+        expect(engineConfigDescription1).toEqual({
+            overview: "OverviewForStub1",
+            fieldDescriptions: {
+                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
+                miscSetting1: "someDescriptionFor_miscSetting1"
+            }
+        });
+        const engineConfigDescription2: ConfigDescription = codeAnalyzer.getEngineConfigDescription('stubEngine2');
+        expect(engineConfigDescription2).toEqual({
+            overview: "OverviewForStub2",
+            fieldDescriptions: {
+                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine2')
+            }
+        });
+    });
+
+    it('If engine has not been added, then getEngineConfig and getEngineConfigDescription should error', async () => {
+        expect(() => codeAnalyzer.getEngineConfig('stubEngine1')).toThrow(
+            getMessage('FailedToGetEngineConfig', 'stubEngine1'));
+        expect(() => codeAnalyzer.getEngineConfigDescription('stubEngine1')).toThrow(
+            getMessage('FailedToGetEngineConfigDescription', 'stubEngine1'));
+    });
+
+    it('When engine is disabled, we can still access its unresolved user provided properties', async () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-04.yml')));
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+        expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
+            disable_engine: true,
+            misc_value: 3
+        });
+    });
+
+    it('When engine is disabled, we can still access its config description', async () => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-04.yml')));
+        await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
+        expect(codeAnalyzer.getEngineConfigDescription('stubEngine1')).toEqual({
+            overview: "OverviewForStub1",
+            fieldDescriptions: {
+                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
+                miscSetting1: "someDescriptionFor_miscSetting1"
+            }
         });
     });
 });

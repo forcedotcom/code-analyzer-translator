@@ -1,6 +1,44 @@
 import {getMessageFromCatalog, MessageCatalog} from "@salesforce/code-analyzer-engine-api";
 
 const MESSAGE_CATALOG : MessageCatalog = {
+    ConfigOverview:
+        `CODE ANALYZER CONFIGURATION\n` +
+        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+
+    ConfigFieldDescription_config_root:
+        `The absolute folder path to which all other path values in this configuration may be relative to.\n` +
+        `If not specified or if equal to null, then the value is automatically chosen to be the parent folder of your Code Analyzer\n` +
+        `configuration file if it exists, or the current working directory otherwise.`,
+
+    ConfigFieldDescription_log_folder:
+        `Folder where to store log files. May be an absolute path or a path relative to config_root.\n` +
+        `If not specified or if equal to null, then the value is automatically chosen to be your machine's default temporary directory.`,
+
+    ConfigFieldDescription_rules:
+        `Rule override settings of the format rules.{engine_name}.{rule_name}.{property_name} = {override_value} where:\n` +
+        `  {engine_name} is the name of the engine containing the rule that you want to override.\n` +
+        `  {rule_name} is the name of the rule that you want to override.\n` +
+        `  {property_name} can either be:\n` +
+        `    'severity' - [Optional] The severity level value that you want to use to override the default severity level for the rule\n` +
+        `                 Possible values: 1 or 'Critical', 2 or 'High', 3 or 'Moderate', 4 or 'Low', 5 or 'Info'\n` +
+        `    'tags'     - [Optional] The string array of tag values that you want to use to override the default tags for the rule\n` +
+        `---- [Example usage]: ---------------------\n` +
+        `rules:\n` +
+        `  eslint:\n` +
+        `    sort-vars:\n` +
+        `      severity: "Info"\n` +
+        `      tags: ["Recommended", "Suggestion"]\n` +
+        `-------------------------------------------`,
+
+    ConfigFieldDescription_engines:
+        `Engine specific custom configuration settings of the format engines.{engine_name}.{property_name} = {value} where:\n` +
+        `  {engine_name} is the name of the engine containing the setting that you want to override.\n` +
+        `  {property_name} is the name of a property that you would like to override.\n` +
+        `Each engine may have its own set of properties available to help customize that particular engine's behavior.`,
+
+    EngineConfigFieldDescription_disable_engine:
+        `Whether to turn off the '%s' engine so that it is not included when running Code Analyzer commands.`,
+
     EngineFromFutureApiDetected:
         `The following engines use the engine api version %d: %s.\n` +
         `This version of Code Analyzer only has knowledge of the %d engine api.\n` +
@@ -21,19 +59,28 @@ const MESSAGE_CATALOG : MessageCatalog = {
     PluginErrorFromGetAvailableEngineNames:
         `Failed to add engine plugin. The plugin's getAvailableNames method threw an error:\n%s`,
 
-    PluginErrorFromCreateEngine:
-        `Failed to create engine with name '%s'. The plugin's createEngine method threw the following error:\n` +
+    PluginErrorWhenCreatingEngine:
+        `Failed to create engine with name '%s' due to the following error:\n` +
         `%s\n\n` +
         `If you wish to ignore this error and disable this engine, then update your Code Analyzer configuration with:\n` +
         `engines:\n` +
         `  %s:\n` +
         `    disable_engine: true\n`,
 
+    PluginErrorWhenCreatingEnginePriorToDisableEngineCheck:
+        `Failed to create engine with name '%s' due to the following error:\n%s\n`,
+
     FailedToDynamicallyLoadModule:
         `Failed to dynamically load module '%s'. Error: %s`,
 
     FailedToDynamicallyAddEnginePlugin:
         `Failed to dynamically add engine plugin from module '%s' because the module does not seem to export a 'createEnginePlugin' function.`,
+
+    FailedToGetEngineConfig:
+        `Failed to get configuration for engine with name '%s' since this engine has not been added to Code Analyzer.`,
+
+    FailedToGetEngineConfigDescription:
+        `Failed to get configuration description for engine with name '%s' since this engine has not been added to Code Analyzer.`,
 
     EngineDisabled:
         `Did not add engine with name '%s' since the '%s' configuration value is set to true.`,
@@ -55,6 +102,9 @@ const MESSAGE_CATALOG : MessageCatalog = {
 
     RulePropertyOverridden:
         `The %s value of rule '%s' of engine '%s' was overridden according to the specified configuration. The old value '%s' was replaced with the new value '%s'.`,
+
+    ConfigPathValueMustBeAbsolute:
+        `The '%s' configuration value must be provided as an absolute path location. Update the value '%s' to instead be '%s'.`,
 
     FileOrFolderDoesNotExist:
         `The file or folder '%s' does not exist.`,

@@ -1,6 +1,7 @@
 import {RegexEnginePlugin} from "../src";
 import {
     ConfigObject,
+    ConfigValueExtractor,
     Engine,
     EnginePluginV1,
     EngineRunResults,
@@ -26,7 +27,8 @@ describe('End to end test', () => {
                 }
             }
         }
-        const engine: Engine = await plugin.createEngine(availableEngineNames[0], customConfig);
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig(availableEngineNames[0], new ConfigValueExtractor(customConfig, 'engines.regex'));
+        const engine: Engine = await plugin.createEngine(availableEngineNames[0], resolvedConfig);
         const workspace: Workspace = new Workspace([path.resolve(__dirname, 'test-data', 'workspaceWithPythonFile')]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         const recommendedRuleNames: string[] = ruleDescriptions.filter(rd => rd.tags.includes('Recommended')).map(rd => rd.name);
