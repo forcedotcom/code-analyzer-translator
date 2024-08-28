@@ -20,9 +20,6 @@ export type ConfigDescription = {
 
     // Description messages of the top-level fields in the configuration
     fieldDescriptions?: Record<string, string>
-
-    // Set of fields that should not be exposed from the client back to the end user. These fields are for internal use only.
-    internalUseOnlyFields?: Set<string>
 }
 
 export class ConfigValueExtractor {

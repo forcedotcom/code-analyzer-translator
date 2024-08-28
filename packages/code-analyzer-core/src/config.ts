@@ -27,23 +27,6 @@ export type RuleOverride = {
     severity?: SeverityLevel
     tags?: string[]
 }
-
-type TopLevelConfig = {
-    config_root: string
-    log_folder: string
-    rules: Record<string, RuleOverrides>
-    engines: Record<string, EngineOverrides>
-    custom_engine_plugin_modules: string[]
-}
-
-const DEFAULT_CONFIG: TopLevelConfig = {
-    config_root: process.cwd(),
-    log_folder: os.tmpdir(),
-    rules: {},
-    engines: {},
-    custom_engine_plugin_modules: [],
-};
-
 export const TOP_LEVEL_CONFIG_DESCRIPTION: ConfigDescription = {
     overview: getMessage('ConfigOverview'),
     fieldDescriptions: {
@@ -51,9 +34,24 @@ export const TOP_LEVEL_CONFIG_DESCRIPTION: ConfigDescription = {
         log_folder: getMessage('ConfigFieldDescription_log_folder'),
         rules: getMessage('ConfigFieldDescription_rules'),
         engines: getMessage('ConfigFieldDescription_engines'),
-    },
-    internalUseOnlyFields: new Set(['custom_engine_plugin_modules'])
+    }
 }
+
+type TopLevelConfig = {
+    config_root: string
+    log_folder: string
+    rules: Record<string, RuleOverrides>
+    engines: Record<string, EngineOverrides>
+    custom_engine_plugin_modules: string[] // INTERNAL USE ONLY
+}
+
+const DEFAULT_CONFIG: TopLevelConfig = {
+    config_root: process.cwd(),
+    log_folder: os.tmpdir(),
+    rules: {},
+    engines: {},
+    custom_engine_plugin_modules: [], // INTERNAL USE ONLY
+};
 
 export type ConfigDescription = engApi.ConfigDescription;
 

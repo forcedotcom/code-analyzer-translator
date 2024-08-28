@@ -14,14 +14,10 @@ export const ESLINT_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
         disable_typescript_base_config: getMessage('ConfigFieldDescription_disable_typescript_base_config'),
         javascript_file_extensions: getMessage('ConfigFieldDescription_javascript_file_extensions'),
         typescript_file_extensions: getMessage('ConfigFieldDescription_typescript_file_extensions')
-    },
-    internalUseOnlyFields: new Set(['config_root'])
+    }
 }
 
 export type ESLintEngineConfig = {
-    // Copy of the code analyzer config root.
-    config_root: string // INTERNAL USE ONLY
-
     // Your project's main ESLint configuration file. May be provided as a path relative to the config_root.
     // If not supplied, and auto_discover_eslint_config=true, then Code Analyzer will attempt to find and apply it automatically.
     // Currently, only support legacy config files are supported.
@@ -54,10 +50,12 @@ export type ESLintEngineConfig = {
     // Extensions of the typescript files in your workspace that will be used to discover rules.
     // Default: ['.ts']
     typescript_file_extensions: string[]
+
+    // (INTERNAL USE ONLY) Copy of the code analyzer config root.
+    config_root: string
 }
 
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
-    config_root: process.cwd(),
     eslint_config_file: undefined,
     eslint_ignore_file: undefined,
     auto_discover_eslint_config: false,
@@ -65,7 +63,8 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     disable_lwc_base_config: false,
     disable_typescript_base_config: false,
     javascript_file_extensions:  ['.js', '.cjs', '.mjs'],
-    typescript_file_extensions: ['.ts']
+    typescript_file_extensions: ['.ts'],
+    config_root: process.cwd() // INTERNAL USE ONLY
 }
 
 // See https://eslint.org/docs/v8.x/use/configure/configuration-files#configuration-file-formats
