@@ -250,8 +250,7 @@ describe("Tests for creating and accessing configuration values", () => {
     });
 
     it("When getConfigDescription is called, then it returns our expected description object", () => {
-        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({});
-        const configDescription: ConfigDescription = conf.getConfigDescription();
+        const configDescription: ConfigDescription = CodeAnalyzerConfig.getConfigDescription();
         expect(configDescription).toEqual(TOP_LEVEL_CONFIG_DESCRIPTION);
     });
 });

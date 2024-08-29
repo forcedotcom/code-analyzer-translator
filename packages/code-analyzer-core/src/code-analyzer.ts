@@ -243,13 +243,14 @@ export class CodeAnalyzer {
             addDisableEngineFieldDescription(engineConfigDescription, engineName);
             this.engineConfigDescriptions.set(engineName, engineConfigDescription);
         } catch (err) {
-            throw new Error(getMessage('PluginErrorWhenCreatingEnginePriorToDisableEngineCheck', engineName, (err as Error).message));
+            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
         }
 
         const engineOverrides: EngineOverrides = this.config.getEngineOverridesFor(engineName);
         if (engineOverrides[FIELDS.DISABLE_ENGINE]) {
             this.emitLogEvent(LogLevel.Debug, getMessage('EngineDisabled', engineName,
                 `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`))
+            // If engine is disabled then instead of returning no config, we simply return whatever overrides the user gave.
             this.engineConfigs.set(engineName, engineOverrides);
             return;
         }
@@ -269,7 +270,8 @@ export class CodeAnalyzer {
             this.listenToEngineEvents(engine);
 
         } catch (err) {
-            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message, engineName));
+            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message) + '\n\n' +
+                getMessage('InstructionsToIgnoreErrorAndDisableEngine', engineName));
         }
 
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));

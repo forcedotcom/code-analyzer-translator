@@ -107,12 +107,12 @@ export class CodeAnalyzerConfig {
         return new CodeAnalyzerConfig(config);
     }
 
-    private constructor(config: TopLevelConfig) {
-        this.config = config;
+    public static getConfigDescription(): ConfigDescription {
+        return TOP_LEVEL_CONFIG_DESCRIPTION;
     }
 
-    public getConfigDescription(): ConfigDescription {
-        return TOP_LEVEL_CONFIG_DESCRIPTION;
+    private constructor(config: TopLevelConfig) {
+        this.config = config;
     }
 
     public getLogFolder(): string {

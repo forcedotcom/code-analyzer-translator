@@ -7,12 +7,12 @@ const MESSAGE_CATALOG : MessageCatalog = {
 
     ConfigFieldDescription_config_root:
         `The absolute folder path to which all other path values in this configuration may be relative to.\n` +
-        `If not specified or if equal to null, then the value is automatically chosen to be the parent folder of your Code Analyzer\n` +
+        `If unspecified, or if specified as null, then the value is automatically chosen to be the parent folder of your Code Analyzer\n` +
         `configuration file if it exists, or the current working directory otherwise.`,
 
     ConfigFieldDescription_log_folder:
         `Folder where to store log files. May be an absolute path or a path relative to config_root.\n` +
-        `If not specified or if equal to null, then the value is automatically chosen to be your machine's default temporary directory.`,
+        `If unspecified, or if specified as null, then the value is automatically chosen to be your machine's default temporary directory.`,
 
     ConfigFieldDescription_rules:
         `Rule override settings of the format rules.{engine_name}.{rule_name}.{property_name} = {override_value} where:\n` +
@@ -60,15 +60,13 @@ const MESSAGE_CATALOG : MessageCatalog = {
         `Failed to add engine plugin. The plugin's getAvailableNames method threw an error:\n%s`,
 
     PluginErrorWhenCreatingEngine:
-        `Failed to create engine with name '%s' due to the following error:\n` +
-        `%s\n\n` +
+        `Failed to create engine with name '%s' due to the following error:\n%s`,
+
+    InstructionsToIgnoreErrorAndDisableEngine:
         `If you wish to ignore this error and disable this engine, then update your Code Analyzer configuration with:\n` +
         `engines:\n` +
         `  %s:\n` +
-        `    disable_engine: true\n`,
-
-    PluginErrorWhenCreatingEnginePriorToDisableEngineCheck:
-        `Failed to create engine with name '%s' due to the following error:\n%s\n`,
+        `    disable_engine: true`,
 
     FailedToDynamicallyLoadModule:
         `Failed to dynamically load module '%s'. Error: %s`,
