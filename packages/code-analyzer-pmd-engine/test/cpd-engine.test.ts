@@ -1,6 +1,6 @@
-import {CpdEngine} from "../src/engines";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {Workspace} from "@salesforce/code-analyzer-engine-api";
+import {CpdEngine} from "../src/cpd-engine";
 
 changeWorkingDirectoryToPackageRoot();
 

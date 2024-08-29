@@ -1,0 +1,912 @@
+[
+  {
+    "name": "ApexAssertionsShouldIncludeMessage",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Apex test assert statement should make use of the message parameter.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexassertionsshouldincludemessage"
+    ]
+  },
+  {
+    "name": "ApexBadCrypto",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex classes should use random IV/key",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexbadcrypto"
+    ]
+  },
+  {
+    "name": "ApexCRUDViolation",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Validate CRUD permission before SOQL/DML operation or enforce user mode",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation"
+    ]
+  },
+  {
+    "name": "ApexCSRF",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid making DML operations in Apex class constructor or initializers",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf"
+    ]
+  },
+  {
+    "name": "ApexDangerousMethods",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Calling potentially dangerous method",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexdangerousmethods"
+    ]
+  },
+  {
+    "name": "ApexDoc",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Documentation",
+      "apexLanguage"
+    ],
+    "description": "ApexDoc comment is missing or incorrect",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
+    ]
+  },
+  {
+    "name": "ApexInsecureEndpoint",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex callouts should use encrypted communication channels",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexinsecureendpoint"
+    ]
+  },
+  {
+    "name": "ApexOpenRedirect",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex classes should safely redirect to a known location",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexopenredirect"
+    ]
+  },
+  {
+    "name": "ApexSharingViolations",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex classes should declare a sharing model if DML or SOQL/SOSL is used",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsharingviolations"
+    ]
+  },
+  {
+    "name": "ApexSOQLInjection",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Avoid untrusted/unescaped variables in DML query",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsoqlinjection"
+    ]
+  },
+  {
+    "name": "ApexSuggestUsingNamedCred",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Suggest named credentials for authentication",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred"
+    ]
+  },
+  {
+    "name": "ApexUnitTestClassShouldHaveAsserts",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Apex unit tests should System.assert() or assertEquals() or assertNotEquals()",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestclassshouldhaveasserts"
+    ]
+  },
+  {
+    "name": "ApexUnitTestClassShouldHaveRunAs",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Apex unit test classes should have at least one System.runAs() call",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestclassshouldhaverunas"
+    ]
+  },
+  {
+    "name": "ApexUnitTestMethodShouldHaveIsTestAnnotation",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Apex test methods should have @isTest annotation.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestmethodshouldhaveistestannotation"
+    ]
+  },
+  {
+    "name": "ApexUnitTestShouldNotUseSeeAllDataTrue",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Apex unit tests should not use @isTest(seeAllData = true)",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestshouldnotuseseealldatatrue"
+    ]
+  },
+  {
+    "name": "ApexXSSFromEscapeFalse",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex classes should escape Strings in error messages",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexxssfromescapefalse"
+    ]
+  },
+  {
+    "name": "ApexXSSFromURLParam",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "apexLanguage"
+    ],
+    "description": "Apex classes should escape/sanitize Strings obtained from URL parameters",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexxssfromurlparam"
+    ]
+  },
+  {
+    "name": "AvoidDebugStatements",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "apexLanguage"
+    ],
+    "description": "Avoid debug statements since they impact on performance",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoiddebugstatements"
+    ]
+  },
+  {
+    "name": "AvoidDeeplyNestedIfStmts",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "Deeply nested if..then statements are hard to read",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#avoiddeeplynestedifstmts"
+    ]
+  },
+  {
+    "name": "AvoidDirectAccessTriggerMap",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid directly accessing Trigger.old and Trigger.new",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoiddirectaccesstriggermap"
+    ]
+  },
+  {
+    "name": "AvoidGlobalModifier",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Avoid using global modifier",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#avoidglobalmodifier"
+    ]
+  },
+  {
+    "name": "AvoidHardcodingId",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Hardcoding Id's is bound to break when changing environments.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoidhardcodingid"
+    ]
+  },
+  {
+    "name": "AvoidLogicInTrigger",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Avoid logic in triggers",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#avoidlogicintrigger"
+    ]
+  },
+  {
+    "name": "AvoidNonExistentAnnotations",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Use of non existent annotations will lead to broken Apex code which will not compile in the future.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoidnonexistentannotations"
+    ]
+  },
+  {
+    "name": "AvoidNonRestrictiveQueries",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "apexLanguage"
+    ],
+    "description": "Avoid {0} queries without a where or limit statement",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
+    ]
+  },
+  {
+    "name": "ClassNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#classnamingconventions"
+    ]
+  },
+  {
+    "name": "CognitiveComplexity",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The {0} ''{1}'' has a{2} cognitive complexity of {3}, current threshold is {4}",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity"
+    ]
+  },
+  {
+    "name": "CyclomaticComplexity",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The {0} ''{1}'' has a{2} cyclomatic complexity of {3}.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity"
+    ]
+  },
+  {
+    "name": "DebugsShouldUseLoggingLevel",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Calls to System.debug should specify a logging level.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#debugsshoulduselogginglevel"
+    ]
+  },
+  {
+    "name": "EagerlyLoadedDescribeSObjectResult",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "apexLanguage"
+    ],
+    "description": "DescribeSObjectResult could be being loaded eagerly with all child relationships.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult"
+    ]
+  },
+  {
+    "name": "EmptyCatchBlock",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid empty catch blocks",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptycatchblock"
+    ]
+  },
+  {
+    "name": "EmptyIfStmt",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid empty 'if' statements",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptyifstmt"
+    ]
+  },
+  {
+    "name": "EmptyStatementBlock",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid empty block statements.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptystatementblock"
+    ]
+  },
+  {
+    "name": "EmptyTryOrFinallyBlock",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid empty try or finally blocks",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptytryorfinallyblock"
+    ]
+  },
+  {
+    "name": "EmptyWhileStmt",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Avoid empty 'while' statements",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptywhilestmt"
+    ]
+  },
+  {
+    "name": "ExcessiveClassLength",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "Avoid really long classes.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessiveclasslength"
+    ]
+  },
+  {
+    "name": "ExcessiveParameterList",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "Avoid long parameter lists.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessiveparameterlist"
+    ]
+  },
+  {
+    "name": "ExcessivePublicCount",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The class {0} has {1} public methods, attributes, and properties (limit: {2})",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessivepubliccount"
+    ]
+  },
+  {
+    "name": "FieldDeclarationsShouldBeAtStart",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Field declaration for ''{0}'' should be before method declarations in its class",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#fielddeclarationsshouldbeatstart"
+    ]
+  },
+  {
+    "name": "FieldNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#fieldnamingconventions"
+    ]
+  },
+  {
+    "name": "ForLoopsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Avoid using 'for' statements without curly braces",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#forloopsmustusebraces"
+    ]
+  },
+  {
+    "name": "FormalParameterNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#formalparameternamingconventions"
+    ]
+  },
+  {
+    "name": "IfElseStmtsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Avoid using 'if...else' statements without curly braces",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#ifelsestmtsmustusebraces"
+    ]
+  },
+  {
+    "name": "IfStmtsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Avoid using if statements without curly braces",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#ifstmtsmustusebraces"
+    ]
+  },
+  {
+    "name": "InaccessibleAuraEnabledGetter",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "AuraEnabled getter must be public or global if is referenced in Lightning components",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#inaccessibleauraenabledgetter"
+    ]
+  },
+  {
+    "name": "LocalVariableNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#localvariablenamingconventions"
+    ]
+  },
+  {
+    "name": "MethodNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#methodnamingconventions"
+    ]
+  },
+  {
+    "name": "MethodWithSameNameAsEnclosingClass",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Classes should not have non-constructor methods with the same name as the class",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#methodwithsamenameasenclosingclass"
+    ]
+  },
+  {
+    "name": "NcssConstructorCount",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The constructor has an NCSS line count of {0}",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncssconstructorcount"
+    ]
+  },
+  {
+    "name": "NcssMethodCount",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The method ''{0}()'' has an NCSS line count of {1} (limit: {2})",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncssmethodcount"
+    ]
+  },
+  {
+    "name": "NcssTypeCount",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The type has an NCSS line count of {0}",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncsstypecount"
+    ]
+  },
+  {
+    "name": "OneDeclarationPerLine",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Use one statement for each line, it enhances code readability.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#onedeclarationperline"
+    ]
+  },
+  {
+    "name": "OperationWithHighCostInLoop",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "apexLanguage"
+    ],
+    "description": "Avoid operations in loops that may impact performances",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithhighcostinloop"
+    ]
+  },
+  {
+    "name": "OperationWithLimitsInLoop",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "apexLanguage"
+    ],
+    "description": "Avoid operations in loops that may hit governor limits",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithlimitsinloop"
+    ]
+  },
+  {
+    "name": "OverrideBothEqualsAndHashcode",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Ensure you override both equals() and hashCode()",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#overridebothequalsandhashcode"
+    ]
+  },
+  {
+    "name": "PropertyNamingConventions",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#propertynamingconventions"
+    ]
+  },
+  {
+    "name": "StdCyclomaticComplexity",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "The {0} ''{1}'' has a Standard Cyclomatic Complexity of {2}.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#stdcyclomaticcomplexity"
+    ]
+  },
+  {
+    "name": "TestMethodsMustBeInTestClasses",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "apexLanguage"
+    ],
+    "description": "Test methods must be in test classes",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#testmethodsmustbeintestclasses"
+    ]
+  },
+  {
+    "name": "TooManyFields",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "Too many fields",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#toomanyfields"
+    ]
+  },
+  {
+    "name": "UnusedLocalVariable",
+    "severityLevel": 4,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Variable ''{0}'' defined but not used",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#unusedlocalvariable"
+    ]
+  },
+  {
+    "name": "UnusedMethod",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "apexLanguage"
+    ],
+    "description": "Unused methods make understanding code harder",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
+    ]
+  },
+  {
+    "name": "VfCsrf",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Avoid calling VF action upon page load",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfcsrf"
+    ]
+  },
+  {
+    "name": "VfHtmlStyleTagXss",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Use correct encoding for expressions within Style tag",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss"
+    ]
+  },
+  {
+    "name": "VfUnescapeEl",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Avoid unescaped user controlled content in EL",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfunescapeel"
+    ]
+  },
+  {
+    "name": "WhileLoopsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "apexLanguage"
+    ],
+    "description": "Avoid using 'while' statements without curly braces",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#whileloopsmustusebraces"
+    ]
+  }
+]
