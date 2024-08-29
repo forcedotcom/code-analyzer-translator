@@ -31,10 +31,6 @@ export class ESLintEngine extends Engine {
         return ESLintEngine.NAME;
     }
 
-    getConfig(): ESLintEngineConfig {
-        return this.config;
-    }
-
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
 

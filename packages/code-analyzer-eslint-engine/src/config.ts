@@ -1,12 +1,23 @@
-import {ConfigObject, ConfigValueExtractor, ValueValidator} from '@salesforce/code-analyzer-engine-api';
+import {ConfigDescription, ConfigValueExtractor, ValueValidator} from '@salesforce/code-analyzer-engine-api';
 import {getMessage} from "./messages";
 import path from "node:path";
 import {makeUnique} from "./utils";
 
-export type ESLintEngineConfig = {
-    // The code analyzer config root. It is supplied to us automatically from core even if the user doesn't specify it.
-    config_root: string
+export const ESLINT_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        eslint_config_file: getMessage('ConfigFieldDescription_eslint_config_file'),
+        eslint_ignore_file: getMessage('ConfigFieldDescription_eslint_ignore_file'),
+        auto_discover_eslint_config: getMessage('ConfigFieldDescription_auto_discover_eslint_config'),
+        disable_javascript_base_config: getMessage('ConfigFieldDescription_disable_javascript_base_config'),
+        disable_lwc_base_config: getMessage('ConfigFieldDescription_disable_lwc_base_config'),
+        disable_typescript_base_config: getMessage('ConfigFieldDescription_disable_typescript_base_config'),
+        javascript_file_extensions: getMessage('ConfigFieldDescription_javascript_file_extensions'),
+        typescript_file_extensions: getMessage('ConfigFieldDescription_typescript_file_extensions')
+    }
+}
 
+export type ESLintEngineConfig = {
     // Your project's main ESLint configuration file. May be provided as a path relative to the config_root.
     // If not supplied, and auto_discover_eslint_config=true, then Code Analyzer will attempt to find and apply it automatically.
     // Currently, only support legacy config files are supported.
@@ -39,10 +50,12 @@ export type ESLintEngineConfig = {
     // Extensions of the typescript files in your workspace that will be used to discover rules.
     // Default: ['.ts']
     typescript_file_extensions: string[]
+
+    // (INTERNAL USE ONLY) Copy of the code analyzer config root.
+    config_root: string
 }
 
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
-    config_root: process.cwd(),
     eslint_config_file: undefined,
     eslint_ignore_file: undefined,
     auto_discover_eslint_config: false,
@@ -50,7 +63,8 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     disable_lwc_base_config: false,
     disable_typescript_base_config: false,
     javascript_file_extensions:  ['.js', '.cjs', '.mjs'],
-    typescript_file_extensions: ['.ts']
+    typescript_file_extensions: ['.ts'],
+    config_root: process.cwd() // INTERNAL USE ONLY
 }
 
 // See https://eslint.org/docs/v8.x/use/configure/configuration-files#configuration-file-formats
@@ -60,34 +74,35 @@ export const LEGACY_ESLINT_CONFIG_FILES: string[] =
 export const LEGACY_ESLINT_IGNORE_FILE: string = '.eslintignore';
 
 
-export function validateAndNormalizeConfig(rawConfig: ConfigObject): ESLintEngineConfig {
-    const valueExtractor: ESLintEngineConfigValueExtractor = new ESLintEngineConfigValueExtractor(rawConfig);
-    const [jsExts, tsExts] = valueExtractor.extractFileExtensionsValues();
+export function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor): ESLintEngineConfig {
+    const eslintConfigValueExtractor: ESLintEngineConfigValueExtractor = new ESLintEngineConfigValueExtractor(configValueExtractor);
+    const [jsExts, tsExts] = eslintConfigValueExtractor.extractFileExtensionsValues();
     return {
-        config_root: valueExtractor.extractConfigRoot(),
-        eslint_config_file: valueExtractor.extractESLintConfigFileValue(),
-        eslint_ignore_file: valueExtractor.extractESLintIgnoreFileValue(),
-        auto_discover_eslint_config: valueExtractor.extractBoolean('auto_discover_eslint_config', DEFAULT_CONFIG.auto_discover_eslint_config)!,
-        disable_javascript_base_config: valueExtractor.extractBoolean('disable_javascript_base_config', DEFAULT_CONFIG.disable_javascript_base_config)!,
-        disable_lwc_base_config: valueExtractor.extractBoolean('disable_lwc_base_config', DEFAULT_CONFIG.disable_lwc_base_config)!,
-        disable_typescript_base_config: valueExtractor.extractBoolean('disable_typescript_base_config', DEFAULT_CONFIG.disable_typescript_base_config)!,
+        config_root: configValueExtractor.getConfigRoot(), // INTERNAL USE ONLY
+        eslint_config_file: eslintConfigValueExtractor.extractESLintConfigFileValue(),
+        eslint_ignore_file: eslintConfigValueExtractor.extractESLintIgnoreFileValue(),
+        auto_discover_eslint_config: eslintConfigValueExtractor.extractBooleanValue('auto_discover_eslint_config'),
+        disable_javascript_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_javascript_base_config'),
+        disable_lwc_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_lwc_base_config'),
+        disable_typescript_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_typescript_base_config'),
         javascript_file_extensions:  jsExts,
         typescript_file_extensions: tsExts
     };
 }
 
-class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
+class ESLintEngineConfigValueExtractor {
     private static readonly FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
+    private readonly delegateExtractor: ConfigValueExtractor;
 
-    constructor(rawConfig: ConfigObject) {
-        super(rawConfig, 'engines.eslint');
+    constructor(delegateExtractor: ConfigValueExtractor) {
+        this.delegateExtractor = delegateExtractor;
     }
 
     extractESLintConfigFileValue(): string | undefined {
         const eslintConfigFileField: string = 'eslint_config_file';
-        const eslintConfigFile: string | undefined = this.extractFile(eslintConfigFileField, DEFAULT_CONFIG.eslint_config_file);
+        const eslintConfigFile: string | undefined = this.delegateExtractor.extractFile(eslintConfigFileField, DEFAULT_CONFIG.eslint_config_file);
         if (eslintConfigFile && !LEGACY_ESLINT_CONFIG_FILES.includes(path.basename(eslintConfigFile))) {
-            throw new Error(getMessage('InvalidLegacyConfigFileName', this.getFieldPath(eslintConfigFileField),
+            throw new Error(getMessage('InvalidLegacyConfigFileName', this.delegateExtractor.getFieldPath(eslintConfigFileField),
                 path.basename(eslintConfigFile), JSON.stringify(LEGACY_ESLINT_CONFIG_FILES)));
         }
         return eslintConfigFile;
@@ -95,9 +110,9 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
 
     extractESLintIgnoreFileValue(): string | undefined {
         const eslintIgnoreFileField: string = 'eslint_ignore_file';
-        const eslintIgnoreFile: string | undefined = this.extractFile(eslintIgnoreFileField, DEFAULT_CONFIG.eslint_ignore_file);
+        const eslintIgnoreFile: string | undefined = this.delegateExtractor.extractFile(eslintIgnoreFileField, DEFAULT_CONFIG.eslint_ignore_file);
         if (eslintIgnoreFile && path.basename(eslintIgnoreFile) !== LEGACY_ESLINT_IGNORE_FILE) {
-            throw new Error(getMessage('InvalidLegacyIgnoreFileName', this.getFieldPath(eslintIgnoreFileField),
+            throw new Error(getMessage('InvalidLegacyIgnoreFileName', this.delegateExtractor.getFieldPath(eslintIgnoreFileField),
                 path.basename(eslintIgnoreFile), LEGACY_ESLINT_IGNORE_FILE));
         }
         return eslintIgnoreFile;
@@ -112,8 +127,8 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
         const allExts: string[] = jsExts.concat(tsExts);
         if (allExts.length != (new Set(allExts)).size) {
             const currentValuesString: string =
-                `  ${this.getFieldPath(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
-                `  ${this.getFieldPath(tsExtsField)}: ${JSON.stringify(tsExts)}`;
+                `  ${this.delegateExtractor.getFieldPath(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
+                `  ${this.delegateExtractor.getFieldPath(tsExtsField)}: ${JSON.stringify(tsExts)}`;
             throw new Error(getMessage('ConfigStringArrayValuesMustNotShareElements', currentValuesString));
         }
 
@@ -121,9 +136,13 @@ class ESLintEngineConfigValueExtractor extends ConfigValueExtractor {
     }
 
     extractExtensionsValue(fieldName: string, defaultValue: string[]): string[] {
-        const fileExts: string[] = this.extractArray(fieldName, ValueValidator.validateString, defaultValue)!;
+        const fileExts: string[] = this.delegateExtractor.extractArray(fieldName, ValueValidator.validateString, defaultValue)!;
         return fileExts.map((fileExt, i) => validateStringMatches(
-            ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.getFieldPath(fieldName)}[${i}]`));
+            ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.delegateExtractor.getFieldPath(fieldName)}[${i}]`));
+    }
+
+    extractBooleanValue(field_name: string): boolean {
+        return this.delegateExtractor.extractBoolean(field_name, DEFAULT_CONFIG[field_name as keyof ESLintEngineConfig] as boolean)!;
     }
 }
 

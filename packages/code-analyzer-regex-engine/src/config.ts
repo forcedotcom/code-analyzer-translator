@@ -1,35 +1,30 @@
 import {
-    ConfigObject,
+    ConfigDescription,
     ConfigValueExtractor,
-    getMessageFromCatalog,
     SeverityLevel,
-    SHARED_MESSAGE_CATALOG,
     ValueValidator
 } from "@salesforce/code-analyzer-engine-api"
 import {getMessage} from "./messages";
+import {convertToRegex} from "./utils";
+
+export const REGEX_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        custom_rules: getMessage('ConfigFieldDescription_custom_rules')
+    }
+}
 
 export type RegexEngineConfig = {
-    // Custom rules to be added to the regex engine
     custom_rules: RegexRules
 }
 
 export type RegexRules = {
-    // Custom rules to be added to the 'regex' engine of the format custom_rules.<rule_name>.<rule_property_name> = <value> where
-    // <rule_name> is the name you would like to give to your custom rule
-    // Example (in yaml format):
-    //     NoTodoComments:
-    //       regex: /\/\/[ \t]*TODO/gi
-    //       file_extensions: [".cls", ".trigger"]
-    //       description: "Prevents TODO comments from being in Apex code."
-    //       violation: "A comment with a TODO statement was found. Please remove TODO statements from your Apex code."
-    //       severity: "Info"
-    //       tags: ['TechDebt']
     [ruleName: string] : RegexRule
 }
 
 export type RegexRule = {
     // The regular expression that triggers a violation when matched against the contents of a file.
-    regex: RegExp;
+    regex: string;
 
     // The extensions of the files that you would like to test the regular expression against.
     // If not defined, or equal to null, then all text-based files of any file extension will be tested.
@@ -59,8 +54,7 @@ export const REGEX_STRING_PATTERN: RegExp = /^\/(.*)\/(.*)$/;
 export const DEFAULT_TAGS: string[] = ['Recommended'];
 export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate;
 
-export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngineConfig {
-    const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
+export function validateAndNormalizeConfig(valueExtractor: ConfigValueExtractor): RegexEngineConfig {
     const customRulesExtractor: ConfigValueExtractor = valueExtractor.extractObjectAsExtractor('custom_rules');
     const customRules: RegexRules = {};
     for (const ruleName of customRulesExtractor.getKeys()) {
@@ -70,15 +64,15 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
         const ruleExtractor: ConfigValueExtractor = customRulesExtractor.extractRequiredObjectAsExtractor(ruleName);
         const description: string = ruleExtractor.extractRequiredString('description');
         const rawRegexString: string = ruleExtractor.extractRequiredString('regex');
-        const regex: RegExp = validateRegex(rawRegexString, ruleExtractor.getFieldPath('regex'));
+        const regexString: string = validateRegexString(rawRegexString, ruleExtractor.getFieldPath('regex'));
         const rawFileExtensions: string[] | undefined = ruleExtractor.extractArray('file_extensions',
             (element, fieldPath) => ValueValidator.validateString(element, fieldPath, FILE_EXT_PATTERN));
 
         customRules[ruleName] = {
-            regex: regex,
+            regex: regexString,
             description: description,
             violation_message: ruleExtractor.extractString('violation_message',
-                getDefaultRuleViolationMessage(regex, ruleName, description))!,
+                getDefaultRuleViolationMessage(regexString, ruleName, description))!,
             severity: ruleExtractor.extractSeverityLevel('severity', DEFAULT_SEVERITY_LEVEL)!,
             tags: ruleExtractor.extractArray('tags', ValueValidator.validateString, DEFAULT_TAGS)!,
             ...(rawFileExtensions ? { file_extensions: normalizeFileExtensions(rawFileExtensions) } : {}),
@@ -89,29 +83,17 @@ export function validateAndNormalizeConfig(rawConfig: ConfigObject): RegexEngine
     };
 }
 
-function getDefaultRuleViolationMessage(regex: RegExp, ruleName: string, description: string): string {
-    return getMessage('RuleViolationMessage', regex.toString(), ruleName, description)
+function getDefaultRuleViolationMessage(regexString: string, ruleName: string, description: string): string {
+    return getMessage('RuleViolationMessage', regexString, ruleName, description)
 }
 
-function validateRegex(value: string, fieldName: string): RegExp {
-    const match: RegExpMatchArray | null = value.match(REGEX_STRING_PATTERN);
-    if (!match) {
-        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
-            fieldName, REGEX_STRING_PATTERN.toString()));
-    }
-    const pattern: string = match[1];
-    const modifiers: string = match[2];
-
-    if (!modifiers.includes('g')){
-        throw new Error(getMessage('GlobalModifierNotProvided', fieldName, `/${pattern}/g${modifiers}`, value));
-    }
-
+function validateRegexString(value: string, fieldName: string): string {
     try {
-        return new RegExp(pattern, modifiers);
+        return convertToRegex(value).toString();
     } catch (err) {
-        /* istanbul ignore next */
-        const errMsg: string = err instanceof Error ? err.message : String(err);
-        throw new Error(getMessage('InvalidRegex', fieldName, errMsg), {cause: err});
+
+        const errMsg: string = err instanceof Error ? err.message : /* istanbul ignore next */ String(err);
+        throw new Error(getMessage('InvalidConfigurationValueWithReason', fieldName, errMsg), {cause: err});
     }
 }
 

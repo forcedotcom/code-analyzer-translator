@@ -14,6 +14,7 @@ import fs from "node:fs";
 import os from "node:os";
 import {RegexRule, RegexRules} from "./config";
 import {isBinaryFile} from "isbinaryfile";
+import {convertToRegex} from "./utils";
 
 const TEXT_BASED_FILE_EXTS = new Set<string>(
     [
@@ -24,7 +25,8 @@ const TEXT_BASED_FILE_EXTS = new Set<string>(
 
 export class RegexEngine extends Engine {
     static readonly NAME = "regex";
-    readonly regexRules: RegexRules;
+    private readonly regexRules: RegexRules;
+    private readonly regexValues: Map<string, RegExp> = new Map();
     private readonly textFilesCache: Map<string, string[]> = new Map();
     private readonly ruleResourceUrls: Map<string, string[]>;
 
@@ -53,6 +55,13 @@ export class RegexEngine extends Engine {
             }
         }
         return ruleDescriptions;
+    }
+
+    private getRegExpFor(ruleName: string): RegExp {
+        if (!this.regexValues.has(ruleName)) {
+            this.regexValues.set(ruleName, convertToRegex(this.regexRules[ruleName].regex));
+        }
+        return this.regexValues.get(ruleName)!;
     }
 
     private async getTextFiles(workspace: Workspace): Promise<string[]>{
@@ -100,7 +109,7 @@ export class RegexEngine extends Engine {
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
         const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'});
-        const regex: RegExp = this.regexRules[ruleName].regex;
+        const regex: RegExp = this.getRegExpFor(ruleName);
         const newlineIndexes: number[] = getNewlineIndices(fileContents);
 
         for (const match of fileContents.matchAll(regex)) {

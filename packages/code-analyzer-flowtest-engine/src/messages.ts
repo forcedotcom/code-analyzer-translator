@@ -1,8 +1,17 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 
 const MESSAGE_CATALOG: {[key: string]: string} = {
-    CantCreateEngineWithUnknownName:
-        `The FlowTestEnginePlugin does not support creating an engine with name '%s'.`,
+    ConfigOverview:
+        `FLOWTEST ENGINE CONFIGURATION\n` +
+        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+
+    ConfigFieldDescription_python_command:
+        `Indicates the specific Python command to use for the 'flowtest' engine.\n` +
+        `May be provided as the name of a command that exists on the path, or an absolute file path location.\n` +
+        `If unspecified, or specified as null, then an attempt will be made to automatically discover a Python command from your environment.`,
+
+    UnsupportedEngineName:
+        `The FlowTestEnginePlugin does not support an engine with name '%s'.`,
 
     CouldNotParseVersionFromOutput:
         `Could not parse a version number from output of '%s': %s`,

@@ -21,10 +21,6 @@ export class FlowTestEngine extends Engine {
         return FlowTestEngine.NAME;
     }
 
-    getConfig(): FlowTestConfig {
-        return this.config;
-    }
-
     public async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
         const pythonCommand: string = this.config.python_command;

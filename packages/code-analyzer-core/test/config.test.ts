@@ -1,9 +1,10 @@
 import {CodeAnalyzerConfig, SeverityLevel} from "../src";
 import * as os from "node:os";
 import * as path from "node:path";
-import {getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
+import {ConfigDescription, getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import {TOP_LEVEL_CONFIG_DESCRIPTION} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -18,9 +19,9 @@ describe("Tests for creating and accessing configuration values", () => {
         expect(conf.getLogFolder()).toEqual(os.tmpdir());
         expect(conf.getCustomEnginePluginModules()).toEqual([]);
         expect(conf.getRuleOverridesFor("stubEngine1")).toEqual({});
-        expect(conf.getEngineConfigFor("stubEngine1")).toEqual({config_root: DEFAULT_CONFIG_ROOT});
+        expect(conf.getEngineOverridesFor("stubEngine1")).toEqual({});
         expect(conf.getRuleOverridesFor("stubEngine2")).toEqual({});
-        expect(conf.getEngineConfigFor("stubEngine2")).toEqual({config_root: DEFAULT_CONFIG_ROOT});
+        expect(conf.getEngineOverridesFor("stubEngine2")).toEqual({});
     });
 
     it("When configuration file does not exist, then throw an error", () => {
@@ -56,8 +57,8 @@ describe("Tests for creating and accessing configuration values", () => {
                 tags: ['Security', "SomeNewTag"]
             }
         });
-        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({config_root: TEST_DATA_DIR});
-        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({config_root: TEST_DATA_DIR});
+        expect(conf.getEngineOverridesFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({});
     });
 
     it("When case insensitive severity levels are provided, they get correctly mapped to SeverityLevel", () => {
@@ -84,15 +85,14 @@ describe("Tests for creating and accessing configuration values", () => {
                 severity: SeverityLevel.Moderate
             }
         });
-        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({
-            config_root: TEST_DATA_DIR,
+        expect(conf.getEngineOverridesFor('stubEngine1')).toEqual({
             miscSetting1: true,
             miscSetting2: {
                 miscSetting2A: 3,
                 miscSetting2B: ["hello", "world"]
             }
         });
-        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({config_root: TEST_DATA_DIR});
+        expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({});
     });
 
     it("When constructing config from json file then values from file are parsed correctly", () => {
@@ -101,8 +101,8 @@ describe("Tests for creating and accessing configuration values", () => {
         expect(conf.getCustomEnginePluginModules()).toEqual([]);
         expect(conf.getRuleOverridesFor('stubEngine1')).toEqual({});
         expect(conf.getRuleOverridesFor('stubEngine2')).toEqual({});
-        expect(conf.getEngineConfigFor('stubEngine1')).toEqual({config_root: TEST_DATA_DIR});
-        expect(conf.getEngineConfigFor('stubEngine2')).toEqual({config_root: TEST_DATA_DIR, miscSetting: "miscValue"});
+        expect(conf.getEngineOverridesFor('stubEngine1')).toEqual({});
+        expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({miscSetting: "miscValue"});
     });
 
     it("When constructing config from invalid yaml string then we throw an error", () => {
@@ -240,13 +240,17 @@ describe("Tests for creating and accessing configuration values", () => {
 
     it("When supplied config_root path is a relative folder, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({config_root: 'test/test-data'})).toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueMustBeAbsolute',
-                'config_root', 'test/test-data', path.resolve('test','test-data')));
+            getMessage('ConfigPathValueMustBeAbsolute', 'config_root', 'test/test-data', path.resolve('test','test-data')));
     });
 
     it("When engines.stubEngine1.disable_engine is not a boolean, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({engines: {stubEngine1: {disable_engine: 5}}})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 'engines.stubEngine1.disable_engine', 'boolean', 'number'));
+    });
+
+    it("When getConfigDescription is called, then it returns our expected description object", () => {
+        const configDescription: ConfigDescription = CodeAnalyzerConfig.getConfigDescription();
+        expect(configDescription).toEqual(TOP_LEVEL_CONFIG_DESCRIPTION);
     });
 });

@@ -22,7 +22,7 @@ changeWorkingDirectoryToPackageRoot();
 
 const SAMPLE_CUSTOM_RULES: RegexRules = {
     NoTodos: {
-        regex: /TODO:/gi,
+        regex: '/TODO:/gi',
         description: "Detects TODO comments in code base.",
         file_extensions: [".js", ".cls"],
         violation_message: "sample violation message",
@@ -30,7 +30,7 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         tags: DEFAULT_TAGS
     },
     NoHellos: {
-        regex: /hello/gi,
+        regex: '/hello/gi',
         description: "Detects hellos in project.",
         violation_message: "sample violation message",
         severity: DEFAULT_SEVERITY_LEVEL,

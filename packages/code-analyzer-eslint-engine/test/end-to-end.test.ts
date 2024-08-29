@@ -1,5 +1,7 @@
 import {ESLintEnginePlugin} from "../src";
 import {
+    ConfigObject,
+    ConfigValueExtractor,
     Engine,
     EnginePluginV1,
     EngineRunResults,
@@ -24,7 +26,9 @@ describe('End to end test', () => {
         const plugin: EnginePluginV1 = new ESLintEnginePlugin();
         const availableEngineNames: string[] = plugin.getAvailableEngineNames();
         expect(availableEngineNames).toHaveLength(1);
-        const engine: Engine = await plugin.createEngine(availableEngineNames[0], {});
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.eslint');
+        const defaultConfig: ConfigObject = await plugin.createEngineConfig('eslint', configValueExtractor);
+        const engine: Engine = await plugin.createEngine(availableEngineNames[0], defaultConfig);
         const workspace: Workspace = new Workspace([
             path.resolve('test', 'test-data', 'legacyConfigCases', 'workspace_NoCustomConfig')
         ]);

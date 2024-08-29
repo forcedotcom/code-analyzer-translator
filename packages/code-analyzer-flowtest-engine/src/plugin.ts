@@ -1,7 +1,13 @@
-import {ConfigObject, Engine, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
+import {
+    ConfigDescription,
+    ConfigObject,
+    ConfigValueExtractor,
+    Engine,
+    EnginePluginV1
+} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "./engine";
 import {getMessage} from './messages';
-import {validateAndNormalizeConfig} from "./config";
+import {FLOWTEST_ENGINE_CONFIG_DESCRIPTION, FlowTestConfig, validateAndNormalizeConfig} from "./config";
 import {PythonVersionIdentifier, RuntimePythonVersionIdentifier} from "./PythonVersionIdentifier";
 
 
@@ -17,11 +23,24 @@ export class FlowTestEnginePlugin extends EnginePluginV1 {
         return [FlowTestEngine.NAME];
     }
 
-    public async createEngine(engineName: string, rawEngineConfig: ConfigObject): Promise<Engine> {
-        if (engineName !== FlowTestEngine.NAME) {
-            throw new Error(getMessage('CantCreateEngineWithUnknownName', engineName));
-        }
-        return new FlowTestEngine(await validateAndNormalizeConfig(rawEngineConfig, this.pythonVersionIdentifier));
+    describeEngineConfig(engineName: string): ConfigDescription {
+        validateEngineName(engineName);
+        return FLOWTEST_ENGINE_CONFIG_DESCRIPTION;
+    }
+
+    async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+        validateEngineName(engineName);
+        return await validateAndNormalizeConfig(configValueExtractor, this.pythonVersionIdentifier) as ConfigObject;
+    }
+
+    public async createEngine(engineName: string, resolvedConfig: ConfigObject): Promise<Engine> {
+        validateEngineName(engineName);
+        return new FlowTestEngine(resolvedConfig as FlowTestConfig);
     }
 }
 
+function validateEngineName(engineName: string) {
+    if (engineName !== FlowTestEngine.NAME) {
+        throw new Error(getMessage('UnsupportedEngineName', engineName));
+    }
+}

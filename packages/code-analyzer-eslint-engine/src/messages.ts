@@ -1,8 +1,41 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 
 const MESSAGE_CATALOG : { [key: string]: string } = {
-    CantCreateEngineWithUnknownEngineName:
-        `The ESLintEnginePlugin does not support creating an engine with name '%s'.`,
+    ConfigOverview:
+        `ESLINT ENGINE CONFIGURATION\n` +
+        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+
+    ConfigFieldDescription_eslint_config_file:
+        `Your project's main ESLint configuration file. May be an absolute path or a path relative to the config_root.\n` +
+        `If null and auto_discover_eslint_config is true, then Code Analyzer will attempt to discover/apply it automatically.\n` +
+        `Currently only legacy ESLInt config files are supported.\n` +
+        `See https://eslint.org/docs/v8.x/use/configure/configuration-files to learn more.`,
+
+    ConfigFieldDescription_eslint_ignore_file:
+        `Your project's ".eslintignore" file. May be an absolute path or a path relative to the config_root.\n` +
+        `If null and auto_discover_eslint_config is true, then Code Analyzer will attempt to discover/apply it automatically.\n` +
+        `See https://eslint.org/docs/v8.x/use/configure/ignore#the-eslintignore-file to learn more.`,
+
+    ConfigFieldDescription_auto_discover_eslint_config:
+        `Whether to have Code Analyzer automatically discover/apply any ESLint configuration and ignore files from your workspace.`,
+
+    ConfigFieldDescription_disable_javascript_base_config:
+        `Whether to turn off the default base configuration that supplies the standard ESLint rules for javascript files.`,
+
+    ConfigFieldDescription_disable_lwc_base_config:
+        `Whether to turn off the default base configuration that supplies the LWC rules for javascript files.`,
+
+    ConfigFieldDescription_disable_typescript_base_config:
+        `Whether to turn off the default base configuration that supplies the standard rules for typescript files.`,
+
+    ConfigFieldDescription_javascript_file_extensions:
+        `Extensions of the javascript files in your workspace that will be associated with javascript and LWC rules.`,
+
+    ConfigFieldDescription_typescript_file_extensions:
+        `Extensions of the typescript files in your workspace that will be associated with typescript rules.`,
+
+    UnsupportedEngineName:
+        `The ESLintEnginePlugin does not support an engine with name '%s'.`,
 
     InvalidLegacyConfigFileName:
         `The '%s' configuration value was invalid. Expected the file name '%s' to be one of the following: %s`,

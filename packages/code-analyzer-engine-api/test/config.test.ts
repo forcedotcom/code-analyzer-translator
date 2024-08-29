@@ -185,44 +185,15 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(extractor.getKeys()).toEqual(['a', 'b']);
     });
 
-    it("When config_root is not supplied, then extractConfigRoot returns cwd", () => {
+    it("When config root is not supplied, then getConfigRoot returns cwd", () => {
         const config: ConfigObject = {};
         const extractor: ConfigValueExtractor = new ConfigValueExtractor(config);
-        expect(extractor.extractConfigRoot()).toEqual(process.cwd());
+        expect(extractor.getConfigRoot()).toEqual(process.cwd());
     });
 
-    it("When config_root is supplied with valid folder, then extractConfigRoot returns it", () => {
-        const config: ConfigObject = {config_root: __dirname};
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor(config);
-        expect(extractor.extractConfigRoot()).toEqual(__dirname);
-    });
-
-    it("When config_root value is not a string, then extractConfigRoot throws an error", () => {
-        const config: ConfigObject = {config_root: 3};
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor(config, 'thisIsNotUsedForConfigRoot');
-        expect(() => extractor.extractConfigRoot()).toThrow(
-            getMessage('ConfigValueMustBeOfType','config_root', 'string', 'number'));
-    });
-
-    it("When config_root value does not exist, then extractConfigRoot throws an error", () => {
-        const config: ConfigObject = {config_root: path.resolve(__dirname, 'doesNotExist')};
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor(config, 'thisIsNotUsedForConfigRoot');
-        expect(() => extractor.extractConfigRoot()).toThrow(
-            getMessage('ConfigPathValueDoesNotExist','config_root', path.resolve(__dirname, 'doesNotExist')));
-    });
-
-    it("When config_root value is a file, then extractConfigRoot throws an error", () => {
-        const config: ConfigObject = {config_root: path.resolve(__dirname, 'config.test.ts')};
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor(config, 'thisIsNotUsedForConfigRoot');
-        expect(() => extractor.extractConfigRoot()).toThrow(
-            getMessage('ConfigFolderValueMustNotBeFile','config_root', path.resolve(__dirname, 'config.test.ts')));
-    });
-
-    it("When config_root value is a relative folder instead of absolute, then extractConfigRoot throws an error", () => {
-        const config: ConfigObject = {config_root: 'test'};
-        const extractor: ConfigValueExtractor = new ConfigValueExtractor(config, 'thisIsNotUsedForConfigRoot');
-        expect(() => extractor.extractConfigRoot()).toThrow(
-            getMessage('ConfigPathValueMustBeAbsolute','config_root', 'test', path.resolve('test')));
+    it("When config root is supplied with valid folder, then getConfigRoot returns it", () => {
+        const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, '', __dirname);
+        expect(extractor.getConfigRoot()).toEqual(__dirname);
     });
 
     it("When calling extractRequiredBoolean on a field that contains a boolean, then return value", () => {
@@ -492,9 +463,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractRequiredFile on valid file, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data\\sampleWorkspace\\someFile.txt'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFile: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt');
         expect(extractor.extractRequiredFile('some_field')).toEqual(expectedFile);
     });
@@ -506,7 +476,7 @@ describe("Tests for ConfigValueExtractor", () => {
     });
 
     it("When calling extractRequiredFile on a field that is a path that does not exist, then error", () => {
-        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'does.not.exist'});
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 'does.not.exist'}, '', __dirname);
         expect(() => extractor1.extractRequiredFile('some_field1')).toThrow(
             getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'does.not.exist')));
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'does.not.exist'}, 'engines.dummy');
@@ -522,9 +492,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractFile on valid file, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data\\sampleWorkspace\\someFile.txt'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFile: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt');
         expect(extractor.extractFile('some_field')).toEqual(expectedFile);
         expect(extractor.extractFile('some_field', 'someDefault')).toEqual(expectedFile);
@@ -540,7 +509,7 @@ describe("Tests for ConfigValueExtractor", () => {
     });
 
     it("When calling extractFile on a field that is a path that does not exist, then error", () => {
-        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'does.not.exist'});
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 'does.not.exist'}, '', __dirname);
         expect(() => extractor1.extractFile('some_field1')).toThrow(
             getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'does.not.exist')));
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'does.not.exist'}, 'engines.dummy');
@@ -550,9 +519,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractFile on a field that is a folder, then error", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         expect(() => extractor.extractFile('some_field')).toThrow(
             getMessage('ConfigFileValueMustNotBeFolder','engines.dummy.some_field', path.resolve(__dirname, 'test-data')));
     });
@@ -565,18 +533,16 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractRequiredFolder on valid relative folder, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data/sampleWorkspace'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFolder: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace');
         expect(extractor.extractRequiredFolder('some_field')).toEqual(expectedFolder);
     });
 
     it("When calling extractRequiredFolder on valid absolute folder, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: path.resolve(__dirname, 'test-data')
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFolder: string = path.resolve(__dirname, 'test-data');
         expect(extractor.extractRequiredFolder('some_field')).toEqual(expectedFolder);
     });
@@ -591,7 +557,7 @@ describe("Tests for ConfigValueExtractor", () => {
     });
 
     it("When calling extractRequiredFolder on a field that is a path that does not exist, then error", () => {
-        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'doesNotExist'});
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 'doesNotExist'}, '', __dirname);
         expect(() => extractor1.extractRequiredFolder('some_field1')).toThrow(
             getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'doesNotExist')));
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'doesNotExist'}, 'engines.dummy');
@@ -601,9 +567,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractRequiredFolder on a field that is a file, then error", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data/sampleWorkspace/someFile.txt'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         expect(() => extractor.extractRequiredFolder('some_field')).toThrow(
             getMessage('ConfigFolderValueMustNotBeFile','engines.dummy.some_field',
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt')));
@@ -617,9 +582,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractFolder on valid relative folder, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data/sampleWorkspace'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFolder: string = path.resolve(__dirname, 'test-data', 'sampleWorkspace');
         expect(extractor.extractFolder('some_field')).toEqual(expectedFolder);
         expect(extractor.extractFolder('some_field', 'someDefault')).toEqual(expectedFolder);
@@ -627,9 +591,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractFolder on valid absolute folder, then return it as absolute", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: path.resolve(__dirname, 'test-data')
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         const expectedFolder: string = path.resolve(__dirname, 'test-data');
         expect(extractor.extractFolder('some_field')).toEqual(expectedFolder);
         expect(extractor.extractFolder('some_field', 'someDefault')).toEqual(expectedFolder);
@@ -645,7 +608,7 @@ describe("Tests for ConfigValueExtractor", () => {
     });
 
     it("When calling extractFolder on a field that is a path that does not exist, then error", () => {
-        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({config_root: __dirname, some_field1: 'doesNotExist'});
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field1: 'doesNotExist'}, '', __dirname);
         expect(() => extractor1.extractFolder('some_field1')).toThrow(
             getMessage('ConfigPathValueDoesNotExist','some_field1', path.resolve(__dirname, 'doesNotExist')));
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: 'doesNotExist'}, 'engines.dummy');
@@ -655,9 +618,8 @@ describe("Tests for ConfigValueExtractor", () => {
 
     it("When calling extractFolder on a field that is a file, then error", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({
-            config_root: __dirname,
             some_field: 'test-data/sampleWorkspace/someFile.txt'
-        }, 'engines.dummy');
+        }, 'engines.dummy', __dirname);
         expect(() => extractor.extractFolder('some_field')).toThrow(
             getMessage('ConfigFolderValueMustNotBeFile','engines.dummy.some_field',
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt')));

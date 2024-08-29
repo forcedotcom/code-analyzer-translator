@@ -1,6 +1,7 @@
 engines:
   stubEngine1:
     disable_engine: true
+    misc_value: 3
 
   someMiscEngine:
     disable_engine: false
