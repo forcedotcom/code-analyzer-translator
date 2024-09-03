@@ -1,0 +1,8 @@
+<apex:page showHeader="true" sidebar="true" controller="testSELECT">
+    <script>
+      console.log({!Name});
+      console.log({!JSENCODE(Name)});
+      console.log({!HTMLENCODE(Name)});
+      console.log('{!JSENCODE(Name)}');
+    </script>
+</apex:page>
