@@ -10,8 +10,8 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `  Exit code: %d\n` +
         `  StdErr:\n%s`,
 
-    ErrorParsingRuleInfoFile:
-        `An internal error was thrown when trying to read the internal PMD rule info file '%s':\n%s'`
+    ErrorParsingPmdWrapperOutputFile:
+        `An internal error was thrown when trying to read the internal PmdWrapper output file '%s':\n%s'`,
 }
 
 /**

@@ -18,12 +18,14 @@ export async function createTempDir(parentTempDir?: string) : Promise<string> {
 
 export class JavaCommandExecutor {
     private readonly javaCommand: string;
+    private readonly stdoutCallback: (stdOutMsg: string) => void;
 
-    constructor(javaCommand: string = 'java') {
+    constructor(javaCommand: string = 'java', stdoutCallback: (stdOutMsg: string) => void = (_m: string) => {}) {
         this.javaCommand = javaCommand;
+        this.stdoutCallback = stdoutCallback;
     }
 
-    async exec(javaCmdArgs: string[], javaClassPaths: string[] = [], stdoutCallback: (stdOutMsg: string) => void = (_m: string) => {}): Promise<void> {
+    async exec(javaCmdArgs: string[], javaClassPaths: string[] = []): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const stderrMessages: string[] = [];
             const allJavaArgs: string[] = javaClassPaths.length == 0 ? javaCmdArgs :
@@ -33,7 +35,7 @@ export class JavaCommandExecutor {
             javaProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();
                 if(msg.length > 0) { // Not sure why stdout spits out empty lines, but we ignore them nonetheless
-                    stdoutCallback(msg);
+                    this.stdoutCallback(msg);
                 }
             });
             javaProcess.stderr.on('data', (data: Buffer) => {

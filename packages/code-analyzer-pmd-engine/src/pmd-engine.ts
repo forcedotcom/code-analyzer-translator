@@ -9,41 +9,37 @@ import {
     SeverityLevel,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {createTempDir, JavaCommandExecutor} from "./utils";
+import {JavaCommandExecutor} from "./utils";
 import path from "node:path";
-import * as fs from "node:fs";
-import {getMessage} from "./messages";
 import {extensionToPmdLanguage, PmdLanguage} from "./constants";
-
-type PmdRuleInfo = {
-    name: string,
-    language: string,
-    message: string,
-    externalInfoUrl: string,
-    ruleSet: string,
-    priority: string,
-    ruleSetFile: string,
-    class: string
-}
+import {PmdRuleInfo, PmdWrapper} from "./pmd-wrapper";
 
 export class PmdEngine extends Engine {
     static readonly NAME: string = "pmd";
 
-    // TODO: Eventually these will be configurable
-    private readonly availableLanguages: PmdLanguage[] = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE];
+    private readonly pmdWrapper: PmdWrapper;
+    private readonly availableLanguages: PmdLanguage[];
 
-    private pmdRuleInfoCache: Map<string, Map<string, PmdRuleInfo>> = new Map();
+    private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
+    private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
+
+    constructor() {
+        super();
+        const javaCmd: string = 'java'; // TODO: Will be configurable soon
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(javaCmd, stdOutMsg =>
+            this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`));
+        this.pmdWrapper = new PmdWrapper(javaCommandExecutor);
+        this.availableLanguages = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE]; // TODO: Will be configurable soon
+    }
 
     getName(): string {
         return PmdEngine.NAME;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        const pmdRuleMap: Map<string, PmdRuleInfo> = await this.getPmdRuleMap(describeOptions.workspace);
-        const ruleDescriptions: RuleDescription[] = [];
-        for (const pmdRuleInfo of pmdRuleMap.values()) {
-            ruleDescriptions.push(toRuleDescription(pmdRuleInfo));
-        }
+        const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(describeOptions.workspace);
+        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison);
+        const ruleDescriptions: RuleDescription[] = ruleInfoList.map(toRuleDescription);
         return ruleDescriptions.sort((rd1, rd2) => rd1.name.localeCompare(rd2.name));
     }
 
@@ -54,59 +50,23 @@ export class PmdEngine extends Engine {
         };
     }
 
-    private async getPmdRuleMap(workspace?: Workspace): Promise<Map<string, PmdRuleInfo>> {
-        const cacheKey: string = workspace? workspace.getWorkspaceId() : process.cwd();
-        if (this.pmdRuleInfoCache.has(cacheKey)) {
-            return this.pmdRuleInfoCache.get(cacheKey)!;
+    private async getPmdRuleInfoList(workspaceLiaison: PmdWorkspaceLiaison): Promise<PmdRuleInfo[]> {
+        const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
+        if (!this.pmdRuleInfoListCache.has(cacheKey)) {
+            const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
+            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapper.invokeDescribeCommand(relevantLanguages);
+            this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
-
-        const relevantLanguages: PmdLanguage[] = await this.getRelevantLanguages(workspace);
-
-        const tempDir: string = await createTempDir();
-        const pmdRulesFile: string = path.join(tempDir, 'ruleInfo.json');
-        await callPmdWrapperDescribeCommand(pmdRulesFile, relevantLanguages,
-            (msg: string) => this.emitLogEvent(LogLevel.Fine, `[describeRules]: ${msg}`));
-
-        let pmdRuleInfoList: PmdRuleInfo[];
-        try {
-            const pmdRulesFileContents: string = await fs.promises.readFile(pmdRulesFile, 'utf-8');
-            pmdRuleInfoList = JSON.parse(pmdRulesFileContents);
-        } catch (err) /* istanbul ignore next */ {
-            const errMsg: string = err instanceof Error ? err.message : String(err);
-            throw new Error(getMessage('ErrorParsingRuleInfoFile', pmdRulesFile, errMsg), {cause: err});
-        }
-
-        const pmdRuleMap: Map<string, PmdRuleInfo> = new Map();
-        for (const pmdRuleInfo of pmdRuleInfoList) {
-            pmdRuleMap.set(pmdRuleInfo.name, pmdRuleInfo);
-        }
-        this.pmdRuleInfoCache.set(cacheKey, pmdRuleMap);
-        return pmdRuleMap;
+        return this.pmdRuleInfoListCache.get(cacheKey)!;
     }
 
-    private async getRelevantLanguages(workspace?: Workspace): Promise<PmdLanguage[]> {
-        if (!workspace) {
-            return this.availableLanguages;
+    private getPmdWorkspaceLiaison(workspace?: Workspace) : PmdWorkspaceLiaison {
+        const cacheKey: string = getCacheKey(workspace);
+        if (!this.pmdWorkspaceLiaisonCache.has(cacheKey)) {
+            this.pmdWorkspaceLiaisonCache.set(cacheKey, new PmdWorkspaceLiaison(workspace, this.availableLanguages));
         }
-        const relevantLanguagesSet: Set<PmdLanguage> = new Set();
-        for (const file of await workspace.getExpandedFiles()) {
-            const fileExt: string = path.extname(file).toLowerCase();
-            const pmdLang: PmdLanguage | undefined = extensionToPmdLanguage[fileExt];
-            if (pmdLang && this.availableLanguages.includes(pmdLang)) {
-                relevantLanguagesSet.add(extensionToPmdLanguage[fileExt]);
-            }
-        }
-        return [...relevantLanguagesSet].sort();
+        return this.pmdWorkspaceLiaisonCache.get(cacheKey)!
     }
-}
-
-async function callPmdWrapperDescribeCommand(outFile: string, languages: PmdLanguage[], stdoutCallback: (str: string) => void): Promise<void> {
-    const javaClassPaths: string[] = [
-        path.resolve(__dirname, '..', 'dist', 'pmd-wrapper', 'lib', '*'),
-    ];
-    const mainClass: string = "com.salesforce.sfca.pmdwrapper.PmdWrapper";
-    const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(); // TODO: Once java_command is configurable, then pass it in
-    await javaCommandExecutor.exec([mainClass, 'describe', outFile, languages.join(',')], javaClassPaths, stdoutCallback);
 }
 
 function toRuleDescription(pmdRule: PmdRuleInfo): RuleDescription {
@@ -137,4 +97,59 @@ function toSeverityLevel(pmdRulePriority: string): SeverityLevel {
     }
 
     throw new Error("Unsupported priority: " + pmdRulePriority);
+}
+
+// noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
+class PmdWorkspaceLiaison {
+    private readonly workspace?: Workspace;
+    private readonly availableLanguages: PmdLanguage[];
+
+    private relevantLanguages?: PmdLanguage[];
+    private relevantFiles?: string[];
+
+    constructor(workspace: Workspace | undefined, availableLanguages: PmdLanguage[]) {
+        this.workspace = workspace;
+        this.availableLanguages = availableLanguages;
+    }
+
+    getWorkspace(): Workspace | undefined {
+        return this.workspace;
+    }
+
+    async getRelevantFiles(): Promise<string[]> {
+        if (this.relevantFiles === undefined) {
+            await this.processWorkspace();
+        }
+        return this.relevantFiles!;
+    }
+
+    async getRelevantLanguages(): Promise<PmdLanguage[]> {
+        if (this.relevantLanguages === undefined) {
+            await this.processWorkspace();
+        }
+        return this.relevantLanguages!;
+    }
+
+    private async processWorkspace(): Promise<void> {
+        this.relevantFiles = [];
+        if (!this.workspace) {
+            this.relevantLanguages = [... this.availableLanguages].sort();
+            return;
+        }
+
+        const relevantLanguagesSet: Set<PmdLanguage> = new Set();
+        for (const file of await this.workspace.getExpandedFiles()) {
+            const fileExt: string = path.extname(file).toLowerCase();
+            const pmdLang: PmdLanguage | undefined = extensionToPmdLanguage[fileExt];
+            if (pmdLang && this.availableLanguages.includes(pmdLang)) {
+                this.relevantFiles.push(file);
+                relevantLanguagesSet.add(extensionToPmdLanguage[fileExt]);
+            }
+        }
+        this.relevantLanguages = [...relevantLanguagesSet].sort();
+    }
+}
+
+function getCacheKey(workspace?: Workspace) {
+    return workspace? workspace.getWorkspaceId() : process.cwd();
 }
