@@ -22,6 +22,7 @@ repositories {
 dependencies {
     // --- APPLICATION DEPENDENCIES ---------------------------------------------
     implementation(libs.bundles.pmd7)
+    implementation(libs.gson)
     implementation(libs.slf4j.nop) // Note, dots map to dashes. So this maps to libraries > slf4j-nop
 
     // --- TEST ONLY DEPENDENCIES -----------------------------------------------
@@ -31,9 +32,8 @@ dependencies {
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
@@ -80,11 +80,9 @@ tasks.test {
         showStandardStreams = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
-
-    // Report is always generated after other test tasks
-    finalizedBy(tasks.jacocoTestReport);
-    finalizedBy(tasks.jacocoTestCoverageVerification)
 }
+// The jacocoTestReport and jacocoTestCoverageVerification tasks must be run separately from the test task
+// Otherwise, running a single test from the IDE will trigger this verification.
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {

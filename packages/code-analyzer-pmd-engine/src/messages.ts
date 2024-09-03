@@ -1,8 +1,17 @@
 import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 
 const MESSAGE_CATALOG : { [key: string]: string } = {
-    CantCreateEngineWithUnknownEngineName:
-        `The PmdCpdEnginesPlugin does not support creating an engine with name '%s'.`
+    UnsupportedEngineName:
+        `The PmdCpdEnginesPlugin does not support an engine with name '%s'.`,
+
+    JavaCommandError:
+        `The following call to java exited with non-zero exit code.\n` +
+        `  Command: %s\n` +
+        `  Exit code: %d\n` +
+        `  StdErr:\n%s`,
+
+    ErrorParsingRuleInfoFile:
+        `An internal error was thrown when trying to read the internal PMD rule info file '%s':\n%s'`
 }
 
 /**

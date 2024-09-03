@@ -14,7 +14,9 @@
     "types": "dist/index.d.ts",
     "dependencies": {
       "@types/node": "^20.0.0",
-      "@salesforce/code-analyzer-engine-api": "0.10.0"
+      "@salesforce/code-analyzer-engine-api": "0.10.0",
+      "@types/tmp": "^0.2.6",
+      "tmp": "^0.2.3"
     },
     "devDependencies": {
       "@eslint/js": "^8.57.0",
@@ -38,7 +40,7 @@
       "build-java": "sh ./gradlew build -x test",
       "build-typescript": "tsc --build tsconfig.build.json --verbose",
       "build": "npm run build-java && npm run build-typescript",
-      "test-java": "sh ./gradlew test",
+      "test-java": "sh ./gradlew test jacocoTestReport jacocoTestCoverageVerification",
       "test-typescript": "jest --coverage",
       "test": "npm run test-java && npm run test-typescript",
       "lint": "eslint src/**/*.ts",

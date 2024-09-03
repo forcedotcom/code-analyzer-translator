@@ -1,0 +1,44 @@
+[
+  {
+    "name": "VfCsrf",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Avoid calling VF action upon page load",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfcsrf"
+    ]
+  },
+  {
+    "name": "VfHtmlStyleTagXss",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Use correct encoding for expressions within Style tag",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss"
+    ]
+  },
+  {
+    "name": "VfUnescapeEl",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Security",
+      "visualforceLanguage"
+    ],
+    "description": "Avoid unescaped user controlled content in EL",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfunescapeel"
+    ]
+  }
+]
