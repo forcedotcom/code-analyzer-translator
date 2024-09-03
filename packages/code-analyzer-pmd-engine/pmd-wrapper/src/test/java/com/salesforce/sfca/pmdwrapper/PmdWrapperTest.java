@@ -66,7 +66,7 @@ class PmdWrapperTest {
         List<PmdRuleInfo> pmdRuleInfoList = gson.fromJson(fileContents, pmdRuleInfoListType);
 
         // Keeping assertions to a minimal since we will lock in most of the output details in our other tests
-        assertThat(pmdRuleInfoList, hasSize(greaterThan(60))); // Actual amount is 65 but keeping this test flexible
+        assertThat(pmdRuleInfoList, hasSize(greaterThan(60))); // Keeping this test flexible so it doesn't fail on each upgrade
 
         // Assert stdOut contains time arguments and time information (which help us with debugging)
         assertThat(stdOut, allOf(containsString("ARGUMENTS"), containsString("milliseconds")));
