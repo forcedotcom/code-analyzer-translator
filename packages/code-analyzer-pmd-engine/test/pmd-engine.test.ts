@@ -1,5 +1,13 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {EventType, LogEvent, LogLevel, RuleDescription, Workspace} from "@salesforce/code-analyzer-engine-api";
+import {
+    EngineRunResults,
+    EventType,
+    LogEvent,
+    LogLevel,
+    RuleDescription,
+    Violation,
+    Workspace
+} from "@salesforce/code-analyzer-engine-api";
 import {PmdEngine} from "../src/pmd-engine";
 import fs from "node:fs";
 import path from "node:path";
@@ -15,6 +23,7 @@ describe('Tests for the getName method of PmdEngine', () => {
         expect(engine.getName()).toEqual('pmd');
     });
 });
+
 
 describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults without workspace, then apex and visualforce rules are returned', async () => {
@@ -71,3 +80,100 @@ async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescriptio
     expectedRuleDescriptionsJsonString = expectedRuleDescriptionsJsonString.replaceAll('{{PMD_VERSION}}', PMD_VERSION);
     expect(actualRuleDescriptionsJsonString).toEqual(expectedRuleDescriptionsJsonString);
 }
+
+describe('Tests for the runRules method of PmdEngine', () => {
+    const expectedOperationWithLimitsInLoopViolation: Violation = {
+        ruleName: "OperationWithLimitsInLoop",
+        message: 'Avoid operations in loops that may hit governor limits',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'OperationWithLimitsInLoop.cls'),
+                startLine: 4,
+                startColumn: 38,
+                endLine: 4,
+                endColumn: 62
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+
+    const expectedVfUnescapeElViolation1: Violation = {
+        ruleName: "VfUnescapeEl",
+        message: 'Avoid unescaped user controlled content in EL',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
+                startLine: 3,
+                startColumn: 19,
+                endLine: 3,
+                endColumn: 26
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+
+    const expectedVfUnescapeElViolation2: Violation = {
+        ruleName: "VfUnescapeEl",
+        message: 'Avoid unescaped user controlled content in EL',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
+                startLine: 5,
+                startColumn: 19,
+                endLine: 5,
+                endColumn: 38
+            }
+        ],
+        primaryLocationIndex: 0
+    };
+
+    it('When zero rule names are provided then return zero violations', async () => {
+        const engine: PmdEngine = new PmdEngine();
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
+        const results: EngineRunResults = await engine.runRules([], {workspace: workspace});
+        expect(results.violations).toHaveLength(0);
+    });
+
+    it('When workspace contains zero relevant files, then return zero violations', async () => {
+        const engine: PmdEngine = new PmdEngine();
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace', 'dummy.xml')]);
+        const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        expect(results.violations).toHaveLength(0);
+    });
+
+    it('When workspace contains relevant files containing violation, then return violations', async () => {
+        const engine: PmdEngine = new PmdEngine();
+        const logEvents: LogEvent[] = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
+        const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        expect(results.violations).toHaveLength(3);
+        expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
+        expect(results.violations).toContainEqual(expectedVfUnescapeElViolation1);
+        expect(results.violations).toContainEqual(expectedVfUnescapeElViolation2);
+
+        // Also check that we throw error event when PMD can't parse a file
+        const errorLogEvents: LogEvent[] = logEvents.filter(event => event.logLevel === LogLevel.Error);
+        expect(errorLogEvents.length).toBeGreaterThan(0);
+        expect(errorLogEvents[0].message).toMatch(/PMD issued a processing error for file.*dummy/)
+    });
+
+    it('When a single rule is selected, then return only violations for that rule', async () => {
+        const engine: PmdEngine = new PmdEngine();
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
+        const ruleNames: string[] = ['OperationWithLimitsInLoop'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        expect(results.violations).toHaveLength(1);
+        expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
+    });
+
+    it('When selected rules are not violated, then return zero violations', async () => {
+        const engine: PmdEngine = new PmdEngine();
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
+        const ruleNames: string[] = ['WhileLoopsMustUseBraces', 'ExcessiveParameterList', 'VfCsrf'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        expect(results.violations).toHaveLength(0);
+    });
+});

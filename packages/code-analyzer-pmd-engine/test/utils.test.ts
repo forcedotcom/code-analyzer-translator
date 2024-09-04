@@ -6,6 +6,11 @@ describe('Tests for JavaCommandExecutor', () => {
         await expect(javaCommandExecutor.exec(['doesNotExist'])).rejects.toThrow(
             /The following call to java exited with non-zero exit code./);
     });
+
+    it('When a java command is valid, then no error is thrown', async () => {
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor();
+        await expect(javaCommandExecutor.exec(['--version'])).resolves.not.toThrow();
+    });
 });
 
 describe('Test for indent', () => {

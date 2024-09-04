@@ -12,6 +12,9 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     ErrorParsingPmdWrapperOutputFile:
         `An internal error was thrown when trying to read the internal PmdWrapper output file '%s':\n%s'`,
+
+    PmdProcessingErrorForFile:
+        `PMD issued a processing error for file '%s':\n%s`
 }
 
 /**

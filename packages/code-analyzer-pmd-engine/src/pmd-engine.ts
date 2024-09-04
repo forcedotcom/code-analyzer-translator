@@ -1,4 +1,5 @@
 import {
+    CodeLocation,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -7,17 +8,19 @@ import {
     RuleType,
     RunOptions,
     SeverityLevel,
+    Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {JavaCommandExecutor} from "./utils";
+import {indent, JavaCommandExecutor} from "./utils";
 import path from "node:path";
 import {extensionToPmdLanguage, PmdLanguage} from "./constants";
-import {PmdRuleInfo, PmdWrapper} from "./pmd-wrapper";
+import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
+import {getMessage} from "./messages";
 
 export class PmdEngine extends Engine {
     static readonly NAME: string = "pmd";
 
-    private readonly pmdWrapper: PmdWrapper;
+    private readonly pmdWrapperInvoker: PmdWrapperInvoker;
     private readonly availableLanguages: PmdLanguage[];
 
     private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
@@ -28,7 +31,7 @@ export class PmdEngine extends Engine {
         const javaCmd: string = 'java'; // TODO: Will be configurable soon
         const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(javaCmd, stdOutMsg =>
             this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`));
-        this.pmdWrapper = new PmdWrapper(javaCommandExecutor);
+        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor);
         this.availableLanguages = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE]; // TODO: Will be configurable soon
     }
 
@@ -43,10 +46,32 @@ export class PmdEngine extends Engine {
         return ruleDescriptions.sort((rd1, rd2) => rd1.name.localeCompare(rd2.name));
     }
 
-    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
-        this.emitLogEvent(LogLevel.Warn, "The runRules method of the 'pmd' engine has not been implemented yet. Simply returning zero violations for now.");
+    async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
+        const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(runOptions.workspace);
+        const filesToScan: string[] = await workspaceLiaison.getRelevantFiles();
+        if (ruleNames.length === 0 || filesToScan.length === 0) {
+            return {violations: []};
+        }
+        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison);
+        const selectedRuleNames: Set<string> = new Set(ruleNames);
+        const selectedRuleInfoList: PmdRuleInfo[] = ruleInfoList.filter(ruleInfo => selectedRuleNames.has(ruleInfo.name));
+
+        const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan);
+
+        const violations: Violation[] = [];
+        for (const pmdFileResult of pmdResults.files) {
+            for (const pmdViolation of pmdFileResult.violations) {
+                violations.push(toViolation(pmdViolation, pmdFileResult.filename));
+            }
+        }
+
+        for (const pmdProcessingError of pmdResults.processingErrors) {
+            this.emitLogEvent(LogLevel.Error, getMessage('PmdProcessingErrorForFile', pmdProcessingError.filename,
+                indent(pmdProcessingError.message)));
+        }
+
         return {
-            violations: []
+            violations: violations
         };
     }
 
@@ -54,7 +79,7 @@ export class PmdEngine extends Engine {
         const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
             const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
-            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapper.invokeDescribeCommand(relevantLanguages);
+            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;
@@ -97,6 +122,22 @@ function toSeverityLevel(pmdRulePriority: string): SeverityLevel {
     }
 
     throw new Error("Unsupported priority: " + pmdRulePriority);
+}
+
+function toViolation(pmdViolation: PmdViolation, file: string): Violation {
+    const codeLocation: CodeLocation = {
+        file: file,
+        startLine: pmdViolation.beginline,
+        startColumn: pmdViolation.begincolumn,
+        endLine: pmdViolation.endline,
+        endColumn: pmdViolation.endcolumn
+    }
+    return {
+        ruleName: pmdViolation.rule,
+        message: pmdViolation.description,
+        codeLocations: [codeLocation],
+        primaryLocationIndex: 0
+    }
 }
 
 // noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
