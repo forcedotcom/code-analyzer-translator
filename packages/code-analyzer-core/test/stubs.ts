@@ -30,9 +30,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
                 }
             }
         }
-        return {
-            overview: 'OverviewForStub2'
-        }
+        return {}
     }
 
     async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {

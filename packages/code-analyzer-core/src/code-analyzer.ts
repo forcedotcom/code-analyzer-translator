@@ -240,7 +240,7 @@ export class CodeAnalyzer {
 
         try {
             const engineConfigDescription: engApi.ConfigDescription = enginePluginV1.describeEngineConfig(engineName);
-            addDisableEngineFieldDescription(engineConfigDescription, engineName);
+            normalizeEngineConfigDescription(engineConfigDescription, engineName);
             this.engineConfigDescriptions.set(engineName, engineConfigDescription);
         } catch (err) {
             throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
@@ -524,10 +524,15 @@ function isIntegerBetween(value: number, leftBound: number, rightBound: number):
     return value >= leftBound && value <= rightBound && Number.isInteger(value);
 }
 
-function addDisableEngineFieldDescription(engineConfigDescription: ConfigDescription, engineName: string): void {
-    if (!engineConfigDescription.fieldDescriptions) {
-        engineConfigDescription.fieldDescriptions = {};
+function normalizeEngineConfigDescription(engineConfigDescription: ConfigDescription, engineName: string): void {
+    // Every engine config should have an overview, so if missing, then we add in a generic one
+    if (!engineConfigDescription.overview) {
+        engineConfigDescription.overview = getMessage('GenericEngineConfigOverview', engineName.toUpperCase());
     }
-    engineConfigDescription.fieldDescriptions[FIELDS.DISABLE_ENGINE] =
-        getMessage('EngineConfigFieldDescription_disable_engine', engineName);
+
+    // Every engine config should have a disable_engine field which we prefer to be first in the object for display purposes
+    engineConfigDescription.fieldDescriptions = {
+        [FIELDS.DISABLE_ENGINE]: getMessage('EngineConfigFieldDescription_disable_engine', engineName),
+        ... engineConfigDescription.fieldDescriptions
+    }
 }
