@@ -36,6 +36,9 @@ const MESSAGE_CATALOG : MessageCatalog = {
         `  {property_name} is the name of a property that you would like to override.\n` +
         `Each engine may have its own set of properties available to help customize that particular engine's behavior.`,
 
+    GenericEngineConfigOverview:
+        `%s ENGINE CONFIGURATION`,
+
     EngineConfigFieldDescription_disable_engine:
         `Whether to turn off the '%s' engine so that it is not included when running Code Analyzer commands.`,
 

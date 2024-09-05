@@ -176,7 +176,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         });
         const engineConfigDescription2: ConfigDescription = codeAnalyzer.getEngineConfigDescription('stubEngine2');
         expect(engineConfigDescription2).toEqual({
-            overview: "OverviewForStub2",
+            overview: getMessage('GenericEngineConfigOverview', 'STUBENGINE2'),
             fieldDescriptions: {
                 disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine2')
             }
