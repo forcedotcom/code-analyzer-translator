@@ -15,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.Type;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,8 +145,12 @@ class PmdWrapperTest {
                 containsString("\"rule\": \"VfUnescapeEl\"")
         ));
 
-        // Assert stdOut contains time arguments and time information (which help us with debugging)
-        assertThat(stdOut, allOf(containsString("ARGUMENTS"), containsString("milliseconds")));
+        // Assert stdOut contains arguments, progress information, and duration information (which help us with debugging)
+        assertThat(stdOut, allOf(
+                containsString("ARGUMENTS"),
+                containsString("[Progress]1::2"),
+                containsString("[Progress]2::2"),
+                containsString("milliseconds")));
     }
 
 

@@ -3,6 +3,7 @@ import {PmdLanguage} from "./constants";
 import path from "node:path";
 import fs from "node:fs";
 import {getMessage} from "./messages";
+import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 
 const PMD_WRAPPER_JAVA_CLASS: string = "com.salesforce.sfca.pmdwrapper.PmdWrapper";
 const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pmd-wrapper', 'lib');
@@ -43,51 +44,76 @@ export type PmdProcessingError = {
 export class PmdWrapperInvoker {
     private readonly javaCommandExecutor: JavaCommandExecutor;
     private temporaryWorkingDir?: string;
+    private emitLogEvent: (logLevel: LogLevel, message: string) => void;
 
-    constructor(javaCommandExecutor: JavaCommandExecutor) {
-        // const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(); // TODO: Once java_command is configurable, then pass it in
+    constructor(javaCommandExecutor: JavaCommandExecutor, emitLogEvent: (logLevel: LogLevel, message: string) => void) {
         this.javaCommandExecutor = javaCommandExecutor;
+        this.emitLogEvent = emitLogEvent;
     }
 
-    async invokeDescribeCommand(languages: PmdLanguage[]): Promise<PmdRuleInfo[]> {
+    async invokeDescribeCommand(languages: PmdLanguage[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const pmdRulesOutputFile: string = path.join(await this.getTemporaryWorkingDir(), 'ruleInfo.json');
+        emitProgress(10);
 
         const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, languages.join(',')];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
         ];
-        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths);
+        this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
+        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths,
+            (stdOutMsg) => this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`));
+        emitProgress(80);
 
         try {
             const pmdRulesFileContents: string = await fs.promises.readFile(pmdRulesOutputFile, 'utf-8');
-            return JSON.parse(pmdRulesFileContents);
+            emitProgress(90);
+            const pmdRuleInfoList: PmdRuleInfo[] = JSON.parse(pmdRulesFileContents);
+            emitProgress(100);
+            return pmdRuleInfoList;
         } catch (err) /* istanbul ignore next */ {
             const errMsg: string = err instanceof Error ? err.message : String(err);
             throw new Error(getMessage('ErrorParsingPmdWrapperOutputFile', pmdRulesOutputFile, errMsg), {cause: err});
         }
     }
 
-    async invokeRunCommand(pmdRuleInfoList: PmdRuleInfo[], filesToScan: string[]): Promise<PmdResults> {
+    async invokeRunCommand(pmdRuleInfoList: PmdRuleInfo[], filesToScan: string[], emitProgress: (percComplete: number) => void): Promise<PmdResults> {
         const tempDir: string = await this.getTemporaryWorkingDir();
+        emitProgress(2);
 
         const ruleSetFileContents: string = createRuleSetFileContentsFor(pmdRuleInfoList);
         const ruleSetInputFile: string = path.join(tempDir, 'ruleSetInputFile.xml');
         await fs.promises.writeFile(ruleSetInputFile, ruleSetFileContents, 'utf-8');
+        emitProgress(6);
 
         const filesToScanInputFile: string = path.join(tempDir, 'filesToScanInputFile.txt');
         await fs.promises.writeFile(filesToScanInputFile, filesToScan.join('\n'), 'utf-8');
+        emitProgress(10);
 
         const resultsOutputFile: string = path.join(tempDir, 'resultsFile.json');
-
         const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'run', ruleSetInputFile, filesToScanInputFile, resultsOutputFile];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
         ];
-        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths);
+        this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
+        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg: string) => {
+            if (stdOutMsg.startsWith('[Progress]')) {
+                const parts: string[] = stdOutMsg.slice(10).split('::');
+                const numFilesProcessed: number = parseInt(parts[0]);
+                const totalNumFiles: number = parseInt(parts[1]);
+                emitProgress(10 + (80 * numFilesProcessed / totalNumFiles));
+            } else {
+                this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`);
+            }
+        });
 
         try {
             const resultsFileContents: string = await fs.promises.readFile(resultsOutputFile, 'utf-8');
-            return JSON.parse(resultsFileContents);
+            emitProgress(95);
+
+            const pmdResults:PmdResults = JSON.parse(resultsFileContents);
+            emitProgress(100);
+            return pmdResults;
+
         } catch (err) /* istanbul ignore next */ {
             const errMsg: string = err instanceof Error ? err.message : String(err);
             throw new Error(getMessage('ErrorParsingPmdWrapperOutputFile', resultsOutputFile, errMsg), {cause: err});
