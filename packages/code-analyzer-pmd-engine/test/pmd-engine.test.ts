@@ -1,10 +1,12 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
+    DescribeRulesProgressEvent,
     EngineRunResults,
     EventType,
     LogEvent,
     LogLevel,
     RuleDescription,
+    RunRulesProgressEvent,
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
@@ -30,15 +32,21 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const engine: PmdEngine = new PmdEngine();
         const logEvents: LogEvent[] = [];
         engine.onEvent(EventType.LogEvent, (e: LogEvent) => logEvents.push(e));
+        const progressEvents: DescribeRulesProgressEvent[] = [];
+        engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndVisualforce.goldfile.json');
 
-        // Also sanity check that we have fine logs with the argument list and the duration in milliseconds
+        // Also check that we have fine logs with the argument list and the duration in milliseconds
         const fineLogEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Fine);
-        expect(fineLogEvents.length).toBeGreaterThanOrEqual(2);
-        expect(fineLogEvents[0].message).toContain('ARGUMENTS');
-        expect(fineLogEvents[1].message).toContain('milliseconds');
+        expect(fineLogEvents.length).toBeGreaterThanOrEqual(3);
+        expect(fineLogEvents[0].message).toContain('Calling JAVA command with');
+        expect(fineLogEvents[1].message).toContain('ARGUMENTS');
+        expect(fineLogEvents[2].message).toContain('milliseconds');
+
+        // Also check that we have all the correct progress events
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([5, 14, 77, 86, 95, 100]);
 
         // Also sanity check that calling describeRules a second time gives same results (from cache):
         expect(await engine.describeRules({})).toEqual(ruleDescriptions);
@@ -136,19 +144,30 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
     it('When workspace contains zero relevant files, then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine();
+        const progressEvents: RunRulesProgressEvent[] = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
+
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace', 'dummy.xml')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
         expect(results.violations).toHaveLength(0);
+
+        // Also check that we have all the correct progress events
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([2, 100]);
     });
 
     it('When workspace contains relevant files containing violation, then return violations', async () => {
         const engine: PmdEngine = new PmdEngine();
         const logEvents: LogEvent[] = [];
         engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+        const progressEvents: RunRulesProgressEvent[] = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
+
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
         expect(results.violations).toHaveLength(3);
         expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
         expect(results.violations).toContainEqual(expectedVfUnescapeElViolation1);
@@ -157,7 +176,11 @@ describe('Tests for the runRules method of PmdEngine', () => {
         // Also check that we throw error event when PMD can't parse a file
         const errorLogEvents: LogEvent[] = logEvents.filter(event => event.logLevel === LogLevel.Error);
         expect(errorLogEvents.length).toBeGreaterThan(0);
-        expect(errorLogEvents[0].message).toMatch(/PMD issued a processing error for file.*dummy/)
+        expect(errorLogEvents[0].message).toMatch(/PMD issued a processing error for file.*dummy/);
+
+        // Also check that we have all the correct progress events
+        expect(progressEvents.map(e => e.percentComplete)).toEqual(
+            [2, 4, 4.6, 8.8, 9.4, 10, 11.76, 15.28, 18.8, 32.88, 46.96, 61.04, 75.12, 89.2, 93.6, 98, 100]);
     });
 
     it('When a single rule is selected, then return only violations for that rule', async () => {

@@ -29,9 +29,9 @@ export class PmdEngine extends Engine {
     constructor() {
         super();
         const javaCmd: string = 'java'; // TODO: Will be configurable soon
-        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(javaCmd, stdOutMsg =>
-            this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`));
-        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor);
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(javaCmd);
+        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor,
+            (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.availableLanguages = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE]; // TODO: Will be configurable soon
     }
 
@@ -41,22 +41,35 @@ export class PmdEngine extends Engine {
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(describeOptions.workspace);
-        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison);
+        this.emitDescribeRulesProgressEvent(5);
+
+        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
+            (innerPerc: number) => this.emitDescribeRulesProgressEvent(5 + 90*(innerPerc/100))); // 5 to 95%
+
         const ruleDescriptions: RuleDescription[] = ruleInfoList.map(toRuleDescription);
-        return ruleDescriptions.sort((rd1, rd2) => rd1.name.localeCompare(rd2.name));
+        ruleDescriptions.sort((rd1, rd2) => rd1.name.localeCompare(rd2.name));
+        this.emitDescribeRulesProgressEvent(100);
+        return ruleDescriptions;
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(runOptions.workspace);
+        this.emitRunRulesProgressEvent(2);
+
         const filesToScan: string[] = await workspaceLiaison.getRelevantFiles();
         if (ruleNames.length === 0 || filesToScan.length === 0) {
+            this.emitRunRulesProgressEvent(100);
             return {violations: []};
         }
-        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison);
+        this.emitRunRulesProgressEvent(4);
+
+        const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
+            (innerPerc: number) => this.emitRunRulesProgressEvent(4 + 6*(innerPerc/100))); // 4 to 10%
+
         const selectedRuleNames: Set<string> = new Set(ruleNames);
         const selectedRuleInfoList: PmdRuleInfo[] = ruleInfoList.filter(ruleInfo => selectedRuleNames.has(ruleInfo.name));
-
-        const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan);
+        const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan,
+            (innerPerc: number) => this.emitRunRulesProgressEvent(10 + 88*(innerPerc/100))); // 10 to 98%
 
         const violations: Violation[] = [];
         for (const pmdFileResult of pmdResults.files) {
@@ -64,22 +77,22 @@ export class PmdEngine extends Engine {
                 violations.push(toViolation(pmdViolation, pmdFileResult.filename));
             }
         }
-
         for (const pmdProcessingError of pmdResults.processingErrors) {
             this.emitLogEvent(LogLevel.Error, getMessage('PmdProcessingErrorForFile', pmdProcessingError.filename,
                 indent(pmdProcessingError.message)));
         }
 
+        this.emitRunRulesProgressEvent(100);
         return {
             violations: violations
         };
     }
 
-    private async getPmdRuleInfoList(workspaceLiaison: PmdWorkspaceLiaison): Promise<PmdRuleInfo[]> {
+    private async getPmdRuleInfoList(workspaceLiaison: PmdWorkspaceLiaison, emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
             const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
-            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages);
+            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;

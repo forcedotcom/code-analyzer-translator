@@ -15,17 +15,17 @@ export async function createTempDir(parentTempDir?: string) : Promise<string> {
     return tmpDirAsync({dir: parentTempDir, keep: false, unsafeCleanup: true});
 }
 
+type ProcessStdOutFcn = (stdOutMsg: string) => void;
+const NO_OP = () => {};
 
 export class JavaCommandExecutor {
     private readonly javaCommand: string;
-    private readonly stdoutCallback: (stdOutMsg: string) => void;
 
-    constructor(javaCommand: string = 'java', stdoutCallback: (stdOutMsg: string) => void = (_m: string) => {}) {
+    constructor(javaCommand: string = 'java') {
         this.javaCommand = javaCommand;
-        this.stdoutCallback = stdoutCallback;
     }
 
-    async exec(javaCmdArgs: string[], javaClassPaths: string[] = []): Promise<void> {
+    async exec(javaCmdArgs: string[], javaClassPaths: string[] = [], processStdOut: ProcessStdOutFcn = NO_OP): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const stderrMessages: string[] = [];
             const allJavaArgs: string[] = javaClassPaths.length == 0 ? javaCmdArgs :
@@ -35,7 +35,7 @@ export class JavaCommandExecutor {
             javaProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();
                 if(msg.length > 0) { // Not sure why stdout spits out empty lines, but we ignore them nonetheless
-                    this.stdoutCallback(msg);
+                    msg.split("\n").map(line => processStdOut(line));
                 }
             });
             javaProcess.stderr.on('data', (data: Buffer) => {
