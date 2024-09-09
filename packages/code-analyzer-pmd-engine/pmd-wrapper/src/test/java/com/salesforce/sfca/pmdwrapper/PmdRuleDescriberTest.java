@@ -44,7 +44,7 @@ public class PmdRuleDescriberTest {
         // show the diff between actual and expected... thus the loop and conversion to sorted lists:
         assertThat(PmdRuleDescriber.LANGUAGE_TO_STANDARD_RULESETS.keySet(), is(expectedMap.keySet()));
         for (String language: PmdRuleDescriber.LANGUAGE_TO_STANDARD_RULESETS.keySet()) {
-            assertThat(PmdRuleDescriber.LANGUAGE_TO_STANDARD_RULESETS.get(language).stream().sorted().collect(Collectors.toList()),
+            assertThat("For language: " + language, PmdRuleDescriber.LANGUAGE_TO_STANDARD_RULESETS.get(language).stream().sorted().collect(Collectors.toList()),
                     is(expectedMap.get(language).stream().sorted().collect(Collectors.toList())));
         }
     }

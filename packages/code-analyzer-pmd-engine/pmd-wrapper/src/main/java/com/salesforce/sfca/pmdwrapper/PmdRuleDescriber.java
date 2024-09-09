@@ -33,7 +33,8 @@ class PmdRuleDescriber {
             "ecmascript", Set.of(
                     "category/ecmascript/bestpractices.xml",
                     "category/ecmascript/codestyle.xml",
-                    "category/ecmascript/errorprone.xml"
+                    "category/ecmascript/errorprone.xml",
+                    "category/ecmascript/performance.xml"
             ),
             "html", Set.of(
                     "category/html/bestpractices.xml"
