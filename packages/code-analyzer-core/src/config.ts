@@ -45,7 +45,7 @@ type TopLevelConfig = {
     custom_engine_plugin_modules: string[] // INTERNAL USE ONLY
 }
 
-const DEFAULT_CONFIG: TopLevelConfig = {
+export const DEFAULT_CONFIG: TopLevelConfig = {
     config_root: process.cwd(),
     log_folder: os.tmpdir(),
     rules: {},
@@ -67,7 +67,7 @@ export class CodeAnalyzerConfig {
         if (!fs.existsSync(file)) {
             throw new Error(getMessage('ConfigFileDoesNotExist', file));
         }
-        const fileContents: string = fs.readFileSync(file, 'utf8');
+        const fileContents: string = fs.readFileSync(file, 'utf8') || "{}";
 
         const fileExt : string = path.extname(file).toLowerCase();
 
@@ -181,7 +181,10 @@ function parseAndValidate(parseFcn: () => unknown): object {
     } catch (err) {
         throw new Error(getMessage('ConfigContentFailedToParse', (err as Error).message), { cause: err });
     }
-    const dataType: string = data === null ? 'null' : Array.isArray(data) ? 'array' : typeof data;
+    if (data === null) {
+        return {};
+    }
+    const dataType: string = Array.isArray(data) ? 'array' : typeof data;
     if (dataType !== 'object') {
         throw new Error(getMessage('ConfigContentNotAnObject', dataType));
     }
