@@ -67,7 +67,7 @@ export class CodeAnalyzerConfig {
         if (!fs.existsSync(file)) {
             throw new Error(getMessage('ConfigFileDoesNotExist', file));
         }
-        const fileContents: string = fs.readFileSync(file, 'utf8');
+        const fileContents: string = fs.readFileSync(file, 'utf8') || "{}";
 
         const fileExt : string = path.extname(file).toLowerCase();
 

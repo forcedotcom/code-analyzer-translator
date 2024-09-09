@@ -105,6 +105,22 @@ describe("Tests for creating and accessing configuration values", () => {
         expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({miscSetting: "miscValue"});
     });
 
+    it.each([
+        {fileType: 'yaml'},
+        {fileType: 'json'}
+    ])("When constructing config from empty $fileType file, the default config is used", ({fileType}) => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, `sample-config-05.${fileType}`));
+
+        // The config root should default to the config file's parent directory.
+        expect(conf.getConfigRoot()).toEqual(path.join(TEST_DATA_DIR));
+        expect(conf.getLogFolder()).toEqual(os.tmpdir());
+        expect(conf.getCustomEnginePluginModules()).toEqual([]);
+        expect(conf.getRuleOverridesFor("stubEngine1")).toEqual({});
+        expect(conf.getEngineOverridesFor("stubEngine1")).toEqual({});
+        expect(conf.getRuleOverridesFor("stubEngine2")).toEqual({});
+        expect(conf.getEngineOverridesFor("stubEngine2")).toEqual({});
+    });
+
     it("When constructing config from invalid yaml string then we throw an error", () => {
         try {
             CodeAnalyzerConfig.fromYamlString('oops: this: should error');
