@@ -2,7 +2,7 @@ import {SemVer} from 'semver';
 import {ConfigDescription, ConfigValueExtractor} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {FlowTestEngine} from "./engine";
-import {PythonVersionIdentifier} from "./PythonVersionIdentifier";
+import {PythonVersionIdentifier} from "./python/PythonVersionIdentifier";
 
 const MINIMUM_PYTHON_VERSION = '3.10.0';
 export const PYTHON_COMMAND = 'python_command';

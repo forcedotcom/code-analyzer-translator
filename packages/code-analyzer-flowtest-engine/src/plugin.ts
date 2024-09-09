@@ -8,7 +8,7 @@ import {
 import {FlowTestEngine} from "./engine";
 import {getMessage} from './messages';
 import {FLOWTEST_ENGINE_CONFIG_DESCRIPTION, FlowTestConfig, validateAndNormalizeConfig} from "./config";
-import {PythonVersionIdentifier, RuntimePythonVersionIdentifier} from "./PythonVersionIdentifier";
+import {PythonVersionIdentifier, RuntimePythonVersionIdentifier} from "./python/PythonVersionIdentifier";
 
 
 export class FlowTestEnginePlugin extends EnginePluginV1 {
