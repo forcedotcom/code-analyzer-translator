@@ -1,5 +1,5 @@
 // !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
-export const PMD_VERSION: string = '7.4.0';
+export const PMD_VERSION: string = '7.5.0';
 
 // !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
 export enum PmdLanguage {
