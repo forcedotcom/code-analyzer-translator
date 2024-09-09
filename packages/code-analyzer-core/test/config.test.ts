@@ -4,7 +4,7 @@ import * as path from "node:path";
 import {ConfigDescription, getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {TOP_LEVEL_CONFIG_DESCRIPTION} from "../src/config";
+import {TOP_LEVEL_CONFIG_DESCRIPTION, DEFAULT_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -112,13 +112,25 @@ describe("Tests for creating and accessing configuration values", () => {
         const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, `sample-config-05.${fileType}`));
 
         // The config root should default to the config file's parent directory.
-        expect(conf.getConfigRoot()).toEqual(path.join(TEST_DATA_DIR));
-        expect(conf.getLogFolder()).toEqual(os.tmpdir());
-        expect(conf.getCustomEnginePluginModules()).toEqual([]);
-        expect(conf.getRuleOverridesFor("stubEngine1")).toEqual({});
-        expect(conf.getEngineOverridesFor("stubEngine1")).toEqual({});
-        expect(conf.getRuleOverridesFor("stubEngine2")).toEqual({});
-        expect(conf.getEngineOverridesFor("stubEngine2")).toEqual({});
+        const expectedConf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({
+            ...DEFAULT_CONFIG,
+            config_root: TEST_DATA_DIR
+        });
+        expect(conf).toEqual(expectedConf);
+    });
+
+    it.each([
+        {fileType: "yaml"},
+        {fileType: "json"}
+    ])("When constructing config from comment-only $fileType file, the default config is used", ({fileType}) => {
+        const conf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, `sample-config-06.${fileType}`));
+
+        // The config root should default to the config file's parent directory.
+        const expectedConf: CodeAnalyzerConfig = CodeAnalyzerConfig.fromObject({
+            ...DEFAULT_CONFIG,
+            config_root: TEST_DATA_DIR
+        });
+        expect(conf).toEqual(expectedConf);
     });
 
     it("When constructing config from invalid yaml string then we throw an error", () => {
@@ -146,15 +158,11 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When constructing config from yaml string that isn't an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromYamlString("3")).toThrow(
             getMessage('ConfigContentNotAnObject','number'));
-        expect(() => CodeAnalyzerConfig.fromYamlString("null")).toThrow(
-            getMessage('ConfigContentNotAnObject','null'));
     });
 
     it("When constructing config from json string that isn't an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromJsonString("[3,4]")).toThrow(
             getMessage('ConfigContentNotAnObject','array'));
-        expect(() => CodeAnalyzerConfig.fromJsonString("null")).toThrow(
-            getMessage('ConfigContentNotAnObject','null'));
     });
 
     it("When engines value is not an object then we throw an error", () => {
