@@ -2,7 +2,7 @@ import path from 'node:path';
 import {PythonCommandExecutor} from "./PythonCommandExecutor";
 
 const PATH_TO_MODULE = path.resolve(__dirname, '..', '..', 'flowtest');
-const PATH_TO_LIB = path.resolve(__dirname, '..', '..', 'flowtest', 'lib');
+const PATH_TO_DEPS = path.resolve(__dirname, '..', '..', 'flowtest', 'deps');
 
 
 export class FlowTestWrapper {
@@ -23,7 +23,7 @@ export class FlowTestWrapper {
     }
 
     public async runPythonVersion(): Promise<string> {
-        const pythonPaths = [PATH_TO_MODULE, PATH_TO_LIB];
+        const pythonPaths = [PATH_TO_MODULE, PATH_TO_DEPS];
 
         const args: string[] = ['--version'];
 
@@ -37,7 +37,7 @@ export class FlowTestWrapper {
     }
 
     public async runPythonInfoScript(): Promise<string> {
-        const pythonPaths = [PATH_TO_MODULE, PATH_TO_LIB];
+        const pythonPaths = [PATH_TO_MODULE, PATH_TO_DEPS];
         const args: string[] = [path.resolve(__dirname, '..', '..', 'pyinfo.py')];
 
         let res = '';
@@ -50,7 +50,7 @@ export class FlowTestWrapper {
     }
 
     public async runFlowTestHelpCommand(): Promise<string> {
-        const pythonPaths = [PATH_TO_MODULE, PATH_TO_LIB];
+        const pythonPaths = [PATH_TO_MODULE, PATH_TO_DEPS];
 
         const args: string[] = ['-m', 'flowtest', '-h'];
 
