@@ -1,0 +1,13 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "shared__c",
+                "referenceId": "shared__cRef1"
+            },
+            "Name": "my name",
+            "private_field__c": "data in private field",
+            "public_field__c": "data in public field"
+        }
+    ]
+}

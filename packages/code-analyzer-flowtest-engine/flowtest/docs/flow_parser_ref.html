@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Flow Parser &#8212; Flowtest 0.6.9-ALPHA documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=94a554c0" />
+    <script src="_static/documentation_options.js?v=c96d704d"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Public Module" href="public_ref.html" />
+    <link rel="prev" title="Queries" href="queries_ref.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="index.html" title="Go to homepage">Flowtest 0.6.9-ALPHA documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Problem Addressed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#how-it-works">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init_flow.html">Flowtest Internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="queries_ref.html">Queries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="public_ref.html">Public API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="flowtest_ref.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">return to top</a></li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="queries_ref.html"
+                          title="previous chapter">Queries</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="public_ref.html"
+                          title="next chapter">Public Module</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-flow_parser.parse">
+<span id="flow-parser"></span><h1>Flow Parser<a class="headerlink" href="#module-flow_parser.parse" title="Link to this heading">¶</a></h1>
+<p>Module for xml parsing of flow global attributes</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="flow_parser.parse.NS_LEN">
+<span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">NS_LEN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">41</span></em><a class="headerlink" href="#flow_parser.parse.NS_LEN" title="Link to this definition">¶</a></dt>
+<dd><p>length of namespace for text munging</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><a class="headerlink" href="#flow_parser.parse.Parser" title="Link to this definition">¶</a></dt>
+<dd><p>API for parsing global lexical attributes of flow xml files.</p>
+<p>Parser instances do not contain any branch-dependent data. In particular
+when a variable is seen by the parser, that does not mean it has been
+initialized or added to the influence map. Parser initialization must
+precede Frame, State, and Crawler initialization.</p>
+<p>Parsers should not have any data modified after initialization except
+new member resolutions (e.g. Account.foo where ‘foo’ is new).</p>
+<p>Parsers should always be built with the <code class="xref py py-meth docutils literal notranslate"><span class="pre">Parser.from_file()</span></code> class method
+except for testing where from_string can be used, but then be sure to provide
+a dummy filename.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.all_named_elems">
+<span class="sig-name descname"><span class="pre">all_named_elems</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code><span class="pre">]]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.all_named_elems" title="Link to this definition">¶</a></dt>
+<dd><p>frozen set of all elements that have a child of &lt;name&gt; and are thus flow globals</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.declared_run_mode">
+<span class="sig-name descname"><span class="pre">declared_run_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="public_ref.html#public.enums.RunMode" title="public.enums.RunMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunMode</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.declared_run_mode" title="Link to this definition">¶</a></dt>
+<dd><p>run mode as declared in flow xml</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.effective_run_mode">
+<span class="sig-name descname"><span class="pre">effective_run_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="public_ref.html#public.enums.RunMode" title="public.enums.RunMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunMode</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.effective_run_mode" title="Link to this definition">¶</a></dt>
+<dd><p>effective run mode taking inheritance into account</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.flow_path">
+<span class="sig-name descname"><span class="pre">flow_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.flow_path" title="Link to this definition">¶</a></dt>
+<dd><p>current filepath of flow</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.flow_type">
+<span class="sig-name descname"><span class="pre">flow_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><a class="reference internal" href="public_ref.html#public.enums.FlowType" title="public.enums.FlowType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowType</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.flow_type" title="Link to this definition">¶</a></dt>
+<dd><p>is this a screen or auto-launched flow</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_all_indirect_tuples">
+<span class="sig-name descname"><span class="pre">get_all_indirect_tuples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_all_indirect_tuples" title="Link to this definition">¶</a></dt>
+<dd><p>returns a list of tuples of all indirect references, e.g.
+str, elem, where str influences elem.
+The elem is a formula or template element and
+str is an extracted merge-field from the elem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_all_traversable_flow_elements">
+<span class="sig-name descname"><span class="pre">get_all_traversable_flow_elements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_all_traversable_flow_elements" title="Link to this definition">¶</a></dt>
+<dd><p>ignore start</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[&lt;class ‘lxml.etree._Element’&gt;]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_by_name">
+<span class="sig-name descname"><span class="pre">get_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_to_match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>returns the first elem with the given name that is a child of the scope element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>name_to_match</strong> (<em>str</em>) – </p></li>
+<li><p><strong>scope</strong> (<em>_Element</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_flow_name">
+<span class="sig-name descname"><span class="pre">get_flow_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_flow_name" title="Link to this definition">¶</a></dt>
+<dd><p>we assume there is always a flow label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_flow_type">
+<span class="sig-name descname"><span class="pre">get_flow_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_flow_type" title="Link to this definition">¶</a></dt>
+<dd><p>Returns type of flow</p>
+<p>If the flow_type member attribute is not set, it is determined,
+set and returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="public_ref.html#public.enums.FlowType" title="public.enums.FlowType"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowType</span></code></a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FlowType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_formulas">
+<span class="sig-name descname"><span class="pre">get_formulas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_formulas" title="Link to this definition">¶</a></dt>
+<dd><p>Grabs all formula elements.
+Returns empty list if none found</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[&lt;class ‘lxml.etree._Element’&gt;]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_input_field_elems">
+<span class="sig-name descname"><span class="pre">get_input_field_elems</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_input_field_elems" title="Link to this definition">¶</a></dt>
+<dd><p>Named XML elements that are children of Screen Flow Input Text Elements
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code>]]</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only returns variables from current flow</p>
+</div>
+<p>Returns: None if none present in flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set[<em>_Element</em>] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_input_output_elems">
+<span class="sig-name descname"><span class="pre">get_input_output_elems</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_input_output_elems" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{&lt;class ‘str’&gt;: set[lxml.etree._Element]}</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns::</dt><dd><p>{“input”: input variable elements,
+“output”: output variable elements }</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_input_variables">
+<span class="sig-name descname"><span class="pre">get_input_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_input_variables" title="Link to this definition">¶</a></dt>
+<dd><p>Get Flow variables available for input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{(&lt;class ‘str’&gt;, &lt;class ‘str’&gt;)}</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>path</strong> (<em>str</em><em> | </em><em>None</em>) – </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: (filename, element_name) corresponding to all variables available for input</dt><dd><p>or None if none found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_run_mode">
+<span class="sig-name descname"><span class="pre">get_run_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_run_mode" title="Link to this definition">¶</a></dt>
+<dd><p>Get effective context of flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="public_ref.html#public.enums.RunMode" title="public.enums.RunMode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunMode</span></code></a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RunMode public enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_start_elem">
+<span class="sig-name descname"><span class="pre">get_start_elem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_start_elem" title="Link to this definition">¶</a></dt>
+<dd><p>Get first element of flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>&lt;start&gt; element or element pointed to in &lt;startElementReference&gt;</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.get_templates">
+<span class="sig-name descname"><span class="pre">get_templates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.get_templates" title="Link to this definition">¶</a></dt>
+<dd><p>Grabs all template elements.
+Returns empty list if none found</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[&lt;class ‘lxml.etree._Element’&gt;]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.input_variables">
+<span class="sig-name descname"><span class="pre">input_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.input_variables" title="Link to this definition">¶</a></dt>
+<dd><p>variables marked ‘available for input’, as a pair (flow_path, name)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.literal_var">
+<span class="sig-name descname"><span class="pre">literal_var</span></span><a class="headerlink" href="#flow_parser.parse.Parser.literal_var" title="Link to this definition">¶</a></dt>
+<dd><p>for marking string literals</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.output_variables">
+<span class="sig-name descname"><span class="pre">output_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><a class="headerlink" href="#flow_parser.parse.Parser.output_variables" title="Link to this definition">¶</a></dt>
+<dd><p>variables marked ‘available for output’, as a tuple (flow_path, name)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.resolve_by_name">
+<span class="sig-name descname"><span class="pre">resolve_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.resolve_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Resolves name to variable, property, VariableType.</p>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Account_var.Name&quot;</span> <span class="o">--&gt;</span> <span class="p">(</span><span class="s2">&quot;Account_var&quot;</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="n">VariableType</span><span class="p">)</span>
+<span class="s2">&quot;account_var&quot;</span> <span class="o">--&gt;</span> <span class="p">(</span><span class="n">account_var</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">VariableType</span><span class="p">)</span><span class="o">.</span>
+<span class="p">(</span><span class="n">my_subflow</span><span class="o">.</span><span class="n">account</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="p">(</span><span class="n">my_subflow</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">Name</span><span class="p">,</span> <span class="n">VarType</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – raw name as it is used in the flow xml file (e.g. foo.bar.baz)</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>None</em>) – filename in which to resolve</p></li>
+<li><p><strong>strict</strong> (<em>bool</em>) – whether to fail hard or guess</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if the name cannot be resolved,
+else the triple (parent name, member, type)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str, str, <a class="reference internal" href="public_ref.html#public.data_obj.VariableType" title="public.data_obj.VariableType">VariableType</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.root">
+<span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></em><a class="headerlink" href="#flow_parser.parse.Parser.root" title="Link to this definition">¶</a></dt>
+<dd><p>XMl root of a single flow</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="flow_parser.parse.Parser.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.Parser.update" title="Link to this definition">¶</a></dt>
+<dd><p>Parse flow root and populate default values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#flow_parser.parse.Parser" title="flow_parser.parse.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>old_parser</strong> (<a class="reference internal" href="#flow_parser.parse.Parser" title="flow_parser.parse.Parser"><em>Parser</em></a>) – when updating a new parser from an old, to copy over elements
+and update run-mode</p></li>
+<li><p><strong>is_return</strong> – are we returning from a function call?</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flow_parser.parse.build_vartype_from_elem">
+<span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">build_vartype_from_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.build_vartype_from_elem" title="Link to this definition">¶</a></dt>
+<dd><p>Build VariableType from XML Element</p>
+<p>The purpose of this function is to assign types to named
+flow elements, in order to assist in object resolution
+and type analysis.</p>
+<p>We are primarily interested in variable names and flow element names
+that can represent variables (via auto-naming conventions).
+Do not add flow elements that can’t be used to resolve variable
+names – e.g. if an element has an explicit outputAssignment,
+then you cannot refer to the output of the flow element by the
+element name, and therefore should not attempt to create a
+variable from this flow element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elem</strong> (<em>ET._Elem</em>) – must be a <em>named</em> Flow element (e.g. an element with a &lt;name&gt; tag that
+is a child of the element root)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>VariableType instance containing type information for the element or None
+If the element is not a named Flow element or is unknown to the parser.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="public_ref.html#public.data_obj.VariableType" title="public.data_obj.VariableType">VariableType</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="flow_parser.parse.get_root">
+<span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">get_root</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flow_parser.parse.get_root" title="Link to this definition">¶</a></dt>
+<dd><p>Get flow root</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>path</strong> (<em>str</em>) – path of xml file to load</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the root of the xml file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="flow_parser.parse.logger">
+<span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Logger</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">flow_parser.parse</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#flow_parser.parse.logger" title="Link to this definition">¶</a></dt>
+<dd><p>logger instance</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="flow_parser.parse.ns">
+<span class="sig-prename descclassname"><span class="pre">flow_parser.parse.</span></span><span class="sig-name descname"><span class="pre">ns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'{http://soap.sforce.com/2006/04/metadata}'</span></em><a class="headerlink" href="#flow_parser.parse.ns" title="Link to this definition">¶</a></dt>
+<dd><p>hardcoded sfdc metadata namespace</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+        <div id="show_right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents<span></a></p>
+        </div>
+
+        <div id="right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:<span></a></p>
+            <div class="page_toc">
+                <ul>
+<li><a class="reference internal" href="#">Flow Parser</a><ul>
+<li><a class="reference internal" href="#flow_parser.parse.NS_LEN"><code class="docutils literal notranslate"><span class="pre">NS_LEN</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.__init__"><code class="docutils literal notranslate"><span class="pre">Parser.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.all_named_elems"><code class="docutils literal notranslate"><span class="pre">Parser.all_named_elems</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.declared_run_mode"><code class="docutils literal notranslate"><span class="pre">Parser.declared_run_mode</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.effective_run_mode"><code class="docutils literal notranslate"><span class="pre">Parser.effective_run_mode</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.flow_path"><code class="docutils literal notranslate"><span class="pre">Parser.flow_path</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.flow_type"><code class="docutils literal notranslate"><span class="pre">Parser.flow_type</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_all_indirect_tuples"><code class="docutils literal notranslate"><span class="pre">Parser.get_all_indirect_tuples()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_all_traversable_flow_elements"><code class="docutils literal notranslate"><span class="pre">Parser.get_all_traversable_flow_elements()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_by_name"><code class="docutils literal notranslate"><span class="pre">Parser.get_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_flow_name"><code class="docutils literal notranslate"><span class="pre">Parser.get_flow_name()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_flow_type"><code class="docutils literal notranslate"><span class="pre">Parser.get_flow_type()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_formulas"><code class="docutils literal notranslate"><span class="pre">Parser.get_formulas()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_input_field_elems"><code class="docutils literal notranslate"><span class="pre">Parser.get_input_field_elems()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_input_output_elems"><code class="docutils literal notranslate"><span class="pre">Parser.get_input_output_elems()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_input_variables"><code class="docutils literal notranslate"><span class="pre">Parser.get_input_variables()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_run_mode"><code class="docutils literal notranslate"><span class="pre">Parser.get_run_mode()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_start_elem"><code class="docutils literal notranslate"><span class="pre">Parser.get_start_elem()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.get_templates"><code class="docutils literal notranslate"><span class="pre">Parser.get_templates()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.input_variables"><code class="docutils literal notranslate"><span class="pre">Parser.input_variables</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.literal_var"><code class="docutils literal notranslate"><span class="pre">Parser.literal_var</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.output_variables"><code class="docutils literal notranslate"><span class="pre">Parser.output_variables</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.resolve_by_name"><code class="docutils literal notranslate"><span class="pre">Parser.resolve_by_name()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.root"><code class="docutils literal notranslate"><span class="pre">Parser.root</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.Parser.update"><code class="docutils literal notranslate"><span class="pre">Parser.update()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flow_parser.parse.build_vartype_from_elem"><code class="docutils literal notranslate"><span class="pre">build_vartype_from_elem()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.get_root"><code class="docutils literal notranslate"><span class="pre">get_root()</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li><a class="reference internal" href="#flow_parser.parse.ns"><code class="docutils literal notranslate"><span class="pre">ns</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+        </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+                <a href="queries_ref.html">
+                    <span class="icon">&lt;</span><span>Queries</span></a>
+                
+            </div>
+
+            <div class="right">
+                
+                    <a href="public_ref.html"><span>Public Module</span><span class="icon">&gt;</span></a>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+[
+    {
+        "sobject": "not_shared__c",
+        "saveRefs": true,
+        "resolveRefs": false,
+        "files": [
+            "export_not_shared-not_shared__cs.json"
+        ]
+    }
+]

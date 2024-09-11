@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <assignments>
+        <description>Do some work with the scanned value, like query records, or show to a form, etc.</description>
+        <name>Barcode_Scan_Next_Steps</name>
+        <label>Replace with Next Steps to use Barcode Scan Value</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>Barcode_Scanner.barcodeScanResult</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+    </assignments>
+    <description>Use this template to build a Barcode Scan flow.</description>
+    <environments>Default</environments>
+    <interviewLabel>Barcode Scan Template {!$Flow.CurrentDateTime}</interviewLabel>
+    <isTemplate>true</isTemplate>
+    <label>Barcode Scan Template</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <name>Barcode_Scan_Screen</name>
+        <label>Barcode Scan Screen</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Barcode_Scan_Next_Steps</targetReference>
+        </connector>
+        <fields>
+            <name>Barcode_Scanner</name>
+            <extensionName>barcodescanner:barcodeScanner</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Barcode_Scan_Screen</targetReference>
+        </connector>
+    </start>
+    <status>Obsolete</status>
+</Flow>

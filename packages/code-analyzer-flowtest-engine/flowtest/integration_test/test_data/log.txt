@@ -1,0 +1,5189 @@
+logfile is .flowtest_log_8cd9e9a5.log
+scanning the single flow: corpus/appointed/src1/flows/Onboarding_Flow-8.flow
+scanning corpus/appointed/src1/flows/Onboarding_Flow-8.flow...
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+	processing subflow /Users/rsussland/dev/git/FlowSecurityLinter/integration_test/test_data/corpus/appointed/src1/flows/Second_flow-7.flow.. 
+		inputs {
+  "CheckFri->CheckFri": null
+}
+{
+  "CheckMon->CheckMon": null
+}
+{
+  "CheckPhone->CheckPhone": null
+}
+{
+  "CheckPhysical->CheckPhysical": null
+}
+{
+  "CheckSat->CheckSat": null
+}
+{
+  "CheckSun->CheckSun": null
+}
+{
+  "CheckThu->CheckThu": null
+}
+{
+  "CheckTue->CheckTue": null
+}
+{
+  "CheckVirtual->CheckVirtual": null
+}
+{
+  "CheckWed->CheckWed": null
+}
+{
+  "Contact2->Contact2": null
+}
+{
+  "VarEndTime->VarEndTime": null
+}
+{
+  "VarHalfhourmeetingID->VarHalfhourmeetingID": null
+}
+{
+  "VarOnehourmeetingID->VarOnehourmeetingID": null
+}
+{
+  "VarPhoneLocationID->VarPhoneLocationID": null
+}
+{
+  "VarPhysicalLocationID->VarPhysicalLocationID": null
+}
+{
+  "VarQuickCatchupID->VarQuickCatchupID": null
+}
+{
+  "VarResourceID->VarResourceID": null
+}
+{
+  "VarServiceCategoryID->VarServiceCategoryID": null
+}
+{
+  "VarStartTime->VarStartTime": null
+}
+{
+  "VarVirtualLocation->VarVirtualLocation": null
+}
+scanning complete.
+html result file written to report.html

@@ -1,0 +1,2851 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>55.0</apiVersion>
+    <decisions>
+        <description>Has the user chosen to Create and Complete the meeting in one process?</description>
+        <name>Create_and_Complete_Meeting</name>
+        <label>Create and Complete Meeting?</label>
+        <locationX>336</locationX>
+        <locationY>3038</locationY>
+        <defaultConnector>
+            <targetReference>Update_Next_Scheduled_Meeting</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Create_Complete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>MeetingCompleted.value</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CompleteMeeting</targetReference>
+            </connector>
+            <label>Create &amp; Complete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Has the user chosen to Create and Complete the meeting in one process?</description>
+        <name>Create_and_Complete_Meeting_0</name>
+        <label>Create and Complete Meeting?</label>
+        <locationX>1172</locationX>
+        <locationY>3038</locationY>
+        <defaultConnector>
+            <targetReference>Update_Next_Scheduled_Meeting_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Create_Complete_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>MeetingCompleted_0.value</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CompleteMeeting_0</targetReference>
+            </connector>
+            <label>Create &amp; Complete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only create an event for Meetings if the CMDT for creating events is set to TRUE under MEETabl General Settings</description>
+        <name>Create_Event</name>
+        <label>Create Event</label>
+        <locationX>336</locationX>
+        <locationY>2246</locationY>
+        <defaultConnector>
+            <targetReference>Create_and_Complete_Meeting</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Event</defaultConnectorLabel>
+        <rules>
+            <name>Event</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting_Event</targetReference>
+            </connector>
+            <label>Event</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only create an event for Meetings if the CMDT for creating events is set to TRUE under MEETabl General Settings</description>
+        <name>Create_Event_0</name>
+        <label>Create Event</label>
+        <locationX>1172</locationX>
+        <locationY>2246</locationY>
+        <defaultConnector>
+            <targetReference>Create_and_Complete_Meeting_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Event</defaultConnectorLabel>
+        <rules>
+            <name>Event_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting_Event_0</targetReference>
+            </connector>
+            <label>Event</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Is the contact to be invited to the meeting and receive an email invitation?</description>
+        <name>Invite_Contact_to_Event</name>
+        <label>Invite Contact to Event</label>
+        <locationX>182</locationX>
+        <locationY>2486</locationY>
+        <defaultConnector>
+            <targetReference>Create_and_Complete_Meeting</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Invite</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Invite_Contact</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Event_Relation</targetReference>
+            </connector>
+            <label>Invite</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Is the contact to be invited to the meeting and receive an email invitation?</description>
+        <name>Invite_Contact_to_Event_0</name>
+        <label>Invite Contact to Event</label>
+        <locationX>1018</locationX>
+        <locationY>2486</locationY>
+        <defaultConnector>
+            <targetReference>Create_and_Complete_Meeting_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Invite_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Invite_Contact_0</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Event_Relation_0</targetReference>
+            </connector>
+            <label>Invite</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Determines whether a Meeting Cadence record was found for the business unit, and if so, progress through to creating a Meeting record, otherwise provide an error message to the user</description>
+        <name>Meeting_Business_Unit_Cadence_Record_Found</name>
+        <label>Meeting Business Unit Cadence Record Found?</label>
+        <locationX>1172</locationX>
+        <locationY>1214</locationY>
+        <defaultConnector>
+            <targetReference>No_Business_Unit_Meeting_Cadence_Found</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Meeting Cadence</defaultConnectorLabel>
+        <rules>
+            <name>No_Business_Unit_on_User</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_User_Record_Data.Business_Unit__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Cannot_Create_Meeting_against_Account_0</targetReference>
+            </connector>
+            <label>No Business Unit on User</label>
+        </rules>
+        <rules>
+            <name>Business_Unit_Meeting_Cadence_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Meeting_Cadence_Business_Unit_Record_Data</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting_0</targetReference>
+            </connector>
+            <label>Meeting Cadence Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Determines whether a Meeting Cadence record was found for the user and Account/Contact, and if so, progress through to creating a Meeting record, otherwise provide an error message to the user</description>
+        <name>Meeting_Cadence_User_Record_Found</name>
+        <label>Meeting Cadence User Record Found?</label>
+        <locationX>336</locationX>
+        <locationY>1214</locationY>
+        <defaultConnector>
+            <targetReference>No_User_Meeting_Cadence_Found</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Meeting Cadence</defaultConnectorLabel>
+        <rules>
+            <name>User_Meeting_Cadence_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Meeting_Cadence_User_Record_Data</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting</targetReference>
+            </connector>
+            <label>Meeting Cadence Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Evaluates which object type the Meeting is being raises from so it knows the value in the MeetingMasterRecordID variable</description>
+        <name>Meeting_Master_Record</name>
+        <label>Meeting Master Record</label>
+        <locationX>1458</locationX>
+        <locationY>1454</locationY>
+        <defaultConnector>
+            <targetReference>Create_Meeting_Cadence_for_Business_Unit_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Account</defaultConnectorLabel>
+        <rules>
+            <name>Contact_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contact</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting_Cadence_for_Business_Unit</targetReference>
+            </connector>
+            <label>Contact</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Evaluates which object type the Meeting is being raises from so it knows the value in the MeetingMasterRecordID variable</description>
+        <name>Meeting_Master_Record_0</name>
+        <label>Meeting Master Record</label>
+        <locationX>490</locationX>
+        <locationY>1454</locationY>
+        <defaultConnector>
+            <targetReference>Create_Meeting_Cadence_for_User_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Account</defaultConnectorLabel>
+        <rules>
+            <name>Contact_0_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contact</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Meeting_Cadence_for_User</targetReference>
+            </connector>
+            <label>Contact</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>What record has this process been triggered from?</description>
+        <name>Triggering_record</name>
+        <label>Triggering record?</label>
+        <locationX>1095</locationX>
+        <locationY>518</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Account_Record_but_Contact_Master</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contact</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>001</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Cannot_Create_Meeting_against_Account</targetReference>
+            </connector>
+            <label>Account Record but Contact Master</label>
+        </rules>
+        <rules>
+            <name>Contact_Record_but_Account_Master</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Account</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>003</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Cannot_Create_Meeting_against_Contact</targetReference>
+            </connector>
+            <label>Contact Record but Account Master</label>
+        </rules>
+        <rules>
+            <name>Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>001</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Account_Record_Data</targetReference>
+            </connector>
+            <label>Account</label>
+        </rules>
+        <rules>
+            <name>Contact</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>003</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contact_Record_Data</targetReference>
+            </connector>
+            <label>Contact</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Defines the type of cadence to find based on the custom setting. The cadence will either relate to the User, Business Unit or Product Lines</description>
+        <name>Type_of_Cadence_to_Search_For</name>
+        <label>Type of Cadence to Search For</label>
+        <locationX>1095</locationX>
+        <locationY>974</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>User</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Meetings_Assigned_To__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>User</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Meeting_Cadence_User_Record_Data</targetReference>
+            </connector>
+            <label>User</label>
+        </rules>
+        <rules>
+            <name>Business_Unit</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Meetings_Assigned_To__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Business Unit</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Meeting_Cadence_Business_Unit_Record_Data</targetReference>
+            </connector>
+            <label>Business Unit</label>
+        </rules>
+    </decisions>
+    <description>Salesforce screen flow to create a Meeting record on an Account or Contact record. The flow is triggered by a record action on the Account or Contact record. The Meeting is attached to the record corresponding Meeting Cadence based on defined configurations.</description>
+    <dynamicChoiceSets>
+        <description>List of Contacts related to the Account selected. Used when Account is Meeting Master.</description>
+        <name>AccountContactRecords</name>
+        <dataType>String</dataType>
+        <displayField>Name</displayField>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <outputAssignments>
+            <assignToReference>AccountContactId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>ContactMobilePhone</assignToReference>
+            <field>MobilePhone</field>
+        </outputAssignments>
+        <sortField>Name</sortField>
+        <sortOrder>Desc</sortOrder>
+        <valueField>Id</valueField>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Duration_minutes__c field from the Meeting__c object used to calculate End Date/Time of the Meeting by adding to the Start Date/Time</description>
+        <name>Meeting_Duration</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Duration_Minutes__c</picklistField>
+        <picklistObject>Meeting__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Purpose_of_Meeting__c field from the Meeting__c object to define why the Meeting is taking place. Chosen values in CMDT are used when calculating Meeting Report outcomes</description>
+        <name>Meeting_PurposeOfMeeting</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Purpose_of_Meeting__c</picklistField>
+        <picklistObject>Meeting__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Scheduled_Type__c field from the Meeting__c object to define if the Meeting is scheduled or a drop-in</description>
+        <name>Meeting_ScheduledType</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Scheduled_Type__c</picklistField>
+        <picklistObject>Meeting__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Type_of_Meeting__c field from the Meeting__c object used to define what type of meeting is being held</description>
+        <name>Meeting_TypeOfMeeting</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Type_of_Meeting__c</picklistField>
+        <picklistObject>Meeting__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Period__c picklist from Meeting_Cadence__c to define if the cadence is set in weeks or months</description>
+        <name>MeetingCadence_Period</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Period__c</picklistField>
+        <picklistObject>Meeting_Cadence__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Manufacturers_Represented__c multi-select picklist from the User object. Contains a multi-select picklist of manufactures the user could represent in a meeting</description>
+        <name>User_ManufactureresRepresented</name>
+        <dataType>Multipicklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Manufacturers_Represented__c</picklistField>
+        <picklistObject>User</picklistObject>
+        <sortOrder>Desc</sortOrder>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <formulas>
+        <description>Populates as the Account or Contact Phone depending on the Meeting Master record</description>
+        <name>AccountOrContactPhone</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!ContactMobilePhone})), {!ContactMobilePhone}, {!AccountPhone})</expression>
+    </formulas>
+    <formulas>
+        <description>Record ID of the newly created Meeting Cadence against the user&apos;s business unit</description>
+        <name>BU_NewOrFoundMeetingCadence</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!BU_NewMeetingCadenceId})), {!BU_NewMeetingCadenceId}, {!Get_Meeting_Cadence_Business_Unit_Record_Data.Id})</expression>
+    </formulas>
+    <formulas>
+        <description>Is the Meeting associated primarily with the Contact or is it associated with the Account&apos;s Contact</description>
+        <name>BU_PrimaryContactOrAcountContact</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!AccountContactId}), {!MeetingContact_0.recordId}, {!AccountContactId})</expression>
+    </formulas>
+    <formulas>
+        <description>Meeting End Date/Time calculated from Start Date/Time + Duration</description>
+        <name>MeetingEndDateTime</name>
+        <dataType>DateTime</dataType>
+        <expression>IF(ISPICKVAL({!Get_MEETabl_General_Settings_Master_CMDT.Meetings_Assigned_To__c},&quot;User&quot;), ({!Start_Date_Time} + (VALUE(IF({!Duration_minutes} = &quot;Half Day&quot;, &quot;240&quot;, IF({!Duration_minutes} = &quot;Full Day&quot;, &quot;480&quot;,{!Duration_minutes})))/1440)),
+IF(ISPICKVAL({!Get_MEETabl_General_Settings_Master_CMDT.Meetings_Assigned_To__c},&quot;Business Unit&quot;), ({!Start_Date_Time_0} + (VALUE(IF({!Duration_minutes_0} = &quot;Half Day&quot;, &quot;240&quot;,IF({!Duration_minutes_0}=&quot;Full Day&quot;, &quot;480&quot;,{!Duration_minutes_0})))/1440)),
+null))</expression>
+    </formulas>
+    <formulas>
+        <description>Meeting Location associated with the Meeting created. The location is used when creating an Event</description>
+        <name>MeetingLocation</name>
+        <dataType>String</dataType>
+        <expression>IF({!User},
+IF(ISBLANK({!Location.street}), &quot;&quot; , {!Location.street} + &quot;, &quot;) + IF(ISBLANK({!Location.city}), &quot;&quot;,{!Location.city}+&quot; &quot;) +  IF(ISBLANK({!Location.province}),&quot;&quot;, {!Location.province} + &quot; &quot;) + IF(ISBLANK({!Location.postalCode}), &quot;&quot;,{!Location.postalCode} +&quot;, &quot;) + IF(ISBLANK({!Location.country}), &quot;&quot;,{!Location.country}),
+
+IF({!Business_Unit},
+IF(ISBLANK({!Location_0.street}), &quot;&quot;,{!Location_0.street} + &quot;, &quot;) + IF(ISBLANK({!Location_0.city}), &quot;&quot;,{!Location_0.city}+&quot; &quot;) +  IF(ISBLANK({!Location_0.province}), &quot;&quot;,{!Location_0.province} + &quot; &quot;) + IF(ISBLANK({!Location_0.postalCode}), &quot;&quot;,{!Location_0.postalCode} +&quot;, &quot;) + IF(ISBLANK({!Location_0.country}), &quot;&quot;,{!Location_0.country}),
+&quot;&quot;))</expression>
+    </formulas>
+    <formulas>
+        <description>Formula evaluates to the nearest half hour based on the current date/time</description>
+        <name>NearestHalfHour</name>
+        <dataType>DateTime</dataType>
+        <expression>DATETIMEVALUE(
+ LEFT(TEXT(Now()),11) 
+ + LPAD(
+   TEXT( VALUE( MID(TEXT(Now()),12,2) ) 
+    + IF( VALUE(MID(TEXT(Now()),15,2)) &gt; 44, 1, 0)
+    ), 2, &quot;0&quot;) 
+ +
+     IF( VALUE( MID(TEXT(Now()),15,2)) &lt;30, &quot;:30&quot;,
+       &quot;:00&quot;)
+ + &quot;:00Z&quot;
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Is the Account record the primary meeting account or the related contact&apos;s account</description>
+        <name>PrimaryAccountorContactAccount</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!ContactAccountId}) &amp;&amp; ISPICKVAL({!Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c},&quot;Contact&quot;), &quot;&quot;,
+IF(NOT(ISBLANK({!ContactAccountId})), {!ContactAccountId},{!MeetingMasterRecordId}))</expression>
+    </formulas>
+    <formulas>
+        <description>Evaluates to either the newly created Meeting Cadence from the first time the flow is initiated OR from a found Meeting Cadence record for the user</description>
+        <name>User_NewOrFoundMeetingCadence</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!User_NewMeetingCadenceId})), {!User_NewMeetingCadenceId}, {!Get_Meeting_Cadence_User_Record_Data.Id})</expression>
+    </formulas>
+    <formulas>
+        <description>Is the Meeting associated primarily with the Contact or is it associated with the Account&apos;s Contact</description>
+        <name>User_PrimaryContactOrAccountContact</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!AccountContactId}), {!MeetingContact.recordId},{!AccountContactId})</expression>
+    </formulas>
+    <formulas>
+        <description>Evaluates if the user record has manufactures that they represent, evaluated from their user record</description>
+        <name>UserHasManufacturers</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(ISBLANK({!Get_User_Record_Data.Manufacturers_Represented__c}), FALSE, TRUE)</expression>
+    </formulas>
+    <interviewLabel>Meeting | Screen Flow | Create Meeting {!$Flow.CurrentDateTime}</interviewLabel>
+    <isTemplate>true</isTemplate>
+    <label>Meeting | Screen Flow | Create Meeting</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <description>Creates a Meeting record based on inputted parameters of the screen flow against the found business unit cadence record</description>
+        <name>Create_Meeting_Against_Business_Unit_Cadence</name>
+        <label>Create Meeting Against Business Unit Cadence</label>
+        <locationX>1172</locationX>
+        <locationY>2006</locationY>
+        <connector>
+            <targetReference>Create_Meeting_Attendee_0</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>MeetingAccount_0.recordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Business_Unit__c</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Business_Unit__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>City__c</field>
+            <value>
+                <elementReference>Location_0.city</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Country__c</field>
+            <value>
+                <elementReference>Location_0.country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Duration_Minutes__c</field>
+            <value>
+                <elementReference>Duration_minutes_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Manufacturers_Represented__c</field>
+            <value>
+                <elementReference>Manufacturers_Represented_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting_Cadence__c</field>
+            <value>
+                <elementReference>BU_NewOrFoundMeetingCadence</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting_Objective__c</field>
+            <value>
+                <elementReference>Meeting_Objective_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Phone__c</field>
+            <value>
+                <elementReference>AccountOrContactPhone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Previous_Meeting__c</field>
+            <value>
+                <elementReference>Get_Meeting_Cadence_Business_Unit_Record_Data.Previous_Meeting__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Primary_Contact__c</field>
+            <value>
+                <elementReference>BU_PrimaryContactOrAcountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Purpose_of_Meeting__c</field>
+            <value>
+                <elementReference>Purpose_of_Meeting_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Scheduled_Type__c</field>
+            <value>
+                <elementReference>Scheduled_Type_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Start__c</field>
+            <value>
+                <elementReference>Start_Date_Time_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>State_Province__c</field>
+            <value>
+                <elementReference>Location_0.province</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Planned</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Street__c</field>
+            <value>
+                <elementReference>Location_0.street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type_of_Meeting__c</field>
+            <value>
+                <elementReference>Meeting_Type_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Zip_Postal_Code__c</field>
+            <value>
+                <elementReference>Location_0.postalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Meeting__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Creates a Meeting record based on inputted parameters of the screen flow against the found user cadence record</description>
+        <name>Create_Meeting_Against_User_Cadence</name>
+        <label>Create Meeting Against User Cadence</label>
+        <locationX>336</locationX>
+        <locationY>2006</locationY>
+        <connector>
+            <targetReference>Create_Meeting_Attendee</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>MeetingAccount.recordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>City__c</field>
+            <value>
+                <elementReference>Location.city</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Country__c</field>
+            <value>
+                <elementReference>Location.country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Duration_Minutes__c</field>
+            <value>
+                <elementReference>Duration_minutes</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Manufacturers_Represented__c</field>
+            <value>
+                <elementReference>Manufacturers_Represented</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting_Cadence__c</field>
+            <value>
+                <elementReference>User_NewOrFoundMeetingCadence</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting_Objective__c</field>
+            <value>
+                <elementReference>Meeting_Objective</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Phone__c</field>
+            <value>
+                <elementReference>AccountOrContactPhone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Previous_Meeting__c</field>
+            <value>
+                <elementReference>Get_Meeting_Cadence_User_Record_Data.Previous_Meeting__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Primary_Contact__c</field>
+            <value>
+                <elementReference>User_PrimaryContactOrAccountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Purpose_of_Meeting__c</field>
+            <value>
+                <elementReference>Purpose_of_Meeting</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Scheduled_Type__c</field>
+            <value>
+                <elementReference>Scheduled_Type</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Start__c</field>
+            <value>
+                <elementReference>Start_Date_Time</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>State_Province__c</field>
+            <value>
+                <elementReference>Location.province</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Planned</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Street__c</field>
+            <value>
+                <elementReference>Location.street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type_of_Meeting__c</field>
+            <value>
+                <elementReference>Meeting_Type</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Zip_Postal_Code__c</field>
+            <value>
+                <elementReference>Location.postalCode</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Meeting__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_Meeting_Attendee</name>
+        <label>Create Meeting Attendee</label>
+        <locationX>336</locationX>
+        <locationY>2126</locationY>
+        <connector>
+            <targetReference>Create_Event</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>User_PrimaryContactOrAccountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>IsPrimary__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting__c</field>
+            <value>
+                <elementReference>Create_Meeting_Against_User_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Attendee__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_Meeting_Attendee_0</name>
+        <label>Create Meeting Attendee</label>
+        <locationX>1172</locationX>
+        <locationY>2126</locationY>
+        <connector>
+            <targetReference>Create_Event_0</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>BU_PrimaryContactOrAcountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>IsPrimary__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting__c</field>
+            <value>
+                <elementReference>Create_Meeting_Against_Business_Unit_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Attendee__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Create Meeting Cadence record for the business unit</description>
+        <name>Create_Meeting_Cadence_for_Business_Unit</name>
+        <label>Create Meeting Cadence for Business Unit</label>
+        <locationX>1326</locationX>
+        <locationY>1574</locationY>
+        <assignRecordIdToReference>BU_NewMeetingCadenceId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Create_Meeting_0</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>PrimaryAccountorContactAccount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Business_Unit__c</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Business_Unit__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Frequency__c</field>
+            <value>
+                <elementReference>Frequency_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Period__c</field>
+            <value>
+                <elementReference>Period_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Cadence__c</object>
+    </recordCreates>
+    <recordCreates>
+        <description>Create Meeting Cadence record for the business unit</description>
+        <name>Create_Meeting_Cadence_for_Business_Unit_0</name>
+        <label>Create Meeting Cadence for Business Unit</label>
+        <locationX>1590</locationX>
+        <locationY>1574</locationY>
+        <assignRecordIdToReference>BU_NewMeetingCadenceId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Create_Meeting_0</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Business_Unit__c</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Business_Unit__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Frequency__c</field>
+            <value>
+                <elementReference>Frequency_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Period__c</field>
+            <value>
+                <elementReference>Period_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Cadence__c</object>
+    </recordCreates>
+    <recordCreates>
+        <description>Create Meeting Cadence record for the user</description>
+        <name>Create_Meeting_Cadence_for_User</name>
+        <label>Create Meeting Cadence for User</label>
+        <locationX>358</locationX>
+        <locationY>1574</locationY>
+        <assignRecordIdToReference>User_NewMeetingCadenceId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Create_Meeting</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>PrimaryAccountorContactAccount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Frequency__c</field>
+            <value>
+                <elementReference>Frequency</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Period__c</field>
+            <value>
+                <elementReference>Period</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Cadence__c</object>
+    </recordCreates>
+    <recordCreates>
+        <description>Create Meeting Cadence record for the user</description>
+        <name>Create_Meeting_Cadence_for_User_0</name>
+        <label>Create Meeting Cadence for User</label>
+        <locationX>622</locationX>
+        <locationY>1574</locationY>
+        <assignRecordIdToReference>User_NewMeetingCadenceId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Create_Meeting</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Frequency__c</field>
+            <value>
+                <elementReference>Frequency</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Period__c</field>
+            <value>
+                <elementReference>Period</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Cadence__c</object>
+    </recordCreates>
+    <recordCreates>
+        <description>Creates Event record related to the Meeting to be synchronized with Outlook/Google Calendar</description>
+        <name>Create_Meeting_Event</name>
+        <label>Create Meeting Event</label>
+        <locationX>182</locationX>
+        <locationY>2366</locationY>
+        <connector>
+            <targetReference>Invite_Contact_to_Event</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>EndDateTime</field>
+            <value>
+                <elementReference>MeetingEndDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Location</field>
+            <value>
+                <elementReference>MeetingLocation</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting__c</field>
+            <value>
+                <elementReference>Create_Meeting_Against_User_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StartDateTime</field>
+            <value>
+                <elementReference>Start_Date_Time</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>Event_Subject</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>PrimaryAccountorContactAccount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>User_PrimaryContactOrAccountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Creates Event record related to the Meeting to be synchronized with Outlook/Google Calendar</description>
+        <name>Create_Meeting_Event_0</name>
+        <label>Create Meeting Event</label>
+        <locationX>1018</locationX>
+        <locationY>2366</locationY>
+        <connector>
+            <targetReference>Invite_Contact_to_Event_0</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>EndDateTime</field>
+            <value>
+                <elementReference>MeetingEndDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Location</field>
+            <value>
+                <elementReference>MeetingLocation</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Meeting__c</field>
+            <value>
+                <elementReference>Create_Meeting_Against_Business_Unit_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_User_Record_Data.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StartDateTime</field>
+            <value>
+                <elementReference>Start_Date_Time_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>Event_Subject_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>PrimaryAccountorContactAccount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>BU_PrimaryContactOrAcountContact</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Event</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>Retrieves Account Data from the triggered record to be used throughout the rest of the flow including ID and Address(s)</description>
+        <name>Get_Account_Record_Data</name>
+        <label>Get Account Record Data</label>
+        <locationX>1095</locationX>
+        <locationY>638</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Type_of_Cadence_to_Search_For</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Account</object>
+        <outputAssignments>
+            <assignToReference>AccountCity</assignToReference>
+            <field>BillingCity</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountCountry</assignToReference>
+            <field>BillingCountry</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountPostalCode</assignToReference>
+            <field>BillingPostalCode</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountState</assignToReference>
+            <field>BillingState</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountStreet</assignToReference>
+            <field>BillingStreet</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>MeetingMasterRecordId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountPhone</assignToReference>
+            <field>Phone</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves the Contacts&apos; Account Data to get address details</description>
+        <name>Get_Contact_Account_Record_Data</name>
+        <label>Get Contact Account Record Data</label>
+        <locationX>1359</locationX>
+        <locationY>758</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Type_of_Cadence_to_Search_For</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>ContactAccountId</elementReference>
+            </value>
+        </filters>
+        <object>Account</object>
+        <outputAssignments>
+            <assignToReference>AccountCity</assignToReference>
+            <field>BillingCity</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountCountry</assignToReference>
+            <field>BillingCountry</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountPostalCode</assignToReference>
+            <field>BillingPostalCode</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountState</assignToReference>
+            <field>BillingState</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountStreet</assignToReference>
+            <field>BillingStreet</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>AccountPhone</assignToReference>
+            <field>Phone</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves Contact Data from the triggered record to be used throughout the rest of the flow including ID and Address(s)</description>
+        <name>Get_Contact_Record_Data</name>
+        <label>Get Contact Record Data</label>
+        <locationX>1359</locationX>
+        <locationY>638</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Contact_Account_Record_Data</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <outputAssignments>
+            <assignToReference>ContactAccountId</assignToReference>
+            <field>AccountId</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>MeetingMasterRecordId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>ContactMobilePhone</assignToReference>
+            <field>MobilePhone</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves the &quot;Default Meeting Duration&quot; custom metdata default record</description>
+        <name>Get_Default_Meeting_Duration_CMDT</name>
+        <label>Get Default Meeting Duration CMDT</label>
+        <locationX>1095</locationX>
+        <locationY>278</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_User_Record_Data</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Label</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>default</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Default_Meeting_Duration__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves the &quot;MEETabl General Settings&quot; custom metadata default record</description>
+        <name>Get_MEETabl_General_Settings_Master_CMDT</name>
+        <label>Get MEETabl General Settings Master CMDT</label>
+        <locationX>1095</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Default_Meeting_Duration_CMDT</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>default</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>MEETabl_General_Settings__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves the correct Cadence record based on the triggered record parameters and matching user&apos;s business unit</description>
+        <name>Get_Meeting_Cadence_Business_Unit_Record_Data</name>
+        <label>Get Meeting Cadence Business Unit Record Data</label>
+        <locationX>1172</locationX>
+        <locationY>1094</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Meeting_Business_Unit_Cadence_Record_Found</targetReference>
+        </connector>
+        <filterLogic>(1 OR 2) AND 3 AND 4</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Business_Unit__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_User_Record_Data.Business_Unit__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Meeting_Cadence__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves the correct Meeting Cadence record based on the triggered record parameters and matching user</description>
+        <name>Get_Meeting_Cadence_User_Record_Data</name>
+        <label>Get Meeting Cadence User Record Data</label>
+        <locationX>336</locationX>
+        <locationY>1094</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Meeting_Cadence_User_Record_Found</targetReference>
+        </connector>
+        <filterLogic>(1 OR 2) AND 3 AND 4</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>MeetingMasterRecordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>OwnerId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>In Progress</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Meeting_Cadence__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieves User Data based on the logged in user triggering the process</description>
+        <name>Get_User_Record_Data</name>
+        <label>Get User Record Data</label>
+        <locationX>1095</locationX>
+        <locationY>398</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Triggering_record</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Business_Unit__c</queriedFields>
+        <queriedFields>Manufacturers_Represented__c</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>Territory_Coverage_weeks__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Update EventRelation record related to the primary contact to mark IsInvitee = TRUE to send the contact a meeting invitation</description>
+        <name>Update_Event_Relation</name>
+        <label>Update Event Relation</label>
+        <locationX>50</locationX>
+        <locationY>2606</locationY>
+        <connector>
+            <targetReference>Update_Meeting_Attendee</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EventId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_Meeting_Event</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>User_PrimaryContactOrAccountContact</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>IsInvitee</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>EventRelation</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update EventRelation record related to the primary contact to mark IsInvitee = TRUE to send the contact a meeting invitation</description>
+        <name>Update_Event_Relation_0</name>
+        <label>Update Event Relation</label>
+        <locationX>886</locationX>
+        <locationY>2606</locationY>
+        <connector>
+            <targetReference>Update_Meeting_Attendee_0</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EventId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_Meeting_Event_0</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RelationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>BU_PrimaryContactOrAcountContact</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>IsInvitee</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>EventRelation</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update Meeting Attendee for primary contact to mark Send_Invite__c to TRUE</description>
+        <name>Update_Meeting_Attendee</name>
+        <label>Update Meeting Attendee</label>
+        <locationX>50</locationX>
+        <locationY>2726</locationY>
+        <connector>
+            <targetReference>Create_and_Complete_Meeting</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_Meeting_Attendee</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Send_Invite__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Attendee__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update Meeting Attendee for primary contact to mark Send_Invite__c to TRUE</description>
+        <name>Update_Meeting_Attendee_0</name>
+        <label>Update Meeting Attendee</label>
+        <locationX>886</locationX>
+        <locationY>2726</locationY>
+        <connector>
+            <targetReference>Create_and_Complete_Meeting_0</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Create_Meeting_Attendee_0</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Send_Invite__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Meeting_Attendee__c</object>
+    </recordUpdates>
+    <runInMode>SystemModeWithSharing</runInMode>
+    <screens>
+        <description>Error message screen provided to the user if they try to create a meeting against an Account when meeting master CMDT is set to Contact</description>
+        <name>Cannot_Create_Meeting_against_Account</name>
+        <label>Cannot Create Meeting against Account</label>
+        <locationX>567</locationX>
+        <locationY>638</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Cannot_Create_Meeting</name>
+            <fieldText>&lt;p&gt;Cannot create meeting against Account when Contact is defined as Meeting &lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;parent&lt;/span&gt; record.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please contact your System Administrator&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Exit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Error message screen provided to the user if they try to create a meeting against an Account when meeting master CMDT is set to Contact</description>
+        <name>Cannot_Create_Meeting_against_Account_0</name>
+        <label>Cannot Create Meeting against Account</label>
+        <locationX>886</locationX>
+        <locationY>1334</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>No_Business_Unit</name>
+            <fieldText>&lt;p&gt;Unable to find/create Meeting Cadence. No Business Unit set on User record.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please contact your System Administrator&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Exit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Error message screen provided to the user if they try to create a meeting against an Contact when meeting master CMDT is set to Account</description>
+        <name>Cannot_Create_Meeting_against_Contact</name>
+        <label>Cannot Create Meeting against Contact</label>
+        <locationX>831</locationX>
+        <locationY>638</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Cannot_Create_Meeting_0</name>
+            <fieldText>&lt;p&gt;Cannot create meeting against Contact when Account is defined as Meeting parent record.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please contact your System Administrator&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Exit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Create Meeting screen to gather input required to create a Meeting record</description>
+        <name>Create_Meeting</name>
+        <label>Create Meeting</label>
+        <locationX>336</locationX>
+        <locationY>1886</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Meeting_Against_User_Cadence</targetReference>
+        </connector>
+        <fields>
+            <name>UserDetails</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;User: &lt;/strong&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;{!Get_User_Record_Data.Name}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Customer</name>
+            <fieldText>Customer</fieldText>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Customer_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>MeetingAccount</name>
+                    <extensionName>flowruntime:lookup</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>fieldApiName</name>
+                        <value>
+                            <stringValue>METabl__Account__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Account</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>objectApiName</name>
+                        <value>
+                            <stringValue>METabl__Meeting__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>recordId</name>
+                        <value>
+                            <elementReference>PrimaryAccountorContactAccount</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>required</name>
+                        <value>
+                            <booleanValue>true</booleanValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <fields>
+                    <name>Primary_Contact</name>
+                    <choiceReferences>AccountContactRecords</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Primary Contact</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>MeetingContact</name>
+                    <extensionName>flowruntime:lookup</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>fieldApiName</name>
+                        <value>
+                            <stringValue>METabl__Primary_Contact__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Contact</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>objectApiName</name>
+                        <value>
+                            <stringValue>METabl__Meeting__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>recordId</name>
+                        <value>
+                            <elementReference>MeetingMasterRecordId</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>required</name>
+                        <value>
+                            <booleanValue>true</booleanValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Contact</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Invite_Contact</name>
+                    <dataType>Boolean</dataType>
+                    <fieldText>Invite Contact</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <helpText>&lt;p&gt;Send the contact an invitation to the meeting&lt;/p&gt;</helpText>
+                    <isRequired>true</isRequired>
+                    <validationRule>
+                        <errorMessage>&lt;p&gt;Cannot invite contact if scheduled type equals &quot;Drop-In&quot; or Start Date/Time is in the past&lt;/p&gt;</errorMessage>
+                        <formulaExpression>OR(
+AND(
+{!Invite_Contact}=TRUE,
+{!Scheduled_Type}=&quot;Appointment&quot;,
+{!Start_Date_Time}&gt;=NOW()
+),
+AND(
+{!Invite_Contact}=FALSE,
+{!Scheduled_Type}=&quot;Drop-In&quot;,
+{!Start_Date_Time}&gt;=NOW()
+),
+AND(
+{!Invite_Contact}=FALSE,
+{!Scheduled_Type}=&quot;Appointment&quot;,
+{!Start_Date_Time}&lt;=NOW()
+),
+AND(
+{!Invite_Contact}=FALSE,
+{!Scheduled_Type}=&quot;Appointment&quot;,
+{!Start_Date_Time}&gt;=NOW()
+),
+AND(
+{!Invite_Contact}=FALSE,
+{!Start_Date_Time}&lt;NOW()
+)
+)</formulaExpression>
+                    </validationRule>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Customer_Column2</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Location</name>
+                    <extensionName>flowruntime:address</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>city</name>
+                        <value>
+                            <elementReference>AccountCity</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>country</name>
+                        <value>
+                            <elementReference>AccountCountry</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>postalCode</name>
+                        <value>
+                            <elementReference>AccountPostalCode</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>province</name>
+                        <value>
+                            <elementReference>AccountState</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>street</name>
+                        <value>
+                            <elementReference>AccountStreet</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>addressLabel</name>
+                        <value>
+                            <stringValue>Location</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Meeting_Details</name>
+            <fieldText>Meeting Details</fieldText>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Meeting_Details_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Start_Date_Time</name>
+                    <dataType>DateTime</dataType>
+                    <defaultValue>
+                        <elementReference>NearestHalfHour</elementReference>
+                    </defaultValue>
+                    <fieldText>Start Date/Time</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>true</isRequired>
+                    <validationRule>
+                        <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Cannot complete Meeting if Start Date/Time is in the future&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                        <formulaExpression>OR(
+AND(
+{!Start_Date_Time} &lt;= {!$Flow.CurrentDateTime},
+{!MeetingCompleted.value}=true
+),
+AND(
+{!Start_Date_Time} &lt;= {!$Flow.CurrentDateTime},
+{!MeetingCompleted.value}=false
+),
+AND(
+{!Start_Date_Time} &gt; {!$Flow.CurrentDateTime},
+{!MeetingCompleted.value}=false
+)
+)</formulaExpression>
+                    </validationRule>
+                </fields>
+                <fields>
+                    <name>Duration_minutes</name>
+                    <choiceReferences>Meeting_Duration</choiceReferences>
+                    <dataType>String</dataType>
+                    <defaultValue>
+                        <elementReference>Get_Default_Meeting_Duration_CMDT.Default_Meeting_Duration_min__c</elementReference>
+                    </defaultValue>
+                    <fieldText>Duration (minutes)</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Scheduled_Type</name>
+                    <choiceReferences>Meeting_ScheduledType</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Scheduled Type</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Event_Subject</name>
+                    <dataType>String</dataType>
+                    <fieldText>Event Subject</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Meeting_Details_Column2</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Meeting_Type</name>
+                    <choiceReferences>Meeting_TypeOfMeeting</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Meeting Type</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+                <fields>
+                    <name>Purpose_of_Meeting</name>
+                    <choiceReferences>Meeting_PurposeOfMeeting</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Purpose of Meeting</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Manufacturers_Represented</name>
+                    <choiceReferences>User_ManufactureresRepresented</choiceReferences>
+                    <dataType>String</dataType>
+                    <defaultValue>
+                        <elementReference>Get_User_Record_Data.Manufacturers_Represented__c</elementReference>
+                    </defaultValue>
+                    <fieldText>Manufacturers Represented</fieldText>
+                    <fieldType>MultiSelectPicklist</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>UserHasManufacturers</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Meeting_Objective</name>
+            <fieldText>Meeting Objective</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Create_Meeting_Section3</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Create_Meeting_Section3_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>MeetingCompleted</name>
+                    <extensionName>flowruntime:toggle</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Meeting Completed?</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>messageToggleActive</name>
+                        <value>
+                            <stringValue>Yes</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>messageToggleInactive</name>
+                        <value>
+                            <stringValue>No</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>4</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Create_Meeting_Section3_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>8</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <nextOrFinishButtonLabel>Submit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Create Meeting screen to gather input required to create a Meeting record</description>
+        <name>Create_Meeting_0</name>
+        <label>Create Meeting</label>
+        <locationX>1172</locationX>
+        <locationY>1886</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Meeting_Against_Business_Unit_Cadence</targetReference>
+        </connector>
+        <fields>
+            <name>UserDetails_0</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;User: &lt;/strong&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;{!Get_User_Record_Data.Name}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;Business Unit: &lt;/strong&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-size: 16px;&quot;&gt;{!Get_User_Record_Data.Business_Unit__c}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Customer_0</name>
+            <fieldText>Customer</fieldText>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Customer_0_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>MeetingAccount_0</name>
+                    <extensionName>flowruntime:lookup</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>fieldApiName</name>
+                        <value>
+                            <stringValue>METabl__Account__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Account</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>objectApiName</name>
+                        <value>
+                            <stringValue>METabl__Meeting__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>recordId</name>
+                        <value>
+                            <elementReference>PrimaryAccountorContactAccount</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>required</name>
+                        <value>
+                            <booleanValue>true</booleanValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <fields>
+                    <name>Primary_Contact_BU</name>
+                    <choiceReferences>AccountContactRecords</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Primary Contact</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Account</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>MeetingContact_0</name>
+                    <extensionName>flowruntime:lookup</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>fieldApiName</name>
+                        <value>
+                            <stringValue>METabl__Primary_Contact__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Contact</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>objectApiName</name>
+                        <value>
+                            <stringValue>METabl__Meeting__c</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>recordId</name>
+                        <value>
+                            <elementReference>MeetingMasterRecordId</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>required</name>
+                        <value>
+                            <booleanValue>true</booleanValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Parent_Record__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <stringValue>Contact</stringValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <fields>
+                    <name>Invite_Contact_0</name>
+                    <dataType>Boolean</dataType>
+                    <fieldText>Invite Contact</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <helpText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Send the contact an invitation to the meeting&lt;/span&gt;&lt;/p&gt;</helpText>
+                    <isRequired>true</isRequired>
+                    <validationRule>
+                        <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;Cannot invite contact if scheduled type equals &quot;Drop-In&quot; or Start Date/Time is in the past&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                        <formulaExpression>OR(
+AND(
+{!Invite_Contact_0}=TRUE,
+{!Scheduled_Type_0}=&quot;Appointment&quot;,
+{!Start_Date_Time_0}&gt;=NOW()
+),
+AND(
+{!Invite_Contact_0}=FALSE,
+{!Scheduled_Type_0}=&quot;Drop-In&quot;,
+{!Start_Date_Time_0}&gt;=NOW()
+),
+AND(
+{!Invite_Contact_0}=FALSE,
+{!Scheduled_Type_0}=&quot;Appointment&quot;,{!Start_Date_Time_0}&gt;=NOW()
+),
+AND(
+{!Invite_Contact}=FALSE,
+{!Scheduled_Type}=&quot;Appointment&quot;,
+{!Start_Date_Time}&gt;=NOW()
+),
+AND(
+{!Invite_Contact_0}=FALSE,
+{!Start_Date_Time_0}&lt;NOW()
+)
+)</formulaExpression>
+                    </validationRule>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Customer_0_Column2</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Location_0</name>
+                    <extensionName>flowruntime:address</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>city</name>
+                        <value>
+                            <elementReference>AccountCity</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>addressLabel</name>
+                        <value>
+                            <stringValue>Location</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>country</name>
+                        <value>
+                            <elementReference>AccountCountry</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>postalCode</name>
+                        <value>
+                            <elementReference>AccountPostalCode</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>province</name>
+                        <value>
+                            <elementReference>AccountState</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>street</name>
+                        <value>
+                            <elementReference>AccountStreet</elementReference>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Meeting_Details_0</name>
+            <fieldText>Meeting Details</fieldText>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Meeting_Details_0_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Start_Date_Time_0</name>
+                    <dataType>DateTime</dataType>
+                    <defaultValue>
+                        <elementReference>NearestHalfHour</elementReference>
+                    </defaultValue>
+                    <fieldText>Start Date/Time</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>true</isRequired>
+                    <validationRule>
+                        <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Cannot complete Meeting if Start Date/Time is in the future&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                        <formulaExpression>OR(
+AND(
+{!Start_Date_Time_0} &lt;= {!$Flow.CurrentDateTime},
+{!MeetingCompleted_0.value}=true
+),
+AND(
+{!Start_Date_Time_0} &lt;= {!$Flow.CurrentDateTime},
+{!MeetingCompleted_0.value}=false
+),
+AND(
+{!Start_Date_Time_0} &gt; {!$Flow.CurrentDateTime},
+{!MeetingCompleted_0.value}=false
+)
+)</formulaExpression>
+                    </validationRule>
+                </fields>
+                <fields>
+                    <name>Duration_minutes_0</name>
+                    <choiceReferences>Meeting_Duration</choiceReferences>
+                    <dataType>String</dataType>
+                    <defaultValue>
+                        <elementReference>Get_Default_Meeting_Duration_CMDT.Default_Meeting_Duration_min__c</elementReference>
+                    </defaultValue>
+                    <fieldText>Duration (minutes)</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Scheduled_Type_0</name>
+                    <choiceReferences>Meeting_ScheduledType</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Scheduled Type</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Event_Subject_0</name>
+                    <dataType>String</dataType>
+                    <fieldText>Event Subject</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>Get_MEETabl_General_Settings_Master_CMDT.Create_Events__c</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Meeting_Details_0_Column2</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>Meeting_Type_0</name>
+                    <choiceReferences>Meeting_TypeOfMeeting</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Meeting Type</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+                <fields>
+                    <name>Purpose_of_Meeting_0</name>
+                    <choiceReferences>Meeting_PurposeOfMeeting</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Purpose of Meeting</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>true</isRequired>
+                </fields>
+                <fields>
+                    <name>Manufacturers_Represented_0</name>
+                    <choiceReferences>User_ManufactureresRepresented</choiceReferences>
+                    <dataType>String</dataType>
+                    <defaultValue>
+                        <elementReference>Get_User_Record_Data.Manufacturers_Represented__c</elementReference>
+                    </defaultValue>
+                    <fieldText>Manufacturers Represented</fieldText>
+                    <fieldType>MultiSelectPicklist</fieldType>
+                    <isRequired>true</isRequired>
+                    <visibilityRule>
+                        <conditionLogic>and</conditionLogic>
+                        <conditions>
+                            <leftValueReference>UserHasManufacturers</leftValueReference>
+                            <operator>EqualTo</operator>
+                            <rightValue>
+                                <booleanValue>true</booleanValue>
+                            </rightValue>
+                        </conditions>
+                    </visibilityRule>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithHeader</regionContainerType>
+        </fields>
+        <fields>
+            <name>Meeting_Objective_0</name>
+            <fieldText>Meeting Objective</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Create_Meeting_0_Section3</name>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>Create_Meeting_0_Section3_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>MeetingCompleted_0</name>
+                    <extensionName>flowruntime:toggle</extensionName>
+                    <fieldType>ComponentInstance</fieldType>
+                    <inputParameters>
+                        <name>label</name>
+                        <value>
+                            <stringValue>Meeting Completed?</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>messageToggleActive</name>
+                        <value>
+                            <stringValue>Yes</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputParameters>
+                        <name>messageToggleInactive</name>
+                        <value>
+                            <stringValue>No</stringValue>
+                        </value>
+                    </inputParameters>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <storeOutputAutomatically>true</storeOutputAutomatically>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>4</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <fields>
+                <name>Create_Meeting_0_Section3_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>8</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+        </fields>
+        <nextOrFinishButtonLabel>Submit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Confirmation screen that the Meet record has been created</description>
+        <name>Meeting_Created_For_Business_Unit</name>
+        <label>Meeting Created For Business Unit</label>
+        <locationX>1304</locationX>
+        <locationY>3278</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>MeetRecordLink_0</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;Meet record successfully created. Click &lt;/strong&gt;&lt;a href=&quot;/{!Create_Meeting_Against_Business_Unit_Cadence}&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;&lt;strong&gt;here &lt;/strong&gt;&lt;/a&gt;&lt;strong&gt;to access.&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Exit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Confirmation screen that the Meeting record has been created</description>
+        <name>Meeting_Created_For_User</name>
+        <label>Meeting Created For User</label>
+        <locationX>468</locationX>
+        <locationY>3278</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>MeetRecordLink</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;Meeting record successfully created. Click &lt;/strong&gt;&lt;a href=&quot;/{!Create_Meeting_Against_User_Cadence}&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;&lt;strong&gt;here &lt;/strong&gt;&lt;/a&gt;&lt;strong&gt;to access.&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Exit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Error message screen provided to the user if no user meeting cadence record was found</description>
+        <name>No_Business_Unit_Meeting_Cadence_Found</name>
+        <label>No Business Unit Meeting Cadence Found</label>
+        <locationX>1458</locationX>
+        <locationY>1334</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Exit</backButtonLabel>
+        <connector>
+            <targetReference>Meeting_Master_Record</targetReference>
+        </connector>
+        <fields>
+            <name>Error_Message_0_0</name>
+            <fieldText>&lt;p&gt;No active Meeting Cadence record found for business unit:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;{!Get_User_Record_Data.Business_Unit__c}&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please create Meeting Cadence record first, and try again.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Frequency_0</name>
+            <dataType>Number</dataType>
+            <fieldText>Frequency</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>0</scale>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Meeting Cadence frequency cannot exceed the user&apos;s territory coverage period of {!Get_User_Record_Data.Territory_Coverage_weeks__c} weeks. Please contact your system administrator.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>OR(
+AND(
+{!Period_0}=&apos;Month&apos;,
+({!Frequency_0}*4) &lt;= {!Get_User_Record_Data.Territory_Coverage_weeks__c}
+),
+AND(
+{!Period_0}=&apos;Week&apos;,
+{!Frequency_0} &lt;= {!Get_User_Record_Data.Territory_Coverage_weeks__c}
+)
+)</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Period_0</name>
+            <choiceReferences>MeetingCadence_Period</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Period</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Continue</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Error message screen provided to the user if no user meet cadence record was found</description>
+        <name>No_User_Meeting_Cadence_Found</name>
+        <label>No User Meeting Cadence Found</label>
+        <locationX>490</locationX>
+        <locationY>1334</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Exit</backButtonLabel>
+        <connector>
+            <targetReference>Meeting_Master_Record_0</targetReference>
+        </connector>
+        <fields>
+            <name>Error_Message</name>
+            <fieldText>&lt;p&gt;No active Meeting Cadence record found for user:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;{!Get_User_Record_Data.Name}&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please create Meeting Cadence record first, and try again.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Frequency</name>
+            <dataType>Number</dataType>
+            <fieldText>Frequency</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <scale>0</scale>
+            <validationRule>
+                <errorMessage>&lt;p&gt;Meeting Cadence frequency cannot exceed the user&apos;s territory coverage period of {!Get_User_Record_Data.Territory_Coverage_weeks__c} weeks. Please contact your system administrator.&lt;/p&gt;</errorMessage>
+                <formulaExpression>OR(
+AND(
+{!Period}=&apos;Month&apos;,
+({!Frequency}*4) &lt;= {!Get_User_Record_Data.Territory_Coverage_weeks__c}
+),
+AND(
+{!Period}=&apos;Week&apos;,
+{!Frequency} &lt;= {!Get_User_Record_Data.Territory_Coverage_weeks__c}
+)
+)</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Period</name>
+            <choiceReferences>MeetingCadence_Period</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Period</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Continue</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>969</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_MEETabl_General_Settings_Master_CMDT</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <description>Sends newly created Meeting record to subflow: Meeting | Screen Flow | Complete meeting because the user chose to create and complete the meeting in one process</description>
+        <name>CompleteMeeting</name>
+        <label>Complete Meeting</label>
+        <locationX>204</locationX>
+        <locationY>3158</locationY>
+        <flowName>Meeting_Screen_Flow_Complete_Meeting</flowName>
+        <inputAssignments>
+            <name>CreateAndComplete</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Create_Meeting_Against_User_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <description>Sends newly created Meeting record to subflow: Meeting | Screen Flow | Complete meeting because the user chose to create and complete the meeting in one process</description>
+        <name>CompleteMeeting_0</name>
+        <label>Complete Meeting</label>
+        <locationX>1040</locationX>
+        <locationY>3158</locationY>
+        <flowName>Meeting_Screen_Flow_Complete_Meeting</flowName>
+        <inputAssignments>
+            <name>CreateAndComplete</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>Create_Meeting_Against_Business_Unit_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <description>Sends Meeting record to sub-flow to evaluate if the meeting is the next scheduled meeting of the Meeting Cadence</description>
+        <name>Update_Next_Scheduled_Meeting</name>
+        <label>Update Next Scheduled Meeting</label>
+        <locationX>468</locationX>
+        <locationY>3158</locationY>
+        <connector>
+            <targetReference>Meeting_Created_For_User</targetReference>
+        </connector>
+        <flowName>Meeting_Cadence_Autolaunched_Next_Scheduled_Meeting</flowName>
+        <inputAssignments>
+            <name>MeetingRecordInputId</name>
+            <value>
+                <elementReference>Create_Meeting_Against_User_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <description>Sends Meeting record to sub-flow to evaluate if the meeting is the next scheduled meeting of the Meeting Cadence</description>
+        <name>Update_Next_Scheduled_Meeting_0</name>
+        <label>Update Next Scheduled Meeting</label>
+        <locationX>1304</locationX>
+        <locationY>3158</locationY>
+        <connector>
+            <targetReference>Meeting_Created_For_Business_Unit</targetReference>
+        </connector>
+        <flowName>Meeting_Cadence_Autolaunched_Next_Scheduled_Meeting</flowName>
+        <inputAssignments>
+            <name>MeetingRecordInputId</name>
+            <value>
+                <elementReference>Create_Meeting_Against_Business_Unit_Cadence</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <description>Stores the Account Billing City</description>
+        <name>AccountCity</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Id of the selected Contact record belonging to the Account when creating a Meeting</description>
+        <name>AccountContactId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the Account Billing Country</description>
+        <name>AccountCountry</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Standard phone field value from the Account record to be defaulted onto Meeting creation</description>
+        <name>AccountPhone</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the Account Billing PostalCode</description>
+        <name>AccountPostalCode</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the Account Billing State</description>
+        <name>AccountState</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the Account Billing Street</description>
+        <name>AccountStreet</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>New Meeting Cadence Record ID created against user&apos;s business unit</description>
+        <name>BU_NewMeetingCadenceId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Account Id of the Contact record the meeting was created from</description>
+        <name>ContactAccountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Standard mobile phone field value from the Contact record to be defaulted onto Meeting creation</description>
+        <name>ContactMobilePhone</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Represents either the Account or Contact ID depending on what is provided</description>
+        <name>MeetingMasterRecordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The Salesforce record ID of the triggering record. This ID is used throughout the flow to retrieve additional data</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Meeting Cadence ID of the newly created Meeting Cadence record for the User</description>
+        <name>User_NewMeetingCadenceId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

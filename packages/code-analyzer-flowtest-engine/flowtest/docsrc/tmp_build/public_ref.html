@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Public Module &#8212; Flowtest 0.6.7-ALPHA documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+    <link rel="stylesheet" type="text/css" href="_static/basic_mod.css?v=94a554c0" />
+    <script src="_static/documentation_options.js?v=2ada2499"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/petite-vue.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Flowtest module" href="flowtest_ref.html" />
+    <link rel="prev" title="Flow Parser" href="flow_parser_ref.html" /> 
+  </head><body data-dark_mode_code_blocks="true">
+
+<div id="top_nav">
+    
+
+    <nav>
+        
+            
+        
+
+        <p id="toggle_sidebar">
+            <a href="#" title="Toggle sidebar">|||</a>
+        </p>
+        <h1><a href="index.html" title="Go to homepage">Flowtest 0.6.7-ALPHA documentation</a></h1>
+
+        <a id="mode_toggle" href="#" @click.prevent="handleClick" :title="mode">
+    <template v-if="mode == 'light'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_light"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M67.48,18.073c1.913,-1.912 1.913,-5.018 0,-6.931c-1.912,-1.912 -5.018,-1.912 -6.931,0l-6.798,6.799c-1.912,1.912 -1.912,5.018 0,6.931c1.913,1.912 5.018,1.912 6.931,-0l6.798,-6.799Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.728,61.108c1.912,-1.913 1.912,-5.018 -0,-6.931c-1.913,-1.913 -5.019,-1.913 -6.931,-0l-6.799,6.798c-1.912,1.913 -1.912,5.019 0,6.931c1.913,1.913 5.019,1.913 6.931,0l6.799,-6.798Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.682,54.177c-1.913,-1.913 -5.018,-1.913 -6.931,-0c-1.912,1.913 -1.912,5.018 0,6.931l6.798,6.798c1.913,1.913 5.019,1.913 6.931,0c1.913,-1.912 1.913,-5.018 0,-6.931l-6.798,-6.798Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M4.901,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901l-0,9.614c-0,2.705 2.196,4.901 4.9,4.901c2.705,-0 4.901,-2.196 4.901,-4.901l0,-9.614Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M18.929,11.142c-1.912,-1.912 -5.018,-1.912 -6.931,0c-1.912,1.913 -1.912,5.019 0,6.931l6.799,6.799c1.912,1.912 5.018,1.912 6.931,-0c1.912,-1.913 1.912,-5.019 -0,-6.931l-6.799,-6.799Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.108,34.623c-2.705,0 -4.901,2.196 -4.901,4.901c-0,2.705 2.196,4.901 4.901,4.901l9.614,0c2.705,0 4.901,-2.196 4.901,-4.901c-0,-2.705 -2.196,-4.901 -4.901,-4.901l-9.614,0Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'dark'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_dark"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><circle cx="39.311" cy="39.524" r="15.734" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.212,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.901,2.196 -4.901,4.901c0,2.705 2.197,4.901 4.901,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.662,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.989,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.732,61.103c1.91,-1.91 1.91,-5.011 0,-6.921l-0.009,-0.01c-1.91,-1.91 -5.012,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.909,1.91 5.011,1.91 6.92,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.672,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.52,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l-0,-0.01c-0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.212,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.901,2.196 -4.901,4.901c0,2.704 2.197,4.9 4.901,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.73,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 -0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.098,34.623c-2.699,0 -4.891,2.192 -4.891,4.892l-0,0.019c-0,2.699 2.192,4.891 4.891,4.891c2.7,0 4.892,-2.192 4.892,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.892,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+
+    <template v-if="mode == 'darkest'">
+        <svg width="100%" height="100%" viewBox="0 0 79 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g id="mode_darkest"><rect id="Bounds" x="0" y="-0" width="78.623" height="79.049" style="fill:none;"/><path d="M39.315,23.791c8.684,-0 15.734,7.05 15.734,15.733c0,8.684 -7.05,15.734 -15.734,15.734c-8.683,0 -15.733,-7.05 -15.733,-15.734c-0,-8.683 7.05,-15.733 15.733,-15.733Zm0,4.737c6.069,0 10.997,4.927 10.997,10.996c-0,6.069 -4.928,10.996 -10.997,10.996c-6.068,0 -10.996,-4.927 -10.996,-10.996c0,-6.069 4.928,-10.996 10.996,-10.996Z" style="fill:#fff;"/><g id="beams"><g id="beam"><path id="beam1" serif:id="beam" d="M44.216,14.515c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,0 -4.9,2.196 -4.9,4.901c-0,2.705 2.196,4.901 4.9,4.901c2.705,0 4.901,-2.196 4.901,-4.901Z" style="fill:#fff;"/></g><g id="beam2" serif:id="beam"><path id="beam3" serif:id="beam" d="M60.666,24.892c1.902,-1.902 1.902,-4.99 0,-6.892l-0.04,-0.039c-1.901,-1.902 -4.989,-1.902 -6.891,-0c-1.901,1.901 -1.901,4.989 0,6.891l0.04,0.04c1.902,1.901 4.99,1.901 6.891,-0Z" style="fill:#fff;"/></g><g id="beam4" serif:id="beam"><path id="beam5" serif:id="beam" d="M25.737,61.103c1.909,-1.91 1.909,-5.011 -0,-6.921l-0.01,-0.01c-1.91,-1.91 -5.011,-1.91 -6.921,-0c-1.91,1.91 -1.91,5.011 -0,6.921l0.01,0.01c1.91,1.91 5.011,1.91 6.921,-0Z" style="fill:#fff;"/></g><g id="beam6" serif:id="beam"><path id="beam7" serif:id="beam" d="M60.676,54.167c-1.907,-1.907 -5.004,-1.907 -6.911,0l-0.02,0.02c-1.907,1.907 -1.907,5.004 0,6.911c1.907,1.907 5.004,1.907 6.911,-0l0.02,-0.02c1.907,-1.907 1.907,-5.004 0,-6.911Z" style="fill:#fff;"/></g><g id="beam8" serif:id="beam"><path id="beam9" serif:id="beam" d="M14.524,34.623c-2.702,0 -4.896,2.194 -4.896,4.896l0,0.01c0,2.702 2.194,4.896 4.896,4.896c2.702,0 4.896,-2.194 4.896,-4.896l0,-0.01c0,-2.702 -2.194,-4.896 -4.896,-4.896Z" style="fill:#fff;"/></g><g id="beam10" serif:id="beam"><path id="beam11" serif:id="beam" d="M44.216,64.534c0,-2.705 -2.196,-4.901 -4.901,-4.901c-2.704,-0 -4.9,2.196 -4.9,4.901c-0,2.704 2.196,4.9 4.9,4.9c2.705,0 4.901,-2.196 4.901,-4.9Z" style="fill:#fff;"/></g><g id="beam12" serif:id="beam"><path id="beam13" serif:id="beam" d="M25.734,17.943c-1.911,-1.911 -5.015,-1.911 -6.926,0l-0.005,0.005c-1.911,1.911 -1.911,5.015 0,6.926c1.911,1.911 5.015,1.911 6.926,0l0.005,-0.005c1.911,-1.911 1.911,-5.014 0,-6.926Z" style="fill:#fff;"/></g><g id="beam14" serif:id="beam"><path id="beam15" serif:id="beam" d="M64.103,34.623c-2.7,0 -4.892,2.192 -4.892,4.892l-0,0.019c-0,2.699 2.192,4.891 4.892,4.891c2.699,0 4.891,-2.192 4.891,-4.891l0,-0.019c0,-2.7 -2.192,-4.892 -4.891,-4.892Z" style="fill:#fff;"/></g></g></g></svg>
+    </template>
+</a>
+
+<script>
+(function() {
+    const LOCAL_STORAGE_KEY = 'piccoloThemeMode'
+
+    var initialMode = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+    if (initialMode) {
+        // Make sure the value in local storage is valid
+        if (['light', 'dark', 'darkest'].indexOf(initialMode) == -1) {
+            initialMode = 'light'
+            localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+        }
+    } else {
+        // Check if the client prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            initialMode = 'dark'
+        } else {
+            initialMode = 'light'
+        }
+        localStorage.setItem(LOCAL_STORAGE_KEY, initialMode)
+    }
+
+    document.documentElement.dataset.mode = initialMode
+
+    PetiteVue.createApp({
+        'mode': initialMode,
+        handleClick() {
+            let currentMode = this.mode
+
+            if (currentMode == 'light') {
+                this.mode = 'dark'
+            } else if (currentMode == 'dark') {
+                this.mode = 'darkest'
+            } else if (currentMode == 'darkest') {
+                this.mode = 'light'
+            }
+
+            document.documentElement.dataset.mode = this.mode
+            localStorage.setItem(LOCAL_STORAGE_KEY, this.mode)
+
+            console.log(this.mode)
+        }
+    }).mount('#mode_toggle')
+})()
+</script>
+            <p class="mobile_search_link">
+                <a href="search.html" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 64" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <path d="M14.873 40.009c-2.315-3.943-3.642-8.532-3.642-13.429C11.231 11.91 23.141 0 37.811 0s26.58 11.91 26.58 26.58-11.91 26.58-26.58 26.58a26.44 26.44 0 0 1-14.277-4.161L9.739 62.794a3.12 3.12 0 0 1-4.413 0L.913 58.382c-1.217-1.218-1.217-3.196 0-4.413l13.96-13.96zM37.811 8.054c10.225 0 18.526 8.301 18.526 18.526s-8.301 18.526-18.526 18.526-18.526-8.301-18.526-18.526S27.586 8.054 37.811 8.054z" fill="#fff" />
+                    </svg>
+                </a>
+            </p>
+        
+
+        <div class="searchbox_wrapper">
+            
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+    </nav>
+</div>
+
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Problem Addressed</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#how-it-works">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init_flow.html">Flowtest Internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="queries_ref.html">Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="flow_parser_ref.html">Parser</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Public API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="flowtest_ref.html">Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">return to top</a></li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="flow_parser_ref.html"
+                          title="previous chapter">Flow Parser</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="flowtest_ref.html"
+                          title="next chapter">Flowtest module</a></p>
+  </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="public-module">
+<h1>Public Module<a class="headerlink" href="#public-module" title="Link to this heading">¶</a></h1>
+<p>This is the module that third party queries should develop
+against, containing the documented interfaces and data objects
+that can be used by queries</p>
+<section id="module-public.contracts">
+<span id="contracts"></span><h2>Contracts<a class="headerlink" href="#module-public.contracts" title="Link to this heading">¶</a></h2>
+<p>Interface definitions for custom queries</p>
+<p>Caution:: If building a custom query, only develop against the ref:mod:<cite>public</cite> module
+otherwise the custom query code will break on upgrades.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="public.contracts.FlowParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.contracts.</span></span><span class="sig-name descname"><span class="pre">FlowParser</span></span><a class="headerlink" href="#public.contracts.FlowParser" title="Link to this definition">¶</a></dt>
+<dd><p>Exposes global information about the current flow</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.FlowParser.get_input_field_elems">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_input_field_elems</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.FlowParser.get_input_field_elems" title="Link to this definition">¶</a></dt>
+<dd><p>Named XML elements that are children of Screen Flow Input Text Elements
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code>]]</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only returns variables from current flow</p>
+</div>
+<p>Returns: None if none present in flow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set[ET._Element] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.FlowParser.get_input_variables">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_input_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.FlowParser.get_input_variables" title="Link to this definition">¶</a></dt>
+<dd><p>Get Flow variables available for input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{(&lt;class ‘str’&gt;, &lt;class ‘str’&gt;)}</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>path</strong> (<em>str</em><em> | </em><em>None</em>) – </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: (filename, element_name) corresponding to all variables available for input</dt><dd><p>or None if none found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.contracts.</span></span><span class="sig-name descname"><span class="pre">QueryProcessor</span></span><a class="headerlink" href="#public.contracts.QueryProcessor" title="Link to this definition">¶</a></dt>
+<dd><p>Queries must implement this class.</p>
+<ul class="simple">
+<li><p>Queries are instantiated <em>once</em> per flow run,
+and the same query instance is passed to all
+subflows. Therefore, you can store internal state
+in the query, for example querying for all sources
+when given the process root command, and then using
+those sources in subsequent invocations.</p></li>
+<li><p>Queries are passed the full BranchState at every
+invocation, but should never write to this state</p></li>
+<li><p>Queries are passed a parser instance with a number
+of higher level functions to search for flow inputs
+and outputs, but access to making raw ET queries
+is still possible. Never write to the parser
+instance.</p></li>
+<li><p>Examine the documentation for the parser instance.</p></li>
+</ul>
+<p><strong>CAUTION</strong> The parser and BranchState API is still
+in development, so early queries may break on upgrade,
+until a more formal release is made, at which point
+older APIs will be maintained for backwards compatability.</p>
+<p>Please stay in contact with the project developers if you are writing
+custom queries or would prefer additional parser functionality.</p>
+<ul class="simple">
+<li><p>do not rely on _methods in the parser being stable
+across even minor releases.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor.__init__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.QueryProcessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Constructor is passed only a FlowParser instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>first</strong> (<em>Parser that has parsed the</em>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor.handle_crawl_element">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_crawl_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.QueryProcessor.handle_crawl_element" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="#public.data_obj.QueryResult" title="public.data_obj.QueryResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryResult</span></code></a>]]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>state</strong> (<a class="reference internal" href="#public.contracts.State" title="public.contracts.State"><em>State</em></a>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor.handle_final">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_final</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_states</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.QueryProcessor.handle_final" title="Link to this definition">¶</a></dt>
+<dd><p>Invoked when crawl is complete for the flow and all subflows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>all_states</strong> (<em>(</em><em>[</em><a class="reference internal" href="#public.contracts.State" title="public.contracts.State"><em>State</em></a><em>]</em><em>,</em><em>)</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<a class="reference internal" href="#public.data_obj.QueryResult" title="public.data_obj.QueryResult">QueryResult</a>] | None</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor.handle_flow_enter">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_flow_enter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.QueryProcessor.handle_flow_enter" title="Link to this definition">¶</a></dt>
+<dd><p>Invoked when a flow or subflow is first entered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="#public.data_obj.QueryResult" title="public.data_obj.QueryResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">QueryResult</span></code></a>]]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>state</strong> (<a class="reference internal" href="#public.contracts.State" title="public.contracts.State"><em>State</em></a>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.contracts.QueryProcessor.set_preset_name">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_preset_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.contracts.QueryProcessor.set_preset_name" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#public.data_obj.Preset" title="public.data_obj.Preset"><code class="xref py py-class docutils literal notranslate"><span class="pre">Preset</span></code></a>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>preset_name</strong> (<em>str</em><em> | </em><em>None</em>) – </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Preset that will be used in subsequent processing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.contracts.State">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.contracts.</span></span><span class="sig-name descname"><span class="pre">State</span></span><a class="headerlink" href="#public.contracts.State" title="Link to this definition">¶</a></dt>
+<dd><p>Stores DataInfluencePaths in the current execution step</p>
+</dd></dl>
+
+</section>
+<section id="module-public.data_obj">
+<span id="data-objects"></span><h2>Data Objects<a class="headerlink" href="#module-public.data_obj" title="Link to this heading">¶</a></h2>
+<p>Definitions of data classes used for querying and reporting</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.BranchVisitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">BranchVisitor</span></span><a class="headerlink" href="#public.data_obj.BranchVisitor" title="Link to this definition">¶</a></dt>
+<dd><p>BranchVisitor(current_label: ‘str’, previous_label: ‘str | None’, token: ‘str | None’ = None, history: ‘((str, str),)’ = &lt;factory&gt;)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.BranchVisitor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.BranchVisitor.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.CrawlStep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">CrawlStep</span></span><a class="headerlink" href="#public.data_obj.CrawlStep" title="Link to this definition">¶</a></dt>
+<dd><p>CrawlStep(step: ‘int’, visitor: ‘BranchVisitor’, element_name: ‘str’)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.CrawlStep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.CrawlStep.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step</strong> (<em>int</em>) – </p></li>
+<li><p><strong>visitor</strong> (<a class="reference internal" href="#public.data_obj.BranchVisitor" title="public.data_obj.BranchVisitor"><em>BranchVisitor</em></a>) – </p></li>
+<li><p><strong>element_name</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluencePath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">DataInfluencePath</span></span><a class="headerlink" href="#public.data_obj.DataInfluencePath" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a data influence between two <em>named</em> elements,
+with a history of influence statements explaining the influence.</p>
+<p>The chains of influence statements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">.</span><span class="n">foo</span> <span class="o">-&gt;</span> <span class="n">B</span><span class="o">.</span><span class="n">bar</span> <span class="ow">in</span> <span class="n">element</span> <span class="n">foo</span>
+<span class="n">B</span> <span class="o">-&gt;</span> <span class="n">C</span> <span class="ow">in</span> <span class="n">element</span> <span class="n">bar</span>
+</pre></div>
+</div>
+<p>are stored for reporting.</p>
+<p>Data Influence Paths are immutable. When flow propagation occurs,
+new paths are created and old paths kept until the variable is reassigned.</p>
+<dl class="simple">
+<dt>This is accomplished by maintaining an influence_map::</dt><dd><p>(flow_path, elem_name) -&gt; set(DataInfluencePaths)</p>
+</dd>
+</dl>
+<p>that tracks all influencers. If a combination of values influences
+a variable, we <em>copy</em> paths for these values, append them, and assign
+them to the influencer. So the usual operations are copy flow + extend.
+When assignment happens, we change which flows a given variable points
+to, and let python garbage collection delete flows when no variable
+points to them.</p>
+<p>When symbolic execution exits a subflow,
+all paths that do not influence a return value are
+dropped.</p>
+<p><strong>Caution</strong>: Only instantiate with provided class method
+builders to ensure data consistency.
+TODO: add support for labels.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluencePath.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influenced_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influenced_property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influencer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influencer_property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influenced_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influencer_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influenced_type_info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.DataInfluencePath.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluencePath.combine">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.DataInfluencePath.combine" title="Link to this definition">¶</a></dt>
+<dd><p>Combine two paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#public.data_obj.DataInfluencePath" title="public.data_obj.DataInfluencePath"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataInfluencePath</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>start_flow</strong> (<a class="reference internal" href="#public.data_obj.DataInfluencePath" title="public.data_obj.DataInfluencePath"><em>DataInfluencePath</em></a>) – the new path starts with this influencer</p></li>
+<li><p><strong>end_flow</strong> (<a class="reference internal" href="#public.data_obj.DataInfluencePath" title="public.data_obj.DataInfluencePath"><em>DataInfluencePath</em></a>) – the new path ends with this flow’s influenced</p></li>
+<li><p><strong>cross_flow</strong> (<em>bool</em>) – whether the end dataflow is in a different flow</p></li>
+<li><p><strong>type_override</strong> (<a class="reference internal" href="#public.data_obj.VariableType" title="public.data_obj.VariableType"><em>VariableType</em></a><em> | </em><em>None</em>) – specify type directly, otherwise we keep the
+end_flow’s type unchanged</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A influences C if start_flow is A influences B, and end_flow is B
+influences C</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError if the influencers don't match up and crossflow is False as cross-flow</strong> – </p></li>
+<li><p><strong>dataflows will have different names and filenames.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluencePath.report_influence_tuples">
+<span class="sig-name descname"><span class="pre">report_influence_tuples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.DataInfluencePath.report_influence_tuples" title="Link to this definition">¶</a></dt>
+<dd><p>Returns simple chain of variables for high level analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of (flow_filename, influenced_var_name)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluencePath.short_report">
+<span class="sig-name descname"><span class="pre">short_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.DataInfluencePath.short_report" title="Link to this definition">¶</a></dt>
+<dd><p>Prints a short report of influence chain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>arrows</strong> (<em>bool</em>) – whether the report should use ‘-&gt;’ (True) or commas
+(False) for statement separators</p></li>
+<li><p><strong>filenames</strong> (<em>bool</em>) – whether the report should include filenames in the report</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string containing summary report.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluenceStatement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">DataInfluenceStatement</span></span><a class="headerlink" href="#public.data_obj.DataInfluenceStatement" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a statement in which one variable influences
+another, usually as the result of an assignment,
+formula or template field, or builtin function.
+These statement are the basic building blocks of dataflows.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.DataInfluenceStatement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">influenced_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influencer_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.DataInfluenceStatement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>influenced_var</strong> (<em>str</em>) – </p></li>
+<li><p><strong>influencer_var</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>element_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>comment</strong> (<em>str</em>) – </p></li>
+<li><p><strong>flow_path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>line_no</strong> (<em>int</em>) – </p></li>
+<li><p><strong>source_text</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.InfluenceStatementEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">InfluenceStatementEncoder</span></span><a class="headerlink" href="#public.data_obj.InfluenceStatementEncoder" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.InfluenceStatementEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.InfluenceStatementEncoder.default" title="Link to this definition">¶</a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.Preset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">Preset</span></span><a class="headerlink" href="#public.data_obj.Preset" title="Link to this definition">¶</a></dt>
+<dd><p>Preset(preset_name: ‘str’, preset_owner: ‘str | None’, queries: ‘{QueryDescription}’)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.Preset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preset_owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queries</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.Preset.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preset_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>preset_owner</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>queries</strong> (<em>{&lt;class 'public.data_obj.QueryDescription'&gt;}</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.QueryDescription">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">QueryDescription</span></span><a class="headerlink" href="#public.data_obj.QueryDescription" title="Link to this definition">¶</a></dt>
+<dd><p>QueryDescription(query_id: ‘str’, query_name: ‘str’, severity: ‘Severity’, query_description: ‘str’, help_url: ‘str | None’ = None, query_version: ‘str’ = ‘0’, is_security: ‘bool’ = True)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.QueryDescription.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_security</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.QueryDescription.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>query_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>severity</strong> (<a class="reference internal" href="#public.enums.Severity" title="public.enums.Severity"><em>Severity</em></a>) – </p></li>
+<li><p><strong>query_description</strong> (<em>str</em>) – </p></li>
+<li><p><strong>help_url</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>query_version</strong> (<em>str</em>) – </p></li>
+<li><p><strong>is_security</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.QueryResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">QueryResult</span></span><a class="headerlink" href="#public.data_obj.QueryResult" title="Link to this definition">¶</a></dt>
+<dd><p>The QueryProcessor performs only local analysis, for example searching
+for whether variables <em>within</em> a given Flow Element are assigned to a
+dangerous sink – for example a filter used to determine which objects
+should be deleted. Therefore, the execution of a query consists of
+two steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Investigate the flow element to determine dangerous influence statements.</p></li>
+<li><p>Decide whether the influencing variable is user controlled.</p></li>
+</ul>
+</div></blockquote>
+<p>The second step is global analysis and is performed by querying BranchState,
+with the variable name of interest. Branch state will return all
+tainted dataflows to this variable.</p>
+<p>The query module will then pass the influence statement together with
+the returned dataflows to the result module. Therefore, the result
+passed is a pair of objects: a data influence statement and a list of flows.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.QueryResult.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">influence_statement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.QueryResult.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>influence_statement</strong> (<a class="reference internal" href="#public.data_obj.DataInfluenceStatement" title="public.data_obj.DataInfluenceStatement"><em>DataInfluenceStatement</em></a>) – </p></li>
+<li><p><strong>paths</strong> (<em>frozenset</em><em>[</em><a class="reference internal" href="#public.data_obj.DataInfluencePath" title="public.data_obj.DataInfluencePath"><em>DataInfluencePath</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.data_obj.VariableType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.data_obj.</span></span><span class="sig-name descname"><span class="pre">VariableType</span></span><a class="headerlink" href="#public.data_obj.VariableType" title="Link to this definition">¶</a></dt>
+<dd><p>This class contains type information for a variable</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="public.data_obj.VariableType.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_optional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.data_obj.VariableType.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> (<em>str</em>) – </p></li>
+<li><p><strong>datatype</strong> (<a class="reference internal" href="#public.enums.DataType" title="public.enums.DataType"><em>DataType</em></a><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>reference</strong> (<a class="reference internal" href="#public.enums.ReferenceType" title="public.enums.ReferenceType"><em>ReferenceType</em></a><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>is_collection</strong> (<em>bool</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>is_optional</strong> (<em>bool</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>object_type</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>properties</strong> (<em>set</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>is_input</strong> (<em>bool</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>is_output</strong> (<em>bool</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-public.enums">
+<span id="enums"></span><h2>Enums<a class="headerlink" href="#module-public.enums" title="Link to this heading">¶</a></h2>
+<p>Public Enum types</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.ConnType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">ConnType</span></span><a class="headerlink" href="#public.enums.ConnType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><a class="headerlink" href="#public.enums.DataType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.FlowType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">FlowType</span></span><a class="headerlink" href="#public.enums.FlowType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.FlowValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">FlowValue</span></span><a class="headerlink" href="#public.enums.FlowValue" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.ReferenceType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">ReferenceType</span></span><a class="headerlink" href="#public.enums.ReferenceType" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.RunMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">RunMode</span></span><a class="headerlink" href="#public.enums.RunMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="public.enums.Severity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">public.enums.</span></span><span class="sig-name descname"><span class="pre">Severity</span></span><a class="headerlink" href="#public.enums.Severity" title="Link to this definition">¶</a></dt>
+<dd><p>All queries must be labelled with a severity field. In the report, they will
+be sorted by severity and the severity will be displayed. The severity is per
+Query, not per result, so if your code contains branching logic in which one
+result is considered more severe, consider defining multiple queries and explaining
+the reason for the difference in severity. An example of explaining
+the reason for severity can be found in the class definition below:</p>
+</dd></dl>
+
+</section>
+<section id="module-public.parse_utils">
+<span id="parsing-utilities"></span><h2>Parsing Utilities<a class="headerlink" href="#module-public.parse_utils" title="Link to this heading">¶</a></h2>
+<p>Public Utility module for xml queries on flows.</p>
+<p>The goal is to move all xml queries into this module,
+so they can be shared by other modules and made available
+to third parties in custom query development.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The distinction between what goes in here and
+what goes in <a class="reference internal" href="flow_parser_ref.html#module-flow_parser.parse" title="flow_parser.parse"><code class="xref py py-mod docutils literal notranslate"><span class="pre">flow_parser.parse</span></code></a> is that the parser
+has access to the flow root and does global analysis on flows,
+whereas the utility functions here are stateless.</p>
+</div>
+<p>If you find yourself doing manual xml queries, look in this module
+first and add a method if one isn’t already present.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.CONNECTOR">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">CONNECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'connector'</span></em><a class="headerlink" href="#public.parse_utils.CONNECTOR" title="Link to this definition">¶</a></dt>
+<dd><p>generic connector label.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.CONN_LIST">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">CONN_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['connector',</span> <span class="pre">'defaultConnector',</span> <span class="pre">'nextValueConnector',</span> <span class="pre">'faultConnector',</span> <span class="pre">'noMoreValuesConnector']</span></em><a class="headerlink" href="#public.parse_utils.CONN_LIST" title="Link to this definition">¶</a></dt>
+<dd><p>list of all known connector tags</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.DEFAULT_CONN">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_CONN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'defaultConnector'</span></em><a class="headerlink" href="#public.parse_utils.DEFAULT_CONN" title="Link to this definition">¶</a></dt>
+<dd><p>default connector in ‘decisions’ Flow Element</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.FAULT_CONNECTOR">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">FAULT_CONNECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'faultConnector'</span></em><a class="headerlink" href="#public.parse_utils.FAULT_CONNECTOR" title="Link to this definition">¶</a></dt>
+<dd><p>fault connector launched by some actions</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.NEXT_VALUE_CONNECTOR">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">NEXT_VALUE_CONNECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nextValueConnector'</span></em><a class="headerlink" href="#public.parse_utils.NEXT_VALUE_CONNECTOR" title="Link to this definition">¶</a></dt>
+<dd><p>next value connector label used in loops</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.NO_MORE_CONN">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">NO_MORE_CONN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'noMoreValuesConnector'</span></em><a class="headerlink" href="#public.parse_utils.NO_MORE_CONN" title="Link to this definition">¶</a></dt>
+<dd><p>connector for when a loop is exhausted</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.NS_LEN">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">NS_LEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">41</span></em><a class="headerlink" href="#public.parse_utils.NS_LEN" title="Link to this definition">¶</a></dt>
+<dd><p>length of namespace string (including {})</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.STRING_LITERAL_TOKEN">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">STRING_LITERAL_TOKEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'**</span> <span class="pre">STRING</span> <span class="pre">LITERAL</span> <span class="pre">**'</span></em><a class="headerlink" href="#public.parse_utils.STRING_LITERAL_TOKEN" title="Link to this definition">¶</a></dt>
+<dd><p>string literal token (can’t be a var name)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_assignment_statement_dicts">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_assignment_statement_dicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_assignment_statement_dicts" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, {&lt;class ‘str’&gt;: &lt;class ‘str’&gt;}]]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – </p>
+</dd>
+</dl>
+<p>Returns assignment statement keywords in ‘assignments’ elems
+:param elem: elem to parse, should have a tag of “assignments”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[(operator, dict)] where dict is suitable for constructing
+DataInfluenceStatements via **args unpack passed to the constructor.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str, {&lt;class ‘str’&gt;: &lt;class ‘str’&gt;}] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_by_tag">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_by_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tagname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_by_tag" title="Link to this definition">¶</a></dt>
+<dd><p>Get list of all elem with the tag (ignoring ns).</p>
+<p>Convenience method as manually dealing with namespaces is clumsy.</p>
+<p class="rubric">Notes</p>
+<p>WARNING: does not recurse. Use this for top level flow
+elements – e.g. screens, variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>XML Elements else [] if no matches</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>elem</strong> (<em>ET._Element</em>) – </p></li>
+<li><p><strong>tagname</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[ET.etree._Element]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_conn_target_map">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_conn_target_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_conn_target_map" title="Link to this definition">¶</a></dt>
+<dd><p>returns map from connectors at elem to where they point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{&lt;class ‘lxml.etree._Element’&gt;: (&lt;class ‘str’&gt;, &lt;enum ‘ConnType’&gt;, &lt;class ‘bool’&gt;)}</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – base element containing connectors (Flow Element)</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>connector element -&gt; target reference (string), connector type, is_optional (True if connector is optional)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_name">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_name" title="Link to this definition">¶</a></dt>
+<dd><p>returns the string name of elem or None if no name or ‘*’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em><em> | </em><em>None</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_named_elems">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_named_elems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_named_elems" title="Link to this definition">¶</a></dt>
+<dd><p>Get all descendents (recursive) of elem that have a <code class="docutils literal notranslate"><span class="pre">name</span></code> tag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – base element whose children to search</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[elem] or [] if None found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_subflow_input_map">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_subflow_input_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_subflow_input_map" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a map from caller variable to variable in called flow
+:rtype: {&lt;class ‘str’&gt;: &lt;class ‘str’&gt;}</p>
+<blockquote>
+<div><p>E.g. in this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">inputAssignments</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">input_var1</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">elementReference</span><span class="o">&gt;</span><span class="n">parent_input_var</span><span class="o">&lt;/</span><span class="n">elementReference</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">inputAssignments</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>we return:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;parent_input_var&#39;</span> <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;input_var1&#39;</span> <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subflow</strong> (<em>_Element</em>) – XML Element</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>map from parent output_variable name to child input variable
+name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{&lt;class ‘str’&gt;: &lt;class ‘str’&gt;}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.get_subflow_output_map">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">get_subflow_output_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subflow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.get_subflow_output_map" title="Link to this definition">¶</a></dt>
+<dd><p>returns a tuple (bool:, map: child name –&gt; parent name)
+where the first return value is true if outputs are automatically assigned
+in which case they are flow_name.flow_var</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subflow</strong> (<em>_Element</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.is_decision">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">is_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.is_decision" title="Link to this definition">¶</a></dt>
+<dd><p>True if this is a decision Flow Element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – Flow Element</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if decision</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.is_goto_connector">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">is_goto_connector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.is_goto_connector" title="Link to this definition">¶</a></dt>
+<dd><p>Is this element a goto?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – connector element</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>whether this is a goto element</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.is_loop">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">is_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.is_loop" title="Link to this definition">¶</a></dt>
+<dd><p>Is this a Loop Flow Element?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>elem</strong> (<em>_Element</em>) – xml element</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if this is a loop element</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.logger">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">public.parse_utils</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#public.parse_utils.logger" title="Link to this definition">¶</a></dt>
+<dd><p>module logger</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.ns">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">ns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'{http://soap.sforce.com/2006/04/metadata}'</span></em><a class="headerlink" href="#public.parse_utils.ns" title="Link to this definition">¶</a></dt>
+<dd><p>sfdc namespace</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="public.parse_utils.parse_expression">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">parse_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#public.parse_utils.parse_expression" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>txt</strong> (<em>str</em>) – expression or template definition string in which merge-fields are present</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of elementRef names (empty list if no matches)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="public.parse_utils.reg">
+<span class="sig-prename descclassname"><span class="pre">public.parse_utils.</span></span><span class="sig-name descname"><span class="pre">reg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\{!([^}]*)')</span></em><a class="headerlink" href="#public.parse_utils.reg" title="Link to this definition">¶</a></dt>
+<dd><p>regular expression to extract variables from formulas and templates</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+    
+        <div id="show_right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&lt;</span><span>Page contents<span></a></p>
+        </div>
+
+        <div id="right_sidebar">
+            <p><a class="toggle_right_sidebar" href="#"><span class="icon">&gt;</span><span>Page contents:<span></a></p>
+            <div class="page_toc">
+                <ul>
+<li><a class="reference internal" href="#">Public Module</a><ul>
+<li><a class="reference internal" href="#module-public.contracts">Contracts</a><ul>
+<li><a class="reference internal" href="#public.contracts.FlowParser"><code class="docutils literal notranslate"><span class="pre">FlowParser</span></code></a><ul>
+<li><a class="reference internal" href="#public.contracts.FlowParser.get_input_field_elems"><code class="docutils literal notranslate"><span class="pre">FlowParser.get_input_field_elems()</span></code></a></li>
+<li><a class="reference internal" href="#public.contracts.FlowParser.get_input_variables"><code class="docutils literal notranslate"><span class="pre">FlowParser.get_input_variables()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor"><code class="docutils literal notranslate"><span class="pre">QueryProcessor</span></code></a><ul>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor.__init__"><code class="docutils literal notranslate"><span class="pre">QueryProcessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor.handle_crawl_element"><code class="docutils literal notranslate"><span class="pre">QueryProcessor.handle_crawl_element()</span></code></a></li>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor.handle_final"><code class="docutils literal notranslate"><span class="pre">QueryProcessor.handle_final()</span></code></a></li>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor.handle_flow_enter"><code class="docutils literal notranslate"><span class="pre">QueryProcessor.handle_flow_enter()</span></code></a></li>
+<li><a class="reference internal" href="#public.contracts.QueryProcessor.set_preset_name"><code class="docutils literal notranslate"><span class="pre">QueryProcessor.set_preset_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.contracts.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-public.data_obj">Data Objects</a><ul>
+<li><a class="reference internal" href="#public.data_obj.BranchVisitor"><code class="docutils literal notranslate"><span class="pre">BranchVisitor</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.BranchVisitor.__init__"><code class="docutils literal notranslate"><span class="pre">BranchVisitor.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.CrawlStep"><code class="docutils literal notranslate"><span class="pre">CrawlStep</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.CrawlStep.__init__"><code class="docutils literal notranslate"><span class="pre">CrawlStep.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.DataInfluencePath"><code class="docutils literal notranslate"><span class="pre">DataInfluencePath</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.DataInfluencePath.__init__"><code class="docutils literal notranslate"><span class="pre">DataInfluencePath.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#public.data_obj.DataInfluencePath.combine"><code class="docutils literal notranslate"><span class="pre">DataInfluencePath.combine()</span></code></a></li>
+<li><a class="reference internal" href="#public.data_obj.DataInfluencePath.report_influence_tuples"><code class="docutils literal notranslate"><span class="pre">DataInfluencePath.report_influence_tuples()</span></code></a></li>
+<li><a class="reference internal" href="#public.data_obj.DataInfluencePath.short_report"><code class="docutils literal notranslate"><span class="pre">DataInfluencePath.short_report()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.DataInfluenceStatement"><code class="docutils literal notranslate"><span class="pre">DataInfluenceStatement</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.DataInfluenceStatement.__init__"><code class="docutils literal notranslate"><span class="pre">DataInfluenceStatement.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.InfluenceStatementEncoder"><code class="docutils literal notranslate"><span class="pre">InfluenceStatementEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.InfluenceStatementEncoder.default"><code class="docutils literal notranslate"><span class="pre">InfluenceStatementEncoder.default()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.Preset"><code class="docutils literal notranslate"><span class="pre">Preset</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.Preset.__init__"><code class="docutils literal notranslate"><span class="pre">Preset.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.QueryDescription"><code class="docutils literal notranslate"><span class="pre">QueryDescription</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.QueryDescription.__init__"><code class="docutils literal notranslate"><span class="pre">QueryDescription.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.QueryResult"><code class="docutils literal notranslate"><span class="pre">QueryResult</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.QueryResult.__init__"><code class="docutils literal notranslate"><span class="pre">QueryResult.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#public.data_obj.VariableType"><code class="docutils literal notranslate"><span class="pre">VariableType</span></code></a><ul>
+<li><a class="reference internal" href="#public.data_obj.VariableType.__init__"><code class="docutils literal notranslate"><span class="pre">VariableType.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-public.enums">Enums</a><ul>
+<li><a class="reference internal" href="#public.enums.ConnType"><code class="docutils literal notranslate"><span class="pre">ConnType</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.FlowType"><code class="docutils literal notranslate"><span class="pre">FlowType</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.FlowValue"><code class="docutils literal notranslate"><span class="pre">FlowValue</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.ReferenceType"><code class="docutils literal notranslate"><span class="pre">ReferenceType</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.RunMode"><code class="docutils literal notranslate"><span class="pre">RunMode</span></code></a></li>
+<li><a class="reference internal" href="#public.enums.Severity"><code class="docutils literal notranslate"><span class="pre">Severity</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-public.parse_utils">Parsing Utilities</a><ul>
+<li><a class="reference internal" href="#public.parse_utils.CONNECTOR"><code class="docutils literal notranslate"><span class="pre">CONNECTOR</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.CONN_LIST"><code class="docutils literal notranslate"><span class="pre">CONN_LIST</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.DEFAULT_CONN"><code class="docutils literal notranslate"><span class="pre">DEFAULT_CONN</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.FAULT_CONNECTOR"><code class="docutils literal notranslate"><span class="pre">FAULT_CONNECTOR</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.NEXT_VALUE_CONNECTOR"><code class="docutils literal notranslate"><span class="pre">NEXT_VALUE_CONNECTOR</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.NO_MORE_CONN"><code class="docutils literal notranslate"><span class="pre">NO_MORE_CONN</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.NS_LEN"><code class="docutils literal notranslate"><span class="pre">NS_LEN</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.STRING_LITERAL_TOKEN"><code class="docutils literal notranslate"><span class="pre">STRING_LITERAL_TOKEN</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_assignment_statement_dicts"><code class="docutils literal notranslate"><span class="pre">get_assignment_statement_dicts()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_by_tag"><code class="docutils literal notranslate"><span class="pre">get_by_tag()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_conn_target_map"><code class="docutils literal notranslate"><span class="pre">get_conn_target_map()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_name"><code class="docutils literal notranslate"><span class="pre">get_name()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_named_elems"><code class="docutils literal notranslate"><span class="pre">get_named_elems()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_subflow_input_map"><code class="docutils literal notranslate"><span class="pre">get_subflow_input_map()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.get_subflow_output_map"><code class="docutils literal notranslate"><span class="pre">get_subflow_output_map()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.is_decision"><code class="docutils literal notranslate"><span class="pre">is_decision()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.is_goto_connector"><code class="docutils literal notranslate"><span class="pre">is_goto_connector()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.is_loop"><code class="docutils literal notranslate"><span class="pre">is_loop()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.ns"><code class="docutils literal notranslate"><span class="pre">ns</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.parse_expression"><code class="docutils literal notranslate"><span class="pre">parse_expression()</span></code></a></li>
+<li><a class="reference internal" href="#public.parse_utils.reg"><code class="docutils literal notranslate"><span class="pre">reg</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+        </div>
+    
+
+      <div class="clearer"></div>
+    </div>
+    <div class="button_nav_wrapper">
+        <div class="button_nav">
+            <div class="left">
+                
+                <a href="flow_parser_ref.html">
+                    <span class="icon">&lt;</span><span>Flow Parser</span></a>
+                
+            </div>
+
+            <div class="right">
+                
+                    <a href="flowtest_ref.html"><span>Flowtest module</span><span class="icon">&gt;</span></a>
+                
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+
+<p id="theme_credit">Styled using the <a href="https://github.com/piccolo-orm/piccolo_theme">Piccolo Theme</a></p>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "orgName": "Flow Test Org",
+  "edition": "Developer",
+  "hasSampleData": true,
+  "features": ["EnableSetPasswordInApi", "Interaction"],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    }
+  }
+}

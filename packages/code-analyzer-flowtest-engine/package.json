@@ -33,6 +33,7 @@
   },
   "files": [
     "dist",
+    "flowtest",
     "LICENSE",
     "package.json"
   ],

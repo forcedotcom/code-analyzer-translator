@@ -1,0 +1,11 @@
+{
+    "Email": "standard_user@sfdx.org",
+    "Alias": "standard_user",
+    "TimeZoneSidKey": "America/Denver",
+    "LocaleSidKey": "en_US",
+    "EmailEncodingKey": "UTF-8",
+    "LanguageLocaleKey": "en_US",
+    "profileName": "Standard Platform User",
+    "permsets": ["Dreamhouse", "Cloudhouse"],
+    "generatePassword": true
+}

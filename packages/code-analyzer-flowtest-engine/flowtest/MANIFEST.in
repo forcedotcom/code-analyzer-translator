@@ -1,0 +1,6 @@
+include flowtest/data/footer.out
+include flowtest/data/header.out
+include flowtest/data/FlowSecurity_preset.txt
+include flowtest/data/flowtest_query_data.txt
+exclude tests/
+recursive-include package *

@@ -1,0 +1,12 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "not_shared__c",
+                "referenceId": "not_shared__cRef1"
+            },
+            "Name": "not shared name",
+            "field__c": "data in not shared field"
+        }
+    ]
+}
