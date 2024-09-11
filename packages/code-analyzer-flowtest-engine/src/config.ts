@@ -2,7 +2,7 @@ import {SemVer} from 'semver';
 import {ConfigDescription, ConfigValueExtractor} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {FlowTestEngine} from "./engine";
-import {PythonVersionIdentifier} from "./python/PythonVersionIdentifier";
+import {PythonVersionDescriptor, PythonVersionIdentifier} from "./python/PythonVersionIdentifier";
 
 const MINIMUM_PYTHON_VERSION = '3.10.0';
 export const PYTHON_COMMAND = 'python_command';
@@ -47,32 +47,32 @@ class FlowTestEngineConfigValueExtractor {
     }
 
     private async validatePythonCommandPath(configSpecifiedPython: string): Promise<string> {
-        let version: SemVer|null;
+        let versionDescriptor: PythonVersionDescriptor;
         try {
-            version = await this.pythonVersionIdentifier.identifyPythonVersion(configSpecifiedPython);
+            versionDescriptor = await this.pythonVersionIdentifier.identifyPythonVersion(configSpecifiedPython);
         } catch (err) {
             /* istanbul ignore next */
             const errMsg: string = err instanceof Error ? err.message : String(err);
             throw new Error(getMessage('UserSpecifiedPythonCommandProducedError',
                 this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, errMsg));
         }
-        if (!version) {
+        if (!versionDescriptor.version) {
             throw new Error(getMessage('UserSpecifiedPythonCommandProducedUnrecognizableVersion',
                 this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython));
-        } else if (version.compare(MINIMUM_PYTHON_VERSION) < 0) {
+        } else if (versionDescriptor.version.compare(MINIMUM_PYTHON_VERSION) < 0) {
             throw new Error(getMessage('UserSpecifiedPythonBelowMinimumVersion',
-                this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, version.format(), MINIMUM_PYTHON_VERSION));
+                this.delegateExtractor.getFieldPath(PYTHON_COMMAND), configSpecifiedPython, versionDescriptor.version.format(), MINIMUM_PYTHON_VERSION));
         }
-        return configSpecifiedPython;
+        return versionDescriptor.executable;
     }
 
     private async findPythonCommandPathFromEnvironment(): Promise<string> {
         const possiblePythonCommands: string[] = ['python3', 'python'];
         for (const pythonCommand of possiblePythonCommands) {
             try {
-                const version: SemVer | null = await this.pythonVersionIdentifier.identifyPythonVersion(pythonCommand);
-                if (version !== null && version.compare(MINIMUM_PYTHON_VERSION) >= 0) {
-                    return pythonCommand;
+                const versionDescriptor: PythonVersionDescriptor = await this.pythonVersionIdentifier.identifyPythonVersion(pythonCommand);
+                if (versionDescriptor.version !== null && versionDescriptor.version.compare(MINIMUM_PYTHON_VERSION) >= 0) {
+                    return versionDescriptor.executable;
                 }
             } catch (err) {
                 // continue
