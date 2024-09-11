@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "doTheThing": "cd flowtest && pip3 install -r requirements.txt -t deps --upgrade",
-    "build": "tsc --build tsconfig.build.json --verbose && npm run doTheThing",
+    "build": "tsc --build tsconfig.build.json --verbose",
     "test": "jest --coverage",
     "lint": "eslint src/**/*.ts",
     "package": "npm pack",
