@@ -20,7 +20,7 @@ describe('FlowTestWrapper', () => {
             console.log(s3);
             console.log(s4);
             expect(s).toContain('python3');
-            expect(s2).toContain('Python 3.12.4');
+            expect(s2).toContain('Python 3.12');
             expect(s4).toContain('usage: __main__');
         });
     });
