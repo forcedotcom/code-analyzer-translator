@@ -1,4 +1,3 @@
-import {SemVer} from 'semver';
 import {ConfigDescription, ConfigValueExtractor} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {FlowTestEngine} from "./engine";
