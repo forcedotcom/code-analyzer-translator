@@ -36,6 +36,8 @@
   "files": [
     "dist",
     "LICENSE",
+    "pipx.pyz",
+    "FlowTest",
     "package.json"
   ],
   "scripts": {
