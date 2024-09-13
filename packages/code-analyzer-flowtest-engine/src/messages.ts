@@ -28,7 +28,13 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     CouldNotLocatePython:
         `Could not locate a Python v%s+ install using any of the following: %s.\n` +
         `If you have python installed, specify the command in your Code Analyzer configuration as the value of property '%s'.\n` +
-        `If you choose not to install python, you may disable the '%s' engine in your Code Analyzer configuration by setting 'engines.%s.disable_engine' to true.`
+        `If you choose not to install python, you may disable the '%s' engine in your Code Analyzer configuration by setting 'engines.%s.disable_engine' to true.`,
+
+    PythonCommandError:
+        `The following call to python exited with non-zero exit code.\n` +
+        `  Command: %s\n` +
+        `  Exit Code: %d\n` +
+        `  StdErr: \n%s`
 };
 
 export function getMessage(msgId: string, ...args: (string | number)[]): string {
