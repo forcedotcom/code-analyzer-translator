@@ -14,7 +14,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 const rules: FlowTestRuleDescriptor[] = await wrapper.getFlowTestRuleDescriptions();
 
                 const expectedRules: FlowTestRuleDescriptor[] = JSON.parse(await fsp.readFile(
-                    path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts', 'catalog.json'),
+                    path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts', 'catalog.goldfile.json'),
                     {encoding: 'utf-8'}
                 )) as FlowTestRuleDescriptor[];
 

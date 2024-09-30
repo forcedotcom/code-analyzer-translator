@@ -34,7 +34,7 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `The following call to python exited with non-zero exit code.\n` +
         `  Command: %s\n` +
         `  Exit Code: %d\n` +
-        `  StdErr: \n%s`
+        `  StdErr:\n%s`
 };
 
 export function getMessage(msgId: string, ...args: (string | number)[]): string {
