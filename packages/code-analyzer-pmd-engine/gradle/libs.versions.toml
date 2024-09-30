@@ -9,7 +9,7 @@
 gson = "2.11.0"
 hamcrest = "2.2"
 junit-jupiter = "5.10.2"
-pmd = "7.5.0" # !!! IMPORTANT !!! KEEP THIS IN SYNC WITH PMD_VERSION INSIDE OF: src/constants.ts
+pmd = "7.6.0" # !!! IMPORTANT !!! KEEP THIS IN SYNC WITH PMD_VERSION INSIDE OF: src/constants.ts
 slf4j-nop = "2.0.13" # For now, we throw slf4j logs away (using this no-op module). We might use an actual logger in the future.
 
 [libraries]
