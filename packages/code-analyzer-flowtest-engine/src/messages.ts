@@ -13,8 +13,8 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     UnsupportedEngineName:
         `The FlowTestEnginePlugin does not support an engine with name '%s'.`,
 
-    CouldNotParseVersionFromOutput:
-        `Could not parse a version number from output of '%s': %s`,
+    CouldNotParseRuleDescriptions:
+        `Could not parse rule descriptions from FlowTest output: %s`,
 
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
         `The '%s' configuration value was invalid. The command '%s' does not seem to be a recognizable version of Python.`,

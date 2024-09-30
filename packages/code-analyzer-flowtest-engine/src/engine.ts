@@ -26,7 +26,7 @@ export class FlowTestEngine extends Engine {
         this.emitDescribeRulesProgressEvent(0);
         const flowTestRules: FlowTestRuleDescriptor[] = await this.commandWrapper.getFlowTestRuleDescriptions();
         this.emitDescribeRulesProgressEvent(75);
-        const convertedRules = this.convertFlowTestRulesToCodeAnalyzerRules(flowTestRules);
+        const convertedRules = flowTestRules.map(r => toRuleDescription(r));
         this.emitDescribeRulesProgressEvent(100);
         return convertedRules;
     }
@@ -40,44 +40,40 @@ export class FlowTestEngine extends Engine {
             violations: []
         };
     }
+}
 
-    private convertFlowTestRulesToCodeAnalyzerRules(flowTestRules: FlowTestRuleDescriptor[]): RuleDescription[] {
-        return flowTestRules.map(flowTestRule => {
-            return {
-                // The name maps directly over.
-                name: flowTestRule.query_name,
-                severityLevel: this.convertFlowTestSeverityToCodeAnalyzerSeverity(flowTestRule.severity),
-                // All rules in FlowTest are obviously Flow-type.
-                type: RuleType.Flow,
-                // All rules are Recommended, but not all rules are Security rules.
-                tags: flowTestRule.is_security.toLowerCase() === 'true' ? ['Recommended', 'Security'] : ['Recommended'],
-                // The description maps directly over.
-                description: flowTestRule.query_description,
-                resourceUrls: this.convertHelpUrlToResourceUrls(flowTestRule.help_url)
-            }
-        });
-    }
-
-    private convertFlowTestSeverityToCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {
-        switch (flowTestSeverity) {
-            case 'Flow_High_Severity':
-                return SeverityLevel.High;
-            case 'Flow_Moderate_Severity':
-                return SeverityLevel.Moderate;
-            case 'Flow_Low_Severity':
-                return SeverityLevel.Low
-        }
-        throw new Error(`Developer error: invalid severity level ${flowTestSeverity}`);
-    }
-
-    private convertHelpUrlToResourceUrls(helpUrl: string): string[] {
-        // Treat the hardcoded string "none" as equivalent to an empty string.
-        if (helpUrl.toLowerCase() === 'none' || helpUrl === '') {
-            return [];
-        } else {
-            return [helpUrl];
-        }
+function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescription {
+    return {
+        // The name maps directly over.
+        name: flowTestRule.query_name,
+        severityLevel: toCodeAnalyzerSeverity(flowTestRule.severity),
+        // All rules in FlowTest are obviously Flow-type.
+        type: RuleType.Flow,
+        // All rules are Recommended, but not all rules are Security rules.
+        tags: flowTestRule.is_security.toLowerCase() === 'true' ? ['Recommended', 'Security'] : ['Recommended'],
+        // The description maps directly over.
+        description: flowTestRule.query_description,
+        resourceUrls: toResourceUrls(flowTestRule.help_url)
     }
 }
 
+function toCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {
+    switch (flowTestSeverity) {
+        case 'Flow_High_Severity':
+            return SeverityLevel.High;
+        case 'Flow_Moderate_Severity':
+            return SeverityLevel.Moderate;
+        case 'Flow_Low_Severity':
+            return SeverityLevel.Low
+    }
+    throw new Error(`Developer error: invalid severity level ${flowTestSeverity}`);
+}
 
+function toResourceUrls(helpUrl: string): string[] {
+    // Treat the hardcoded string "none" as equivalent to an empty string.
+    if (helpUrl.toLowerCase() === 'none' || helpUrl === '') {
+        return [];
+    } else {
+        return [helpUrl];
+    }
+}

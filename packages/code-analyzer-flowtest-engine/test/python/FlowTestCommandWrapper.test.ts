@@ -2,12 +2,16 @@ import * as fsp from 'node:fs/promises';
 import path from 'node:path';
 import {sync} from 'which';
 import {FlowTestRuleDescriptor, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
+import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
 
 const PATH_TO_PYTHON_EXE: string = sync('python3');
 
 describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
         describe('#getFlowTestRuleDescriptions()', () => {
+            afterEach(() => {
+                jest.restoreAllMocks();
+            })
             it('Returns valid, well-formed rule descriptions', async () => {
                 const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PATH_TO_PYTHON_EXE);
 
@@ -19,6 +23,19 @@ describe('FlowTestCommandWrapper implementations', () => {
                 )) as FlowTestRuleDescriptor[];
 
                 expect(rules).toEqual(expectedRules);
+            // For the sake of CI/CD, set the timeout to a truly absurd value.
+            }, 30000);
+
+            it('When output is unparseable, an informative error is thrown', async () => {
+                jest.spyOn(PythonCommandExecutor.prototype, 'exec').mockImplementation(async (_args, processStdout) => {
+                    processStdout!('This will not parse as valid JSON');
+                });
+
+                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PATH_TO_PYTHON_EXE);
+
+                await expect(wrapper.getFlowTestRuleDescriptions())
+                    .rejects
+                    .toThrow('Could not parse rule descriptions from FlowTest output: This will not parse as valid JSON');
             // For the sake of CI/CD, set the timeout to a truly absurd value.
             }, 30000);
         });

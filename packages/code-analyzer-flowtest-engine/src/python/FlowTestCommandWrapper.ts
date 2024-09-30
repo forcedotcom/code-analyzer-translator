@@ -1,5 +1,6 @@
 import path from 'node:path';
 import {PythonCommandExecutor} from './PythonCommandExecutor';
+import {getMessage} from '../messages';
 
 
 export interface FlowTestCommandWrapper {
@@ -67,6 +68,12 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
             stdout += stdoutMsg;
         }
         await this.pythonCommandExecutor.exec(pythonArgs, processStdout);
-        return JSON.parse(stdout) as FlowTestRuleDescriptor[];
+        // We typically try to avoid reading output directly from stdout, but in this case there's no option to write the rule
+        // descriptions to a file, so we have no choice. At the very least, we can wrap it in a try-catch.
+        try {
+            return JSON.parse(stdout) as FlowTestRuleDescriptor[];
+        } catch (e) {
+            throw new Error(getMessage('CouldNotParseRuleDescriptions', stdout));
+        }
     }
 }
