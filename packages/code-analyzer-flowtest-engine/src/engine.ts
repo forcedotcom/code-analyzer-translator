@@ -2,6 +2,7 @@ import {
     DescribeOptions,
     Engine,
     EngineRunResults,
+    LogLevel,
     RuleDescription,
     RuleType,
     RunOptions,
@@ -22,8 +23,17 @@ export class FlowTestEngine extends Engine {
         return FlowTestEngine.NAME;
     }
 
-    public async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+    public async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
+        if (describeOptions.workspace) {
+            const workspaceFiles: string[] = await describeOptions.workspace.getExpandedFiles();
+            // If a workspace is provided but it contains no flow files, then return no rules.
+            if (!workspaceFiles.some(fileIsFlowFile)) {
+                this.emitLogEvent(LogLevel.Fine, 'Workspace contains no Flow files; returning no rules');
+                this.emitDescribeRulesProgressEvent(100);
+                return [];
+            }
+        }
         const flowTestRules: FlowTestRuleDescriptor[] = await this.commandWrapper.getFlowTestRuleDescriptions();
         this.emitDescribeRulesProgressEvent(75);
         const convertedRules = flowTestRules.map(r => toRuleDescription(r));
@@ -40,6 +50,11 @@ export class FlowTestEngine extends Engine {
             violations: []
         };
     }
+}
+
+function fileIsFlowFile(fileName: string): boolean {
+    const lowerCaseFileName = fileName.toLowerCase();
+    return lowerCaseFileName.endsWith('.flow') || lowerCaseFileName.endsWith('.flow-meta.xml');
 }
 
 function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescription {

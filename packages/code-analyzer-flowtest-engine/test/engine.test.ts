@@ -1,3 +1,4 @@
+import path from 'node:path';
 import {RuleDescription, RuleType, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "../src/engine";
 import {FlowTestCommandWrapper, FlowTestRuleDescriptor} from "../src/python/FlowTestCommandWrapper";
@@ -56,55 +57,82 @@ describe('Tests for the FlowTestEngine', () => {
     });
 
     describe('#describeRules()', () => {
-        it('Parses well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
-            // Construct the engine, injecting a Stub wrapper to replace the real one.
-            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
+        describe('Rule description parsing', () => {
+            it('Parses well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
+                // Construct the engine, injecting a Stub wrapper to replace the real one.
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
 
-            const ruleDescriptors: RuleDescription[] = await engine.describeRules({});
+                const ruleDescriptors: RuleDescription[] = await engine.describeRules({});
 
-            expect(ruleDescriptors).toHaveLength(4);
-            expect(ruleDescriptors[0]).toEqual({
-                name: 'Fake_Flow_Rule_1',
-                severityLevel: SeverityLevel.High,
-                type: RuleType.Flow,
-                tags: ['Recommended', 'Security'],
-                description: 'Fake Description 1',
-                resourceUrls: ['https://www.salesforce.com']
+                expect(ruleDescriptors).toHaveLength(4);
+                expect(ruleDescriptors[0]).toEqual({
+                    name: 'Fake_Flow_Rule_1',
+                    severityLevel: SeverityLevel.High,
+                    type: RuleType.Flow,
+                    tags: ['Recommended', 'Security'],
+                    description: 'Fake Description 1',
+                    resourceUrls: ['https://www.salesforce.com']
+                });
+                expect(ruleDescriptors[1]).toEqual({
+                    name: 'Fake_Flow_Rule_2',
+                    severityLevel: SeverityLevel.Moderate,
+                    type: RuleType.Flow,
+                    tags: ['Recommended', 'Security'],
+                    description: 'Fake Description 2',
+                    resourceUrls: ['https://www.github.com/forcedotcom/code-analyzer-core']
+                });
+                expect(ruleDescriptors[2]).toEqual({
+                    name: 'Fake_Flow_Rule_3',
+                    severityLevel: SeverityLevel.Low,
+                    type: RuleType.Flow,
+                    tags: ['Recommended'],
+                    description: 'Fake Description 3',
+                    resourceUrls: []
+                });
+                expect(ruleDescriptors[3]).toEqual({
+                    name: 'Fake_Flow_Rule_4',
+                    severityLevel: SeverityLevel.Low,
+                    type: RuleType.Flow,
+                    tags: ['Recommended'],
+                    description: 'Fake Description 4',
+                    resourceUrls: []
+                });
             });
-            expect(ruleDescriptors[1]).toEqual({
-                name: 'Fake_Flow_Rule_2',
-                severityLevel: SeverityLevel.Moderate,
-                type: RuleType.Flow,
-                tags: ['Recommended', 'Security'],
-                description: 'Fake Description 2',
-                resourceUrls: ['https://www.github.com/forcedotcom/code-analyzer-core']
-            });
-            expect(ruleDescriptors[2]).toEqual({
-                name: 'Fake_Flow_Rule_3',
-                severityLevel: SeverityLevel.Low,
-                type: RuleType.Flow,
-                tags: ['Recommended'],
-                description: 'Fake Description 3',
-                resourceUrls: []
-            });
-            expect(ruleDescriptors[3]).toEqual({
-                name: 'Fake_Flow_Rule_4',
-                severityLevel: SeverityLevel.Low,
-                type: RuleType.Flow,
-                tags: ['Recommended'],
-                description: 'Fake Description 4',
-                resourceUrls: []
+
+            it.each([
+                {ruleIndex: 0, defect: 'invalid severity level'}
+            ])('Throws coherent error for malformed FlowTest rule descriptors. Case: $defect', async ({ruleIndex, defect}) => {
+                // Construct the engine, injecting a Stub wrapper to replace the real one.
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([MALFORMED_RULES[ruleIndex]]));
+
+                // Expect the Describe call to fail with a message containing the defect description.
+                await expect(engine.describeRules({})).rejects.toThrow(defect);
             });
         });
 
-        it.each([
-            {ruleIndex: 0, defect: 'invalid severity level'}
-        ])('Throws coherent error for malformed FlowTest rule descriptors. Case: $defect', async ({ruleIndex, defect}) => {
-            // Construct the engine, injecting a Stub wrapper to replace the real one.
-            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([MALFORMED_RULES[ruleIndex]]));
+        describe('Workspace processing', () => {
+            it.each([
+                {desc: 'is undefined', workspace: undefined},
+                {desc: 'contains .flow-meta.xml files', workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-metadata-flow-file')])},
+                {desc: 'contains .flow files', workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-package-flow-file')])}
+            ])('When workspace $desc, rules are returned', async ({workspace}) => {
+                // Construct the engine, injecting a Stub wrapper to replace the real one.
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
 
-            // Expect the Describe call to fail with a message containing the defect description.
-            await expect(engine.describeRules({})).rejects.toThrow(defect);
+                const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
+
+                expect(ruleDescriptors).toHaveLength(4);
+            });
+
+            it('When workspace contains no flow files, no rules are returned', async () => {
+                const workspace = new Workspace([path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-no-flow-files')]);
+                // Construct the engine, injecting a Stub wrapper to replace the real one.
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
+
+                const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
+
+                expect(ruleDescriptors).toHaveLength(0);
+            });
         });
     });
 
