@@ -36,7 +36,7 @@ export class FlowTestEngine extends Engine {
         }
         const flowTestRules: FlowTestRuleDescriptor[] = await this.commandWrapper.getFlowTestRuleDescriptions();
         this.emitDescribeRulesProgressEvent(75);
-        const convertedRules = flowTestRules.map(r => toRuleDescription(r));
+        const convertedRules = flowTestRules.map(toRuleDescription);
         this.emitDescribeRulesProgressEvent(100);
         return convertedRules;
     }
