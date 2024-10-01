@@ -24,7 +24,7 @@ describe('FlowTestCommandWrapper implementations', () => {
 
                 expect(rules).toEqual(expectedRules);
             // For the sake of CI/CD, set the timeout to a truly absurd value.
-            }, 30000);
+            }, 60000);
 
             it('When output is unparseable, an informative error is thrown', async () => {
                 jest.spyOn(PythonCommandExecutor.prototype, 'exec').mockImplementation(async (_args, processStdout) => {
