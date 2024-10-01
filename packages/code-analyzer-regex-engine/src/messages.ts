@@ -58,7 +58,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Detects usage of Limits.getHeapSize() in loops`,
     
     AvoidGetHeapSizeInLoopRuleMessage:
-        `Found the use of Limits.getHeapSize() in a loop`,
+        `Found the use of Limits.getHeapSize() in a loop. We recommend you avoid this pattern due to performance and resource reasons.`,
 
     RuleViolationMessage:
         `A match of the regular expression %s was found for rule '%s': %s`,
