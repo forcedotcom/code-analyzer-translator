@@ -79,7 +79,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
         },
         AvoidOldSalesforceApiVersions: createAvoidOldSalesforceApiVersionsRule(now),
         AvoidGetHeapSizeInLoop: {
-            regex: (/(for|while|do)\s*\([^)]*\)\s*\{[^}]*\bLimits\.getHeapSize\(\);/gi).toString(),
+            regex: (/(for|while)\s*\([^)]*\)\s*\{[^}]*\bLimits\.getHeapSize\(\);|do\s*\{[^}]*\}\s*while\s*\([^)]*\);/gi).toString(),
             description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
             violation_message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
             severity: SeverityLevel.High,

@@ -285,6 +285,76 @@ describe('Tests for runRules', () => {
                     }
                 ]
             },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 8,
+                        startColumn: 9,
+                        endLine: 9,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 15,
+                        startColumn: 9,
+                        endLine: 20,
+                        endColumn: 24
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 22,
+                        startColumn: 9,
+                        endLine: 24,
+                        endColumn: 26
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 29,
+                        startColumn: 9,
+                        endLine: 31,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 35,
+                        startColumn: 9,
+                        endLine: 36,
+                        endColumn: 34
+                    }
+                ]
+            },
         ];
 
         expect(runResults.violations).toHaveLength(expectedViolations.length);
