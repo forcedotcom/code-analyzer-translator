@@ -18,5 +18,12 @@ describe('PythonCommandExecutor', () => {
                 .replace('__FILE__', PATH_TO_ERROR_THROWER);
             await expect(executor.exec([PATH_TO_ERROR_THROWER])).rejects.toThrow(expectedOutput);
         });
+
+        it('Whatever', async () => {
+            const pythonCommand = 'python3';
+            await new PythonCommandExecutor(pythonCommand).exec([path.join(__dirname, '..', '..', 'pyinfo.py')], (stdout) => {
+                console.log(stdout);
+            });
+        })
     });
 });
