@@ -103,6 +103,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
     let plugin: RegexEnginePlugin;
     beforeAll(async () => {
         plugin = new RegexEnginePlugin()
+        plugin._setClock(new FixedClock(SAMPLE_DATE));
     });
 
     it("When valid custom rules are provided, then they are appended to base rules", async () => {
