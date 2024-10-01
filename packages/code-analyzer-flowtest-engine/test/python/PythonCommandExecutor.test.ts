@@ -16,7 +16,19 @@ describe('PythonCommandExecutor', () => {
             const expectedOutput: string = (await fsp.readFile(pathToGoldfile, {encoding: 'utf-8'}))
                 .replace('__PYTHON__', PYTHON_EXE)
                 .replace('__FILE__', PATH_TO_ERROR_THROWER);
-            await expect(executor.exec([PATH_TO_ERROR_THROWER])).rejects.toThrow(expectedOutput);
+
+            let errorThrown: boolean = false;
+            let msg: string = '';
+            try {
+                await executor.exec([PATH_TO_ERROR_THROWER]);
+            } catch (e) {
+                msg = e instanceof Error ? e.message : e as string;
+                errorThrown = true;
+            }
+            expect(errorThrown).toEqual(true);
+            // The need to clean up carriage returns prevents us from using the `await expect().rejects` syntax that we'd
+            // typically use.
+            expect(msg.replaceAll('\r\n', '\n')).toEqual(expectedOutput);
         });
     });
 });

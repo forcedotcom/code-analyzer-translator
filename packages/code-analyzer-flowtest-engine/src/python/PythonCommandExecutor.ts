@@ -42,5 +42,5 @@ export class PythonCommandExecutor {
 }
 
 function indent(text: string, indentation: string): string {
-    return text.replace(/^.?/gm, m => `${indentation}${m}`);
+    return indentation + text.replaceAll('\n', `\n${indentation}`);
 }
