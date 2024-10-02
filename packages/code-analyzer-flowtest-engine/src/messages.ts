@@ -13,8 +13,8 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     UnsupportedEngineName:
         `The FlowTestEnginePlugin does not support an engine with name '%s'.`,
 
-    CouldNotParseVersionFromOutput:
-        `Could not parse a version number from output of '%s': %s`,
+    CouldNotParseRuleDescriptions:
+        `Could not parse rule descriptions from FlowTest output: %s`,
 
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
         `The '%s' configuration value was invalid. The command '%s' does not seem to be a recognizable version of Python.`,
@@ -34,7 +34,7 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `The following call to python exited with non-zero exit code.\n` +
         `  Command: %s\n` +
         `  Exit Code: %d\n` +
-        `  StdErr: \n%s`
+        `  StdErr:\n%s`
 };
 
 export function getMessage(msgId: string, ...args: (string | number)[]): string {
