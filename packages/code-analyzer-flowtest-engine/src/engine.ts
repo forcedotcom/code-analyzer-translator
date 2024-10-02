@@ -29,7 +29,7 @@ export class FlowTestEngine extends Engine {
             const workspaceFiles: string[] = await describeOptions.workspace.getExpandedFiles();
             // If a workspace is provided but it contains no flow files, then return no rules.
             if (!workspaceFiles.some(fileIsFlowFile)) {
-                this.emitLogEvent(LogLevel.Fine, 'Workspace contains no Flow files; returning no rules');
+                this.emitLogEvent(LogLevel.Debug, 'Workspace contains no Flow files; returning no rules');
                 this.emitDescribeRulesProgressEvent(100);
                 return [];
             }
@@ -60,7 +60,7 @@ function fileIsFlowFile(fileName: string): boolean {
 function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescription {
     return {
         // The name maps directly over.
-        name: flowTestRule.query_name,
+        name: toCodeAnalyzerName(flowTestRule.query_name),
         severityLevel: toCodeAnalyzerSeverity(flowTestRule.severity),
         // All rules in FlowTest are obviously Flow-type.
         type: RuleType.Flow,
@@ -70,6 +70,10 @@ function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescriptio
         description: flowTestRule.query_description,
         resourceUrls: toResourceUrls(flowTestRule.help_url)
     }
+}
+
+function toCodeAnalyzerName(queryName: string): string {
+    return queryName.replaceAll('Flow: ', '').replaceAll(' ', '-').toLowerCase();
 }
 
 function toCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {

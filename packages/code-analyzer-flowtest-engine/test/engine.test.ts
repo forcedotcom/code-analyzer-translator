@@ -8,7 +8,7 @@ changeWorkingDirectoryToPackageRoot();
 
 const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
     query_id: 'FakeId1',
-    query_name: 'Fake_Flow_Rule_1',
+    query_name: 'Fake Flow Rule 1',
     severity: 'Flow_High_Severity',
     query_description: 'Fake Description 1',
     help_url: 'https://www.salesforce.com',
@@ -16,7 +16,7 @@ const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
     is_security: "True"
 }, {
     query_id: 'FakeId2',
-    query_name: 'Fake_Flow_Rule_2',
+    query_name: 'Fake Flow Rule 2',
     severity: 'Flow_Moderate_Severity',
     query_description: 'Fake Description 2',
     help_url: 'https://www.github.com/forcedotcom/code-analyzer-core',
@@ -24,7 +24,7 @@ const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
     is_security: "True"
 }, {
     query_id: 'FakeId3',
-    query_name: 'Fake_Flow_Rule_3',
+    query_name: 'Fake Flow Rule 3',
     severity: 'Flow_Low_Severity',
     query_description: 'Fake Description 3',
     help_url: 'None',
@@ -32,7 +32,7 @@ const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
     is_security: "False"
 }, {
     query_id: 'FakeId4',
-    query_name: 'Fake_Flow_Rule_4',
+    query_name: 'Fake Flow Rule 4',
     severity: 'Flow_Low_Severity',
     query_description: 'Fake Description 4',
     help_url: '',
@@ -42,7 +42,7 @@ const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
 
 const MALFORMED_RULES: FlowTestRuleDescriptor[] = [{
     query_id: 'FakeId1',
-    query_name: 'Fake_Flow_Rule_1',
+    query_name: 'Fake Flow Rule 1',
     severity: 'InvalidSeverityValue',
     query_description: 'This Rule has an invalid Severity',
     help_url: 'https://www.salesforce.com',
@@ -66,7 +66,7 @@ describe('Tests for the FlowTestEngine', () => {
 
                 expect(ruleDescriptors).toHaveLength(4);
                 expect(ruleDescriptors[0]).toEqual({
-                    name: 'Fake_Flow_Rule_1',
+                    name: 'fake-flow-rule-1',
                     severityLevel: SeverityLevel.High,
                     type: RuleType.Flow,
                     tags: ['Recommended', 'Security'],
@@ -74,7 +74,7 @@ describe('Tests for the FlowTestEngine', () => {
                     resourceUrls: ['https://www.salesforce.com']
                 });
                 expect(ruleDescriptors[1]).toEqual({
-                    name: 'Fake_Flow_Rule_2',
+                    name: 'fake-flow-rule-2',
                     severityLevel: SeverityLevel.Moderate,
                     type: RuleType.Flow,
                     tags: ['Recommended', 'Security'],
@@ -82,7 +82,7 @@ describe('Tests for the FlowTestEngine', () => {
                     resourceUrls: ['https://www.github.com/forcedotcom/code-analyzer-core']
                 });
                 expect(ruleDescriptors[2]).toEqual({
-                    name: 'Fake_Flow_Rule_3',
+                    name: 'fake-flow-rule-3',
                     severityLevel: SeverityLevel.Low,
                     type: RuleType.Flow,
                     tags: ['Recommended'],
@@ -90,7 +90,7 @@ describe('Tests for the FlowTestEngine', () => {
                     resourceUrls: []
                 });
                 expect(ruleDescriptors[3]).toEqual({
-                    name: 'Fake_Flow_Rule_4',
+                    name: 'fake-flow-rule-4',
                     severityLevel: SeverityLevel.Low,
                     type: RuleType.Flow,
                     tags: ['Recommended'],
