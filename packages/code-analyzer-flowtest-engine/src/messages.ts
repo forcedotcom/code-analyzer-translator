@@ -17,13 +17,13 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `Could not parse rule descriptions from FlowTest output: %s`,
 
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
-        `The '%s' configuration value was invalid. The command '%s' does not seem to be a recognizable version of Python.`,
+        `The '%s' configuration value is invalid. The command '%s' does not seem to be a recognizable version of Python.`,
 
     UserSpecifiedPythonCommandProducedError:
-        `The '%s' configuration value was invalid. When attempting to find the version of command '%s', an error was thrown: %s`,
+        `The '%s' configuration value is invalid. When attempting to find the version of command '%s', an error was thrown: %s`,
 
     UserSpecifiedPythonBelowMinimumVersion:
-        `The '%s' configuration value was invalid. The command '%s' specifies Python v%s, which is below minimum supported version v%s.`,
+        `The '%s' configuration value is invalid. The command '%s' specifies Python v%s, which is below minimum supported version v%s.`,
 
     CouldNotLocatePython:
         `Could not locate a Python v%s+ install using any of the following: %s.\n` +

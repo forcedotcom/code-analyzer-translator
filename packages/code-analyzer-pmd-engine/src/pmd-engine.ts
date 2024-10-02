@@ -16,6 +16,7 @@ import path from "node:path";
 import {extensionToPmdLanguage, PmdLanguage} from "./constants";
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
+import {PmdEngineConfig} from "./config";
 
 export class PmdEngine extends Engine {
     static readonly NAME: string = "pmd";
@@ -26,10 +27,9 @@ export class PmdEngine extends Engine {
     private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
     private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
 
-    constructor() {
+    constructor(config: PmdEngineConfig) {
         super();
-        const javaCmd: string = 'java'; // TODO: Will be configurable soon
-        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(javaCmd);
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
         this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.availableLanguages = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE]; // TODO: Will be configurable soon
@@ -92,7 +92,8 @@ export class PmdEngine extends Engine {
         const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
             const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
-            const ruleInfoList: PmdRuleInfo[] = await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages, emitProgress);
+            const ruleInfoList: PmdRuleInfo[] = relevantLanguages.length === 0 ? [] :
+                await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;
@@ -197,7 +198,7 @@ class PmdWorkspaceLiaison {
             const pmdLang: PmdLanguage | undefined = extensionToPmdLanguage[fileExt];
             if (pmdLang && this.availableLanguages.includes(pmdLang)) {
                 this.relevantFiles.push(file);
-                relevantLanguagesSet.add(extensionToPmdLanguage[fileExt]);
+                relevantLanguagesSet.add(pmdLang);
             }
         }
         this.relevantLanguages = [...relevantLanguagesSet].sort();
