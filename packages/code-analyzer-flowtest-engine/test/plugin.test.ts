@@ -4,7 +4,7 @@ import {FlowTestEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {SemVer} from "semver";
-import {PythonVersionDescriptor, PythonVersionIdentifier} from "../src/python/PythonVersionIdentifier";
+import {PythonVersionIdentifier} from "../src/python/PythonVersionIdentifier";
 import {FLOWTEST_ENGINE_CONFIG_DESCRIPTION} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
@@ -106,23 +106,16 @@ class StubPythonVersionIdentifier implements PythonVersionIdentifier {
         this.versionMap = versionMap;
     }
 
-    public identifyPythonVersion(pythonCommand: string): Promise<PythonVersionDescriptor> {
+    public identifyPythonVersion(pythonCommand: string): Promise<SemVer|null> {
         if (this.versionMap.has(pythonCommand)) {
-            const version = this.versionMap.get(pythonCommand)!;
-            return Promise.resolve({
-                executable: pythonCommand,
-                version
-            });
+            return Promise.resolve(this.versionMap.get(pythonCommand)!);
         }
         return Promise.reject('Some Error Message');
     }
 }
 
 class NullProducingPythonVersionIdentifier implements PythonVersionIdentifier {
-    async identifyPythonVersion(_pythonCommand: string): Promise<PythonVersionDescriptor> {
-        return {
-            executable: _pythonCommand,
-            version: null
-        };
+    async identifyPythonVersion(_pythonCommand: string): Promise<SemVer|null> {
+        return null;
     }
 }

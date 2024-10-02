@@ -1,10 +1,7 @@
 import * as fsp from 'node:fs/promises';
 import path from 'node:path';
-import {sync} from 'which';
 import {FlowTestRuleDescriptor, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
 import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
-
-const PATH_TO_PYTHON_EXE: string = sync('python3');
 
 describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
@@ -13,7 +10,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 jest.restoreAllMocks();
             })
             it('Returns valid, well-formed rule descriptions', async () => {
-                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PATH_TO_PYTHON_EXE);
+                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper('python3');
 
                 const rules: FlowTestRuleDescriptor[] = await wrapper.getFlowTestRuleDescriptions();
 
@@ -31,7 +28,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                     processStdout!('This will not parse as valid JSON');
                 });
 
-                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PATH_TO_PYTHON_EXE);
+                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper('python3');
 
                 await expect(wrapper.getFlowTestRuleDescriptions())
                     .rejects
