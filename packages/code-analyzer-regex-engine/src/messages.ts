@@ -53,6 +53,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     AvoidOldSalesforceApiVersionsRuleMessage:
         `Found the use of a Salesforce API version that is 3 or more years old. Avoid using an API version that is <= %d.0.`,
+    
+    AvoidGetHeapSizeInLoopRuleDescription:
+        `Detects usage of Limits.getHeapSize() in loops`,
+    
+    AvoidGetHeapSizeInLoopRuleMessage:
+        `Found the use of Limits.getHeapSize() in a loop. We recommend you avoid this pattern due to performance and resource reasons.`,
 
     RuleViolationMessage:
         `A match of the regular expression %s was found for rule '%s': %s`,

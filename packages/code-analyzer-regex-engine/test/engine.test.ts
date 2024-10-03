@@ -83,6 +83,15 @@ const EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION: RuleDescription =
     resourceUrls: []
 }
 
+const EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION: RuleDescription = {
+    name: "AvoidGetHeapSizeInLoop",
+    description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
+    severityLevel: SeverityLevel.High,
+    type: RuleType.Standard,
+    tags: ['Recommended', 'Performance'],
+    resourceUrls: []
+}
+
 const SAMPLE_DATE: Date = new Date(Date.UTC(2024, 8, 1, 0, 0, 0));
 
 let engine: RegexEngine;
@@ -101,12 +110,13 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
 
     it('Calling describeRules without workspace, returns all available rules', async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
-        expect(rulesDescriptions).toHaveLength(5);
+        expect(rulesDescriptions).toHaveLength(6);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
         expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION)
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
@@ -121,22 +131,24 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
 
-        expect(rulesDescriptions).toHaveLength(3);
+        expect(rulesDescriptions).toHaveLength(4);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
-        expect(rulesDescriptions).toHaveLength(5);
+        expect(rulesDescriptions).toHaveLength(6);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
         expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION)
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -244,6 +256,105 @@ describe('Tests for runRules', () => {
                 }]
             },
 
+        ];
+
+        expect(runResults.violations).toHaveLength(expectedViolations.length);
+        for (const expectedViolation of expectedViolations) {
+            expect(runResults.violations).toContainEqual(expectedViolation);
+        }
+    });
+
+    it("Ensure runRules when called on a directory of Apex classes with getHeapSize in a loop, it properly emits violations", async () => {
+        const runOptions: RunOptions = {workspace: new Workspace([
+            path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop")
+        ])};
+        const runResults: EngineRunResults = await engine.runRules(["AvoidGetHeapSizeInLoop"], runOptions);
+
+        const expectedViolations: Violation[] = [
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 3,
+                        startColumn: 9,
+                        endLine: 5,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 8,
+                        startColumn: 9,
+                        endLine: 9,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 15,
+                        startColumn: 9,
+                        endLine: 20,
+                        endColumn: 24
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 22,
+                        startColumn: 9,
+                        endLine: 24,
+                        endColumn: 26
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 29,
+                        startColumn: 9,
+                        endLine: 31,
+                        endColumn: 34
+                    }
+                ]
+            },
+            {
+                ruleName: "AvoidGetHeapSizeInLoop",
+                message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassGetLimitsInLoop", "testClass.cls"),
+                        startLine: 35,
+                        startColumn: 9,
+                        endLine: 36,
+                        endColumn: 34
+                    }
+                ]
+            },
         ];
 
         expect(runResults.violations).toHaveLength(expectedViolations.length);
