@@ -14,6 +14,7 @@ import {PmdEngine} from "../src/pmd-engine";
 import fs from "node:fs";
 import path from "node:path";
 import {PMD_VERSION} from "../src/constants";
+import {DEFAULT_PMD_ENGINE_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -21,7 +22,7 @@ const testDataFolder: string = path.join(__dirname, 'test-data');
 
 describe('Tests for the getName method of PmdEngine', () => {
     it('When getName is called, then pmd is returned', () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         expect(engine.getName()).toEqual('pmd');
     });
 });
@@ -29,7 +30,7 @@ describe('Tests for the getName method of PmdEngine', () => {
 
 describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults without workspace, then apex and visualforce rules are returned', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const logEvents: LogEvent[] = [];
         engine.onEvent(EventType.LogEvent, (e: LogEvent) => logEvents.push(e));
         const progressEvents: DescribeRulesProgressEvent[] = [];
@@ -53,7 +54,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     });
 
     it('When using defaults with workspace containing only apex code, then only apex rules are returned', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(testDataFolder, 'sampleWorkspace', 'dummy.cls')
         ]);
@@ -62,7 +63,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     });
 
     it('When using defaults with workspace containing only apex and xml code, then only apex rules are returned', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(testDataFolder, 'sampleWorkspace', 'dummy.trigger'),
             path.join(testDataFolder, 'sampleWorkspace', 'dummy.xml')
@@ -72,12 +73,21 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     });
 
     it('When using defaults with workspace containing only visualforce code, then only visualforce rules are returned', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(testDataFolder, 'sampleWorkspace', 'dummy.page')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_visualforceOnly.goldfile.json');
+    });
+
+    it('When using defaults with workspace containing no supported files, then no rules are returned', async () => {
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
+        const workspace: Workspace = new Workspace([
+            path.join(testDataFolder, 'sampleWorkspace', 'dummy.txt')
+        ]);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        expect(ruleDescriptions).toHaveLength(0);
     });
 });
 
@@ -136,14 +146,14 @@ describe('Tests for the runRules method of PmdEngine', () => {
     };
 
     it('When zero rule names are provided then return zero violations', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
         const results: EngineRunResults = await engine.runRules([], {workspace: workspace});
         expect(results.violations).toHaveLength(0);
     });
 
     it('When workspace contains zero relevant files, then return zero violations', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
 
@@ -158,7 +168,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     });
 
     it('When workspace contains relevant files containing violation, then return violations', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const logEvents: LogEvent[] = [];
         engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
         const progressEvents: RunRulesProgressEvent[] = [];
@@ -184,7 +194,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     });
 
     it('When a single rule is selected, then return only violations for that rule', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
@@ -193,7 +203,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     });
 
     it('When selected rules are not violated, then return zero violations', async () => {
-        const engine: PmdEngine = new PmdEngine();
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
         const ruleNames: string[] = ['WhileLoopsMustUseBraces', 'ExcessiveParameterList', 'VfCsrf'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});

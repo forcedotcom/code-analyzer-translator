@@ -38,10 +38,10 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The ESLintEnginePlugin does not support an engine with name '%s'.`,
 
     InvalidLegacyConfigFileName:
-        `The '%s' configuration value was invalid. Expected the file name '%s' to be one of the following: %s`,
+        `The '%s' configuration value is invalid. Expected the file name '%s' to be one of the following: %s`,
 
     InvalidLegacyIgnoreFileName:
-        `The '%s' configuration value was invalid. Expected the file name '%s' to be equal to '%s'.`,
+        `The '%s' configuration value is invalid. Expected the file name '%s' to be equal to '%s'.`,
 
     ConfigStringValueMustMatchPattern:
         `The '%s' configuration value '%s' must match the pattern: /%s/`,
