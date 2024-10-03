@@ -1,0 +1,8 @@
+The following call to python exited with non-zero exit code.
+  Command: __PYTHON__ __FILE__
+  Exit Code: 42
+  StdErr:
+    | Logging the number "1" to stderr
+    | Logging the number "2" to stderr
+    | 
+    | Logging the string "orangutan" to stderr

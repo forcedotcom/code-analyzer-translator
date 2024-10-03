@@ -16,9 +16,7 @@
     "@salesforce/code-analyzer-engine-api": "0.10.0",
     "@types/node": "^20.0.0",
     "@types/semver": "^7.5.8",
-    "@types/which": "^3.0.4",
-    "semver": "^7.6.3",
-    "which": "^4.0.0"
+    "semver": "^7.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
