@@ -22,7 +22,7 @@ export class PmdEngine extends Engine {
     static readonly NAME: string = "pmd";
 
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
-    private readonly availableLanguages: PmdLanguage[];
+    private readonly selectedLanguages: PmdLanguage[];
 
     private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
     private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
@@ -32,7 +32,7 @@ export class PmdEngine extends Engine {
         const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
         this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
-        this.availableLanguages = [PmdLanguage.APEX, PmdLanguage.VISUALFORCE]; // TODO: Will be configurable soon
+        this.selectedLanguages = config.rule_languages as PmdLanguage[];
     }
 
     getName(): string {
@@ -102,7 +102,7 @@ export class PmdEngine extends Engine {
     private getPmdWorkspaceLiaison(workspace?: Workspace) : PmdWorkspaceLiaison {
         const cacheKey: string = getCacheKey(workspace);
         if (!this.pmdWorkspaceLiaisonCache.has(cacheKey)) {
-            this.pmdWorkspaceLiaisonCache.set(cacheKey, new PmdWorkspaceLiaison(workspace, this.availableLanguages));
+            this.pmdWorkspaceLiaisonCache.set(cacheKey, new PmdWorkspaceLiaison(workspace, this.selectedLanguages));
         }
         return this.pmdWorkspaceLiaisonCache.get(cacheKey)!
     }
@@ -114,7 +114,7 @@ function toRuleDescription(pmdRule: PmdRuleInfo): RuleDescription {
         severityLevel: toSeverityLevel(pmdRule.priority),
         type: RuleType.Standard,
         tags: ['Recommended', pmdRule.ruleSet.replace(' ', ''), pmdRule.language + "Language"],
-        description: pmdRule.message,
+        description: pmdRule.description,
         resourceUrls: [pmdRule.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links
     };
 }
@@ -157,14 +157,14 @@ function toViolation(pmdViolation: PmdViolation, file: string): Violation {
 // noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
 class PmdWorkspaceLiaison {
     private readonly workspace?: Workspace;
-    private readonly availableLanguages: PmdLanguage[];
+    private readonly selectedLanguages: PmdLanguage[];
 
     private relevantLanguages?: PmdLanguage[];
     private relevantFiles?: string[];
 
-    constructor(workspace: Workspace | undefined, availableLanguages: PmdLanguage[]) {
+    constructor(workspace: Workspace | undefined, selectedLanguages: PmdLanguage[]) {
         this.workspace = workspace;
-        this.availableLanguages = availableLanguages;
+        this.selectedLanguages = selectedLanguages;
     }
 
     getWorkspace(): Workspace | undefined {
@@ -188,7 +188,7 @@ class PmdWorkspaceLiaison {
     private async processWorkspace(): Promise<void> {
         this.relevantFiles = [];
         if (!this.workspace) {
-            this.relevantLanguages = [... this.availableLanguages].sort();
+            this.relevantLanguages = [... this.selectedLanguages].sort();
             return;
         }
 
@@ -196,7 +196,7 @@ class PmdWorkspaceLiaison {
         for (const file of await this.workspace.getExpandedFiles()) {
             const fileExt: string = path.extname(file).toLowerCase();
             const pmdLang: PmdLanguage | undefined = extensionToPmdLanguage[fileExt];
-            if (pmdLang && this.availableLanguages.includes(pmdLang)) {
+            if (pmdLang && this.selectedLanguages.includes(pmdLang)) {
                 this.relevantFiles.push(file);
                 relevantLanguagesSet.add(pmdLang);
             }

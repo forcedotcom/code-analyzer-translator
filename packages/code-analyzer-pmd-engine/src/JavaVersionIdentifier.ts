@@ -6,7 +6,13 @@ export interface JavaVersionIdentifier {
 }
 
 export class RuntimeJavaVersionIdentifier implements JavaVersionIdentifier {
+    private readonly cache: Map<string, SemVer|null> = new Map();
+
     identifyJavaVersion(javaCommand: string): Promise<SemVer|null> {
+        if (this.cache.has(javaCommand)) {
+            return Promise.resolve(this.cache.get(javaCommand)!);
+        }
+
         return new Promise<SemVer|null>((resolve, reject) => {
             // We are using "java -version" which has output that typically looks like:
             // * (from MacOS): "openjdk version "11.0.6" 2020-01-14 LTS\nOpenJDK Runtime Environment Zulu11.37+17-CA (build 11.0.6+10-LTS)\nOpenJDK 64-Bit Server VM Zulu11.37+17-CA (build 11.0.6+10-LTS, mixed mode)\n"
@@ -24,7 +30,9 @@ export class RuntimeJavaVersionIdentifier implements JavaVersionIdentifier {
                 /* istanbul ignore else */
                 if (code === 0) {
                     // Oddly enough the -version command is documented to go to stderr and not stdout
-                    resolve(_extractJavaVersionFrom(stderr));
+                    const version: SemVer|null = _extractJavaVersionFrom(stderr);
+                    this.cache.set(javaCommand, version);
+                    resolve(version);
                 } else {
                     // A non-0 exit code indicates a failure. So just reject with whatever `stderr` was.
                     reject(stderr);

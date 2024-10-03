@@ -60,7 +60,7 @@ public class PmdRuleDescriberTest {
         // Sanity check one of the rules:
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "OperationWithLimitsInLoop");
         assertThat(ruleInfo, is(notNullValue()));
-        assertThat(ruleInfo.message, is("Avoid operations in loops that may hit governor limits"));
+        assertThat(ruleInfo.description, is("Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#operationwithlimitsinloop")));
         assertThat(ruleInfo.ruleSet, is("Performance"));
         assertThat(ruleInfo.priority, is("Medium"));
@@ -79,7 +79,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "AvoidReassigningParameters");
         assertThat(ruleInfo, is(notNullValue()));
         assertThat(ruleInfo.language, is("java"));
-        assertThat(ruleInfo.message, is("Avoid reassigning parameters such as ''{0}''"));
+        assertThat(ruleInfo.description, is("Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the me...<<CLIPPED>> READ MORE AT: " + ruleInfo.externalInfoUrl));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#avoidreassigningparameters")));
         assertThat(ruleInfo.ruleSet, is("Best Practices"));
         assertThat(ruleInfo.priority, is("Medium High"));
@@ -98,7 +98,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "ForLoopsMustUseBraces");
         assertThat(ruleInfo, is(notNullValue()));
         assertThat(ruleInfo.language, is("ecmascript"));
-        assertThat(ruleInfo.message, is("Avoid using 'for' statements without curly braces"));
+        assertThat(ruleInfo.description, is("Avoid using 'for' statements without using curly braces."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#forloopsmustusebraces")));
         assertThat(ruleInfo.ruleSet, is("Code Style"));
         assertThat(ruleInfo.priority, is("Medium"));
@@ -117,7 +117,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "VfUnescapeEl");
         assertThat(ruleInfo, is(notNullValue()));
         assertThat(ruleInfo.language, is("visualforce"));
-        assertThat(ruleInfo.message, is("Avoid unescaped user controlled content in EL"));
+        assertThat(ruleInfo.description, is("Avoid unescaped user controlled content in EL as it results in XSS."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#vfunescapeel")));
         assertThat(ruleInfo.ruleSet, is("Security"));
         assertThat(ruleInfo.priority, is("Medium"));
@@ -136,7 +136,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "MissingEncoding");
         assertThat(ruleInfo, is(notNullValue()));
         assertThat(ruleInfo.language, is("xml"));
-        assertThat(ruleInfo.message, is("Set an explicit XML encoding in the XML declaration to ensure proper parsing"));
+        assertThat(ruleInfo.description, is("When the character encoding is missing from the XML declaration, the parser may produce garbled text. This is completely dependent on how the parser is set up and the content of the XML file, so it may be hard to reproduce. Providing an explicit encoding ensures accurate and consistent parsing."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#missingencoding")));
         assertThat(ruleInfo.ruleSet, is("Best Practices"));
         assertThat(ruleInfo.priority, is("Medium"));

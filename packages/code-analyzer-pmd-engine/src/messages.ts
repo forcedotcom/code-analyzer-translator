@@ -10,6 +10,11 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `May be provided as the name of a command that exists on the path, or an absolute file path location.\n` +
         `If unspecified, or specified as null, then an attempt will be made to automatically discover a 'java' command from your environment.`,
 
+    PmdConfigFieldDescription_rule_languages:
+        `List of languages associated with the PMD rules to be made available for selection.\n` +
+        `The available languages are: %s\n` +
+        `See https://pmd.github.io/pmd/tag_rule_references.html`,
+
     UnsupportedEngineName:
         `The PmdCpdEnginesPlugin does not support an engine with name '%s'.`,
 
@@ -36,6 +41,9 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `  Command: %s\n` +
         `  Exit code: %d\n` +
         `  StdErr:\n%s`,
+
+    InvalidRuleLanguage:
+        `The '%s' configuration value is invalid. The specified language '%s' is not one of the supported languages: %s`,
 
     ErrorParsingPmdWrapperOutputFile:
         `An internal error was thrown when trying to read the internal PmdWrapper output file '%s':\n%s'`,

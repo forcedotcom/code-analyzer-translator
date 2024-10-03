@@ -13,7 +13,7 @@ import {
 import {PmdEngine} from "../src/pmd-engine";
 import fs from "node:fs";
 import path from "node:path";
-import {PMD_VERSION} from "../src/constants";
+import {PMD_VERSION, PmdLanguage} from "../src/constants";
 import {DEFAULT_PMD_ENGINE_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
@@ -89,6 +89,36 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         expect(ruleDescriptions).toHaveLength(0);
     });
+
+    it('When specifying all available rule languages without a workspace, then all rules available are described', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: Object.values(PmdLanguage)
+        });
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
+    });
+
+    it('When specifying all zero rule languages, then no rules are described', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: []
+        });
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        expect(ruleDescriptions).toHaveLength(0);
+    });
+
+    it('When specifying multiple rule languages, but only js files are in the workspace, then only ecmascript rules are returned', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: ['ecmascript', 'xml' /* not in workspace */]
+        });
+        const workspace: Workspace = new Workspace([
+            path.join(testDataFolder, 'sampleWorkspace', 'dummy.js')
+        ]);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_ecmascriptOnly.goldfile.json');
+    });
 });
 
 async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescription[], relativeExpectedFile: string) {
@@ -144,6 +174,21 @@ describe('Tests for the runRules method of PmdEngine', () => {
         ],
         primaryLocationIndex: 0
     };
+
+    const expectConsistentReturnViolation: Violation = {
+        ruleName: "ConsistentReturn",
+        message: 'A function should not mix return statements with and without a result.',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'ConsistentReturn.js'),
+                startLine: 1,
+                startColumn: 1,
+                endLine: 6,
+                endColumn: 2
+            }
+        ],
+        primaryLocationIndex: 0
+    }
 
     it('When zero rule names are provided then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
@@ -208,5 +253,18 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const ruleNames: string[] = ['WhileLoopsMustUseBraces', 'ExcessiveParameterList', 'VfCsrf'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
         expect(results.violations).toHaveLength(0);
+    });
+
+    it('When specifying a non-default language and workspace contains violation for that language, then return correct violations', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: ['ecmascript', 'xml' /* sanity check: not relevant to workspace */, 'apex']
+        });
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
+        const ruleNames: string[] = ['ConsistentReturn', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        expect(results.violations).toHaveLength(2);
+        expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
+        expect(results.violations).toContainEqual(expectConsistentReturnViolation);
     });
 });

@@ -11,7 +11,7 @@ const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pm
 export type PmdRuleInfo = {
     name: string,
     language: string,
-    message: string,
+    description: string,
     externalInfoUrl: string,
     ruleSet: string,
     priority: string,

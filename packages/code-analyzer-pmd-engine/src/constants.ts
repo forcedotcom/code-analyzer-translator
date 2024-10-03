@@ -11,6 +11,8 @@ export enum PmdLanguage {
     XML = 'xml'
 }
 
+export const MINIMUM_JAVA_VERSION = '11.0.0';
+
 // Map from file extension to language for PMD.
 // Note in the future we might consider getting this dynamically from our PmdWrapper (java side) instead of hard coding these.
 export const extensionToPmdLanguage: Record<string, PmdLanguage> = {

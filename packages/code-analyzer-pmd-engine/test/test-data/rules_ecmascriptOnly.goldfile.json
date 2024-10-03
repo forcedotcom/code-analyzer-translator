@@ -1,0 +1,254 @@
+[
+  {
+    "name": "AssignmentInOperand",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid assignments in operands; this can make code more complicated and harder to read. This is sometime indicative of the bug where the assignment operator '=' was used instead of the equality operator '=='.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#assignmentinoperand"
+    ]
+  },
+  {
+    "name": "AvoidConsoleStatements",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Performance",
+      "ecmascriptLanguage"
+    ],
+    "description": "Using the console for logging in production might negatively impact performance. In addition, logging could expose sensitive data.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_performance.html#avoidconsolestatements"
+    ]
+  },
+  {
+    "name": "AvoidTrailingComma",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "ecmascriptLanguage"
+    ],
+    "description": "This rule helps improve code portability due to differences in browser treatment of trailing commas in object or array literals.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_errorprone.html#avoidtrailingcomma"
+    ]
+  },
+  {
+    "name": "AvoidWithStatement",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid using with - it's bad news",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#avoidwithstatement"
+    ]
+  },
+  {
+    "name": "ConsistentReturn",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "ecmascriptLanguage"
+    ],
+    "description": "ECMAScript does provide for return types on functions, and therefore there is no solid rule as to their usage. However, when a function does use returns they should all have a value, or all with no value. Mixed return usage is likely a bug, or at best poor style.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#consistentreturn"
+    ]
+  },
+  {
+    "name": "EqualComparison",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "ecmascriptLanguage"
+    ],
+    "description": "Using == in condition may lead to unexpected results, as the variables are automatically casted to be of the same type. The === operator avoids the casting.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_errorprone.html#equalcomparison"
+    ]
+  },
+  {
+    "name": "ForLoopsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid using 'for' statements without using curly braces.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#forloopsmustusebraces"
+    ]
+  },
+  {
+    "name": "GlobalVariable",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "ecmascriptLanguage"
+    ],
+    "description": "This rule helps to avoid using accidently global variables by simply missing the \"var\" declaration. Global variables can lead to side-effects that are hard to debug.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#globalvariable"
+    ]
+  },
+  {
+    "name": "IfElseStmtsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid using if..else statements without using curly braces.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#ifelsestmtsmustusebraces"
+    ]
+  },
+  {
+    "name": "IfStmtsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid using if statements without using curly braces.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#ifstmtsmustusebraces"
+    ]
+  },
+  {
+    "name": "InaccurateNumericLiteral",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "ecmascriptLanguage"
+    ],
+    "description": "The numeric literal will have a different value at runtime, which can happen if you provide too much precision in a floating point number. This may result in numeric calculations being in error. Numbers in JavaScript are represented by 64bit double-precision floating point numbers internally and that's why there are some limits to the available precision of the number. See Number.isSafeInteger() and Number.EPSILON. Note: This rule was named InnaccurateNumericLiteral before PMD 7.4.0.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_errorprone.html#inaccuratenumericliteral"
+    ]
+  },
+  {
+    "name": "NoElseReturn",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "The else block in a if-else-construct is unnecessary if the `if` block contains a return. Then the content of the else block can be put outside. See also: <http://eslint.org/docs/rules/no-else-return>",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#noelsereturn"
+    ]
+  },
+  {
+    "name": "ScopeForInVariable",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "ecmascriptLanguage"
+    ],
+    "description": "A for-in loop in which the variable name is not explicitly scoped to the enclosing scope with the 'var' keyword can refer to a variable in an enclosing scope outside the nearest enclosing scope. This will overwrite the existing value of the variable in the outer scope when the body of the for-in is evaluated. When the for-in loop has finished, the variable will contain t...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable"
+    ]
+  },
+  {
+    "name": "UnnecessaryBlock",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "An unnecessary Block is present. Such Blocks are often used in other languages to introduce a new variable scope. Blocks do not behave like this in ECMAScipt, and using them can be misleading. Considering removing this unnecessary Block.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#unnecessaryblock"
+    ]
+  },
+  {
+    "name": "UnnecessaryParentheses",
+    "severityLevel": 4,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Unnecessary parentheses should be removed.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#unnecessaryparentheses"
+    ]
+  },
+  {
+    "name": "UnreachableCode",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "A 'return', 'break', 'continue', or 'throw' statement should be the last in a block. Statements after these will never execute. This is a bug, or extremely poor style.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#unreachablecode"
+    ]
+  },
+  {
+    "name": "UseBaseWithParseInt",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "ecmascriptLanguage"
+    ],
+    "description": "This rule checks for usages of parseInt. While the second parameter is optional and usually defaults to 10 (base/radix is 10 for a decimal number), different implementations may behave differently. It also improves readability, if the base is given. See also: parseInt()",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#usebasewithparseint"
+    ]
+  },
+  {
+    "name": "WhileLoopsMustUseBraces",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "ecmascriptLanguage"
+    ],
+    "description": "Avoid using 'while' statements without using curly braces.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#whileloopsmustusebraces"
+    ]
+  }
+]
