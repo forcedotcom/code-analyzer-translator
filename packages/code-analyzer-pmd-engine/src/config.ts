@@ -51,7 +51,7 @@ async function extractJavaCommand(configValueExtractor: ConfigValueExtractor, ja
 async function attemptToAutoDetectJavaCommand(configValueExtractor: ConfigValueExtractor, javaVersionIdentifier: JavaVersionIdentifier): Promise<string> {
     const commandsToAttempt: string[] = [
         // Environment variables specifying JAVA HOME take precedence (if they exist)
-        ... ['JAVA_HOME', 'JRE_HOME', 'JDK_HOME'].filter(v => process.env[v] !== undefined)
+        ... ['JAVA_HOME', 'JRE_HOME', 'JDK_HOME'].filter(v => process.env[v]) // only keep vars that have a non-empty defined value
             .map(v => path.join(process.env[v]!, 'bin', 'java')),
 
         // Attempt to just use the default java command that might be already on the path as a last attempt

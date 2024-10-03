@@ -8,7 +8,6 @@ export interface JavaVersionIdentifier {
 export class RuntimeJavaVersionIdentifier implements JavaVersionIdentifier {
     identifyJavaVersion(javaCommand: string): Promise<SemVer|null> {
         return new Promise<SemVer|null>((resolve, reject) => {
-
             // We are using "java -version" which has output that typically looks like:
             // * (from MacOS): "openjdk version "11.0.6" 2020-01-14 LTS\nOpenJDK Runtime Environment Zulu11.37+17-CA (build 11.0.6+10-LTS)\nOpenJDK 64-Bit Server VM Zulu11.37+17-CA (build 11.0.6+10-LTS, mixed mode)\n"
             // From much research this output typically has the word "version " and then either a number with or without quotes.
@@ -41,8 +40,9 @@ export class RuntimeJavaVersionIdentifier implements JavaVersionIdentifier {
 export function _extractJavaVersionFrom(javaVersionOutput: string): SemVer|null {
     // First we'll see if the word "version" exists with the version number and use that first.
     const matchedParts: RegExpMatchArray | null = javaVersionOutput.match(/version\s+"?(\d+(\.\d+)*)"?/i);
-    if (matchedParts && matchedParts.length > 1) {
-        return coerce(matchedParts[1]);
+    const versionString: string | undefined = matchedParts?.[1];
+    if (versionString) {
+        return coerce(versionString);
     }
     // Otherwise we'll try to get the version number the crude way by just looking for the first number (which is what coerce does)
     return coerce(javaVersionOutput);
