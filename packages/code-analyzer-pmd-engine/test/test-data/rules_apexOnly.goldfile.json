@@ -36,7 +36,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
+    "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH USER_MODE`... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation"
     ]
@@ -50,7 +50,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and rais...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
+    "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and raises a runtime... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf"
     ]
@@ -78,7 +78,7 @@
       "Documentation",
       "apexLanguage"
     ],
-    "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments shou...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
+    "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments should contain... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
     ]
@@ -148,7 +148,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Usi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
+    "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Using different... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred"
     ]
@@ -372,7 +372,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, w...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
+    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, whereas the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity"
     ]
@@ -386,7 +386,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
+    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to another... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity"
     ]
@@ -414,7 +414,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether th...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
+    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informatio... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult"
     ]
@@ -848,7 +848,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce m...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
+    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce metadata,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
     ]

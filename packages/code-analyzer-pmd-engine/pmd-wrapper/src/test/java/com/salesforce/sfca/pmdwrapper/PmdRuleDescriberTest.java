@@ -79,7 +79,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = findRuleInfoWithName(ruleInfoList, "AvoidReassigningParameters");
         assertThat(ruleInfo, is(notNullValue()));
         assertThat(ruleInfo.language, is("java"));
-        assertThat(ruleInfo.description, is("Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the me...<<CLIPPED>> READ MORE AT: " + ruleInfo.externalInfoUrl));
+        assertThat(ruleInfo.description, is("Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the method's... Learn more: " + ruleInfo.externalInfoUrl));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#avoidreassigningparameters")));
         assertThat(ruleInfo.ruleSet, is("Best Practices"));
         assertThat(ruleInfo.priority, is("Medium High"));

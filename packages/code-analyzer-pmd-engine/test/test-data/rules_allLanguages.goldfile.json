@@ -36,7 +36,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Instantiation by way of private constructors from outside the constructor's class often causes the generation of an accessor. A factory method, or non-privatization of the constructor can eliminate this situation. The generated class file is actually an interface. It gives the accessing class the ability to invoke a new hidden package scope constructor that takes the inte...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessorclassgeneration",
+    "description": "Instantiation by way of private constructors from outside the constructor's class often causes the generation of an accessor. A factory method, or non-privatization of the constructor can eliminate this situation. The generated class file is actually an interface. It gives the accessing class the ability to invoke a new hidden package scope constructor that takes the interface as a... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessorclassgeneration",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessorclassgeneration"
     ]
@@ -50,7 +50,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "When accessing private fields / methods from another class, the Java compiler will generate accessor methods with package-private visibility. This adds overhead, and to the dex method count on Android. This situation can be avoided by changing the visibility of the field / method from private to package-private. _Note:_ This rule is only executed for Java 10 or lower. Si...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessormethodgeneration",
+    "description": "When accessing private fields / methods from another class, the Java compiler will generate accessor methods with package-private visibility. This adds overhead, and to the dex method count on Android. This situation can be avoided by changing the visibility of the field / method from private to package-private. _Note:_ This rule is only executed for Java 10 or lower. Since Java 11,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessormethodgeneration",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#accessormethodgeneration"
     ]
@@ -106,7 +106,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
+    "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH USER_MODE`... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation"
     ]
@@ -120,7 +120,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and rais...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
+    "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and raises a runtime... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf"
     ]
@@ -148,7 +148,7 @@
       "Documentation",
       "apexLanguage"
     ],
-    "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments shou...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
+    "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments should contain... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
     ]
@@ -218,7 +218,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Usi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
+    "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Using different... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred"
     ]
@@ -336,21 +336,7 @@
     ]
   },
   {
-    "name": "AssignmentInOperand",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "ErrorProne",
-      "javaLanguage"
-    ],
-    "description": "Avoid assignments in operands; this can make code more complicated and harder to read.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#assignmentinoperand"
-    ]
-  },
-  {
-    "name": "AssignmentInOperand",
+    "name": "AssignmentInOperand-ecmascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -361,6 +347,20 @@
     "description": "Avoid assignments in operands; this can make code more complicated and harder to read. This is sometime indicative of the bug where the assignment operator '=' was used instead of the equality operator '=='.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#assignmentinoperand"
+    ]
+  },
+  {
+    "name": "AssignmentInOperand-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "javaLanguage"
+    ],
+    "description": "Avoid assignments in operands; this can make code more complicated and harder to read.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#assignmentinoperand"
     ]
   },
   {
@@ -400,7 +400,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Methods such as `getDeclaredConstructors()`, `getDeclaredMethods()`, and `getDeclaredFields()` also return private constructors, methods and fields. These can be made accessible by calling `setAccessible(true)`. This gives access to normally protected data which violates the principle of encapsulation. This rule detects calls to `setAccessible` and finds possible access...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidaccessibilityalteration",
+    "description": "Methods such as `getDeclaredConstructors()`, `getDeclaredMethods()`, and `getDeclaredFields()` also return private constructors, methods and fields. These can be made accessible by calling `setAccessible(true)`. This gives access to normally protected data which violates the principle of encapsulation. This rule detects calls to `setAccessible` and finds possible accessibility... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidaccessibilityalteration",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidaccessibilityalteration"
     ]
@@ -554,23 +554,9 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "One might assume that the result of \"new BigDecimal(0.1)\" is exactly equal to 0.1, but it is actually equal to .1000000000000000055511151231257827021181583404541015625. This is because 0.1 cannot be represented exactly as a double (or as a binary fraction of any finite length). Thus, the long value that is being passed in to the constructor is not exactly...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoiddecimalliteralsinbigdecimalconstructor",
+    "description": "One might assume that the result of \"new BigDecimal(0.1)\" is exactly equal to 0.1, but it is actually equal to .1000000000000000055511151231257827021181583404541015625. This is because 0.1 cannot be represented exactly as a double (or as a binary fraction of any finite length). Thus, the long value that is being passed in to the constructor is not exactly equal to... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoiddecimalliteralsinbigdecimalconstructor",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoiddecimalliteralsinbigdecimalconstructor"
-    ]
-  },
-  {
-    "name": "AvoidDeeplyNestedIfStmts",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "Design",
-      "javaLanguage"
-    ],
-    "description": "Avoid creating deeply nested if-then statements since they are harder to read and error-prone to maintain.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#avoiddeeplynestedifstmts"
     ]
   },
   {
@@ -585,6 +571,20 @@
     "description": "Avoid creating deeply nested if-then statements since they are harder to read and error-prone to maintain.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#avoiddeeplynestedifstmts"
+    ]
+  },
+  {
+    "name": "AvoidDeeplyNestedIfStmts-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "javaLanguage"
+    ],
+    "description": "Avoid creating deeply nested if-then statements since they are harder to read and error-prone to maintain.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#avoiddeeplynestedifstmts"
     ]
   },
   {
@@ -680,7 +680,7 @@
       "Performance",
       "javaLanguage"
     ],
-    "description": "The FileInputStream and FileOutputStream classes contains a finalizer method which will cause garbage collection pauses. See JDK-8080225 for details. The FileReader and FileWriter constructors instantiate FileInputStream and FileOutputStream, again causing garbage collection issues while finalizer methods are called. * Use `Files.newInputStream(Paths.get(fileName))` instead of `new...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#avoidfilestream",
+    "description": "The FileInputStream and FileOutputStream classes contains a finalizer method which will cause garbage collection pauses. See JDK-8080225 for details. The FileReader and FileWriter constructors instantiate FileInputStream and FileOutputStream, again causing garbage collection issues while finalizer methods are called. * Use `Files.newInputStream(Paths.get(fileName))` instead of `new FileInputStr... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#avoidfilestream",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#avoidfilestream"
     ]
@@ -764,7 +764,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Avoid using hard-coded literals in conditional statements. By declaring them as static variables or private members with descriptive names maintainability is enhanced. By default, the literals \"-1\" and \"0\" are ignored. More exceptions can be defined with the property \"ignoreMagicNumbers\". The rule doesn't consider deeper expressions by default, but this can be enabled via...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidliteralsinifcondition",
+    "description": "Avoid using hard-coded literals in conditional statements. By declaring them as static variables or private members with descriptive names maintainability is enhanced. By default, the literals \"-1\" and \"0\" are ignored. More exceptions can be defined with the property \"ignoreMagicNumbers\". The rule doesn't consider deeper expressions by default, but this can be enabled via the property... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidliteralsinifcondition",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#avoidliteralsinifcondition"
     ]
@@ -918,7 +918,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Reassigning loop variables can lead to hard-to-find bugs. Prevent or limit how these variables can be changed. In foreach-loops, configured by the `foreachReassign` property: - `deny`: Report any reassignment of the loop variable in the loop body. _This is the default._ - `allow`: Don't check the loop variable. - `firstOnly`: Report any reassignments of the loop var...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningloopvariables",
+    "description": "Reassigning loop variables can lead to hard-to-find bugs. Prevent or limit how these variables can be changed. In foreach-loops, configured by the `foreachReassign` property: - `deny`: Report any reassignment of the loop variable in the loop body. _This is the default._ - `allow`: Don't check the loop variable. - `firstOnly`: Report any reassignments of the loop variable, except... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningloopvariables",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningloopvariables"
     ]
@@ -932,7 +932,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the me...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningparameters",
+    "description": "Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the method's... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningparameters",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#avoidreassigningparameters"
     ]
@@ -1030,7 +1030,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Avoid throwing NullPointerExceptions manually. These are confusing because most people will assume that the virtual machine threw it. To avoid a method being called with a null parameter, you may consider using an IllegalArgumentException instead, making it clearly seen as a programmer-initiated exception. However, there are better ways to handle this: >*Effective Java...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#avoidthrowingnullpointerexception",
+    "description": "Avoid throwing NullPointerExceptions manually. These are confusing because most people will assume that the virtual machine threw it. To avoid a method being called with a null parameter, you may consider using an IllegalArgumentException instead, making it clearly seen as a programmer-initiated exception. However, there are better ways to handle this: >*Effective Java, 3rd... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#avoidthrowingnullpointerexception",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#avoidthrowingnullpointerexception"
     ]
@@ -1280,25 +1280,25 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "javaLanguage"
-    ],
-    "description": "Configurable naming conventions for type declarations. This rule reports type declarations which do not match the regex that applies to their specific kind (e.g. enum or interface). Each regex can be configured through properties. By default, this rule uses the standard Java naming convention (Pascal case). The rule can detect utility classes and enforce a different naming con...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#classnamingconventions",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#classnamingconventions"
-    ]
-  },
-  {
-    "name": "ClassNamingConventions",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
       "apexLanguage"
     ],
     "description": "Configurable naming conventions for type declarations. This rule reports type declarations which do not match the regex that applies to their specific kind (e.g. enum or interface). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Pascal case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#classnamingconventions"
+    ]
+  },
+  {
+    "name": "ClassNamingConventions-java",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javaLanguage"
+    ],
+    "description": "Configurable naming conventions for type declarations. This rule reports type declarations which do not match the regex that applies to their specific kind (e.g. enum or interface). Each regex can be configured through properties. By default, this rule uses the standard Java naming convention (Pascal case). The rule can detect utility classes and enforce a different naming convention on... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#classnamingconventions",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#classnamingconventions"
     ]
   },
   {
@@ -1366,7 +1366,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Ensure that resources (like `java.sql.Connection`, `java.sql.Statement`, and `java.sql.ResultSet` objects and any subtype of `java.lang.AutoCloseable`) are always closed after use. Failing to do so might result in resource leaks. Note: It suffices to configure the super type, e.g. `java.lang.AutoCloseable`, so that this rule automatically triggers on any subtype (e.g. `java.io.FileInp...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#closeresource",
+    "description": "Ensure that resources (like `java.sql.Connection`, `java.sql.Statement`, and `java.sql.ResultSet` objects and any subtype of `java.lang.AutoCloseable`) are always closed after use. Failing to do so might result in resource leaks. Note: It suffices to configure the super type, e.g. `java.lang.AutoCloseable`, so that this rule automatically triggers on any subtype (e.g. `java.io.FileInputStream`).... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#closeresource",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#closeresource"
     ]
@@ -1378,25 +1378,25 @@
     "tags": [
       "Recommended",
       "Design",
-      "javaLanguage"
+      "apexLanguage"
     ],
-    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, w...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cognitivecomplexity",
+    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, whereas the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cognitivecomplexity"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity"
     ]
   },
   {
-    "name": "CognitiveComplexity",
+    "name": "CognitiveComplexity-java",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "javaLanguage"
     ],
-    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, w...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
+    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, whereas the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cognitivecomplexity",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cognitivecomplexity"
     ]
   },
   {
@@ -1436,7 +1436,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "To avoid mistakes if we want that an Annotation, Class, Enum, Method, Constructor or Field have a default access modifier we must add a comment at the beginning of its declaration. By default, the comment must be `/* default */` or `/* package */`, if you want another, you have to provide a regular expression. This rule ignores by default all cases that have a `@VisibleF...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#commentdefaultaccessmodifier",
+    "description": "To avoid mistakes if we want that an Annotation, Class, Enum, Method, Constructor or Field have a default access modifier we must add a comment at the beginning of its declaration. By default, the comment must be `/* default */` or `/* package */`, if you want another, you have to provide a regular expression. This rule ignores by default all cases that have a `@VisibleForTesting`... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#commentdefaultaccessmodifier",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#commentdefaultaccessmodifier"
     ]
@@ -1492,7 +1492,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Reports comparisons with double and float `NaN` (Not-a-Number) values. These are specified to have unintuitive behavior: NaN is considered unequal to itself. This means a check like `someDouble == Double.NaN` will always return false, even if `someDouble` is really the NaN value. To test whether a value is the NaN value, one should instead use `Double.isNaN(someDouble)` (or `Float...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#comparisonwithnan",
+    "description": "Reports comparisons with double and float `NaN` (Not-a-Number) values. These are specified to have unintuitive behavior: NaN is considered unequal to itself. This means a check like `someDouble == Double.NaN` will always return false, even if `someDouble` is really the NaN value. To test whether a value is the NaN value, one should instead use `Double.isNaN(someDouble)` (or `Float.isNaN`). The... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#comparisonwithnan",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#comparisonwithnan"
     ]
@@ -1506,7 +1506,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Reports a confusing argument passed to a varargs method. This can occur when an array is passed as a single varargs argument, when the array type is not exactly the type of array that the varargs method expects. If, that array is a subtype of the component type of the expected array type, then it might not be clear what value the called varargs method will receive. ...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#confusingargumenttovarargsmethod",
+    "description": "Reports a confusing argument passed to a varargs method. This can occur when an array is passed as a single varargs argument, when the array type is not exactly the type of array that the varargs method expects. If, that array is a subtype of the component type of the expected array type, then it might not be clear what value the called varargs method will receive. For instance... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#confusingargumenttovarargsmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#confusingargumenttovarargsmethod"
     ]
@@ -1590,7 +1590,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Reports calls to overridable methods on `this` during object initialization. These are invoked on an incompletely constructed object and can be difficult to debug if overridden. This is because the subclass usually assumes that the superclass is completely initialized in all methods. If that is not the case, bugs can appear in the constructor, for instance, some fi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#constructorcallsoverridablemethod",
+    "description": "Reports calls to overridable methods on `this` during object initialization. These are invoked on an incompletely constructed object and can be difficult to debug if overridden. This is because the subclass usually assumes that the superclass is completely initialized in all methods. If that is not the case, bugs can appear in the constructor, for instance, some fields that are... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#constructorcallsoverridablemethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#constructorcallsoverridablemethod"
     ]
@@ -1630,25 +1630,25 @@
     "tags": [
       "Recommended",
       "Design",
-      "javaLanguage"
+      "apexLanguage"
     ],
-    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cyclomaticcomplexity",
+    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to another... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cyclomaticcomplexity"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity"
     ]
   },
   {
-    "name": "CyclomaticComplexity",
+    "name": "CyclomaticComplexity-java",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "javaLanguage"
     ],
-    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
+    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to another... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cyclomaticcomplexity",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#cyclomaticcomplexity"
     ]
   },
   {
@@ -1660,7 +1660,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Data Classes are simple data holders, which reveal most of their state, and without complex functionality. The lack of functionality may indicate that their behaviour is defined elsewhere, which is a sign of poor data-behaviour proximity. By directly exposing their internals, Data Classes break encapsulation, and therefore reduce the system's maintainability and understandability. Moreover, c...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#dataclass",
+    "description": "Data Classes are simple data holders, which reveal most of their state, and without complex functionality. The lack of functionality may indicate that their behaviour is defined elsewhere, which is a sign of poor data-behaviour proximity. By directly exposing their internals, Data Classes break encapsulation, and therefore reduce the system's maintainability and understandability. Moreover, classes tend... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#dataclass",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#dataclass"
     ]
@@ -1856,7 +1856,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Double brace initialisation is a pattern to initialise eg collections concisely. But it implicitly generates a new .class file, and the object holds a strong reference to the enclosing object. For those reasons, it is preferable to initialize the object normally, even though it's verbose. This rule counts any anonymous class which only has a single initializer as an ins...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#doublebraceinitialization",
+    "description": "Double brace initialisation is a pattern to initialise eg collections concisely. But it implicitly generates a new .class file, and the object holds a strong reference to the enclosing object. For those reasons, it is preferable to initialize the object normally, even though it's verbose. This rule counts any anonymous class which only has a single initializer as an instance of... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#doublebraceinitialization",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#doublebraceinitialization"
     ]
@@ -1870,7 +1870,7 @@
       "Multithreading",
       "javaLanguage"
     ],
-    "description": "Partially created objects can be returned by the Double Checked Locking pattern when used in Java. An optimizing JRE may assign a reference to the baz variable before it calls the constructor of the object the reference points to. Note: With Java 5, you can make Double checked locking work, if you declare the variable to be `volatile`. For more details refer to: <http://www...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#doublecheckedlocking",
+    "description": "Partially created objects can be returned by the Double Checked Locking pattern when used in Java. An optimizing JRE may assign a reference to the baz variable before it calls the constructor of the object the reference points to. Note: With Java 5, you can make Double checked locking work, if you declare the variable to be `volatile`. For more details refer to: <http://www.javaworld.co... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#doublecheckedlocking",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#doublecheckedlocking"
     ]
@@ -1884,23 +1884,9 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether th...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
+    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informatio... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult"
-    ]
-  },
-  {
-    "name": "EmptyCatchBlock",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "ErrorProne",
-      "javaLanguage"
-    ],
-    "description": "Empty Catch Block finds instances where an exception is caught, but nothing is done. In most circumstances, this swallows an exception which should either be acted on or reported.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#emptycatchblock"
     ]
   },
   {
@@ -1918,6 +1904,20 @@
     ]
   },
   {
+    "name": "EmptyCatchBlock-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "javaLanguage"
+    ],
+    "description": "Empty Catch Block finds instances where an exception is caught, but nothing is done. In most circumstances, this swallows an exception which should either be acted on or reported.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#emptycatchblock"
+    ]
+  },
+  {
     "name": "EmptyControlStatement",
     "severityLevel": 3,
     "type": "Standard",
@@ -1926,7 +1926,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "Reports control statements whose body is empty, as well as empty initializers. The checked code constructs are the following: - bodies of `try` statements - `finally` clauses of `try` statements - `switch` statements - `synchronized` statements - `if` statements - loop statements: `while`, `for`, `do .. while` - initializers - blocks used as statements (for scoping) This rule r...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#emptycontrolstatement",
+    "description": "Reports control statements whose body is empty, as well as empty initializers. The checked code constructs are the following: - bodies of `try` statements - `finally` clauses of `try` statements - `switch` statements - `synchronized` statements - `if` statements - loop statements: `while`, `for`, `do .. while` - initializers - blocks used as statements (for scoping) This rule replaces the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#emptycontrolstatement",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#emptycontrolstatement"
     ]
@@ -2092,20 +2092,6 @@
     "tags": [
       "Recommended",
       "Design",
-      "javaLanguage"
-    ],
-    "description": "Methods with numerous parameters are a challenge to maintain, especially if most of them share the same datatype. These situations usually denote the need for new objects to wrap the numerous parameters.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#excessiveparameterlist"
-    ]
-  },
-  {
-    "name": "ExcessiveParameterList",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "Design",
       "apexLanguage"
     ],
     "description": "Methods with numerous parameters are a challenge to maintain, especially if most of them share the same datatype. These situations usually denote the need for new objects to wrap the numerous parameters.",
@@ -2114,7 +2100,7 @@
     ]
   },
   {
-    "name": "ExcessivePublicCount",
+    "name": "ExcessiveParameterList-java",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -2122,9 +2108,9 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Classes with large numbers of public methods and attributes require disproportionate testing efforts since combinational side effects grow rapidly and increase risk. Refactoring these classes into smaller ones not only increases testability and reliability but also allows new variations to be developed easily.",
+    "description": "Methods with numerous parameters are a challenge to maintain, especially if most of them share the same datatype. These situations usually denote the need for new objects to wrap the numerous parameters.",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#excessivepubliccount"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#excessiveparameterlist"
     ]
   },
   {
@@ -2139,6 +2125,20 @@
     "description": "Classes with large numbers of public methods, attributes, and properties require disproportionate testing efforts since combinatorial side effects grow rapidly and increase risk. Refactoring these classes into smaller ones not only increases testability and reliability but also allows new variations to be developed easily.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessivepubliccount"
+    ]
+  },
+  {
+    "name": "ExcessivePublicCount-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "javaLanguage"
+    ],
+    "description": "Classes with large numbers of public methods and attributes require disproportionate testing efforts since combinational side effects grow rapidly and increase risk. Refactoring these classes into smaller ones not only increases testability and reliability but also allows new variations to be developed easily.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#excessivepubliccount"
     ]
   },
   {
@@ -2190,25 +2190,25 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "javaLanguage"
-    ],
-    "description": "Configurable naming conventions for field declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind ---e.g. constants (static final), enum constant, final field. Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case), and uses the ALL_UPPER convention for constants and enum constants.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#fieldnamingconventions"
-    ]
-  },
-  {
-    "name": "FieldNamingConventions",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
       "apexLanguage"
     ],
     "description": "Configurable naming conventions for field declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind ---e.g. constants (static final), static field, final field. Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#fieldnamingconventions"
+    ]
+  },
+  {
+    "name": "FieldNamingConventions-java",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javaLanguage"
+    ],
+    "description": "Configurable naming conventions for field declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind ---e.g. constants (static final), enum constant, final field. Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case), and uses the ALL_UPPER convention for constants and enum constants.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#fieldnamingconventions"
     ]
   },
   {
@@ -2338,7 +2338,7 @@
     ]
   },
   {
-    "name": "ForLoopsMustUseBraces",
+    "name": "ForLoopsMustUseBraces-ecmascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -2372,25 +2372,25 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "javaLanguage"
-    ],
-    "description": "Configurable naming conventions for formal parameters of methods and lambdas. This rule reports formal parameters which do not match the regex that applies to their specific kind (e.g. lambda parameter, or final formal parameter). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#formalparameternamingconventions"
-    ]
-  },
-  {
-    "name": "FormalParameterNamingConventions",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
       "apexLanguage"
     ],
     "description": "Configurable naming conventions for formal parameters of methods. This rule reports formal parameters which do not match the regex that applies to their specific kind (e.g. method parameter, or final method parameter). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#formalparameternamingconventions"
+    ]
+  },
+  {
+    "name": "FormalParameterNamingConventions-java",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javaLanguage"
+    ],
+    "description": "Configurable naming conventions for formal parameters of methods and lambdas. This rule reports formal parameters which do not match the regex that applies to their specific kind (e.g. lambda parameter, or final formal parameter). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#formalparameternamingconventions"
     ]
   },
   {
@@ -2430,7 +2430,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "The God Class rule detects the God Class design flaw using metrics. God classes do too many things, are very big and overly complex. They should be split apart to be more object-oriented. The rule uses the detection strategy described in \"Object-Oriented Metrics in Practice\". The violations are reported against the entire class. The rule uses metrics to implement its detection strategy. The vi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#godclass",
+    "description": "The God Class rule detects the God Class design flaw using metrics. God classes do too many things, are very big and overly complex. They should be split apart to be more object-oriented. The rule uses the detection strategy described in \"Object-Oriented Metrics in Practice\". The violations are reported against the entire class. The rule uses metrics to implement its detection strategy. The violation... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#godclass",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#godclass"
     ]
@@ -2506,7 +2506,7 @@
     ]
   },
   {
-    "name": "IfElseStmtsMustUseBraces",
+    "name": "IfElseStmtsMustUseBraces-ecmascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -2534,7 +2534,7 @@
     ]
   },
   {
-    "name": "IfStmtsMustUseBraces",
+    "name": "IfStmtsMustUseBraces-ecmascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -2612,7 +2612,7 @@
       "Performance",
       "javaLanguage"
     ],
-    "description": "String.trim().length() == 0 (or String.trim().isEmpty() for the same reason) is an inefficient way to check if a String is really blank, as it creates a new String object just to check its size. Consider creating a static function that loops through a string, checking Character.isWhitespace() on each character and returning false if a non-whitespace character is found. ...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#inefficientemptystringcheck",
+    "description": "String.trim().length() == 0 (or String.trim().isEmpty() for the same reason) is an inefficient way to check if a String is really blank, as it creates a new String object just to check its size. Consider creating a static function that loops through a string, checking Character.isWhitespace() on each character and returning false if a non-whitespace character is found. A Smarter... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#inefficientemptystringcheck",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#inefficientemptystringcheck"
     ]
@@ -2682,7 +2682,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Identifies beans, that don't follow the JavaBeans API specification. Each non-static field should have both a getter and a setter method. If the field is just used internally and is not a bean property, then the field should be marked as `transient`. The rule verifies that the type of the field is the same as the result type of the getter. And that this type matches the type used in the...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#invalidjavabean",
+    "description": "Identifies beans, that don't follow the JavaBeans API specification. Each non-static field should have both a getter and a setter method. If the field is just used internally and is not a bean property, then the field should be marked as `transient`. The rule verifies that the type of the field is the same as the result type of the getter. And that this type matches the type used in the setter. The... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#invalidjavabean",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#invalidjavabean"
     ]
@@ -2878,7 +2878,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "This rule reports lambda expressions that can be written more succinctly as a method reference. This is the case if the lambda is an expression lambda that only calls one method, passing the entire lambda parameter list in order to the method. For instance: ```java x -> Foo.call(x) // can be Foo::call x -> call(x) // can be this::call, if call is an instance method (x, y, ...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#lambdacanbemethodreference",
+    "description": "This rule reports lambda expressions that can be written more succinctly as a method reference. This is the case if the lambda is an expression lambda that only calls one method, passing the entire lambda parameter list in order to the method. For instance: ```java x -> Foo.call(x) // can be Foo::call x -> call(x) // can be this::call, if call is an instance method (x, y, z) -> call(x,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#lambdacanbemethodreference",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#lambdacanbemethodreference"
     ]
@@ -2892,7 +2892,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "The law of Demeter is a simple rule that says \"only talk to friends\". It forbids fetching data from \"too far away\", for some definition of distance, in order to reduce coupling between classes or objects of different levels of abstraction. The rule uses a notion of \"degree\", that quantifies how \"far\" an object is. Expressions with too high degree can only be used in certain ways. The degre...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#lawofdemeter",
+    "description": "The law of Demeter is a simple rule that says \"only talk to friends\". It forbids fetching data from \"too far away\", for some definition of distance, in order to reduce coupling between classes or objects of different levels of abstraction. The rule uses a notion of \"degree\", that quantifies how \"far\" an object is. Expressions with too high degree can only be used in certain ways. The degree of an... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#lawofdemeter",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#lawofdemeter"
     ]
@@ -2906,7 +2906,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "This rule finds Linguistic Naming Antipatterns. It checks for fields, that are named, as if they should be boolean but have a different type. It also checks for methods, that according to their name, should return a boolean, but don't. Further, it checks, that getters return something and setters won't. Finally, it checks that methods, that start with \"to\" - so called transform meth...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#linguisticnaming",
+    "description": "This rule finds Linguistic Naming Antipatterns. It checks for fields, that are named, as if they should be boolean but have a different type. It also checks for methods, that according to their name, should return a boolean, but don't. Further, it checks, that getters return something and setters won't. Finally, it checks that methods, that start with \"to\" - so called transform methods -... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#linguisticnaming",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#linguisticnaming"
     ]
@@ -2974,25 +2974,25 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "javaLanguage"
-    ],
-    "description": "Configurable naming conventions for local variable declarations and other locally-scoped variables. This rule reports variable declarations which do not match the regex that applies to their specific kind (e.g. final variable, or catch-clause parameter). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#localvariablenamingconventions"
-    ]
-  },
-  {
-    "name": "LocalVariableNamingConventions",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
       "apexLanguage"
     ],
     "description": "Configurable naming conventions for local variable declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind (e.g. local variable, or final local variable). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#localvariablenamingconventions"
+    ]
+  },
+  {
+    "name": "LocalVariableNamingConventions-java",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javaLanguage"
+    ],
+    "description": "Configurable naming conventions for local variable declarations and other locally-scoped variables. This rule reports variable declarations which do not match the regex that applies to their specific kind (e.g. final variable, or catch-clause parameter). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#localvariablenamingconventions"
     ]
   },
   {
@@ -3086,25 +3086,25 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "javaLanguage"
-    ],
-    "description": "Configurable naming conventions for method declarations. This rule reports method declarations which do not match the regex that applies to their specific kind (e.g. JUnit test or native method). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#methodnamingconventions"
-    ]
-  },
-  {
-    "name": "MethodNamingConventions",
-    "severityLevel": 2,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
       "apexLanguage"
     ],
     "description": "Configurable naming conventions for method declarations. This rule reports method declarations which do not match the regex that applies to their specific kind (e.g. static method, or test method). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#methodnamingconventions"
+    ]
+  },
+  {
+    "name": "MethodNamingConventions-java",
+    "severityLevel": 2,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javaLanguage"
+    ],
+    "description": "Configurable naming conventions for method declarations. This rule reports method declarations which do not match the regex that applies to their specific kind (e.g. JUnit test or native method). Each regex can be configured through properties. By default this rule uses the standard Java naming convention (Camel case).",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#methodnamingconventions"
     ]
   },
   {
@@ -3128,25 +3128,25 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "javaLanguage"
-    ],
-    "description": "A method should not have the same name as its containing class. This would be confusing as it would look like a constructor.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#methodwithsamenameasenclosingclass"
-    ]
-  },
-  {
-    "name": "MethodWithSameNameAsEnclosingClass",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "ErrorProne",
       "apexLanguage"
     ],
     "description": "Non-constructor methods should not have the same name as the enclosing class.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#methodwithsamenameasenclosingclass"
+    ]
+  },
+  {
+    "name": "MethodWithSameNameAsEnclosingClass-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "javaLanguage"
+    ],
+    "description": "A method should not have the same name as its containing class. This would be confusing as it would look like a constructor.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#methodwithsamenameasenclosingclass"
     ]
   },
   {
@@ -3256,7 +3256,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Non-private static fields should be made constants (or immutable references) by declaring them final. Non-private non-final static fields break encapsulation and can lead to hard to find bugs, since these fields can be modified from anywhere within the program. Callers can trivially access and modify non-private non-final static fields. Neither accesses nor modifications can be guard...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#mutablestaticstate",
+    "description": "Non-private static fields should be made constants (or immutable references) by declaring them final. Non-private non-final static fields break encapsulation and can lead to hard to find bugs, since these fields can be modified from anywhere within the program. Callers can trivially access and modify non-private non-final static fields. Neither accesses nor modifications can be guarded against,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#mutablestaticstate",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#mutablestaticstate"
     ]
@@ -3354,7 +3354,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "If a class is marked as `Serializable`, then all fields need to be serializable as well. In order to exclude a field, it can be marked as transient. Static fields are not considered. This rule reports all fields, that are not serializable. If a class implements the methods to perform manual serialization (`writeObject`, `readObject`) or uses a replacement object (`writeReplace`...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#nonserializableclass",
+    "description": "If a class is marked as `Serializable`, then all fields need to be serializable as well. In order to exclude a field, it can be marked as transient. Static fields are not considered. This rule reports all fields, that are not serializable. If a class implements the methods to perform manual serialization (`writeObject`, `readObject`) or uses a replacement object (`writeReplace`, `readResolv... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#nonserializableclass",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#nonserializableclass"
     ]
@@ -3382,7 +3382,7 @@
       "Multithreading",
       "javaLanguage"
     ],
-    "description": "Non-thread safe singletons can result in bad state changes. Eliminate static singletons if possible by instantiating the object directly. Static singletons are usually not needed as only a single instance exists anyway. Other possible fixes are to synchronize the entire method or to use an initialize-on-demand holder class. Refrain from using the double-checked locking pa...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#nonthreadsafesingleton",
+    "description": "Non-thread safe singletons can result in bad state changes. Eliminate static singletons if possible by instantiating the object directly. Static singletons are usually not needed as only a single instance exists anyway. Other possible fixes are to synchronize the entire method or to use an initialize-on-demand holder class. Refrain from using the double-checked locking pattern. The... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#nonthreadsafesingleton",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_multithreading.html#nonthreadsafesingleton"
     ]
@@ -3410,7 +3410,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "The NPath complexity of a method is the number of acyclic execution paths through that method. While cyclomatic complexity counts the number of decision points in a method, NPath counts the number of full paths from the beginning to the end of the block of the method. That metric grows exponentially, as it multiplies the complexity of statements in the same block. For more details on th...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#npathcomplexity",
+    "description": "The NPath complexity of a method is the number of acyclic execution paths through that method. While cyclomatic complexity counts the number of decision points in a method, NPath counts the number of full paths from the beginning to the end of the block of the method. That metric grows exponentially, as it multiplies the complexity of statements in the same block. For more details on the calculation... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#npathcomplexity",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#npathcomplexity"
     ]
@@ -3431,20 +3431,6 @@
   },
   {
     "name": "OneDeclarationPerLine",
-    "severityLevel": 4,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "Java allows the use of several variables declaration of the same type on one line. However, it can lead to quite messy code. This rule looks for several declarations on the same line.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#onedeclarationperline"
-    ]
-  },
-  {
-    "name": "OneDeclarationPerLine",
     "severityLevel": 2,
     "type": "Standard",
     "tags": [
@@ -3455,6 +3441,20 @@
     "description": "Apex allows the use of several variables declaration of the same type on one line. However, it can lead to quite messy code. This rule looks for several declarations on the same line.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#onedeclarationperline"
+    ]
+  },
+  {
+    "name": "OneDeclarationPerLine-java",
+    "severityLevel": 4,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Java allows the use of several variables declaration of the same type on one line. However, it can lead to quite messy code. This rule looks for several declarations on the same line.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#onedeclarationperline"
     ]
   },
   {
@@ -3508,23 +3508,9 @@
       "Performance",
       "javaLanguage"
     ],
-    "description": "Calls to a collection's `toArray(E[])` method should specify a target array of zero size. This allows the JVM to optimize the memory allocation and copying as much as possible. Previous versions of this rule (pre PMD 6.0.0) suggested the opposite, but current JVM implementations perform always better, when they have full control over the target array. And allocation an array...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#optimizabletoarraycall",
+    "description": "Calls to a collection's `toArray(E[])` method should specify a target array of zero size. This allows the JVM to optimize the memory allocation and copying as much as possible. Previous versions of this rule (pre PMD 6.0.0) suggested the opposite, but current JVM implementations perform always better, when they have full control over the target array. And allocation an array via... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#optimizabletoarraycall",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#optimizabletoarraycall"
-    ]
-  },
-  {
-    "name": "OverrideBothEqualsAndHashcode",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "ErrorProne",
-      "javaLanguage"
-    ],
-    "description": "Override both public boolean Object.equals(Object other), and public int Object.hashCode(), or override neither. Even if you are inheriting a hashCode() from a parent class, consider implementing hashCode and explicitly delegating to your superclass.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#overridebothequalsandhashcode"
     ]
   },
   {
@@ -3539,6 +3525,20 @@
     "description": "Override both `public Boolean equals(Object obj)`, and `public Integer hashCode()`, or override neither. Even if you are inheriting a hashCode() from a parent class, consider implementing hashCode and explicitly delegating to your superclass. This is especially important when Using Custom Types in Map Keys and Sets.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#overridebothequalsandhashcode"
+    ]
+  },
+  {
+    "name": "OverrideBothEqualsAndHashcode-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "ErrorProne",
+      "javaLanguage"
+    ],
+    "description": "Override both public boolean Object.equals(Object other), and public int Object.hashCode(), or override neither. Even if you are inheriting a hashCode() from a parent class, consider implementing hashCode and explicitly delegating to your superclass.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#overridebothequalsandhashcode"
     ]
   },
   {
@@ -3564,7 +3564,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "Checks for variables that are defined before they might be used. A declaration is deemed to be premature if there are some statements that may return or throw an exception between the time the variable is declared and the time it is first read. Some variables cannot be declared close to their first usage because of side-effects occurring before they're first used. We try to avoi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#prematuredeclaration",
+    "description": "Checks for variables that are defined before they might be used. A declaration is deemed to be premature if there are some statements that may return or throw an exception between the time the variable is declared and the time it is first read. Some variables cannot be declared close to their first usage because of side-effects occurring before they're first used. We try to avoid reporting... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#prematuredeclaration",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#prematuredeclaration"
     ]
@@ -3578,7 +3578,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Reports exceptions that are thrown from within a catch block, yet don't refer to the exception parameter declared by that catch block. The stack trace of the original exception could be lost, which makes the thrown exception less informative. To preserve the stack trace, the original exception may be used as the cause of the new exception, using `Throwable#initCause`, or passe...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#preservestacktrace",
+    "description": "Reports exceptions that are thrown from within a catch block, yet don't refer to the exception parameter declared by that catch block. The stack trace of the original exception could be lost, which makes the thrown exception less informative. To preserve the stack trace, the original exception may be used as the cause of the new exception, using `Throwable#initCause`, or passed as a... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#preservestacktrace",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#preservestacktrace"
     ]
@@ -3592,7 +3592,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Reports usages of primitive wrapper constructors. They are deprecated since Java 9 and should not be used. Even before Java 9, they can be replaced with usage of the corresponding static `valueOf` factory method (which may be automatically inserted by the compiler since Java 1.5). This has the advantage that it may reuse common instances instead of creating a new in...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#primitivewrapperinstantiation",
+    "description": "Reports usages of primitive wrapper constructors. They are deprecated since Java 9 and should not be used. Even before Java 9, they can be replaced with usage of the corresponding static `valueOf` factory method (which may be automatically inserted by the compiler since Java 1.5). This has the advantage that it may reuse common instances instead of creating a new instance each... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#primitivewrapperinstantiation",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#primitivewrapperinstantiation"
     ]
@@ -3760,7 +3760,7 @@
       "BestPractices",
       "ecmascriptLanguage"
     ],
-    "description": "A for-in loop in which the variable name is not explicitly scoped to the enclosing scope with the 'var' keyword can refer to a variable in an enclosing scope outside the nearest enclosing scope. This will overwrite the existing value of the variable in the outer scope when the body of the for-in is evaluated. When the for-in loop has finished, the variable will contain t...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable",
+    "description": "A for-in loop in which the variable name is not explicitly scoped to the enclosing scope with the 'var' keyword can refer to a variable in an enclosing scope outside the nearest enclosing scope. This will overwrite the existing value of the variable in the outer scope when the body of the for-in is evaluated. When the for-in loop has finished, the variable will contain the last value... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable"
     ]
@@ -3942,7 +3942,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "Reports fields which may be converted to a local variable. This is so because in every method where the field is used, it is assigned before it is first read. Hence, the value that the field had before the method call may not be observed, so it might as well not be stored in the enclosing object. Limitations: * We can only check private fields for now. * The rule is not aware of threading...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#singularfield",
+    "description": "Reports fields which may be converted to a local variable. This is so because in every method where the field is used, it is assigned before it is first read. Hence, the value that the field had before the method call may not be observed, so it might as well not be stored in the enclosing object. Limitations: * We can only check private fields for now. * The rule is not aware of threading, so it may... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#singularfield",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#singularfield"
     ]
@@ -3984,7 +3984,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "Individual character values provided as initialization arguments will be converted into integers. This can lead to internal buffer sizes that are larger than expected. Some examples: ``` new StringBuffer() // 16 new StringBuffer(6) // 6 new StringBuffer(\"hello world\") // 11 + 16 = 27 new StringBuffer('A') // chr(A) = 65 new StringBuffer(\"A\") // 1 + 16 = 17 new Stri...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#stringbufferinstantiationwithchar",
+    "description": "Individual character values provided as initialization arguments will be converted into integers. This can lead to internal buffer sizes that are larger than expected. Some examples: ``` new StringBuffer() // 16 new StringBuffer(6) // 6 new StringBuffer(\"hello world\") // 11 + 16 = 27 new StringBuffer('A') // chr(A) = 65 new StringBuffer(\"A\") // 1 + 16 = 17 new StringBuilder()... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#stringbufferinstantiationwithchar",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#stringbufferinstantiationwithchar"
     ]
@@ -4026,7 +4026,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "The method name and parameter number are suspiciously close to `Object.equals`, which can denote an intention to override it. However, the method does not override `Object.equals`, but overloads it instead. Overloading `Object.equals` method is confusing for other programmers, error-prone and hard to maintain, especially when using inheritance, because `@Override` annotat...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#suspiciousequalsmethodname",
+    "description": "The method name and parameter number are suspiciously close to `Object.equals`, which can denote an intention to override it. However, the method does not override `Object.equals`, but overloads it instead. Overloading `Object.equals` method is confusing for other programmers, error-prone and hard to maintain, especially when using inheritance, because `@Override` annotations used in... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#suspiciousequalsmethodname",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#suspiciousequalsmethodname"
     ]
@@ -4150,25 +4150,25 @@
     "tags": [
       "Recommended",
       "Design",
-      "javaLanguage"
-    ],
-    "description": "Classes that have too many fields can become unwieldy and could be redesigned to have fewer fields, possibly through grouping related fields in new objects. For example, a class with individual city/state/zip fields could park them within a single Address field.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#toomanyfields"
-    ]
-  },
-  {
-    "name": "TooManyFields",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "Design",
       "apexLanguage"
     ],
     "description": "Classes that have too many fields can become unwieldy and could be redesigned to have fewer fields, possibly through grouping related fields in new objects. For example, a class with individual city/state/zip fields could park them within a single Address field.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#toomanyfields"
+    ]
+  },
+  {
+    "name": "TooManyFields-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "Design",
+      "javaLanguage"
+    ],
+    "description": "Classes that have too many fields can become unwieldy and could be redesigned to have fewer fields, possibly through grouping related fields in new objects. For example, a class with individual city/state/zip fields could park them within a single Address field.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#toomanyfields"
     ]
   },
   {
@@ -4516,7 +4516,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Reports assignments to variables that are never used before the variable is overwritten, or goes out of scope. Unused assignments are those for which 1. The variable is never read after the assignment, or 2. The assigned value is always overwritten by other assignments before the next read of the variable. The rule tracks assignements to fields of `this`, and static fields of th...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedassignment",
+    "description": "Reports assignments to variables that are never used before the variable is overwritten, or goes out of scope. Unused assignments are those for which 1. The variable is never read after the assignment, or 2. The assigned value is always overwritten by other assignments before the next read of the variable. The rule tracks assignements to fields of `this`, and static fields of the current... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedassignment",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedassignment"
     ]
@@ -4537,20 +4537,6 @@
   },
   {
     "name": "UnusedLocalVariable",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "Detects when a local variable is declared and/or assigned, but not used. Variables whose name starts with `ignored` or `unused` are filtered out.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedlocalvariable"
-    ]
-  },
-  {
-    "name": "UnusedLocalVariable",
     "severityLevel": 4,
     "type": "Standard",
     "tags": [
@@ -4564,6 +4550,20 @@
     ]
   },
   {
+    "name": "UnusedLocalVariable-java",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Detects when a local variable is declared and/or assigned, but not used. Variables whose name starts with `ignored` or `unused` are filtered out.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedlocalvariable"
+    ]
+  },
+  {
     "name": "UnusedMethod",
     "severityLevel": 3,
     "type": "Standard",
@@ -4572,7 +4572,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce m...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
+    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce metadata,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
     ]
@@ -4600,7 +4600,7 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "Detects when a private field is declared and/or assigned a value, but not used. Since PMD 6.50.0 private fields are ignored, if the fields are annotated with any annotation or the enclosing class has any annotation. Annotations often enable a framework (such as dependency injection, mocking or e.g. Lombok) which use the fields by reflection or other means. This usage can't be ...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedprivatefield",
+    "description": "Detects when a private field is declared and/or assigned a value, but not used. Since PMD 6.50.0 private fields are ignored, if the fields are annotated with any annotation or the enclosing class has any annotation. Annotations often enable a framework (such as dependency injection, mocking or e.g. Lombok) which use the fields by reflection or other means. This usage can't be detected by... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedprivatefield",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unusedprivatefield"
     ]
@@ -4656,7 +4656,7 @@
       "Performance",
       "javaLanguage"
     ],
-    "description": "The `java.util.Arrays` class has a `asList()` method that should be used when you want to create a new List from an array of objects. It is faster than executing a loop to copy all the elements of the array one by one. Note that the result of `Arrays.asList()` is backed by the specified array, changes in the returned list will result in the array to be modified. For that reason, it...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#usearraysaslist",
+    "description": "The `java.util.Arrays` class has a `asList()` method that should be used when you want to create a new List from an array of objects. It is faster than executing a loop to copy all the elements of the array one by one. Note that the result of `Arrays.asList()` is backed by the specified array, changes in the returned list will result in the array to be modified. For that reason, it is not... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#usearraysaslist",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#usearraysaslist"
     ]
@@ -4726,7 +4726,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "In some cases, explicit type arguments in a constructor call for a generic type may be replaced by diamond type arguments (`<>`), and be inferred by the compiler. This rule recommends that you use diamond type arguments anywhere possible, since it avoids duplication of the type arguments, and makes the code more concise and readable. This rule is useful when upgrading a codebase t...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#usediamondoperator",
+    "description": "In some cases, explicit type arguments in a constructor call for a generic type may be replaced by diamond type arguments (`<>`), and be inferred by the compiler. This rule recommends that you use diamond type arguments anywhere possible, since it avoids duplication of the type arguments, and makes the code more concise and readable. This rule is useful when upgrading a codebase to Java 1.7,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#usediamondoperator",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#usediamondoperator"
     ]
@@ -4768,7 +4768,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "Java 10 introduced the `var` keyword. This reduces the amount of code written because java can infer the type from the initializer of the variable declaration. This is essentially a trade-off: On the one hand, it can make code more readable by eliminating redundant information. On the other hand, it can make code less readable by eliding useful information. There is no blanket rule ...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#useexplicittypes",
+    "description": "Java 10 introduced the `var` keyword. This reduces the amount of code written because java can infer the type from the initializer of the variable declaration. This is essentially a trade-off: On the one hand, it can make code more readable by eliminating redundant information. On the other hand, it can make code less readable by eliding useful information. There is no blanket rule for when... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#useexplicittypes",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#useexplicittypes"
     ]
@@ -4838,7 +4838,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "Parenthesized expressions are used to override the default operator precedence rules. Parentheses whose removal would not change the relative nesting of operators are unnecessary, because they don't change the semantics of the enclosing expression. Some parentheses that strictly speaking are unnecessary, may still be considered useful for readability. This rule allows to ignore vi...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#uselessparentheses",
+    "description": "Parenthesized expressions are used to override the default operator precedence rules. Parentheses whose removal would not change the relative nesting of operators are unnecessary, because they don't change the semantics of the enclosing expression. Some parentheses that strictly speaking are unnecessary, may still be considered useful for readability. This rule allows to ignore violations on... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#uselessparentheses",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#uselessparentheses"
     ]
@@ -4880,7 +4880,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "When doing `String::toLowerCase()/toUpperCase()` conversions, use an explicit locale argument to specify the case transformation rules. Using `String::toLowerCase()` without arguments implicitly uses `Locale::getDefault()`. The problem is that the default locale depends on the current JVM setup (and usually on the system in which it is running). Using the system default...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#uselocalewithcaseconversions",
+    "description": "When doing `String::toLowerCase()/toUpperCase()` conversions, use an explicit locale argument to specify the case transformation rules. Using `String::toLowerCase()` without arguments implicitly uses `Locale::getDefault()`. The problem is that the default locale depends on the current JVM setup (and usually on the system in which it is running). Using the system default may be... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#uselocalewithcaseconversions",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#uselocalewithcaseconversions"
     ]
@@ -4908,7 +4908,7 @@
       "Design",
       "javaLanguage"
     ],
-    "description": "When you write a public method, you should be thinking in terms of an API. If your method is public, it means other class will use it, therefore, you want (or need) to offer a comprehensive and evolutive API. If you pass a lot of information as a simple series of Strings, you may think of using an Object to represent all those information. You'll get a simpler API (such as doWork...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#useobjectforclearerapi",
+    "description": "When you write a public method, you should be thinking in terms of an API. If your method is public, it means other class will use it, therefore, you want (or need) to offer a comprehensive and evolutive API. If you pass a lot of information as a simple series of Strings, you may think of using an Object to represent all those information. You'll get a simpler API (such as doWork(Workload... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#useobjectforclearerapi",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_design.html#useobjectforclearerapi"
     ]
@@ -5062,7 +5062,7 @@
       "Security",
       "visualforceLanguage"
     ],
-    "description": "Checks for the correct encoding in `<style/>` tags in Visualforce pages. The rule is based on Salesforce Security's recommendation to prevent XSS in Visualforce as mentioned on Secure Coding Cross Site Scripting. In order to avoid cross site scripting, the relevant encoding must be used in HTML tags. The rule expects `URLENCODING` or `JSINHTMLENCODING` for URL-based style val...<<CLIPPED>> READ MORE AT: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss",
+    "description": "Checks for the correct encoding in `<style/>` tags in Visualforce pages. The rule is based on Salesforce Security's recommendation to prevent XSS in Visualforce as mentioned on Secure Coding Cross Site Scripting. In order to avoid cross site scripting, the relevant encoding must be used in HTML tags. The rule expects `URLENCODING` or `JSINHTMLENCODING` for URL-based style values and any... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss"
     ]
@@ -5096,7 +5096,7 @@
     ]
   },
   {
-    "name": "WhileLoopsMustUseBraces",
+    "name": "WhileLoopsMustUseBraces-ecmascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [

@@ -99,8 +99,18 @@ class PmdRuleDescriber {
                 .replaceAll("\\s+"," ") // Switch to only use a single space whenever whitespace is found
                 .replaceAll("\\[([^]]+)]\\([^)]+\\)", "$1"); // Remove markdown urls. i.e. replace "[phrase](<url>)" with "phrase"
         if (ruleDescription.length() > 500) {
-            String clipText = "...<<CLIPPED>> READ MORE AT: " +  rule.getExternalInfoUrl();
-            ruleDescription = ruleDescription.substring(0, 500 - clipText.length()) + clipText;
+            String clipText = "... Learn more: " +  rule.getExternalInfoUrl();
+
+            int clipLocation = 500 - clipText.length();
+            // Attempt to clip at some nearby whitespace instead of clipping the middle of a word
+            for (int i = 0; i < 10; i++) {
+                if (ruleDescription.charAt(clipLocation - i) == ' ') {
+                    clipLocation = clipLocation - i;
+                    break;
+                }
+            }
+
+            ruleDescription = ruleDescription.substring(0, clipLocation) + clipText;
         }
         return ruleDescription;
     }

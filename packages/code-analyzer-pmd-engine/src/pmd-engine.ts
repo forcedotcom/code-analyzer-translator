@@ -13,7 +13,7 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {indent, JavaCommandExecutor} from "./utils";
 import path from "node:path";
-import {extensionToPmdLanguage, PmdLanguage} from "./constants";
+import {extensionToPmdLanguage, PmdLanguage, SHARED_RULE_NAMES} from "./constants";
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
 import {PmdEngineConfig} from "./config";
@@ -66,8 +66,10 @@ export class PmdEngine extends Engine {
         const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
             (innerPerc: number) => this.emitRunRulesProgressEvent(4 + 6*(innerPerc/100))); // 4 to 10%
 
-        const selectedRuleNames: Set<string> = new Set(ruleNames);
-        const selectedRuleInfoList: PmdRuleInfo[] = ruleInfoList.filter(ruleInfo => selectedRuleNames.has(ruleInfo.name));
+        const selectedRuleInfoList: PmdRuleInfo[] = ruleNames
+            .map(ruleName => fetchRuleInfoByRuleName(ruleInfoList, ruleName))
+            .filter(ruleInfo => ruleInfo !== null);
+
         const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan,
             (innerPerc: number) => this.emitRunRulesProgressEvent(10 + 88*(innerPerc/100))); // 10 to 98%
 
@@ -109,14 +111,22 @@ export class PmdEngine extends Engine {
 }
 
 function toRuleDescription(pmdRule: PmdRuleInfo): RuleDescription {
+
     return {
-        name: pmdRule.name,
+        name: toUniqueRuleName(pmdRule.name, pmdRule.language as PmdLanguage),
         severityLevel: toSeverityLevel(pmdRule.priority),
         type: RuleType.Standard,
         tags: ['Recommended', pmdRule.ruleSet.replace(' ', ''), pmdRule.language + "Language"],
         description: pmdRule.description,
         resourceUrls: [pmdRule.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links
     };
+}
+
+function toUniqueRuleName(ruleName: string, ruleLanguage: PmdLanguage): string {
+    if (ruleName in SHARED_RULE_NAMES && ruleLanguage !== PmdLanguage.APEX) {
+        return `${ruleName}-${ruleLanguage}`;
+    }
+    return ruleName;
 }
 
 /* istanbul ignore next */
@@ -147,7 +157,7 @@ function toViolation(pmdViolation: PmdViolation, file: string): Violation {
         endColumn: pmdViolation.endcolumn
     }
     return {
-        ruleName: pmdViolation.rule,
+        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToPmdLanguage[path.extname(file)]),
         message: pmdViolation.description,
         codeLocations: [codeLocation],
         primaryLocationIndex: 0
@@ -207,4 +217,15 @@ class PmdWorkspaceLiaison {
 
 function getCacheKey(workspace?: Workspace) {
     return workspace? workspace.getWorkspaceId() : process.cwd();
+}
+
+function fetchRuleInfoByRuleName(ruleInfoList: PmdRuleInfo[], uniqueRuleName: string) : PmdRuleInfo|null {
+    // Note that some pmd rule names that were shared among languages were converted to contain a "-<language>" suffix.
+    // So we need to map these names (like "TooManyFields-java") back into "TooManyFields" for the "java" language.
+    const langSeparator: number = uniqueRuleName.indexOf('-');
+    const specificRuleLanguage: PmdLanguage|undefined = langSeparator > 0 ? uniqueRuleName.substring(langSeparator+1) as PmdLanguage : undefined;
+    const pmdRuleName: string = langSeparator > 0 ? uniqueRuleName.substring(0, langSeparator) : uniqueRuleName;
+    return ruleInfoList.find(ruleInfo =>
+        ruleInfo.name === pmdRuleName && (specificRuleLanguage === undefined || ruleInfo.language === specificRuleLanguage)
+    ) || null;
 }

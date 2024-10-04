@@ -97,6 +97,13 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
+
+        // // SANITY CHECK THAT NO RULES IN PMD HAVE A '-' CHARACTER IN ITS NAME SINCE IT IS WHAT WE USE TO MAKE UNIQUE NAMES
+        expectNoDashesAppearOutsideOfOurLanguageSpecificRules(ruleDescriptions);
+
+        // SANITY CHECK THAT OUR SHARED_RULE_NAMES IS UP-TO-DATE BY CHECKING FOR DUPLICATE RULE NAMES
+        // If the following fails then most likely, we need to update your SHARED_RULE_NAMES object.
+        expectNoDuplicateRuleNames(ruleDescriptions);
     });
 
     it('When specifying all zero rule languages, then no rules are described', async () => {
@@ -175,7 +182,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         primaryLocationIndex: 0
     };
 
-    const expectConsistentReturnViolation: Violation = {
+    const expectedConsistentReturnViolation: Violation = {
         ruleName: "ConsistentReturn",
         message: 'A function should not mix return statements with and without a result.',
         codeLocations: [
@@ -185,6 +192,21 @@ describe('Tests for the runRules method of PmdEngine', () => {
                 startColumn: 1,
                 endLine: 6,
                 endColumn: 2
+            }
+        ],
+        primaryLocationIndex: 0
+    }
+
+    const expectedWhileLoopsMustUseBracesViolation: Violation = {
+        ruleName: "WhileLoopsMustUseBraces-ecmascript",
+        message: 'Avoid using while statements without curly braces',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'WhileLoopsMustUseBraces.js'),
+                startLine: 2,
+                startColumn: 1,
+                endLine: 3,
+                endColumn: 9
             }
         ],
         primaryLocationIndex: 0
@@ -210,6 +232,18 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
         // Also check that we have all the correct progress events
         expect(progressEvents.map(e => e.percentComplete)).toEqual([2, 100]);
+    });
+
+    it('When specified rules are not relevant to users workspace, then return zero violations', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ...DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: ['xml']
+        });
+        const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace', 'dummy.xml')]);
+        const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
+        expect(results.violations).toHaveLength(0);
     });
 
     it('When workspace contains relevant files containing violation, then return violations', async () => {
@@ -255,16 +289,40 @@ describe('Tests for the runRules method of PmdEngine', () => {
         expect(results.violations).toHaveLength(0);
     });
 
-    it('When specifying a non-default language and workspace contains violation for that language, then return correct violations', async () => {
+    it('When specifying a non-default language and workspace contains violations for that language, then return correct violations', async () => {
         const engine: PmdEngine = new PmdEngine({
             ... DEFAULT_PMD_ENGINE_CONFIG,
             rule_languages: ['ecmascript', 'xml' /* sanity check: not relevant to workspace */, 'apex']
         });
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
-        const ruleNames: string[] = ['ConsistentReturn', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
+        const ruleNames: string[] = ['ConsistentReturn', 'WhileLoopsMustUseBraces-ecmascript', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
-        expect(results.violations).toHaveLength(2);
+        expect(results.violations).toHaveLength(3);
         expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
-        expect(results.violations).toContainEqual(expectConsistentReturnViolation);
+        expect(results.violations).toContainEqual(expectedConsistentReturnViolation);
+        expect(results.violations).toContainEqual(expectedWhileLoopsMustUseBracesViolation);
     });
 });
+
+
+function expectNoDashesAppearOutsideOfOurLanguageSpecificRules(ruleDescriptions: RuleDescription[]): void {
+    for (const ruleDescription of ruleDescriptions) {
+        const dashIdx: number = ruleDescription.name.indexOf('-');
+        if (dashIdx >= 0) {
+            const possibleLang: string = ruleDescription.name.substring(dashIdx+1) as PmdLanguage;
+            if (!(Object.values(PmdLanguage) as string[]).includes(possibleLang)) {
+                fail(`${ruleDescription.name} contains a '-' which is a reserved character for our PMD rules`)
+            }
+        }
+    }
+}
+
+function expectNoDuplicateRuleNames(ruleDescriptions: RuleDescription[]): void {
+    const seen: Set<string> = new Set();
+    for (const ruleDescription of ruleDescriptions) {
+        if (seen.has(ruleDescription.name)) {
+            fail(`The rule name ${ruleDescription.name} appears more than once among the rule descriptions.`);
+        }
+        seen.add(ruleDescription.name);
+    }
+}
