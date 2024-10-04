@@ -19,13 +19,16 @@ export class PythonCommandExecutor {
 
             pythonProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();
-                if(msg.length > 0) { // Not sure why stdout spits out empty lines, but we ignore them nonetheless
+                if(msg.length > 0) { // Not sure why stdout spits out empty lines sometimes, but we ignore them nonetheless
                     msg.split("\n").map(line => processStdout(line));
                 }
             });
 
             pythonProcess.stderr.on('data', (data: Buffer) => {
-                stderrMessages.push(`${data.toString().trim()}`);
+                const msg: string = data.toString().trim();
+                if(msg.length > 0) { // Not sure why stderr spits out empty lines sometimes, but we ignore them nonetheless
+                    stderrMessages.push(msg);
+                }
             });
 
             pythonProcess.on('close', (code: number) => {
