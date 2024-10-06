@@ -108,7 +108,10 @@ export class RegexEngine extends Engine {
 
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
-        const fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'});
+        let fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'})
+        if (this.regexRules[ruleName].include_metadata) {
+            fileContents = fileContents + await fs.promises.readFile(fileName + "-meta.xml", {encoding: 'utf8'}) ;
+        }
         const regex: RegExp = this.getRegExpFor(ruleName);
         const newlineIndexes: number[] = getNewlineIndices(fileContents);
 

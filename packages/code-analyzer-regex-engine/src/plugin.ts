@@ -84,6 +84,15 @@ export function createBaseRegexRules(now: Date): RegexRules {
             violation_message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
             severity: SeverityLevel.High,
             tags: ['Recommended', 'Performance']
+        },
+        MinVersionForAbstractVirtualClassesWithPrivateMethod: {
+            regex: (/(?=.*(?<=<apiVersion>)([1-9]|[1-5][0-9]|60)(\.[0-9])?(?=<\/apiVersion>))public\s+(virtual|abstract)\s+class\s+\w+\s*\n*\s*{\s*(?:[^{}]*{[^{}]*})*?\s+private\s+\w+\s+\w+\s*\([^)]*\)\s*{[^}]*}/gis).toString(),
+            file_extensions: ['.cls', '.trigger'],
+            description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
+            violation_message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
+            severity: SeverityLevel.Info,
+            tags: ['Recommended'],
+            include_metadata: true
         }
     }
 }

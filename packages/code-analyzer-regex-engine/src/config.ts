@@ -45,6 +45,10 @@ export type RegexRule = {
     // Possible values: 1 or 'Critical', 2 or 'High', 3 or 'Moderate', 4 or 'Low', 5 or 'Info'
     // Default: 'Moderate'
     severity: SeverityLevel;
+
+    // [Optional] If the corresponding -meta.xml file should be included for analysis
+    // Default: false
+    include_metadata?: boolean;
 }
 
 export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;

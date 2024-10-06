@@ -92,6 +92,15 @@ const EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION: RuleDescription = {
     resourceUrls: []
 }
 
+const EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIPTION: RuleDescription = {
+    name: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
+    description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
+    severityLevel: SeverityLevel.Info,
+    type: RuleType.Standard,
+    tags: ['Recommended'],
+    resourceUrls: []
+}
+
 const SAMPLE_DATE: Date = new Date(Date.UTC(2024, 8, 1, 0, 0, 0));
 
 let engine: RegexEngine;
@@ -110,13 +119,14 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
 
     it('Calling describeRules without workspace, returns all available rules', async () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({});
-        expect(rulesDescriptions).toHaveLength(6);
+        expect(rulesDescriptions).toHaveLength(7);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
         expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
         expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
         expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION)
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIPTION)
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains zero applicable files, then describeRules returns no rules", async () => {
@@ -142,13 +152,14 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
         const rulesDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace')
             ])});
-        expect(rulesDescriptions).toHaveLength(6);
+        expect(rulesDescriptions).toHaveLength(7);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION)
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION)
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION)
-        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION);
+        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION);
+        expect(rulesDescriptions[4]).toMatchObject(EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIPTION);
+        expect(rulesDescriptions[5]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[6]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 });
 
@@ -352,6 +363,49 @@ describe('Tests for runRules', () => {
                         startColumn: 9,
                         endLine: 36,
                         endColumn: 34
+                    }
+                ]
+            },
+        ];
+
+        expect(runResults.violations).toHaveLength(expectedViolations.length);
+        for (const expectedViolation of expectedViolations) {
+            expect(runResults.violations).toContainEqual(expectedViolation);
+        }
+    });
+
+    it("Ensure runRules when called on a directory of Apex classes with private method in abstract/private class, it properly emits violations", async () => {
+        const runOptions: RunOptions = {workspace: new Workspace([
+            path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod")
+        ])};
+        const runResults: EngineRunResults = await engine.runRules(["MinVersionForAbstractVirtualClassesWithPrivateMethod"], runOptions);
+
+        const expectedViolations: Violation[] = [
+            {
+                ruleName: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
+                message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testAbstractClassWithPrivateMethod.cls"),
+                        startLine: 1,
+                        startColumn: 1,
+                        endLine: 4,
+                        endColumn: 6
+                    }
+                ]
+            },
+            {
+                ruleName: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
+                message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testVirtualClassWithPrivateMethod.cls"),
+                        startLine: 1,
+                        startColumn: 1,
+                        endLine: 4,
+                        endColumn: 6
                     }
                 ]
             },
