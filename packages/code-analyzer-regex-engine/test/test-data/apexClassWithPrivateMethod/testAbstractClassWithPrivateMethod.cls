@@ -1,8 +1,13 @@
 public abstract class Parent {
     public void aMethod() {
-        aPrivateMethod();
+        if(true) {
+            aPrivateMethod();
+        }
     }
+
     private void aPrivateMethod() {
-        System.debug('Parent private method is called.');
+        if(true) {
+            System.debug('Parent private method is called.');
+        }
     }
 }

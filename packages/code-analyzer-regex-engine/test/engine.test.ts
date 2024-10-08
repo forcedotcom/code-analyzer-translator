@@ -390,8 +390,8 @@ describe('Tests for runRules', () => {
                         file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testAbstractClassWithPrivateMethod.cls"),
                         startLine: 1,
                         startColumn: 1,
-                        endLine: 7,
-                        endColumn: 6
+                        endLine: 11,
+                        endColumn: 10
                     }
                 ]
             },
