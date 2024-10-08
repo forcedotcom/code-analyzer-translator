@@ -109,8 +109,14 @@ export class RegexEngine extends Engine {
     private async scanFile(fileName: string, ruleName: string): Promise<Violation[]> {
         const violations: Violation[] = [];
         let fileContents: string = await fs.promises.readFile(fileName, {encoding: 'utf8'})
-        if (this.regexRules[ruleName].include_metadata) {
-            fileContents = fileContents + await fs.promises.readFile(fileName + "-meta.xml", {encoding: 'utf8'}) ;
+        if (this.regexRules[ruleName]?.include_metadata) {
+            const medataFileName = fileName + "-meta.xml";
+            try {
+                await fs.promises.access(medataFileName, fs.constants.F_OK);
+                fileContents = fileContents + await fs.promises.readFile(medataFileName, {encoding: 'utf8'}) ;
+            } catch (err) {
+                // Silently proceed if -meta.xml file doesn't exist or there was a problem reading it.
+            }
         }
         const regex: RegExp = this.getRegExpFor(ruleName);
         const newlineIndexes: number[] = getNewlineIndices(fileContents);
