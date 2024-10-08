@@ -16,6 +16,12 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     CouldNotParseRuleDescriptions:
         `Could not parse rule descriptions from FlowTest output: %s`,
 
+    ResultsFileNotValidJson:
+        `Results file contents are not a valid JSON: %s`,
+
+    CouldNotParseExecutionResults:
+        `Could not parse results from %s`,
+
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
         `The '%s' configuration value is invalid. The command '%s' does not seem to be a recognizable version of Python.`,
 
