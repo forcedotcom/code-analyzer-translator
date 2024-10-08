@@ -8,7 +8,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Apex test assert statement should make use of the message parameter.",
+    "description": "The second parameter of System.assert/third parameter of System.assertEquals/System.assertNotEquals is a message. Having a second/third parameter provides more information and makes it easier to debug the test failure and improves the readability of test output.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexassertionsshouldincludemessage"
     ]
@@ -22,7 +22,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex classes should use random IV/key",
+    "description": "The rule makes sure you are using randomly generated IVs and keys for `Crypto` calls. Hard-wiring these values greatly compromises the security of encrypted data.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexbadcrypto"
     ]
@@ -36,7 +36,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Validate CRUD permission before SOQL/DML operation or enforce user mode",
+    "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH USER_MODE`... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation"
     ]
@@ -50,7 +50,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid making DML operations in Apex class constructor or initializers",
+    "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and raises a runtime... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf"
     ]
@@ -64,7 +64,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Calling potentially dangerous method",
+    "description": "Checks against calling dangerous methods. For the time being, it reports: * Against `FinancialForce`'s `Configuration.disableTriggerCRUDSecurity()`. Disabling CRUD security opens the door to several attacks and requires manual validation, which is unreliable. * Calling `System.debug` passing sensitive data as parameter, which could lead to exposure of private data.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexdangerousmethods"
     ]
@@ -78,7 +78,7 @@
       "Documentation",
       "apexLanguage"
     ],
-    "description": "ApexDoc comment is missing or incorrect",
+    "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments should contain... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc"
     ]
@@ -92,7 +92,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex callouts should use encrypted communication channels",
+    "description": "Checks against accessing endpoints under plain **http**. You should always use **https** for security.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexinsecureendpoint"
     ]
@@ -106,7 +106,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex classes should safely redirect to a known location",
+    "description": "Checks against redirects to user-controlled locations. This prevents attackers from redirecting users to phishing sites.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexopenredirect"
     ]
@@ -120,7 +120,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex classes should declare a sharing model if DML or SOQL/SOSL is used",
+    "description": "Detect classes declared without explicit sharing mode if DML methods are used. This forces the developer to take access restrictions into account before modifying objects.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsharingviolations"
     ]
@@ -134,7 +134,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Avoid untrusted/unescaped variables in DML query",
+    "description": "Detects the usage of untrusted / unescaped variables in DML queries.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsoqlinjection"
     ]
@@ -148,7 +148,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Suggest named credentials for authentication",
+    "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Using different... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred"
     ]
@@ -162,7 +162,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Apex unit tests should System.assert() or assertEquals() or assertNotEquals()",
+    "description": "Apex unit tests should include at least one assertion. This makes the tests more robust, and using assert with messages provide the developer a clearer idea of what the test does. Custom assert method invocation patterns can be specified using the 'additionalAssertMethodPattern' property if required.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestclassshouldhaveasserts"
     ]
@@ -176,7 +176,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Apex unit test classes should have at least one System.runAs() call",
+    "description": "Apex unit tests should include at least one runAs method. This makes the tests more robust, and independent from the user running it.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestclassshouldhaverunas"
     ]
@@ -190,7 +190,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Apex test methods should have @isTest annotation.",
+    "description": "Apex test methods should have `@isTest` annotation instead of the `testMethod` keyword, as `testMethod` is deprecated. Salesforce advices to use @isTest annotation for test classes and methods.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestmethodshouldhaveistestannotation"
     ]
@@ -204,7 +204,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Apex unit tests should not use @isTest(seeAllData = true)",
+    "description": "Apex unit tests should not use @isTest(seeAllData=true) because it opens up the existing database data for unexpected modification by tests.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#apexunittestshouldnotuseseealldatatrue"
     ]
@@ -218,7 +218,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex classes should escape Strings in error messages",
+    "description": "Reports on calls to `addError` with disabled escaping. The message passed to `addError` will be displayed directly to the user in the UI, making it prime ground for XSS attacks if unescaped.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexxssfromescapefalse"
     ]
@@ -232,7 +232,7 @@
       "Security",
       "apexLanguage"
     ],
-    "description": "Apex classes should escape/sanitize Strings obtained from URL parameters",
+    "description": "Makes sure that all values obtained from URL parameters are properly escaped / sanitized to avoid XSS attacks.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexxssfromurlparam"
     ]
@@ -246,7 +246,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "Avoid debug statements since they impact on performance",
+    "description": "Debug statements contribute to longer transactions and consume Apex CPU time even when debug logs are not being captured. When possible make use of other debugging techniques such as the Apex Replay Debugger and Checkpoints that could cover *most* use cases. For other valid use cases that the statement is in fact valid make use of the `@SuppressWarnings` annotation or the `//NOPMD` comment.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoiddebugstatements"
     ]
@@ -260,7 +260,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Deeply nested if..then statements are hard to read",
+    "description": "Avoid creating deeply nested if-then statements since they are harder to read and error-prone to maintain.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#avoiddeeplynestedifstmts"
     ]
@@ -274,7 +274,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid directly accessing Trigger.old and Trigger.new",
+    "description": "Avoid directly accessing Trigger.old and Trigger.new as it can lead to a bug. Triggers should be bulkified and iterate through the map to handle the actions for each item separately.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoiddirectaccesstriggermap"
     ]
@@ -288,7 +288,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Avoid using global modifier",
+    "description": "Global classes should be avoided (especially in managed packages) as they can never be deleted or changed in signature. Always check twice if something needs to be global. Many interfaces (e.g. Batch) required global modifiers in the past but don't require this anymore. Don't lock yourself in.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#avoidglobalmodifier"
     ]
@@ -302,7 +302,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Hardcoding Id's is bound to break when changing environments.",
+    "description": "When deploying Apex code between sandbox and production environments, or installing Force.com AppExchange packages, it is essential to avoid hardcoding IDs in the Apex code. By doing so, if the record IDs change between environments, the logic can dynamically identify the proper data to operate against and not fail.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoidhardcodingid"
     ]
@@ -316,7 +316,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Avoid logic in triggers",
+    "description": "As triggers do not allow methods like regular classes they are less flexible and suited to apply good encapsulation style. Therefore delegate the triggers work to a regular class (often called Trigger handler class). See more here: <https://developer.salesforce.com/page/Trigger_Frameworks_and_Apex_Trigger_Best_Practices>",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#avoidlogicintrigger"
     ]
@@ -330,7 +330,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Use of non existent annotations will lead to broken Apex code which will not compile in the future.",
+    "description": "Apex supported non existent annotations for legacy reasons. In the future, use of such non-existent annotations could result in broken apex code that will not compile. This will prevent users of garbage annotations from being able to use legitimate annotations added to Apex in the future. A full list of supported annotations can be found at https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#avoidnonexistentannotations"
     ]
@@ -344,7 +344,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "Avoid {0} queries without a where or limit statement",
+    "description": "When working with very large amounts of data, unfiltered SOQL or SOSL queries can quickly cause governor limit exceptions.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
     ]
@@ -358,7 +358,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for type declarations. This rule reports type declarations which do not match the regex that applies to their specific kind (e.g. enum or interface). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Pascal case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#classnamingconventions"
     ]
@@ -372,7 +372,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The {0} ''{1}'' has a{2} cognitive complexity of {3}, current threshold is {4}",
+    "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, whereas the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity"
     ]
@@ -386,7 +386,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The {0} ''{1}'' has a{2} cyclomatic complexity of {3}.",
+    "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to another... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity"
     ]
@@ -400,7 +400,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Calls to System.debug should specify a logging level.",
+    "description": "The first parameter of System.debug, when using the signature with two parameters, is a LoggingLevel enum. Having the Logging Level specified provides a cleaner log, and improves readability of it.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#debugsshoulduselogginglevel"
     ]
@@ -414,7 +414,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "DescribeSObjectResult could be being loaded eagerly with all child relationships.",
+    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informatio... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult"
     ]
@@ -428,7 +428,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid empty catch blocks",
+    "description": "Empty Catch Block finds instances where an exception is caught, but nothing is done. In most circumstances, this swallows an exception which should either be acted on or reported.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptycatchblock"
     ]
@@ -442,7 +442,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid empty 'if' statements",
+    "description": "Empty If Statement finds instances where a condition is checked but nothing is done about it.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptyifstmt"
     ]
@@ -456,7 +456,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid empty block statements.",
+    "description": "Empty block statements serve no purpose and should be removed.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptystatementblock"
     ]
@@ -470,7 +470,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid empty try or finally blocks",
+    "description": "Avoid empty try or finally blocks - what's the point?",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptytryorfinallyblock"
     ]
@@ -484,7 +484,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Avoid empty 'while' statements",
+    "description": "Empty While Statement finds all instances where a while statement does nothing. If it is a timing loop, then you should use Thread.sleep() for it; if it is a while loop that does a lot in the exit expression, rewrite it to make it clearer.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#emptywhilestmt"
     ]
@@ -498,7 +498,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Avoid really long classes.",
+    "description": "Excessive class file lengths are usually indications that the class may be burdened with excessive responsibilities that could be provided by external classes or functions. In breaking these methods apart the code becomes more managable and ripe for reuse.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessiveclasslength"
     ]
@@ -512,7 +512,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Avoid long parameter lists.",
+    "description": "Methods with numerous parameters are a challenge to maintain, especially if most of them share the same datatype. These situations usually denote the need for new objects to wrap the numerous parameters.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessiveparameterlist"
     ]
@@ -526,7 +526,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The class {0} has {1} public methods, attributes, and properties (limit: {2})",
+    "description": "Classes with large numbers of public methods, attributes, and properties require disproportionate testing efforts since combinatorial side effects grow rapidly and increase risk. Refactoring these classes into smaller ones not only increases testability and reliability but also allows new variations to be developed easily.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#excessivepubliccount"
     ]
@@ -540,7 +540,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Field declaration for ''{0}'' should be before method declarations in its class",
+    "description": "Field declarations should appear before method declarations within a class.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#fielddeclarationsshouldbeatstart"
     ]
@@ -554,7 +554,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for field declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind ---e.g. constants (static final), static field, final field. Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#fieldnamingconventions"
     ]
@@ -568,7 +568,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Avoid using 'for' statements without curly braces",
+    "description": "Avoid using 'for' statements without using surrounding braces. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#forloopsmustusebraces"
     ]
@@ -582,7 +582,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for formal parameters of methods. This rule reports formal parameters which do not match the regex that applies to their specific kind (e.g. method parameter, or final method parameter). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#formalparameternamingconventions"
     ]
@@ -596,7 +596,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Avoid using 'if...else' statements without curly braces",
+    "description": "Avoid using if..else statements without using surrounding braces. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#ifelsestmtsmustusebraces"
     ]
@@ -610,7 +610,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Avoid using if statements without curly braces",
+    "description": "Avoid using if statements without using braces to surround the code block. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#ifstmtsmustusebraces"
     ]
@@ -624,7 +624,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "AuraEnabled getter must be public or global if is referenced in Lightning components",
+    "description": "In the Summer '21 release, a mandatory security update enforces access modifiers on Apex properties in Lightning component markup. The update prevents access to private or protected Apex getters from Aura and Lightning Web Components.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#inaccessibleauraenabledgetter"
     ]
@@ -638,7 +638,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for local variable declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind (e.g. local variable, or final local variable). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#localvariablenamingconventions"
     ]
@@ -652,7 +652,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for method declarations. This rule reports method declarations which do not match the regex that applies to their specific kind (e.g. static method, or test method). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#methodnamingconventions"
     ]
@@ -666,7 +666,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Classes should not have non-constructor methods with the same name as the class",
+    "description": "Non-constructor methods should not have the same name as the enclosing class.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#methodwithsamenameasenclosingclass"
     ]
@@ -680,7 +680,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The constructor has an NCSS line count of {0}",
+    "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given constructor. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncssconstructorcount"
     ]
@@ -694,7 +694,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The method ''{0}()'' has an NCSS line count of {1} (limit: {2})",
+    "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given method. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncssmethodcount"
     ]
@@ -708,7 +708,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The type has an NCSS line count of {0}",
+    "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given type. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#ncsstypecount"
     ]
@@ -722,7 +722,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Use one statement for each line, it enhances code readability.",
+    "description": "Apex allows the use of several variables declaration of the same type on one line. However, it can lead to quite messy code. This rule looks for several declarations on the same line.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#onedeclarationperline"
     ]
@@ -736,7 +736,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "Avoid operations in loops that may impact performances",
+    "description": "This rule finds method calls inside loops that are known to be likely a performance issue. These methods should be called only once before the loop. Schema class methods like Schema.getGlobalDescribe() and Schema.describeSObjects() might be slow depending on the size of your organization. Calling these methods repeatedly inside a loop creates a potential performance issue.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithhighcostinloop"
     ]
@@ -750,7 +750,7 @@
       "Performance",
       "apexLanguage"
     ],
-    "description": "Avoid operations in loops that may hit governor limits",
+    "description": "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#operationwithlimitsinloop"
     ]
@@ -764,7 +764,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Ensure you override both equals() and hashCode()",
+    "description": "Override both `public Boolean equals(Object obj)`, and `public Integer hashCode()`, or override neither. Even if you are inheriting a hashCode() from a parent class, consider implementing hashCode and explicitly delegating to your superclass. This is especially important when Using Custom Types in Map Keys and Sets.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#overridebothequalsandhashcode"
     ]
@@ -778,7 +778,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "The {0} name ''{1}'' doesn''t match ''{2}''",
+    "description": "Configurable naming conventions for property declarations. This rule reports property declarations which do not match the regex that applies to their specific kind (e.g. static property, or instance property). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#propertynamingconventions"
     ]
@@ -792,7 +792,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "The {0} ''{1}'' has a Standard Cyclomatic Complexity of {2}.",
+    "description": "Complexity directly affects maintenance costs is determined by the number of decision points in a method plus one for the method entry. The decision points include 'if', 'while', 'for', and 'case labels' calls. Generally, numbers ranging from 1-4 denote low complexity, 5-7 denote moderate complexity, 8-10 denote high complexity, and 11+ is very high complexity.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#stdcyclomaticcomplexity"
     ]
@@ -806,7 +806,7 @@
       "ErrorProne",
       "apexLanguage"
     ],
-    "description": "Test methods must be in test classes",
+    "description": "Test methods marked as a testMethod or annotated with @IsTest, but not residing in a test class should be moved to a proper class or have the @IsTest annotation added to the class. Support for tests inside functional classes was removed in Spring-13 (API Version 27.0), making classes that violate this rule fail compile-time. This rule is mostly usable when dealing with legacy code.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#testmethodsmustbeintestclasses"
     ]
@@ -820,7 +820,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Too many fields",
+    "description": "Classes that have too many fields can become unwieldy and could be redesigned to have fewer fields, possibly through grouping related fields in new objects. For example, a class with individual city/state/zip fields could park them within a single Address field.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#toomanyfields"
     ]
@@ -834,7 +834,7 @@
       "BestPractices",
       "apexLanguage"
     ],
-    "description": "Variable ''{0}'' defined but not used",
+    "description": "Detects when a local variable is declared and/or assigned but not used.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#unusedlocalvariable"
     ]
@@ -848,7 +848,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Unused methods make understanding code harder",
+    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce metadata,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
     ]
@@ -862,7 +862,7 @@
       "Security",
       "visualforceLanguage"
     ],
-    "description": "Avoid calling VF action upon page load",
+    "description": "Avoid calling VF action upon page load as the action becomes vulnerable to CSRF.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfcsrf"
     ]
@@ -876,7 +876,7 @@
       "Security",
       "visualforceLanguage"
     ],
-    "description": "Use correct encoding for expressions within Style tag",
+    "description": "Checks for the correct encoding in `<style/>` tags in Visualforce pages. The rule is based on Salesforce Security's recommendation to prevent XSS in Visualforce as mentioned on Secure Coding Cross Site Scripting. In order to avoid cross site scripting, the relevant encoding must be used in HTML tags. The rule expects `URLENCODING` or `JSINHTMLENCODING` for URL-based style values and any... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss"
     ]
@@ -890,7 +890,7 @@
       "Security",
       "visualforceLanguage"
     ],
-    "description": "Avoid unescaped user controlled content in EL",
+    "description": "Avoid unescaped user controlled content in EL as it results in XSS.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfunescapeel"
     ]
@@ -904,7 +904,7 @@
       "CodeStyle",
       "apexLanguage"
     ],
-    "description": "Avoid using 'while' statements without curly braces",
+    "description": "Avoid using 'while' statements without using braces to surround the code block. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_codestyle.html#whileloopsmustusebraces"
     ]
