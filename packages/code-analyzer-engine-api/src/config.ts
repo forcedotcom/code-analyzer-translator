@@ -185,7 +185,7 @@ export class ValueValidator {
             throw new Error(getMessage('ConfigValueMustBeOfType', fieldPath, 'array', getDataType(value)));
         }
         if (elementValidator) {
-            value.every((element, index) => elementValidator(element, `${fieldPath}[${index}]`));
+            value = value.map((element, index) => elementValidator(element, `${fieldPath}[${index}]`));
         }
         return value as T[];
     }
