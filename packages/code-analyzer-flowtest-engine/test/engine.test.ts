@@ -1,7 +1,8 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
-import {RuleDescription, RuleType, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
+import {EngineRunResults, RuleDescription, RuleType, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "../src/engine";
-import {FlowTestCommandWrapper, FlowTestRuleDescriptor} from "../src/python/FlowTestCommandWrapper";
+import {FlowTestCommandWrapper, FlowTestExecutionResult, FlowTestRuleDescriptor} from "../src/python/FlowTestCommandWrapper";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
 changeWorkingDirectoryToPackageRoot();
@@ -49,6 +50,10 @@ const MALFORMED_RULES: FlowTestRuleDescriptor[] = [{
     query_version: "0",
     is_security: "True"
 }];
+
+const PATH_TO_WORKSPACES = path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-multiple-flows');
+const PATH_TO_SAMPLE_RESULTS = path.resolve(__dirname, 'test-data', 'sample-flowtest-results', 'engine.test.ts');
+const PATH_TO_GOLDFILES = path.resolve(__dirname, 'test-data', 'goldfiles', 'engine.test.ts');
 
 describe('Tests for the FlowTestEngine', () => {
     it('getName() returns correct name', () => {
@@ -136,21 +141,164 @@ describe('Tests for the FlowTestEngine', () => {
         });
     });
 
-    it('TEMPORARY TEST FOR CODE COVERAGE', async () => {
-        // Will delete this test as soon as engine is implemented.
-        const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([]));
-        expect(await engine.runRules([], {workspace: new Workspace([__dirname])})).toEqual({violations: []});
+    describe('#runRules', () => {
+
+        const PATH_TO_SUBFLOW_TEST1: string = path.join(PATH_TO_WORKSPACES, 'subflow_test1.flow-meta.xml');
+        const PATH_TO_INNER_SUBFLOW_EXAMPLE: string = path.join(PATH_TO_WORKSPACES, 'inner_subflow_example.flow-meta.xml');
+        const PATH_TO_EXAMPLE: string = path.join(PATH_TO_WORKSPACES, 'example.flow-meta.xml');
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+        })
+
+        it.each([
+            {case: 'Empty results', inputFile: 'empty-results.json', goldfile: 'empty-results.goldfile.json'},
+            {case: 'Non-empty results', inputFile: 'non-empty-results.json', goldfile: 'non-empty-results.goldfile.json'}
+        ])('Converts FlowTest format to Code Analyzer format. Case: $case', async ({inputFile, goldfile}) => {
+            // ==== SETUP ====
+            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, inputFile), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+
+            // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
+            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+
+            // ==== TESTED BEHAVIOR ====
+            // Specify every rule
+            const desiredRuleNames: string[] = [
+                'systemmodewithsharing-recordcreates-data',
+                'systemmodewithsharing-recorddeletes-selector',
+                'systemmodewithsharing-recordlookups-selector',
+                'systemmodewithsharing-recordupdates-data',
+                'systemmodewithsharing-recordupdates-selector',
+                'systemmodewithoutsharing-recordcreates-data',
+                'systemmodewithoutsharing-recorddeletes-selector',
+                'systemmodewithoutsharing-recordlookups-selector',
+                'systemmodewithoutsharing-recordupdates-data',
+                'systemmodewithoutsharing-recordupdates-selector'
+            ];
+            // Specify every file in the workspace
+            const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE];
+            const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
+                workspace: new Workspace(workspaceFiles)
+            });
+
+            // ==== ASSERTIONS ====
+            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfile), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+        });
+
+        it('If Workspace has no root, throws an error', async () => {
+            // ==== SETUP ====
+            // Stub out the Workspace's getRoot method so it returns null.
+            jest.spyOn(Workspace.prototype, 'getWorkspaceRoot').mockImplementation(() => {
+                return null;
+            });
+
+            // Instantiate an engine that will return no results.
+            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], {results: {}}));
+
+            // ==== TESTED BEHAVIOR ====
+            // Specify a rule. It doesn't matter which one.
+            const desiredRuleNames: string[] = ['fakerule-thisshouldnotmatter'];
+            const workspaceFiles: string[] = [PATH_TO_EXAMPLE];
+            await expect(engine.runRules(desiredRuleNames, {
+                workspace: new Workspace(workspaceFiles)
+            }))
+                // Expect the errro message to mention the lack of a root directory
+                .rejects.toThrow('has no identifiable root directory');
+        });
+
+        it('Filters out results for unrequested rules', async () => {
+            // ==== SETUP ====
+            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+
+            // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
+            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+
+            // ==== TESTED BEHAVIOR ====
+            // Specify only one of the rules, creating a scenario where the FlowTest result includes violations of rules
+            // that weren't requested.
+            const desiredRuleNames: string[] = ['systemmodewithoutsharing-recordlookups-selector'];
+            // Specify every file in the workspace
+            const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE];
+            const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
+                workspace: new Workspace(workspaceFiles)
+            });
+
+            // ==== ASSERTIONS ====
+            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, 'filtered-by-rules.goldfile.json'), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+        });
+
+        it('Filters out results for files outside of workspace', async () => {
+            // ==== SETUP ====
+            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+
+            // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
+            const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+
+            // ==== TESTED BEHAVIOR ====
+            // Specify all rules
+            const desiredRuleNames: string[] = [
+                'systemmodewithsharing-recordcreates-data',
+                'systemmodewithsharing-recorddeletes-selector',
+                'systemmodewithsharing-recordlookups-selector',
+                'systemmodewithsharing-recordupdates-data',
+                'systemmodewithsharing-recordupdates-selector',
+                'systemmodewithoutsharing-recordcreates-data',
+                'systemmodewithoutsharing-recorddeletes-selector',
+                'systemmodewithoutsharing-recordlookups-selector',
+                'systemmodewithoutsharing-recordupdates-data',
+                'systemmodewithoutsharing-recordupdates-selector'
+            ];
+            // Specify only one of the files in the workspace, creating a scenario where the FlowTest result includes
+            // violations from files that weren't requested
+            const workspaceFiles = [PATH_TO_EXAMPLE];
+            const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
+                workspace: new Workspace(workspaceFiles)
+            });
+
+            // ==== ASSERTIONS ====
+            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, 'filtered-by-workspace.goldfile.json'), {encoding: 'utf-8'}))
+                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
+                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
+                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
+            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+        });
     });
 });
 
 class StubCommandWrapper implements FlowTestCommandWrapper {
     private readonly rules: FlowTestRuleDescriptor[];
+    private readonly results: FlowTestExecutionResult;
 
-    public constructor(rules: FlowTestRuleDescriptor[]) {
+    public constructor(rules: FlowTestRuleDescriptor[], results: FlowTestExecutionResult = {results: {}}) {
         this.rules = rules;
+        this.results = results;
     }
 
     public getFlowTestRuleDescriptions(): Promise<FlowTestRuleDescriptor[]> {
         return Promise.resolve(this.rules);
+    }
+
+    public runFlowTestRules(_dir: string, _fn: (percent: number) => void ): Promise<FlowTestExecutionResult> {
+        return Promise.resolve(this.results);
     }
 }

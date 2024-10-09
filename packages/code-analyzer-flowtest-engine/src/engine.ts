@@ -4,11 +4,22 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunOptions,
-    SeverityLevel
 } from "@salesforce/code-analyzer-engine-api";
-import {FlowTestCommandWrapper, FlowTestRuleDescriptor} from "./python/FlowTestCommandWrapper";
+import {toEngineRunResults, toRuleDescription} from './utils';
+import {getMessage} from './messages';
+import {FlowTestCommandWrapper, FlowTestExecutionResult, FlowTestRuleDescriptor} from "./python/FlowTestCommandWrapper";
+
+/**
+ * An arbitrarily chosen value for how close the engine is to completion before the underlying FlowTest tool is invoked,
+ * expressed as a percentage.
+ */
+const PRE_INVOCATION_RUN_PERCENT = 10;
+/**
+ * An arbitrarily chosen value for how close the engine is to completion after the underlying FlowTest tool has completed,
+ * expressed as a percentage.
+ */
+const POST_INVOCATION_RUN_PERCENT = 90;
 
 export class FlowTestEngine extends Engine {
     public static readonly NAME: string = 'flowtest';
@@ -41,14 +52,24 @@ export class FlowTestEngine extends Engine {
         return convertedRules;
     }
 
-    public async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
+    public async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitRunRulesProgressEvent(0);
-
-        this.emitRunRulesProgressEvent(10);
+        const workspaceRoot: string | null = runOptions.workspace.getWorkspaceRoot();
+        // If we can't identify a single directory as the root of the workspace, then there's nothing for us to pass into
+        // FlowTest. So just throw an error and be done with it.
+        // NOTE: The only known case where this can occur is if a Windows user is scanning files on two different drives
+        //       (e.g., "C:" and "D:"). Since this is an extreme edge case, it's one we're willing to tolerate.
+        if (workspaceRoot === null) {
+            throw new Error(getMessage('WorkspaceLacksIdentifiableRoot', runOptions.workspace.getFilesAndFolders().join(', ')));
+        }
+        this.emitRunRulesProgressEvent(PRE_INVOCATION_RUN_PERCENT);
+        const percentageUpdateHandler = /* istanbul ignore next */ (percentage: number) => {
+            this.emitDescribeRulesProgressEvent(normalizeRelativeCompletionPercentage(percentage));
+        }
+        const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(workspaceRoot, percentageUpdateHandler);
+        const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames, await runOptions.workspace.getExpandedFiles());
         this.emitRunRulesProgressEvent(100);
-        return {
-            violations: []
-        };
+        return convertedResults;
     }
 }
 
@@ -57,42 +78,13 @@ function fileIsFlowFile(fileName: string): boolean {
     return lowerCaseFileName.endsWith('.flow') || lowerCaseFileName.endsWith('.flow-meta.xml');
 }
 
-function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescription {
-    return {
-        // The name maps directly over.
-        name: toCodeAnalyzerName(flowTestRule.query_name),
-        severityLevel: toCodeAnalyzerSeverity(flowTestRule.severity),
-        // All rules in FlowTest are obviously Flow-type.
-        type: RuleType.Flow,
-        // All rules are Recommended, but not all rules are Security rules.
-        tags: flowTestRule.is_security.toLowerCase() === 'true' ? ['Recommended', 'Security'] : ['Recommended'],
-        // The description maps directly over.
-        description: flowTestRule.query_description,
-        resourceUrls: toResourceUrls(flowTestRule.help_url)
-    }
-}
-
-function toCodeAnalyzerName(queryName: string): string {
-    return queryName.replaceAll('Flow: ', '').replaceAll(' ', '-').toLowerCase();
-}
-
-function toCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {
-    switch (flowTestSeverity) {
-        case 'Flow_High_Severity':
-            return SeverityLevel.High;
-        case 'Flow_Moderate_Severity':
-            return SeverityLevel.Moderate;
-        case 'Flow_Low_Severity':
-            return SeverityLevel.Low
-    }
-    throw new Error(`Developer error: invalid severity level ${flowTestSeverity}`);
-}
-
-function toResourceUrls(helpUrl: string): string[] {
-    // Treat the hardcoded string "none" as equivalent to an empty string.
-    if (helpUrl.toLowerCase() === 'none' || helpUrl === '') {
-        return [];
-    } else {
-        return [helpUrl];
-    }
+/**
+ * Accepts a percentage indicating the completion percentage of the underlying FlowTest tool, and converts it into a
+ * percentage representing the completion percentage of the engine as a whole.
+ * @param flowTestPercentage Completion percentage received from the FlowTest tool.
+ */
+// istanbul ignore next
+function normalizeRelativeCompletionPercentage(flowTestPercentage: number): number {
+    const percentageSpread: number = POST_INVOCATION_RUN_PERCENT - PRE_INVOCATION_RUN_PERCENT;
+    return PRE_INVOCATION_RUN_PERCENT + ((flowTestPercentage * percentageSpread) / 100);
 }

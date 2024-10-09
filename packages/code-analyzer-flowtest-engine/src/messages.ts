@@ -36,6 +36,9 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `If you have python installed, specify the command in your Code Analyzer configuration as the value of property '%s'.\n` +
         `If you choose not to install python, you may disable the '%s' engine in your Code Analyzer configuration by setting 'engines.%s.disable_engine' to true.`,
 
+    WorkspaceLacksIdentifiableRoot:
+        `Cannot run FlowTest: Workspace consisting of %s has no identifiable root directory.`,
+
     PythonCommandError:
         `The following call to python exited with non-zero exit code.\n` +
         `  Command: %s\n` +

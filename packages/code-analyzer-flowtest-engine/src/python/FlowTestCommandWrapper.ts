@@ -50,7 +50,7 @@ export type FlowTestExecutionResult = {
     }
 }
 
-type FlowTestRuleResult = {
+export type FlowTestRuleResult = {
     flow: FlowNodeDescriptor[];
     query_name: string;
     severity: string;
@@ -59,7 +59,7 @@ type FlowTestRuleResult = {
     field: string;
 }
 
-type FlowNodeDescriptor = {
+export type FlowNodeDescriptor = {
     influenced_var: string;
     influencer_var: string;
     element_name: string;
