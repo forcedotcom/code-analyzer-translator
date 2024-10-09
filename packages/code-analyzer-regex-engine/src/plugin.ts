@@ -86,6 +86,12 @@ export function createBaseRegexRules(now: Date): RegexRules {
             tags: ['Recommended', 'Performance']
         },
         MinVersionForAbstractVirtualClassesWithPrivateMethod: {
+            // Part to match (using look behind) that we are in an abstract/virtual class (using look behind):
+            //    (^|\s+)(virtual|abstract)[^{]*\s+class\s+.*\n\s*
+            // Part to match a private method signature:
+            //    private [^{]+\([^)]*\)\s*{
+            // Part to match (using look ahead) that the meta data has apiVersion less than 61.0:
+            //    .*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>
             regex: (/(?<=(^|\s+)(virtual|abstract)[^{]*\s+class\s+.*\n\s*)private [^{]+\([^)]*\)\s*{(?=.*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>)/gis).toString(),
             file_extensions: ['.cls', '.trigger'],
             description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
