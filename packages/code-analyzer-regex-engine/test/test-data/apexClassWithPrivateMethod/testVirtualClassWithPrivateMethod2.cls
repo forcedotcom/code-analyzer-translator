@@ -3,7 +3,7 @@ virtual public class Parent {
         aPrivateMethod();
     }
 
-    private void aPrivateMethod() {
+    private Map<String,List<String>> aPrivateMethod() {
         System.debug('Parent private method is called.');
     }
 }

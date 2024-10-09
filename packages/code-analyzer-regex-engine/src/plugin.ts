@@ -86,7 +86,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
             tags: ['Recommended', 'Performance']
         },
         MinVersionForAbstractVirtualClassesWithPrivateMethod: {
-            regex: (/(?<=(^|\s+)(virtual|abstract)[^{]*\s+class\s+.*)private\s+\w+\s+\w+\s*\([^)]*\)\s*{(?=.*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>)/gis).toString(),
+            regex: (/(?<=(^|\s+)(virtual|abstract)[^{]*\s+class\s+.*)private\s+[\w<,>]+\s+\w+\s*\([^)]*\)\s*{(?=.*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>)/gis).toString(),
             file_extensions: ['.cls', '.trigger'],
             description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
             violation_message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),

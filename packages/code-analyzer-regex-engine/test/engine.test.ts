@@ -419,7 +419,7 @@ describe('Tests for runRules', () => {
                         startLine: 6,
                         startColumn: 5,
                         endLine: 6,
-                        endColumn: 36
+                        endColumn: 44
                     }
                 ]
             },
@@ -433,7 +433,7 @@ describe('Tests for runRules', () => {
                         startLine: 6,
                         startColumn: 5,
                         endLine: 6,
-                        endColumn: 36
+                        endColumn: 56
                     }
                 ]
             },

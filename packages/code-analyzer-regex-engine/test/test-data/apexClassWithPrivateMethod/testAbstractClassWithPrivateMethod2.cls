@@ -1,9 +1,9 @@
-abstract class Parent {
+abstract public class Parent {
     public void aMethod() {
         aPrivateMethod();
     }
 
-    private void aPrivateMethod() {
+    private List<String> aPrivateMethod() {
         System.debug('Parent private method is called.');
     }
 }
