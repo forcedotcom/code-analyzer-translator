@@ -83,6 +83,11 @@ describe("Tests for ValueValidator", () => {
             getMessage('ConfigValueMustBeOfType', 'someFieldName[1]', 'string', 'number'));
     });
 
+    it("When a custom element validator is given to validateArray, then the resolved elements are returned in the array", () => {
+        expect(ValueValidator.validateArray(['a',2], 'someFieldName', (_e: unknown, _p: string) => 'resolved')).toEqual(
+            ['resolved', 'resolved']);
+    });
+
     it("When an absolute file is given to validateFile, then it is returned", () => {
         const inputFile: string = path.resolve(__dirname, 'config.test.ts');
         expect(ValueValidator.validateFile(inputFile, 'someFieldName')).toEqual(inputFile);
@@ -434,6 +439,12 @@ describe("Tests for ConfigValueExtractor", () => {
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2[1]', 'string', 'number'));
     });
 
+    it("When calling extractRequiredArray with a custom validator, then the returned array contains resolved elements", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field: [1, 2, 3]});
+        expect(extractor1.extractRequiredArray('some_field', (_e, _p) => 'resolved')).toEqual(
+            ['resolved', 'resolved', 'resolved']);
+    });
+
     it("When calling extractArray on field that is not defined, then return default value", () => {
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({}, 'engines.dummy');
         expect(extractor.extractArray('some_field')).toEqual(undefined);
@@ -453,6 +464,12 @@ describe("Tests for ConfigValueExtractor", () => {
         const extractor2: ConfigValueExtractor = new ConfigValueExtractor({some_field2: ['a',3]}, 'engines.dummy');
         expect(() => extractor2.extractArray('some_field2', ValueValidator.validateString)).toThrow(
             getMessage('ConfigValueMustBeOfType','engines.dummy.some_field2[1]', 'string', 'number'));
+    });
+
+    it("When calling extractArray with a custom validator, then the returned array contains resolved elements", () => {
+        const extractor1: ConfigValueExtractor = new ConfigValueExtractor({some_field: [1, 2, 3]});
+        expect(extractor1.extractArray('some_field', (_e, _p) => 'resolved')).toEqual(
+            ['resolved', 'resolved', 'resolved']);
     });
 
     it("When calling extractRequiredFile on a field that does not exist, then error", () => {
