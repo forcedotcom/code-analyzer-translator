@@ -95,7 +95,7 @@ const EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION: RuleDescription = {
 const EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIPTION: RuleDescription = {
     name: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
     description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
-    severityLevel: SeverityLevel.Info,
+    severityLevel: SeverityLevel.High,
     type: RuleType.Standard,
     tags: ['Recommended'],
     resourceUrls: []
