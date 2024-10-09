@@ -60,6 +60,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     AvoidGetHeapSizeInLoopRuleMessage:
         `Found the use of Limits.getHeapSize() in a loop. We recommend you avoid this pattern due to performance and resource reasons.`,
 
+    MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription:
+        `Detects private methods within abstract/virtual classes when the corresponding API version of the class is less than v61.0.`,
+    
+    MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage:
+        `Found private methods within abstract/virtual classes. Make sure the corresponding API version of the class is at least v61.0.`,
+
     RuleViolationMessage:
         `A match of the regular expression %s was found for rule '%s': %s`,
 
