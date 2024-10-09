@@ -96,7 +96,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
             file_extensions: ['.cls', '.trigger'],
             description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
             violation_message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
-            severity: SeverityLevel.Info,
+            severity: SeverityLevel.High,
             tags: ['Recommended'],
             include_metadata: true
         }
