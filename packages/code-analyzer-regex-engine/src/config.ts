@@ -48,7 +48,6 @@ export type RegexRule = {
 
     // [Optional] If the corresponding -meta.xml file should be included for analysis
     // INTERNAL USE ONLY (NOT EXPOSED TO USER CONFIG)
-    // Default: false
     include_metadata?: boolean;
 }
 
