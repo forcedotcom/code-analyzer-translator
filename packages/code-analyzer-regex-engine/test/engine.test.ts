@@ -388,10 +388,10 @@ describe('Tests for runRules', () => {
                 codeLocations: [
                     {
                         file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testAbstractClassWithPrivateMethod.cls"),
-                        startLine: 1,
-                        startColumn: 1,
-                        endLine: 11,
-                        endColumn: 10
+                        startLine: 8,
+                        startColumn: 5,
+                        endLine: 8,
+                        endColumn: 36
                     }
                 ]
             },
@@ -402,10 +402,38 @@ describe('Tests for runRules', () => {
                 codeLocations: [
                     {
                         file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testVirtualClassWithPrivateMethod.cls"),
-                        startLine: 1,
-                        startColumn: 1,
-                        endLine: 4,
-                        endColumn: 6
+                        startLine: 2,
+                        startColumn: 5,
+                        endLine: 2,
+                        endColumn: 36
+                    }
+                ]
+            },
+            {
+                ruleName: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
+                message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testAbstractClassWithPrivateMethod2.cls"),
+                        startLine: 6,
+                        startColumn: 5,
+                        endLine: 6,
+                        endColumn: 36
+                    }
+                ]
+            },
+            {
+                ruleName: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
+                message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
+                primaryLocationIndex: 0,
+                codeLocations: [
+                    {
+                        file: path.resolve(__dirname, "test-data", "apexClassWithPrivateMethod", "testVirtualClassWithPrivateMethod2.cls"),
+                        startLine: 6,
+                        startColumn: 5,
+                        endLine: 6,
+                        endColumn: 36
                     }
                 ]
             },
