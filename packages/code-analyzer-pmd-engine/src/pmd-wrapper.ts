@@ -41,27 +41,42 @@ export type PmdProcessingError = {
     detail: string
 }
 
+const STDOUT_PROGRESS_MARKER = '[Progress]';
+const STDOUT_ERROR_MARKER = '[Error] ';
+
 export class PmdWrapperInvoker {
     private readonly javaCommandExecutor: JavaCommandExecutor;
+    private readonly userProvidedJavaClasspathEntries: string[];
     private temporaryWorkingDir?: string;
     private emitLogEvent: (logLevel: LogLevel, message: string) => void;
 
-    constructor(javaCommandExecutor: JavaCommandExecutor, emitLogEvent: (logLevel: LogLevel, message: string) => void) {
+    constructor(javaCommandExecutor: JavaCommandExecutor, userProvidedJavaClasspathEntries: string[], emitLogEvent: (logLevel: LogLevel, message: string) => void) {
         this.javaCommandExecutor = javaCommandExecutor;
+        this.userProvidedJavaClasspathEntries = userProvidedJavaClasspathEntries;
         this.emitLogEvent = emitLogEvent;
     }
 
-    async invokeDescribeCommand(languages: PmdLanguage[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
-        const pmdRulesOutputFile: string = path.join(await this.getTemporaryWorkingDir(), 'ruleInfo.json');
+    async invokeDescribeCommand(customRulesets: string[], languages: PmdLanguage[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
+        const tempDir: string = await this.getTemporaryWorkingDir();
+        const pmdRulesOutputFile: string = path.join(tempDir, 'ruleInfo.json');
+        const customRulesetsListFile: string = path.join(tempDir, 'customRulesetsList.txt');
+        await fs.promises.writeFile(customRulesetsListFile, customRulesets.join('\n'), 'utf-8');
         emitProgress(10);
 
-        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, languages.join(',')];
+        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, customRulesetsListFile, languages.join(',')];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
+            ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)
         ];
         this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
-        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths,
-            (stdOutMsg) => this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`));
+        await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg) => {
+            if (stdOutMsg.startsWith(STDOUT_ERROR_MARKER)) {
+                const errorMessage: string = stdOutMsg.slice(STDOUT_ERROR_MARKER.length);
+                throw new Error(errorMessage);
+            } else {
+                this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`)
+            }
+        });
         emitProgress(80);
 
         try {
@@ -93,11 +108,12 @@ export class PmdWrapperInvoker {
         const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'run', ruleSetInputFile, filesToScanInputFile, resultsOutputFile];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
+            ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)
         ];
         this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg: string) => {
-            if (stdOutMsg.startsWith('[Progress]')) {
-                const parts: string[] = stdOutMsg.slice(10).split('::');
+            if (stdOutMsg.startsWith(STDOUT_PROGRESS_MARKER)) {
+                const parts: string[] = stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length).split('::');
                 const numFilesProcessed: number = parseInt(parts[0]);
                 const totalNumFiles: number = parseInt(parts[1]);
                 emitProgress(10 + (80 * numFilesProcessed / totalNumFiles));
@@ -138,4 +154,8 @@ function createRuleSetFileContentsFor(pmdRuleInfoList: PmdRuleInfo[]): string {
         '    <description>Rules to Run for Salesforce Code Analyzer</description>\n' +
         ruleRefs.join('\n') + '\n' +
         '</ruleset>';
+}
+
+function toJavaClasspathEntry(jarfileOrFolder: string): string {
+    return jarfileOrFolder.toLowerCase().endsWith(".jar") ? jarfileOrFolder : jarfileOrFolder + path.sep + "*";
 }

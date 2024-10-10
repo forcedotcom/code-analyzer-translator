@@ -23,6 +23,7 @@ export class PmdEngine extends Engine {
 
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
     private readonly selectedLanguages: PmdLanguage[];
+    private readonly customRulesets: string[];
 
     private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
     private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
@@ -30,9 +31,11 @@ export class PmdEngine extends Engine {
     constructor(config: PmdEngineConfig) {
         super();
         const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
-        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor,
+        const userProvidedJavaClasspathEntries: string[] = config.java_classpath_entries;
+        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.selectedLanguages = config.rule_languages as PmdLanguage[];
+        this.customRulesets = config.custom_rulesets;
     }
 
     getName(): string {
@@ -95,7 +98,7 @@ export class PmdEngine extends Engine {
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
             const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
             const ruleInfoList: PmdRuleInfo[] = relevantLanguages.length === 0 ? [] :
-                await this.pmdWrapperInvoker.invokeDescribeCommand(relevantLanguages, emitProgress);
+                await this.pmdWrapperInvoker.invokeDescribeCommand(this.customRulesets, relevantLanguages, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;

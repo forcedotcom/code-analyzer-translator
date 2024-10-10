@@ -5,6 +5,7 @@ import {SemVer} from "semver";
 import path from "node:path";
 import {indent} from "./utils";
 import {MINIMUM_JAVA_VERSION, PmdLanguage} from "./constants";
+import fs from "node:fs";
 
 const PMD_AVAILABLE_LANGUAGES: string[] = Object.values(PmdLanguage);
 const PMD_AVAILABLE_LANGUAGES_TEXT: string = PMD_AVAILABLE_LANGUAGES.map(lang => `'${lang}'`)
@@ -14,7 +15,9 @@ export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
     overview: getMessage('PmdConfigOverview'),
     fieldDescriptions: {
         java_command: getMessage('PmdConfigFieldDescription_java_command'),
-        rule_languages: getMessage('PmdConfigFieldDescription_rule_languages', PMD_AVAILABLE_LANGUAGES_TEXT)
+        rule_languages: getMessage('PmdConfigFieldDescription_rule_languages', PMD_AVAILABLE_LANGUAGES_TEXT),
+        java_classpath_entries: getMessage('PmdConfigFieldDescription_java_classpath_entries'),
+        custom_rulesets: getMessage('PmdConfigFieldDescription_custom_rulesets')
     }
 }
 
@@ -29,20 +32,41 @@ export type PmdEngineConfig = {
     // The available languages are: 'apex', 'html', 'java', 'ecmascript' (or 'javascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html
     rule_languages: string[]
+
+    // List of jar files and/or folders to add the Java classpath when running PMD.
+    // Each entry may be given as an absolute path or a relative path to 'config_root'.
+    // This field is primarily used to supply custom Java based rule definitions to PMD.
+    // See https://pmd.github.io/pmd/pmd_userdocs_extending_writing_java_rules.html
+    java_classpath_entries: string[]
+
+    // List of xml ruleset files containing custom PMD rules to be made available for rule selection.
+    // Each ruleset must be an xml file that is either::
+    //   - on disk (provided as an absolute path or a relative path to 'config_root')
+    //   - or a relative resource found on the Java classpath.
+    // Not all custom rules can be fully defined within an xml ruleset file. For example, Java based rules may be defined in jar files.
+    // In these cases, you will need to also add your additional files to the Java classpath using the 'java_classpath_entries' field.
+    // See https://pmd.github.io/pmd/pmd_userdocs_making_rulesets.html
+    custom_rulesets: string []
 }
 
 export const DEFAULT_PMD_ENGINE_CONFIG: PmdEngineConfig = {
     java_command: 'java',
-    rule_languages: ['apex', 'visualforce']
+    rule_languages: ['apex', 'visualforce'],
+    java_classpath_entries: [],
+    custom_rulesets: []
 }
 
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<PmdEngineConfig> {
     const pmdConfigValueExtractor: PmdConfigValueExtractor = new PmdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
+
+    const javaClasspathEntries: string[] = pmdConfigValueExtractor.extractJavaClasspathEntries();
     return {
         java_command: await pmdConfigValueExtractor.extractJavaCommand(),
-        rule_languages: pmdConfigValueExtractor.extractRuleLanguages()
+        rule_languages: pmdConfigValueExtractor.extractRuleLanguages(),
+        java_classpath_entries: pmdConfigValueExtractor.extractJavaClasspathEntries(),
+        custom_rulesets: pmdConfigValueExtractor.extractCustomRulesets(javaClasspathEntries)
     }
 }
 
@@ -97,6 +121,45 @@ class PmdConfigValueExtractor {
             }
         }
         return ruleLanguages.sort();
+    }
+
+    extractJavaClasspathEntries(): string[] {
+        const entries: string[] = this.configValueExtractor.extractArray('java_classpath_entries',
+            (entry: unknown, entryField: string) => ValueValidator.validatePath(entry, entryField,
+                [this.configValueExtractor.getConfigRoot()]),
+            DEFAULT_PMD_ENGINE_CONFIG.java_classpath_entries)!;
+        for (let i= 0; i < entries.length; i++) {
+            if (path.extname(entries[i]).toLowerCase() !== '.jar' && !fs.statSync(entries[i]).isDirectory()) {
+                throw new Error(getMessage('InvalidJavaClasspathEntry',
+                    this.configValueExtractor.getFieldPath('java_classpath_entries') + `[${i}]`));
+            }
+        }
+        return [... new Set(entries)]; // Converting to set and back to array to remove duplicates
+    }
+
+    extractCustomRulesets(javaClassPathEntries: string[]): string[] {
+        const customRulesets: string[] =  this.configValueExtractor.extractArray('custom_rulesets',
+            ValueValidator.validateString, DEFAULT_PMD_ENGINE_CONFIG.custom_rulesets)!;
+
+        const possibleParentFolders: string [] = [
+            this.configValueExtractor.getConfigRoot(),
+            ... javaClassPathEntries.filter(entry => !entry.toLowerCase().endsWith('.jar')) // folder based entries
+        ]
+
+        for (let i=0; i < customRulesets.length; i++) {
+            try {
+                // Using the validatePath method to simply help resolve relative paths on disk to absolute paths on disk
+                customRulesets[i] = ValueValidator.validatePath(customRulesets[i],
+                    this.configValueExtractor.getFieldPath('custom_rulesets') + `[${i}]`,
+                    [this.configValueExtractor.getConfigRoot(),...possibleParentFolders]);
+            } catch (_err) {
+                // If the ruleset isn't found on disk, then at this point we could ideally attempt to validate that it
+                // exists in one of the jar files, but that would be expensive. Instead, we will rely on our pmd-wrapper
+                // (which is called when describing rules) to finish validation when we add in the ruleset on the Java
+                // side - at which point our try/catch statement will provide a nice error message.
+            }
+        }
+        return [... new Set(customRulesets)]; // Converting to set and back to array to remove duplicates
     }
 
     private async attemptToAutoDetectJavaCommand(): Promise<string> {

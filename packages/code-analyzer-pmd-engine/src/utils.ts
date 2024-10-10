@@ -35,7 +35,11 @@ export class JavaCommandExecutor {
             javaProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();
                 if(msg.length > 0) { // Not sure why stdout spits out empty lines, but we ignore them nonetheless
-                    msg.split("\n").map(line => processStdOut(line));
+                    try {
+                        msg.split("\n").map(line => processStdOut(line));
+                    } catch (err) {
+                        reject(err);
+                    }
                 }
             });
             javaProcess.stderr.on('data', (data: Buffer) => {

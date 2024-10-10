@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -47,20 +50,34 @@ public class PmdWrapper {
     }
 
     private static void invokeDescribeCommand(String[] args) {
-        if (args.length != 2) {
-            throw new RuntimeException("Invalid number of arguments following the \"describe\" command. Expected 2 but received: " + args.length);
+        if (args.length != 3) {
+            throw new RuntimeException("Invalid number of arguments following the \"describe\" command. Expected 3 but received: " + args.length);
         }
+
         String outFile = args[0];
-        Set<String> languages = Arrays.stream(args[1].toLowerCase().split(",")).collect(Collectors.toSet());
+        List<String> customRulesets = getCustomRulesetsFromFile(args[1]);
+        Set<String> languages = Arrays.stream(args[2].toLowerCase().split(",")).collect(Collectors.toSet());
 
         PmdRuleDescriber ruleDescriber = new PmdRuleDescriber();
-        List<PmdRuleInfo> pmdRuleInfoList = ruleDescriber.describeRulesFor(languages);
+        List<PmdRuleInfo> pmdRuleInfoList = ruleDescriber.describeRulesFor(customRulesets, languages);
 
         Gson gson = new Gson();
         try (FileWriter fileWriter = new FileWriter(outFile)) {
             gson.toJson(pmdRuleInfoList, fileWriter);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static List<String> getCustomRulesetsFromFile(String file) {
+        Path path = Paths.get(file);
+        try {
+            return Files.readAllLines(path).stream()
+                    .map(String::trim)
+                    .filter(line -> !line.isEmpty())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read contents of " + file, e);
         }
     }
 

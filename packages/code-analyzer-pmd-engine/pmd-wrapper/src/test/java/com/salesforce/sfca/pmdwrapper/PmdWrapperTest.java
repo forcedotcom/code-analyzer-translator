@@ -1,5 +1,7 @@
 package com.salesforce.sfca.pmdwrapper;
 
+import static com.salesforce.sfca.pmdwrapper.PmdRuleDescriberTest.assertContainsOneRuleWithNameAndLanguage;
+import static com.salesforce.sfca.pmdwrapper.PmdRuleDescriberTest.createSampleRuleset;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -39,27 +42,45 @@ class PmdWrapperTest {
     void whenCallingMainWithDescribeAndTwoFewArgs_thenError() {
         String[] args = {"describe", "notEnough"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
-        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"describe\" command. Expected 2 but received: 1"));
+        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"describe\" command. Expected 3 but received: 1"));
     }
 
     @Test
     void whenCallingMainWithDescribeAndTooManyArgs_thenError() {
-        String[] args = {"describe", "too", "many", "args"};
+        String[] args = {"describe", "far", "too", "many", "args"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
-        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"describe\" command. Expected 2 but received: 3"));
+        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"describe\" command. Expected 3 but received: 4"));
     }
 
     @Test
-    void whenCallingMainWithDescribeAndBadOutputFile_thenError() {
-        String[] args = {"describe", "/this/folder/does/not/exist", "apex,visualforce"};
+    void whenCallingMainWithDescribeAndBadOutputFile_thenError(@TempDir Path tempDir) throws Exception {
+        Path tempCustomRulesetsListFile = tempDir.resolve("tempCustomRulesetsListFile.txt");
+        Files.write(tempCustomRulesetsListFile, "".getBytes());
+
+        String[] args = {"describe", "/this/does/not/exist.txt",
+                tempCustomRulesetsListFile.toAbsolutePath().toString(), "apex,visualforce"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
         assertThat(thrown.getCause(), instanceOf(FileNotFoundException.class));
     }
 
     @Test
+    void whenCallingMainWithDescribeAndMissingCustomRulesetsListFile_thenError(@TempDir Path tempDir) throws Exception {
+        Path tempFile = tempDir.resolve("tempFile.txt");
+        Path tempCustomRulesetsListFile = tempDir.resolve("tempCustomRulesetsListFile.txt"); // Does not exist
+
+        String[] args = {"describe", tempFile.toAbsolutePath().toString(),
+                tempCustomRulesetsListFile.toAbsolutePath().toString(), "apex,visualforce"};
+        Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getCause(), instanceOf(NoSuchFileException.class));
+    }
+
+    @Test
     void whenCallingMainWithDescribeAndValidArgs_thenItWritesValidJsonToFile(@TempDir Path tempDir) throws Exception {
         Path tempFile = tempDir.resolve("tempFile.txt");
-        String[] args = {"describe", tempFile.toAbsolutePath().toString(), "apex,visualforce"};
+        Path tempCustomRulesetsListFile = tempDir.resolve("tempCustomRulesetsListFile.txt");
+        Files.write(tempCustomRulesetsListFile, "".getBytes());
+        String[] args = {"describe", tempFile.toAbsolutePath().toString(),
+                tempCustomRulesetsListFile.toAbsolutePath().toString(), "apex,visualforce"};
         String stdOut = callPmdWrapper(args);
 
         // Read the file and convert the json back into a list of PmdRuleInfo instances
@@ -73,6 +94,35 @@ class PmdWrapperTest {
 
         // Assert stdOut contains time arguments and time information (which help us with debugging)
         assertThat(stdOut, allOf(containsString("ARGUMENTS"), containsString("milliseconds")));
+    }
+
+    @Test
+    void whenCallingMainWithDescribeWithCustomRulesetsFile_thenRulesetsAreApplied(@TempDir Path tempDir) throws Exception {
+        Path sampleRulesetFile1 = tempDir.resolve("sampleRulesetFile1.xml");
+        Files.write(sampleRulesetFile1, createSampleRuleset("sampleRuleset1", "sampleRule1", "visualforce", 2).getBytes());
+        Path sampleRulesetFile2 = tempDir.resolve("sampleRulesetFile2.xml");
+        Files.write(sampleRulesetFile2, createSampleRuleset("sampleRuleset2", "sampleRule2", "apex", 4).getBytes());
+
+        Path tempFile = tempDir.resolve("tempFile.txt");
+
+        Path tempCustomRulesetsListFile = tempDir.resolve("tempCustomRulesetsListFile.txt");
+        String tempCustomRulesetsListText = sampleRulesetFile1.toAbsolutePath() + "\n" +
+                sampleRulesetFile2.toAbsolutePath() + "\n\n"; // Sanity check that extra new lines don't break anything
+        Files.write(tempCustomRulesetsListFile, tempCustomRulesetsListText.getBytes());
+        String[] args = {"describe", tempFile.toAbsolutePath().toString(),
+                tempCustomRulesetsListFile.toAbsolutePath().toString(), "apex,visualforce"};
+
+        callPmdWrapper(args);
+
+        // Read the file and convert the json back into a list of PmdRuleInfo instances
+        String fileContents = Files.readString(tempFile);
+        Gson gson = new Gson();
+        Type pmdRuleInfoListType = new TypeToken<List<PmdRuleInfo>>(){}.getType();
+        List<PmdRuleInfo> pmdRuleInfoList = gson.fromJson(fileContents, pmdRuleInfoListType);
+        PmdRuleInfo ruleInfo1 = assertContainsOneRuleWithNameAndLanguage(pmdRuleInfoList, "sampleRule1", "visualforce");
+        assertThat(ruleInfo1.ruleSetFile, is(sampleRulesetFile1.toAbsolutePath().toString()));
+        PmdRuleInfo ruleInfo2 = assertContainsOneRuleWithNameAndLanguage(pmdRuleInfoList, "sampleRule2", "apex");
+        assertThat(ruleInfo2.ruleSetFile, is(sampleRulesetFile2.toAbsolutePath().toString()));
     }
 
     @Test

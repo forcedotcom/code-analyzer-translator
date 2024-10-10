@@ -15,6 +15,21 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The available languages are: %s\n` +
         `See https://pmd.github.io/pmd/tag_rule_references.html`,
 
+    PmdConfigFieldDescription_java_classpath_entries:
+        `List of jar files and/or folders to add the Java classpath when running PMD.\n` +
+        `Each entry may be given as an absolute path or a relative path to 'config_root'.\n` +
+        `This field is primarily used to supply custom Java based rule definitions to PMD.\n` +
+        `See https://pmd.github.io/pmd/pmd_userdocs_extending_writing_java_rules.html`,
+
+    PmdConfigFieldDescription_custom_rulesets:
+        `List of xml ruleset files containing custom PMD rules to be made available for rule selection.\n` +
+        `Each ruleset must be an xml file that is either:\n` +
+        `  - on disk (provided as an absolute path or a relative path to 'config_root')\n` +
+        `  - or a relative resource found on the Java classpath.\n` +
+        `Not all custom rules can be fully defined within an xml ruleset file. For example, Java based rules may be defined in jar files.\n` +
+        `In these cases, you will need to also add your additional files to the Java classpath using the 'java_classpath_entries' field.\n` +
+        `See https://pmd.github.io/pmd/pmd_userdocs_making_rulesets.html`,
+
     UnsupportedEngineName:
         `The PmdCpdEnginesPlugin does not support an engine with name '%s'.`,
 
@@ -37,13 +52,16 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `If you choose not to install Java, you may disable the corresponding engine in your Code Analyzer configuration by setting '%s' to true.`,
 
     JavaCommandError:
-        `The following call to java exited with non-zero exit code.\n` +
+        `The following call to 'java' exited with non-zero exit code.\n` +
         `  Command: %s\n` +
         `  Exit code: %d\n` +
         `  StdErr:\n%s`,
 
     InvalidRuleLanguage:
         `The '%s' configuration value is invalid. The specified language '%s' is not one of the supported languages: %s`,
+
+    InvalidJavaClasspathEntry:
+        `The '%s' configuration value is invalid. The path must either be a '.jar' file or a folder.`,
 
     ErrorParsingPmdWrapperOutputFile:
         `An internal error was thrown when trying to read the internal PmdWrapper output file '%s':\n%s'`,
