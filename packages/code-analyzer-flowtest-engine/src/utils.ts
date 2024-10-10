@@ -28,9 +28,13 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
         const flowTestRuleResults = flowTestExecutionResult.results[queryName];
         for (const flowTestRuleResult of flowTestRuleResults) {
             const ruleName = toCodeAnalyzerName(flowTestRuleResult.query_name);
+            // FlowTest runs extremely quickly, and its rule selection is fiddly. So it's easier to just run all the rules,
+            // and then throw away results for rules that the user didn't request.
             if (!requestedRulesSet.has(ruleName)) {
                 continue;
             }
+            // FlowTest's file discovery is known to be overzealous relative to our Workspaces. So we iterate over each
+            // violation's Flow Path, and if it goes through a file that isn't in the Workspace, then we discard it.
             const flowNodes: FlowNodeDescriptor[] = flowTestRuleResult.flow;
             if (flowNodes.some(node => !allowedFilesSet.has(node.flow_path))) {
                 continue;
