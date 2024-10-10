@@ -151,10 +151,12 @@ public class PmdRuleDescriberTest {
 
     @Test
     void whenDescribeRulesIsGivenCustomRulesetThatDoesNotExist_thenErrorWithNiceMessage() {
-        Exception thrown = assertThrows(Exception.class, () ->
-                ruleDescriber.describeRulesFor(List.of("does/not/exist.xml"), Set.of("apex", "visualforce")));
-        assertThat(thrown.getMessage(), is("PMD errored when attempting to load a custom ruleset \"does/not/exist.xml\". " +
-                        "Make sure the resource is a valid file on disk or on the Java classpath."));
+        try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
+            Exception thrown = assertThrows(Exception.class, () ->
+                    ruleDescriber.describeRulesFor(List.of("does/not/exist.xml"), Set.of("apex", "visualforce")));
+            assertThat(thrown.getMessage(), is("PMD errored when attempting to load a custom ruleset \"does/not/exist.xml\". " +
+                            "Make sure the resource is a valid file on disk or on the Java classpath."));
+            }
     }
 
     @Test
@@ -200,17 +202,17 @@ public class PmdRuleDescriberTest {
     @Test
     void whenDescribeRulesIsGivenCustomRulesetButCustomRuleLanguageIsNotSpecified_thenItIsOmitted(@TempDir Path tempDir) throws Exception {
         Path rulesetFile1 = tempDir.resolve("sampleRulesetFile1.xml");
-        Files.write(rulesetFile1, createSampleRuleset("sampleRuleset1", "sampleRule1", "apex", 3).getBytes());
+        Files.write(rulesetFile1, createSampleRuleset("sampleRuleset1", "sampleRule1", "apex", 3).getBytes()); // Notice apex here...
         Path rulesetFile2 = tempDir.resolve("sampleRulesetFile2.xml");
         Files.write(rulesetFile2, createSampleRuleset("sampleRuleset2", "sampleRule2", "visualforce", 5).getBytes());
 
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(
                 List.of(rulesetFile1.toAbsolutePath().toString(), rulesetFile2.toAbsolutePath().toString()),
-                Set.of("java", "visualforce"));
+                Set.of("java", "visualforce")); // ... but we don't have apex here but we do have visualforce...
 
-        assertContainsNoRuleWithNameAndLanguage(ruleInfoList, "sampleRule1", "apex"); // Should not show
-        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule2", "visualforce"); // Should show
-        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AtLeastOneConstructor", "java"); // Should show
+        assertContainsNoRuleWithNameAndLanguage(ruleInfoList, "sampleRule1", "apex"); // ... thus this rule should not show
+        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule2", "visualforce"); // Should show since visualforce is provided
+        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AtLeastOneConstructor", "java"); // Should show since visualforce is provided
     }
 
     @Test

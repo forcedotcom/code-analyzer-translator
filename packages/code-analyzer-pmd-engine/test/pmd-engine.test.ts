@@ -100,11 +100,11 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
 
-        // // SANITY CHECK THAT NO RULES IN PMD HAVE A '-' CHARACTER IN ITS NAME SINCE IT IS WHAT WE USE TO MAKE UNIQUE NAMES
+        // SANITY CHECK THAT NO RULES IN PMD HAVE A '-' CHARACTER IN ITS NAME SINCE IT IS WHAT WE USE TO MAKE UNIQUE NAMES
         expectNoDashesAppearOutsideOfOurLanguageSpecificRules(ruleDescriptions);
 
         // SANITY CHECK THAT OUR SHARED_RULE_NAMES IS UP-TO-DATE BY CHECKING FOR DUPLICATE RULE NAMES
-        // If the following throw new Errors then most likely, we need to update your SHARED_RULE_NAMES object.
+        // If the following errors, then most likely we will need to update the SHARED_RULE_NAMES object.
         expectNoDuplicateRuleNames(ruleDescriptions);
     });
 
@@ -364,6 +364,21 @@ describe('Tests for the runRules method of PmdEngine', () => {
         primaryLocationIndex: 0
     }
 
+    const expectedFakeRule7Violation: Violation = {
+        ruleName: "fakerule7",
+        message: 'Avoid debug statements since they impact on performance',
+        codeLocations: [
+            {
+                file: path.join(testDataFolder, 'sampleWorkspace', 'sampleViolations', 'AvoidDebugStatements.cls'),
+                startLine: 4,
+                startColumn: 9,
+                endLine: 4,
+                endColumn: 27
+            }
+        ],
+        primaryLocationIndex: 0
+    }
+
 
     it('When zero rule names are provided then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
@@ -463,14 +478,16 @@ describe('Tests for the runRules method of PmdEngine', () => {
                 path.join(testDataFolder, 'custom rules', 'rulesets_apex_rules1.jar')
             ],
             custom_rulesets: [
-                'rulesets/apex/rules1.xml'
+                'rulesets/apex/rules1.xml',
+                path.join(testDataFolder, 'custom rules', 'somecat3.xml')
             ]
         });
         const workspace: Workspace = new Workspace([path.join(testDataFolder, 'sampleWorkspace')]);
-        const ruleNames: string[] = ['fakerule1', 'fakerule2', 'fakerule3'];
+        const ruleNames: string[] = ['fakerule1', 'fakerule2', 'fakerule7', 'fakerule8'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
-        expect(results.violations).toHaveLength(1); // Expecting fakerule1 (which has a definition equivalent to the AvoidDebugStatements rule)
+        expect(results.violations).toHaveLength(2); // Expecting fakerule1 and fakerule7 (which both have a definition equivalent to the AvoidDebugStatements rule)
         expect(results.violations).toContainEqual(expectedFakeRule1Violation);
+        expect(results.violations).toContainEqual(expectedFakeRule7Violation);
     });
 });
 

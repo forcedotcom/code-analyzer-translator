@@ -159,11 +159,6 @@ class PmdRuleDescriber {
 // error messages.
 class PmdErrorListener implements PmdReporter {
     @Override
-    public boolean isLoggable(Level level) {
-        return false;
-    }
-
-    @Override
     public void logEx(Level level, @Nullable String s, Object[] objects, @Nullable Throwable throwable) {
         if (throwable != null) {
             String message = throwable.getMessage();
@@ -184,6 +179,11 @@ class PmdErrorListener implements PmdReporter {
         }
     }
 
+    // These methods aren't needed or used, but they are required to be implemented (since the interface does not give them default implementations)
+    @Override
+    public boolean isLoggable(Level level) {
+        return false;
+    }
     @Override
     public int numErrors() {
         return 0;
