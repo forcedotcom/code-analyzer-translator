@@ -151,16 +151,30 @@ describe('Tests for the FlowTestEngine', () => {
             jest.restoreAllMocks();
         })
 
+        async function readAndParseInputFile(inputFile: string): Promise<FlowTestExecutionResult> {
+            const inputFileContents: string = (await fs.readFile(inputFile, {encoding: 'utf-8'}))
+                .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(PATH_TO_SUBFLOW_TEST1))
+                .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(PATH_TO_INNER_SUBFLOW_EXAMPLE))
+                .replaceAll('"__PATH_TO_EXAMPLE__"', JSON.stringify(PATH_TO_EXAMPLE));
+
+            return JSON.parse(inputFileContents) as FlowTestExecutionResult;
+        }
+
+        async function readAndParseGoldfile(goldfile: string): Promise<EngineRunResults> {
+            const goldfileContents: string = (await fs.readFile(goldfile, {encoding: 'utf-8'}))
+                .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(PATH_TO_SUBFLOW_TEST1))
+                .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(PATH_TO_INNER_SUBFLOW_EXAMPLE))
+                .replaceAll('"__PATH_TO_EXAMPLE__"', JSON.stringify(PATH_TO_EXAMPLE));
+
+            return JSON.parse(goldfileContents) as EngineRunResults;
+        }
+
         it.each([
             {case: 'Empty results', inputFile: 'empty-results.json', goldfile: 'empty-results.goldfile.json'},
             {case: 'Non-empty results', inputFile: 'non-empty-results.json', goldfile: 'non-empty-results.goldfile.json'}
         ])('Converts FlowTest format to Code Analyzer format. Case: $case', async ({inputFile, goldfile}) => {
             // ==== SETUP ====
-            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, inputFile), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+            const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, inputFile));
 
             // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
             const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
@@ -186,11 +200,8 @@ describe('Tests for the FlowTestEngine', () => {
             });
 
             // ==== ASSERTIONS ====
-            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfile), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+            const expectedResults: EngineRunResults = await readAndParseGoldfile(path.join(PATH_TO_GOLDFILES, goldfile));
+            expect(engineResults).toEqual(expectedResults);
         });
 
         it('If Workspace has no root, throws an error', async () => {
@@ -216,11 +227,7 @@ describe('Tests for the FlowTestEngine', () => {
 
         it('Filters out results for unrequested rules', async () => {
             // ==== SETUP ====
-            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+            const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'));
 
             // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
             const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
@@ -236,20 +243,13 @@ describe('Tests for the FlowTestEngine', () => {
             });
 
             // ==== ASSERTIONS ====
-            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, 'filtered-by-rules.goldfile.json'), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+            const expectedResults: EngineRunResults = await readAndParseGoldfile(path.join(PATH_TO_GOLDFILES, 'filtered-by-rules.goldfile.json'));
+            expect(engineResults).toEqual(expectedResults);
         });
 
         it('Filters out results for files outside of workspace', async () => {
             // ==== SETUP ====
-            const inputFileContents: string = (await fs.readFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            const fakeFlowTestResults: FlowTestExecutionResult = JSON.parse(inputFileContents) as FlowTestExecutionResult;
+            const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'));
 
             // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
             const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
@@ -276,11 +276,8 @@ describe('Tests for the FlowTestEngine', () => {
             });
 
             // ==== ASSERTIONS ====
-            const goldfileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, 'filtered-by-workspace.goldfile.json'), {encoding: 'utf-8'}))
-                .replaceAll('__PATH_TO_SUBFLOW_TEST1__', PATH_TO_SUBFLOW_TEST1)
-                .replaceAll('__PATH_TO_INNER_SUBFLOW_EXAMPLE__', PATH_TO_INNER_SUBFLOW_EXAMPLE)
-                .replaceAll('__PATH_TO_EXAMPLE__', PATH_TO_EXAMPLE);
-            expect(engineResults).toEqual(JSON.parse(goldfileContents) as EngineRunResults);
+            const expectedResults: EngineRunResults = await readAndParseGoldfile(path.join(PATH_TO_GOLDFILES, 'filtered-by-workspace.goldfile.json'));
+            expect(engineResults).toEqual(expectedResults);
         });
     });
 });
