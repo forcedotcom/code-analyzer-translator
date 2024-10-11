@@ -1,0 +1,165 @@
+{
+  "violations": [{
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; Company.Company => Create_Lead.Company",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 369,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 192,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; First_Name.First_Name => Create_Lead.FirstName",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 355,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 192,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; Last_Name.Last_Name => Create_Lead.LastName",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 362,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 192,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; Phone.Phone => Create_Lead.Phone",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 376,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 192,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; title.title => Create_Lead.Title",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 509,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 192,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; Company.Company => Copy_1_of_Create_Lead.Company",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 369,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 138,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; First_Name.First_Name => Copy_1_of_Create_Lead.FirstName",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 355,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 138,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; Last_Name.Last_Name => random_last_name.random_last_name => randomize_last_name_and_phone.fixed_last_name => Copy_1_of_Create_Lead.LastName",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 362,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 89,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 44,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 138,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 3,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; street.street => Copy_1_of_Create_Lead.Street",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 502,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 138,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing; title.title => Copy_1_of_Create_Lead.Title",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 509,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 138,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }, {
+    "ruleName": "systemmodewithoutsharing-recordupdates-data",
+    "message": "User controlled data flows into recordUpdates element data in run mode: SystemModeWithoutSharing; description.description => update_lead.Description",
+    "codeLocations": [{
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 442,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_EXAMPLE__",
+      "startLine": 266,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 1,
+    "resourceUrls": []
+  }]
+}

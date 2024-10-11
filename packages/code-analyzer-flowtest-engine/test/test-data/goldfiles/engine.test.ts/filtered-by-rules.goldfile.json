@@ -1,0 +1,29 @@
+{
+  "violations": [{
+    "ruleName": "systemmodewithoutsharing-recordlookups-selector",
+    "message": "User controlled data flows into recordLookups element selector in run mode: SystemModeWithoutSharing; enter_text_subflow.enter_text_subflow => combine_vars.combine_vars => assign_enter_to_output.output_var1 => call_subflow.call_subflow.output_var1 => get_records.SuppliedName",
+    "codeLocations": [{
+      "file": "__PATH_TO_INNER_SUBFLOW_EXAMPLE__",
+      "startLine": 82,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_INNER_SUBFLOW_EXAMPLE__",
+      "startLine": 19,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_INNER_SUBFLOW_EXAMPLE__",
+      "startLine": 10,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_SUBFLOW_TEST1__",
+      "startLine": 109,
+      "startColumn": 1
+    }, {
+      "file": "__PATH_TO_SUBFLOW_TEST1__",
+      "startLine": 42,
+      "startColumn": 1
+    }],
+    "primaryLocationIndex": 4,
+    "resourceUrls": []
+  }]
+}

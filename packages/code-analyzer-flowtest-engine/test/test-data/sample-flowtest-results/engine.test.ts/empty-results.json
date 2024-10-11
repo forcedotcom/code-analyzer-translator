@@ -1,0 +1,12 @@
+{
+  "preset": "Penetration Testing",
+  "help_url": null,
+  "result_id": "a6e63ba2",
+  "service_version": "0.7.0-ALPHA",
+  "flowtest_version": "0.7.0-ALPHA",
+  "report_label": "flowscan of contains-multiple-flows",
+  "email": null,
+  "scan_start": "2024-10-07 12:53:12",
+  "scan_end": "2024-10-07 12:53:12",
+  "results": {}
+}

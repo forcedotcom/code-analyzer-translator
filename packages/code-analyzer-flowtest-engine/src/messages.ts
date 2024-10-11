@@ -14,7 +14,13 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `The FlowTestEnginePlugin does not support an engine with name '%s'.`,
 
     CouldNotParseRuleDescriptions:
-        `Could not parse rule descriptions from FlowTest output: %s`,
+        `Unexpected error: Could not parse rule descriptions from FlowTest output: %s`,
+
+    ResultsFileNotValidJson:
+        `Unexpected error: Results file contents are not a valid JSON: %s`,
+
+    CouldNotParseExecutionResults:
+        `Unexpected error: Could not parse results from %s`,
 
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
         `The '%s' configuration value is invalid. The command '%s' does not seem to be a recognizable version of Python.`,
@@ -29,6 +35,9 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `Could not locate a Python v%s+ install using any of the following: %s.\n` +
         `If you have python installed, specify the command in your Code Analyzer configuration as the value of property '%s'.\n` +
         `If you choose not to install python, you may disable the '%s' engine in your Code Analyzer configuration by setting 'engines.%s.disable_engine' to true.`,
+
+    WorkspaceLacksIdentifiableRoot:
+        `Cannot run FlowTest: Workspace consisting of %s has no identifiable root directory.`,
 
     PythonCommandError:
         `The following call to python exited with non-zero exit code.\n` +

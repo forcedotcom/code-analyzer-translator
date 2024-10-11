@@ -4,5 +4,9 @@ The following call to python exited with non-zero exit code.
   StdErr:
     | Logging the number "1" to stderr
     | Logging the number "2" to stderr
+    | Logging a string
+    | with newline characters
     | 
+    | in it
+    | to stderr
     | Logging the string "orangutan" to stderr
