@@ -14,13 +14,13 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
         `The FlowTestEnginePlugin does not support an engine with name '%s'.`,
 
     CouldNotParseRuleDescriptions:
-        `Could not parse rule descriptions from FlowTest output: %s`,
+        `Unexpected error: Could not parse rule descriptions from FlowTest output: %s`,
 
     ResultsFileNotValidJson:
-        `Results file contents are not a valid JSON: %s`,
+        `Unexpected error: Results file contents are not a valid JSON: %s`,
 
     CouldNotParseExecutionResults:
-        `Could not parse results from %s`,
+        `Unexpected error: Could not parse results from %s`,
 
     UserSpecifiedPythonCommandProducedUnrecognizableVersion:
         `The '%s' configuration value is invalid. The command '%s' does not seem to be a recognizable version of Python.`,

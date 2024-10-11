@@ -84,7 +84,6 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         const pythonArgs: string[] = [
             PATH_TO_PIPX_PYZ,
             'run',
-            '--no-cache',
             '--spec',
             PATH_TO_FLOWTEST_ROOT,
             '--',
@@ -111,7 +110,6 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         const pythonArgs: string[] = [
             PATH_TO_PIPX_PYZ,
             'run',
-            '--no-cache',
             '--spec',
             PATH_TO_FLOWTEST_ROOT,
             '--',
@@ -130,9 +128,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
             // Rip off the status delimiter and then attempt to parse a Float out of the status update.
             const percentageFlowsScanned: number = parseFloat(stdoutMsg.slice(STATUS_DELIMITER.length));
             // If we successfully parsed a Float, pass it through the completion percentage processor.
-            // Note: NaN is the only value in ECMA that is not equal to itself, so this if-expression will only be
-            // satisfiable if the parse attempt failed.
-            if (percentageFlowsScanned === percentageFlowsScanned) {
+            if (!Number.isNaN(percentageFlowsScanned)) {
                 completionPercentageHandler(percentageFlowsScanned);
             }
         }
