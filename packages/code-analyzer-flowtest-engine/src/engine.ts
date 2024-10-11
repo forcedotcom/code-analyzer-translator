@@ -124,8 +124,11 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
             if (!requestedRulesSet.has(ruleName)) {
                 continue;
             }
-            // FlowTest's file discovery is known to be overzealous relative to our Workspaces. So we iterate over each
-            // violation's Flow Path, and if it goes through a file that isn't in the Workspace, then we discard it.
+            // FlowTest has some logic to try and discover referenced Subflows in nearby directories. If it can find the
+            // Subflow, then it is pulled into analysis, and if it can't, then the parent flow analysis ceases.
+            // This can technically create situations where Violations are present referencing Flows that are not part
+            // of the Workspace. To combat this, we iterate over the files referenced and discard a Violation if it references
+            // files that are not part of the Workspace.
             const flowNodes: FlowNodeDescriptor[] = flowTestRuleResult.flow;
             if (flowNodes.some(node => !allowedFilesSet.has(node.flow_path))) {
                 continue;

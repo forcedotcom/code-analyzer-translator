@@ -1,6 +1,6 @@
 import path from 'node:path';
-import os from 'node:os';
 import * as fsp from 'node:fs/promises';
+import tmp from 'tmp';
 import {PythonCommandExecutor} from './PythonCommandExecutor';
 import {getMessage} from '../messages';
 
@@ -152,7 +152,9 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
     }
 
     private createTmpFileName(): string {
-        return path.join(os.tmpdir(), `flow-test-execution-${Date.now()}.json`);
+        tmp.setGracefulCleanup();
+        const tmpDir: string = tmp.dirSync({unsafeCleanup: true}).name;
+        return path.join(tmpDir, `flow-test-execution-${Date.now()}.json`);
     }
 
     // istanbul ignore next
