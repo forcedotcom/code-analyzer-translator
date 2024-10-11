@@ -6,7 +6,7 @@ describe('Tests for JavaCommandExecutor', () => {
     it('When a java command fails due to invalid command, then a helpful error should be thrown', async () => {
         const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor();
         await expect(javaCommandExecutor.exec(['doesNotExist'])).rejects.toThrow(
-            /The following call to java exited with non-zero exit code./);
+            /The following call to 'java' exited with non-zero exit code./);
     });
 
     it('When a java command is valid, then no error is thrown', async () => {

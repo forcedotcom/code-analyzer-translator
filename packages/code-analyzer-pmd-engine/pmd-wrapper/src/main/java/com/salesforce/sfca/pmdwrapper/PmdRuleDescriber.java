@@ -4,11 +4,18 @@ import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.PmdAnalysis;
 import net.sourceforge.pmd.lang.rule.Rule;
 import net.sourceforge.pmd.lang.rule.RuleSet;
+import net.sourceforge.pmd.lang.rule.RuleSetLoadException;
+import net.sourceforge.pmd.util.log.PmdReporter;
+import org.slf4j.event.Level;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 class PmdRuleDescriber {
     /**
@@ -65,21 +72,51 @@ class PmdRuleDescriber {
             )
     );
 
-    List<PmdRuleInfo> describeRulesFor(Set<String> languages) {
+    List<PmdRuleInfo> describeRulesFor(List<String> customRulesets, Set<String> languages) {
         List<PmdRuleInfo> ruleInfoList = new ArrayList<>();
         PMDConfiguration config = new PMDConfiguration();
+
+        // Set Reported which will throw error during PmdAnalysis.create if a custom ruleset cannot be found
+        config.setReporter(new PmdErrorListener());
+
+        // Add in user specified custom rulesets, which must be added before standard rules so that they take preference
+        // in case of duplication
+        for (String customRuleset : customRulesets) {
+            config.addRuleSet(customRuleset);
+        }
+
+        // Add in standard rulesets based on the languages specified
         for (String lang : languages) {
             for (String ruleSetFile : LANGUAGE_TO_STANDARD_RULESETS.get(lang)) {
                 config.addRuleSet(ruleSetFile);
             }
         }
 
+        // Keep track of "<language>::<ruleName>" so that we don't have duplicates
+        Set<String> alreadySeen = new HashSet<>();
+
         try (PmdAnalysis pmd = PmdAnalysis.create(config)) {
             for (RuleSet ruleSet : pmd.getRulesets()) {
                 for (Rule rule : ruleSet.getRules()) {
+
+                    // Filter out custom rules that don't match languages specified
+                    String language = rule.getLanguage().toString();
+                    if (!languages.contains(language)) {
+                        continue;
+                    }
+
+                    // Filter out any rules that we have already seen (duplicates) which can happen if user specifies a
+                    // ruleset that references an existing rule
+                    String langPlusName = language + "::" + rule.getName();
+                    if(alreadySeen.contains(langPlusName)) {
+                        continue;
+                    }
+                    alreadySeen.add(langPlusName);
+
+                    // Add rule info
                     PmdRuleInfo pmdRuleInfo = new PmdRuleInfo();
                     pmdRuleInfo.name = rule.getName();
-                    pmdRuleInfo.language = rule.getLanguage().toString();
+                    pmdRuleInfo.language = language;
                     pmdRuleInfo.description = getLimitedDescription(rule);
                     pmdRuleInfo.externalInfoUrl = rule.getExternalInfoUrl();
                     pmdRuleInfo.ruleSet = rule.getRuleSetName();
@@ -89,6 +126,7 @@ class PmdRuleDescriber {
                 }
             }
         }
+
         return ruleInfoList;
     }
 
@@ -113,5 +151,41 @@ class PmdRuleDescriber {
             ruleDescription = ruleDescription.substring(0, clipLocation) + clipText;
         }
         return ruleDescription;
+    }
+}
+
+// This class simply helps us process any errors that may be thrown by PMD. By default PMD suppresses errors so that
+// they are not thrown. So here, we look out for the errors that we care about and process it to throw a better
+// error messages.
+class PmdErrorListener implements PmdReporter {
+    @Override
+    public void logEx(Level level, @Nullable String s, Object[] objects, @Nullable Throwable throwable) {
+        if (throwable != null) {
+            String message = throwable.getMessage();
+            if (throwable instanceof RuleSetLoadException && message.contains("Cannot load ruleset ")) {
+                Pattern pattern = Pattern.compile("Cannot load ruleset (.+?):");
+                Matcher matcher = pattern.matcher(message);
+                if (matcher.find()) {
+                    String ruleset = matcher.group(1).trim();
+                    String errorMessage = "PMD errored when attempting to load a custom ruleset \"" + ruleset + "\". " +
+                            "Make sure the resource is a valid file on disk or on the Java classpath.";
+
+                    // The typescript side can more easily handle error messages that come from stdout with "[Error] " marker
+                    System.out.println("[Error] " + errorMessage);
+                    throw new RuntimeException(errorMessage, throwable);
+                }
+            }
+            throw new RuntimeException("PMD threw an unexpected exception:\n" + message, throwable);
+        }
+    }
+
+    // These methods aren't needed or used, but they are required to be implemented (since the interface does not give them default implementations)
+    @Override
+    public boolean isLoggable(Level level) {
+        return false;
+    }
+    @Override
+    public int numErrors() {
+        return 0;
     }
 }

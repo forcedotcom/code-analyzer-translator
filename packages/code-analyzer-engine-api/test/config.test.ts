@@ -88,6 +88,39 @@ describe("Tests for ValueValidator", () => {
             ['resolved', 'resolved']);
     });
 
+    it("When an absolute file is given to validatePath, then it is returned", () => {
+        const inputFile: string = path.resolve(__dirname, 'config.test.ts');
+        expect(ValueValidator.validatePath(inputFile, 'someFieldName')).toEqual(inputFile);
+    });
+
+    it("When an relative file is given to validatePath with a correct root, then it is returned", () => {
+        const inputFile: string = 'test-data/sampleWorkspace';
+        const inputRoot: string = __dirname;
+        expect(ValueValidator.validatePath(inputFile, 'someFieldName', [
+            path.resolve(__dirname, '..'), // Not correct (so it should try the next one)
+            inputRoot // Correct
+        ])).toEqual(
+            path.resolve(__dirname, 'test-data', 'sampleWorkspace'));
+    });
+
+    it("When an non-string value is given to validatePath, then error", () => {
+        expect(() => ValueValidator.validatePath(3, 'someFieldName')).toThrow(
+            getMessage('ConfigValueMustBeOfType', 'someFieldName', 'string', 'number'));
+    });
+
+    it("When an absolute file that does not exist is given to validatePath, then error", () => {
+        const inputFile: string = path.resolve(__dirname, 'does.not.exist');
+        expect(() => ValueValidator.validatePath(inputFile, 'someFieldName')).toThrow(
+            getMessage('ConfigPathValueDoesNotExist', 'someFieldName', inputFile));
+    });
+
+    it("When an relative file that does not exist is given to validatePath, then error", () => {
+        const inputFile: string = 'test-data/does.not.exist';
+        const inputRoot: string = __dirname;
+        expect(() => ValueValidator.validatePath(inputFile, 'someFieldName', [inputRoot])).toThrow(
+            getMessage('ConfigPathValueDoesNotExist', 'someFieldName', path.resolve(__dirname, 'test-data', 'does.not.exist')));
+    });
+
     it("When an absolute file is given to validateFile, then it is returned", () => {
         const inputFile: string = path.resolve(__dirname, 'config.test.ts');
         expect(ValueValidator.validateFile(inputFile, 'someFieldName')).toEqual(inputFile);
@@ -96,7 +129,7 @@ describe("Tests for ValueValidator", () => {
     it("When an relative file is given to validateFile with a correct root, then it is returned", () => {
         const inputFile: string = 'test-data/sampleWorkspace/someFile.txt';
         const inputRoot: string = __dirname;
-        expect(ValueValidator.validateFile(inputFile, 'someFieldName', inputRoot)).toEqual(
+        expect(ValueValidator.validateFile(inputFile, 'someFieldName', [inputRoot])).toEqual(
             path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'someFile.txt'));
     });
 
@@ -114,7 +147,7 @@ describe("Tests for ValueValidator", () => {
     it("When an relative file that does not exist is given to validateFile, then error", () => {
         const inputFile: string = 'test-data/does.not.exist';
         const inputRoot: string = __dirname;
-        expect(() => ValueValidator.validateFile(inputFile, 'someFieldName', inputRoot)).toThrow(
+        expect(() => ValueValidator.validateFile(inputFile, 'someFieldName', [inputRoot])).toThrow(
             getMessage('ConfigPathValueDoesNotExist', 'someFieldName', path.resolve(__dirname, 'test-data', 'does.not.exist')));
     });
 
@@ -130,7 +163,7 @@ describe("Tests for ValueValidator", () => {
     it("When an relative folder is given to validateFolder with a correct root, then it is returned", () => {
         const inputFile: string = 'test-data/sampleWorkspace';
         const inputRoot: string = __dirname;
-        expect(ValueValidator.validateFolder(inputFile, 'someFieldName', inputRoot)).toEqual(
+        expect(ValueValidator.validateFolder(inputFile, 'someFieldName', [inputRoot])).toEqual(
             path.resolve(__dirname, 'test-data', 'sampleWorkspace'));
     });
 
@@ -148,7 +181,7 @@ describe("Tests for ValueValidator", () => {
     it("When an relative folder that does not exist is given to validateFolder, then error", () => {
         const inputFile: string = 'doesNotExist';
         const inputRoot: string = __dirname;
-        expect(() => ValueValidator.validateFile(inputFile, 'someFieldName', inputRoot)).toThrow(
+        expect(() => ValueValidator.validateFile(inputFile, 'someFieldName', [inputRoot])).toThrow(
             getMessage('ConfigPathValueDoesNotExist', 'someFieldName', path.resolve(__dirname, 'doesNotExist')));
     });
 

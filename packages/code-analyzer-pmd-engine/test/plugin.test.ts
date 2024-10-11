@@ -13,6 +13,7 @@ import {PmdEngine} from "../src/pmd-engine";
 import {DEFAULT_PMD_ENGINE_CONFIG, PMD_ENGINE_CONFIG_DESCRIPTION, PmdEngineConfig} from "../src/config";
 import {JavaVersionIdentifier} from "../src/JavaVersionIdentifier";
 import { SemVer } from "semver";
+import path from "node:path";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -58,7 +59,9 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig.java_command.endsWith('java')).toEqual(true);
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
-            rule_languages: ['apex', 'visualforce']
+            rule_languages: ['apex', 'visualforce'],
+            java_classpath_entries: [],
+            custom_rulesets: []
         });
     });
 
@@ -157,6 +160,120 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleLanguage', 'engines.pmd.rule_languages', 'cpp',
                 `'apex', 'html', 'java', 'ecmascript' (or 'javascript'), 'visualforce', 'xml'`));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a non-array value for java_classpath_entries, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: path.join('test-data','custom rules','category_joshapex_somecat2.jar'), // Not in an array
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.pmd.java_classpath_entries', 'array', 'string'));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a java classpath entry that is not a string, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: [
+                path.join('test-data','custom rules','category_joshapex_somecat2.jar'),
+                3 // should throw error
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.pmd.java_classpath_entries[1]', 'string', 'number'));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a java classpath entry that is not a folder or a jar file, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: [
+                path.join('test-data','custom rules','category_joshapex_somecat2.jar'),
+                path.join('test-data','custom rules','somecat3.xml') // not allowed
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessage('InvalidJavaClasspathEntry', 'engines.pmd.java_classpath_entries[1]'));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a java classpath entry that does not exist, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: [
+                path.join('test-data','custom rules','does_not_exist.jar'),
+                path.join('test-data','custom rules','category_joshapex_somecat2.jar')
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist', 'engines.pmd.java_classpath_entries[0]',
+                path.join(__dirname, 'test-data','custom rules','does_not_exist.jar')));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a relative path java classpath entry, then we resolve to absolute path`, async () => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: [
+                path.join('test-data','custom rules','category_joshapex_somecat2.jar'),
+                path.join(__dirname, 'test-data','custom rules','category_joshapex_somecat2.jar'), // duplicates should also be removed
+                path.join('test-data','custom rules','subfolder')
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig('pmd', configValueExtractor);
+        expect(resolvedConfig['java_classpath_entries']).toEqual([
+            path.join(__dirname, 'test-data','custom rules','category_joshapex_somecat2.jar'),
+            path.join(__dirname, 'test-data','custom rules','subfolder')
+        ]);
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a non-array value for custom_rulesets, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            custom_rulesets: path.join('test-data','custom rules','somecat3.xml'), // Not in an array
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.pmd.custom_rulesets', 'array', 'string'));
+    });
+
+    it(`When createEngineConfig for 'pmd' is given a custom ruleset array containing a non-string value, then error`, async () => {
+        const rawConfig: ConfigObject = {
+            custom_rulesets: [
+                path.join('test-data','custom rules','somecat3.xml'),
+                path.join('test-data','custom rules','subfolder', 'somecat4.xml'),
+                { oops: 3 } // should throw error
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.pmd.custom_rulesets[2]', 'string', 'object'));
+    });
+
+    it(`When createEngineConfig is given valid custom ruleset values, then make sure they are in resolved config`, async() => {
+        const rawConfig: ConfigObject = {
+            java_classpath_entries: [
+                path.join('test-data','custom rules','category_joshapex_somecat2.jar'),
+                path.join('test-data','custom rules','subfolder')
+            ],
+            custom_rulesets: [
+                path.join('test-data','custom rules','somecat3.xml'),
+                path.join('test-data','custom rules','somecat3.xml'), // Also confirm duplicates are removed
+                'somecat4.xml',
+                'category/joshapex/somecat2.xml'
+            ]
+        };
+        const configRoot: string = __dirname;
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig('pmd', configValueExtractor);
+        expect(resolvedConfig['custom_rulesets']).toEqual([
+            path.join(__dirname, 'test-data','custom rules','somecat3.xml'), // resolved to absolute (from config root)
+            path.join(__dirname, 'test-data','custom rules','subfolder', 'somecat4.xml'), // resolved to absolute (from folder added to java classpath)
+            'category/joshapex/somecat2.xml' // not on disk so left as is since it might be inside a jar that is on the java classpath
+        ]);
     });
 
     it('When createEngineConfig is called with an unsupported engine name, then an error is thrown', async () => {

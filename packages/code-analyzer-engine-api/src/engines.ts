@@ -48,14 +48,18 @@ export abstract class Engine {
     protected emitDescribeRulesProgressEvent(percentComplete: number): void {
         this.emitEvent({
             type: EventType.DescribeRulesProgressEvent,
-            percentComplete: percentComplete
+            percentComplete: roundToHundredths(percentComplete)
         });
     }
 
     protected emitRunRulesProgressEvent(percentComplete: number): void {
         this.emitEvent({
             type: EventType.RunRulesProgressEvent,
-            percentComplete: percentComplete
+            percentComplete: roundToHundredths(percentComplete)
         });
     }
+}
+
+export function roundToHundredths(num: number): number {
+    return Math.round(num * 100) / 100;
 }

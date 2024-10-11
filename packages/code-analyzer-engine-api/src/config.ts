@@ -27,7 +27,7 @@ export class ConfigValueExtractor {
     private readonly fieldPathRoot: string;
     private readonly configRoot: string;
 
-    constructor(configObject: ConfigObject, fieldPathRoot: string = '', configRoot: string = process.cwd(), ) {
+    constructor(configObject: ConfigObject, fieldPathRoot: string = '', configRoot: string = process.cwd()) {
         this.configObj = configObject;
         this.fieldPathRoot = fieldPathRoot;
         this.configRoot = configRoot;
@@ -114,7 +114,7 @@ export class ConfigValueExtractor {
     }
 
     extractRequiredFile(fieldName: string): string {
-        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), this.getConfigRoot());
+        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), [this.getConfigRoot()]);
     }
 
     extractFile(fieldName: string, defaultValue?: string): string | undefined {
@@ -122,7 +122,7 @@ export class ConfigValueExtractor {
     }
 
     extractRequiredFolder(fieldName: string): string {
-        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), this.getConfigRoot());
+        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), [this.getConfigRoot()]);
     }
 
     extractFolder(fieldName: string, defaultValue?: string): string | undefined {
@@ -190,27 +190,26 @@ export class ValueValidator {
         return value as T[];
     }
 
-    static validateFile(value: unknown, fieldPath: string, possibleFileRoot?: string): string {
-        const fileValue: string = ValueValidator.validatePath(value, fieldPath, possibleFileRoot);
+    static validateFile(value: unknown, fieldPath: string, possiblePathRoots: string[] = []): string {
+        const fileValue: string = ValueValidator.validatePath(value, fieldPath, possiblePathRoots);
         if (fs.statSync(fileValue).isDirectory()) {
             throw new Error(getMessage('ConfigFileValueMustNotBeFolder', fieldPath, fileValue));
         }
         return fileValue;
     }
 
-    static validateFolder(value: unknown, fieldPath: string, possibleFolderRoot?: string): string {
-        const folderValue: string = ValueValidator.validatePath(value, fieldPath, possibleFolderRoot);
+    static validateFolder(value: unknown, fieldPath: string, possiblePathRoots: string[] = []): string {
+        const folderValue: string = ValueValidator.validatePath(value, fieldPath, possiblePathRoots);
         if (!fs.statSync(folderValue).isDirectory()) {
             throw new Error(getMessage('ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
         }
         return folderValue;
     }
 
-    static validatePath(value: unknown, fieldPath: string, possiblePathRoot?: string): string {
+    static validatePath(value: unknown, fieldPath: string, possiblePathRoots: string[] = []): string {
         const pathValue: string = ValueValidator.validateString(value, fieldPath);
         const pathsToTry: string[] = [];
-        if (possiblePathRoot) {
-            // If a possible root is supplied, then we first assume the pathValue is relative to it
+        for (const possiblePathRoot of possiblePathRoots) {
             pathsToTry.push(toAbsolutePath(pathValue, possiblePathRoot));
         }
         // Otherwise we try to resolve it without a possible root
