@@ -36,6 +36,7 @@ public class myCls {
             System.debug( Limits.getHeapSize() );
         }
         while(i++<20) {
+            // should not match the following
             aLimits.getHeapSize();
         }
     }
