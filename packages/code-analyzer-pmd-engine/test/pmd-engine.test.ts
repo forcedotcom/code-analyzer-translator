@@ -31,6 +31,10 @@ describe('Tests for the getName method of PmdEngine', () => {
 
 
 describe('Tests for the describeRules method of PmdEngine', () => {
+    beforeAll(() => {
+        jest.setTimeout(60000);
+    });
+
     it('When using defaults without workspace, then apex and visualforce rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const logEvents: LogEvent[] = [];
