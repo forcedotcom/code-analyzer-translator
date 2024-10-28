@@ -43,10 +43,11 @@ describe('Tests for selecting rules', () => {
         const selection: RuleSelection = await codeAnalyzer.selectRules([]);
         expect(selection).toEqual(await codeAnalyzer.selectRules(['Recommended']));
 
-        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
-        expect(selection.getCount()).toEqual(5);
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2', 'stubEngine3']);
+        expect(selection.getCount()).toEqual(6);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleB', 'stub1RuleC']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleA', 'stub2RuleC']);
+        expect(ruleNamesFor(selection, 'stubEngine3')).toEqual(['stub3RuleA']);
 
         // Sanity check one of the rules in detail:
         const selectedRulesForStubEngine1: Rule[] = selection.getRulesFor('stubEngine1');
@@ -66,10 +67,11 @@ describe('Tests for selecting rules', () => {
     it('When all is provide then all is returned', async () => {
         const selection: RuleSelection = await codeAnalyzer.selectRules(['all']);
 
-        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
-        expect(selection.getCount()).toEqual(8);
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2', 'stubEngine3']);
+        expect(selection.getCount()).toEqual(9);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleB', 'stub1RuleC', 'stub1RuleD', 'stub1RuleE']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleA', 'stub2RuleB', 'stub2RuleC']);
+        expect(ruleNamesFor(selection, 'stubEngine3')).toEqual(['stub3RuleA']);
     })
 
     it('When test selector is an individual rule name then only that rule is selected', async () => {
@@ -102,9 +104,10 @@ describe('Tests for selecting rules', () => {
     it('When test selector a severity level then all rules with that severity are selected', async () => {
         const selection: RuleSelection = await codeAnalyzer.selectRules(['3'])
 
-        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2','stubEngine3']);
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleC', 'stub1RuleE']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleA']);
+        expect(ruleNamesFor(selection, 'stubEngine3')).toEqual(['stub3RuleA']);
     });
 
     it('When using a colon with a rule selector, then it acts like an intersection of two selectors', async () => {
@@ -185,12 +188,13 @@ describe('Tests for selecting rules', () => {
 
         const selection: RuleSelection = await codeAnalyzer.selectRules([]);
 
-        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
-        expect(selection.getCount()).toEqual(5);
+        expect(selection.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2', 'stubEngine3']);
+        expect(selection.getCount()).toEqual(6);
 
         // sample-config-01.yaml makes stub1RuleD is now Recommended and stub2RuleA no longer Recommended
         expect(ruleNamesFor(selection, 'stubEngine1')).toEqual(['stub1RuleA', 'stub1RuleB', 'stub1RuleC', 'stub1RuleD']);
         expect(ruleNamesFor(selection, 'stubEngine2')).toEqual(['stub2RuleC']);
+        expect(ruleNamesFor(selection, 'stubEngine3')).toEqual(['stub3RuleA']);
 
         // sample-config-01.yaml stub1RuleB have changed severity
         const selectedRulesForStubEngine1: Rule[] = selection.getRulesFor('stubEngine1');
@@ -311,15 +315,17 @@ describe('Tests for selecting rules', () => {
             (event: RuleSelectionProgressEvent) => ruleSelectionProgressEvents.push(event));
         await codeAnalyzer.selectRules([]);
 
-        expect(ruleSelectionProgressEvents).toHaveLength(8);
+        expect(ruleSelectionProgressEvents).toHaveLength(11);
         const expectedPercentages: number[] = [
             0, // initial progress always reported
-            10, // average of 20 from engine1 and 0 from engine2
-            40, // average of 80 from engine1 and 0 from engine2
-            55, // average of 80 from engine1 and 30 from engine2
-            85, // average of 80 from engine1 and 90 from engine2
-            95, // average of 100 from engine1 and 90 from engine2
-            100, // average of 100 from engine1 and 100 from engine 2
+            6.666666666666667, // average of 20 from engine1, 0 from engine2, 0 from engine3
+            26.666666666666668, // average of 80 from engine1, 0 from engine2, 0 from engine3
+            36.666666666666664, // average of 80 from engine1, 30 from engine2, 0 from engine3
+            56.666666666666664, // average of 80 from engine1, 90 from engine2, 0 from engine3
+            73.33333333333333, // average of 80 from engine1, 90 from engine2, 50 from engine3
+            85, // average of 80 from engine1, 90 from engine 2, 85 from engine3
+            91.66666666666667, // average of 100 from engine1, 90 from engine 2, 85 from engine3
+            95, // average of 100 from engine1, 100 from engine 2, 85 from engine3
             100 // final progress always reported (just in case there are no engines, we don't want to get stuck on 0)
         ]
         for (const [i, expectedPercentComplete] of expectedPercentages.entries()) {
@@ -336,7 +342,7 @@ describe('Tests for selecting rules', () => {
         codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
         await codeAnalyzer.selectRules([]);
 
-        expect(engineLogEvents).toHaveLength(2);
+        expect(engineLogEvents).toHaveLength(3);
         expect(engineLogEvents).toContainEqual({
             type: EventType.EngineLogEvent,
             timestamp: sampleTimestamp,
@@ -350,6 +356,13 @@ describe('Tests for selecting rules', () => {
             engineName: "stubEngine2",
             logLevel: LogLevel.Error,
             message: "someMiscErrorMessageFromStubEngine2"
+        });
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine3",
+            logLevel: LogLevel.Error,
+            message: "someMiscErrorMessageFromStubEngine3"
         });
     });
 });

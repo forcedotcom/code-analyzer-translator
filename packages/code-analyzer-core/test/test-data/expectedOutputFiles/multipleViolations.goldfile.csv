@@ -1,6 +1,7 @@
-"rule","engine","severity","type","tags","file","line","column","endLine","endColumn","pathLocations","message","resources"
+"rule","engine","severity","type","tags","file","line","column","endLine","endColumn","locations","message","resources"
 "stub1RuleA","stubEngine1",4,"Standard","Recommended,CodeStyle","test{{PATHSEP}}config.test.ts",3,6,11,8,,"SomeViolationMessage1","https://example.com/stub1RuleA"
 "stub1RuleC","stubEngine1",3,"Standard","Recommended,Performance,Custom","test{{PATHSEP}}run.test.ts",21,7,25,4,,"SomeViolationMessage2","https://example.com/stub1RuleC,https://example.com/aViolationSpecificUrl1,https://example.com/violationSpecificUrl2"
 "stub1RuleE","stubEngine1",3,"Standard","Performance","test{{PATHSEP}}run.test.ts",56,4,,,,"Some Violation that contains
 a new line in `it` and ""various"" 'quotes'. Also it has <brackets> that may need to be {escaped}.","https://example.com/stub1RuleE,https://example.com/stub1RuleE_2"
 "stub2RuleC","stubEngine2",2,"DataFlow","Recommended,BestPractice","test{{PATHSEP}}stubs.ts",76,8,,,"test{{PATHSEP}}stubs.ts:4:13,test{{PATHSEP}}test-helpers.ts:9:1,test{{PATHSEP}}stubs.ts:76:8","SomeViolationMessage3",
+"stub3RuleA","stubEngine3",3,"Flow","Recommended,ErrorProne","test{{PATHSEP}}stubs.ts",90,1,95,10,"test{{PATHSEP}}stubs.ts:20:10 (Comment at location 1),test{{PATHSEP}}test-helpers.ts:5:10 (Comment at location 2),test{{PATHSEP}}stubs.ts:90:1","SomeViolationMessage4",

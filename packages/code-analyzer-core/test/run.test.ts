@@ -253,7 +253,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When no zero violations occurred, then results have no violations for the engines that ran", async () => {
         const overallResults: RunResults = await codeAnalyzer.run(selection, sampleRunOptions);
 
-        expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2', 'stubEngine3']);
         expect(overallResults.getViolationCount()).toEqual(0);
         for (const severityLevel of getAllSeverityLevels()) {
             expect(overallResults.getViolationCountOfSeverity(severityLevel)).toEqual(0);
@@ -275,6 +275,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             expect(stubEngine2Results.getViolationCountOfSeverity(severityLevel)).toEqual(0);
         }
         expect(stubEngine2Results.getViolations()).toEqual([]);
+
+        const stubEngine3Results = overallResults.getEngineRunResults('stubEngine3');
+        expect(stubEngine3Results.getEngineName()).toEqual('stubEngine3');
+        expect(stubEngine3Results.getViolationCount()).toEqual(0);
+        for (const severityLevel of getAllSeverityLevels()) {
+            expect(stubEngine3Results.getViolationCountOfSeverity(severityLevel)).toEqual(0);
+        }
+        expect(stubEngine3Results.getViolations()).toEqual([]);
     });
 
     it("When an engines return violations, then they are correctly included in the run results", async () => {
@@ -286,7 +294,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         };
         const overallResults: RunResults = await codeAnalyzer.run(selection, sampleRunOptions);
 
-        expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2']);
+        expect(overallResults.getEngineNames()).toEqual(['stubEngine1', 'stubEngine2', 'stubEngine3']);
         expect(overallResults.getViolationCount()).toEqual(3);
         expect(overallResults.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(0);
         expect(overallResults.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(1);
@@ -540,11 +548,13 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         codeAnalyzer.onEvent(EventType.EngineRunProgressEvent, (event: EngineRunProgressEvent) => engineRunProgressEvents.push(event));
         await codeAnalyzer.run(selection, sampleRunOptions);
 
-        expect(engineRunProgressEvents).toHaveLength(9);
+        expect(engineRunProgressEvents).toHaveLength(13);
         const stub1RunProgressEvents: EngineRunProgressEvent[] = engineRunProgressEvents.filter(e => e.engineName === 'stubEngine1');
         expect(stub1RunProgressEvents).toHaveLength(5);
         const stub2RunProgressEvents: EngineRunProgressEvent[] = engineRunProgressEvents.filter(e => e.engineName === 'stubEngine2');
         expect(stub2RunProgressEvents).toHaveLength(4);
+        const stub3RunProgressEvents: EngineRunProgressEvent[] = engineRunProgressEvents.filter(e => e.engineName === 'stubEngine3');
+        expect(stub3RunProgressEvents).toHaveLength(4);
         for (const [i, expectedPercentComplete] of [0, 0, 50, 100, 100].entries()) { // Core and stubEngine1 both give us 0 and 100
             expect(stub1RunProgressEvents[i]).toEqual({
                 type: EventType.EngineRunProgressEvent,
@@ -561,6 +571,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
                 percentComplete: expectedPercentComplete
             });
         }
+        for (const [i, expectedPercentComplete] of [0, 5, 80, 100].entries()) { // Only Core gives us 0 and 100
+            expect(stub3RunProgressEvents[i]).toEqual({
+                type: EventType.EngineRunProgressEvent,
+                timestamp: sampleTimestamp,
+                engineName: "stubEngine3",
+                percentComplete: expectedPercentComplete
+            });
+        }
     });
 
     it("When running engines, then engine run results events are emitted correctly when the enginges complete", async () => {
@@ -568,7 +586,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         codeAnalyzer.onEvent(EventType.EngineResultsEvent, (event: EngineResultsEvent) => engineResultsEvents.push(event));
         const runResults: RunResults = await codeAnalyzer.run(selection, sampleRunOptions);
 
-        expect(engineResultsEvents).toHaveLength(2);
+        expect(engineResultsEvents).toHaveLength(3);
         expect(engineResultsEvents).toContainEqual({
             type: EventType.EngineResultsEvent,
             timestamp: sampleTimestamp,
@@ -579,6 +597,11 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             timestamp: sampleTimestamp,
             results: runResults.getEngineRunResults("stubEngine2")
         });
+        expect(engineResultsEvents).toContainEqual({
+            type: EventType.EngineResultsEvent,
+            timestamp: sampleTimestamp,
+            results: runResults.getEngineRunResults("stubEngine3")
+        });
     });
 
     it("When running engines, then engine specific events are wired up and emitted correctly from the engines", async () => {
@@ -586,7 +609,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         codeAnalyzer.onEvent(EventType.EngineLogEvent, (event: EngineLogEvent) => engineLogEvents.push(event));
         await codeAnalyzer.run(selection, sampleRunOptions);
 
-        expect(engineLogEvents).toHaveLength(2);
+        expect(engineLogEvents).toHaveLength(3);
         expect(engineLogEvents).toContainEqual({
             type: EventType.EngineLogEvent,
             timestamp: sampleTimestamp,
@@ -600,6 +623,13 @@ describe("Tests for the run method of CodeAnalyzer", () => {
             engineName: "stubEngine2",
             logLevel: LogLevel.Info,
             message: "someMiscInfoMessageFromStubEngine2"
+        });
+        expect(engineLogEvents).toContainEqual({
+            type: EventType.EngineLogEvent,
+            timestamp: sampleTimestamp,
+            engineName: "stubEngine3",
+            logLevel: LogLevel.Info,
+            message: "someMiscInfoMessageFromStubEngine3"
         });
     });
 });
