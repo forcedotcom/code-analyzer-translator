@@ -64,31 +64,31 @@ type ViolationOutput = {
 }
 
 class CodeLocationOutput {
-    private readonly file: string;
-    private readonly line: number;
-    private readonly column: number;
+    private readonly file?: string;
+    private readonly line?: number;
+    private readonly column?: number;
     private readonly endLine?: number;
     private readonly endColumn?: number;
     private readonly comment?: string;
 
     public constructor(codeLocation: CodeLocation, runDir: string) {
-        this.file = makeRelativeIfPossible(codeLocation.getFile()!, runDir);
-        this.line = codeLocation.getStartLine()!;
-        this.column = codeLocation.getStartColumn()!;
+        this.file = codeLocation.getFile() ? makeRelativeIfPossible(codeLocation.getFile()!, runDir) : /* istanbul ignore next */ undefined;
+        this.line = codeLocation.getStartLine();
+        this.column = codeLocation.getStartColumn();
         this.endLine = codeLocation.getEndLine();
         this.endColumn = codeLocation.getEndColumn();
         this.comment = codeLocation.getComment();
     }
 
-    public getFile(): string {
+    public getFile(): string | undefined {
         return this.file;
     }
 
-    public getLine(): number {
+    public getLine(): number | undefined {
         return this.line;
     }
 
-    public getColumn(): number {
+    public getColumn(): number | undefined {
         return this.column;
     }
 
@@ -186,9 +186,15 @@ class XmlOutputFormatter implements OutputFormatter {
                 const pathLocationsNode: xmlbuilder.XMLElement = violationNode.node('locations');
                 for (const location of violationOutput.locations) {
                     const locationNode: xmlbuilder.XMLElement = pathLocationsNode.node('location');
-                    locationNode.node('file').text(location.getFile());
-                    locationNode.node('line').text(`${location.getLine()}`);
-                    locationNode.node('column').text(`${location.getColumn()}`);
+                    if (location.getFile() != null ) {
+                        locationNode.node('file').text(location.getFile()!);
+                    }
+                    if (location.getLine() != null) {
+                        locationNode.node('line').text(`${location.getLine()}`);
+                    }
+                    if (location.getColumn() != null) {
+                        locationNode.node('column').text(`${location.getColumn()}`);
+                    }
                     if (location.getEndLine() != null) {
                         locationNode.node('endLine').text(`${location.getEndLine()}`);
                     }
