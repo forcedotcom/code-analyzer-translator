@@ -57,9 +57,69 @@ type ViolationOutput = {
     column?: number
     endLine?: number
     endColumn?: number
-    pathLocations?: string[]
+    primaryLocationIndex?: number
+    locations?: CodeLocationOutput[]
     message: string
     resources?: string[]
+}
+
+class CodeLocationOutput {
+    private readonly file?: string;
+    private readonly line?: number;
+    private readonly column?: number;
+    private readonly endLine?: number;
+    private readonly endColumn?: number;
+    private readonly comment?: string;
+
+    public constructor(codeLocation: CodeLocation, runDir: string) {
+        this.file = codeLocation.getFile() ? makeRelativeIfPossible(codeLocation.getFile()!, runDir) : /* istanbul ignore next */ undefined;
+        this.line = codeLocation.getStartLine();
+        this.column = codeLocation.getStartColumn();
+        this.endLine = codeLocation.getEndLine();
+        this.endColumn = codeLocation.getEndColumn();
+        this.comment = codeLocation.getComment();
+    }
+
+    public getFile(): string | undefined {
+        return this.file;
+    }
+
+    public getLine(): number | undefined {
+        return this.line;
+    }
+
+    public getColumn(): number | undefined {
+        return this.column;
+    }
+
+    public getEndLine(): number | undefined {
+        return this.endLine;
+    }
+
+    public getEndColumn(): number | undefined {
+        return this.endColumn;
+    }
+
+    public getComment(): string | undefined {
+        return this.comment;
+    }
+
+    public toString(): string {
+        let locationString: string = '';
+        if (this.file != null) {
+            locationString += this.file;
+            if (this.line != null) {
+                locationString += `:${this.line}`;
+                if (this.column != null) {
+                    locationString += `:${this.column}`;
+                }
+            }
+        }
+        if (this.comment != null) {
+            locationString += ` (${this.comment})`;
+        }
+        return locationString;
+    }
 }
 
 class CsvOutputFormatter implements OutputFormatter {
@@ -69,7 +129,7 @@ class CsvOutputFormatter implements OutputFormatter {
             header: true,
             quoted_string: true,
             columns: ['rule', 'engine', 'severity', 'type', 'tags', 'file', 'line', 'column',
-                'endLine', 'endColumn', 'pathLocations', 'message', 'resources'],
+                'endLine', 'endColumn', 'locations', 'message', 'resources'],
             cast: {
                 object: value => {
                     if (Array.isArray(value)) {
@@ -131,10 +191,31 @@ class XmlOutputFormatter implements OutputFormatter {
             if (violationOutput.endColumn) {
                 violationNode.node('endColumn').text(`${violationOutput.endColumn}`);
             }
-            if (violationOutput.pathLocations) {
-                const pathLocationsNode: xmlbuilder.XMLElement = violationNode.node('pathLocations');
-                for (const pathLocation of violationOutput.pathLocations) {
-                    pathLocationsNode.node('pathLocation', pathLocation);
+            if (violationOutput.primaryLocationIndex != null) {
+                violationNode.node('primaryLocationIndex').text(`${violationOutput.primaryLocationIndex}`);
+            }
+            if (violationOutput.locations) {
+                const pathLocationsNode: xmlbuilder.XMLElement = violationNode.node('locations');
+                for (const location of violationOutput.locations) {
+                    const locationNode: xmlbuilder.XMLElement = pathLocationsNode.node('location');
+                    if (location.getFile() != null ) {
+                        locationNode.node('file').text(location.getFile()!);
+                    }
+                    if (location.getLine() != null) {
+                        locationNode.node('line').text(`${location.getLine()}`);
+                    }
+                    if (location.getColumn() != null) {
+                        locationNode.node('column').text(`${location.getColumn()}`);
+                    }
+                    if (location.getEndLine() != null) {
+                        locationNode.node('endLine').text(`${location.getEndLine()}`);
+                    }
+                    if (location.getEndColumn() != null) {
+                        locationNode.node('endColumn').text(`${location.getEndColumn()}`);
+                    }
+                    if (location.getComment() != null) {
+                        locationNode.node('comment').text(location.getComment()!);
+                    }
                 }
             }
             violationNode.node('message').text(violationOutput.message);
@@ -212,28 +293,17 @@ function createViolationOutput(violation: Violation, runDir: string, sanitizeFcn
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        pathLocations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createPathLocations(codeLocations, runDir) : undefined,
+        primaryLocationIndex: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
+        locations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
 }
 
-function createPathLocations(codeLocations: CodeLocation[], runDir: string): string[] {
-    return codeLocations.map(l => createLocationString(l, runDir)).filter(s => s.length > 0);
-}
-
-function createLocationString(codeLocation: CodeLocation, runDir: string): string {
-    let locationString: string = '';
-    if (codeLocation.getFile()) {
-        locationString += makeRelativeIfPossible(codeLocation.getFile() as string, runDir);
-        if (codeLocation.getStartLine()) {
-            locationString += ':' + codeLocation.getStartLine();
-            if (codeLocation.getStartColumn()) {
-                locationString += ':' + codeLocation.getStartColumn();
-            }
-        }
-    }
-    return locationString;
+function createCodeLocationOutputs(codeLocations: CodeLocation[], runDir: string): CodeLocationOutput[] {
+    return codeLocations.map(loc => {
+        return new CodeLocationOutput(loc, runDir);
+    })
 }
 
 function makeRelativeIfPossible(file: string, rootDir: string): string {

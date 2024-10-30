@@ -22,6 +22,9 @@ beforeAll(async () => {
     (stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub2RuleC()]
     };
+    (stubPlugin.getCreatedEngine('stubEngine3') as stubs.StubEngine3).resultsToReturn = {
+        violations: [stubs.getSampleViolationForStub3RuleA()]
+    }
     runResults = await codeAnalyzer.run(await codeAnalyzer.selectRules(['all']), {workspace: await codeAnalyzer.createWorkspace(['test'])});
 });
 

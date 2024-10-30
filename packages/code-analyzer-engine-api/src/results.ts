@@ -2,6 +2,7 @@ export type CodeLocation = {
     file: string
     startLine: number
     startColumn: number
+    comment?: string
     endLine?: number
     endColumn?: number
 }

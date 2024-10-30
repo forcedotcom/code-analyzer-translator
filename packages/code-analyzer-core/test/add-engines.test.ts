@@ -3,7 +3,7 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import path from "node:path";
-import {StubEngine1, StubEngine2} from "./stubs";
+import {StubEngine1, StubEngine2, StubEngine3} from "./stubs";
 import {ConfigDescription} from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
@@ -25,7 +25,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"]);
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2","stubEngine3"]);
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
         expect(stubEngine1.getName()).toEqual('stubEngine1');
         expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
@@ -40,6 +40,13 @@ describe("Tests for adding engines to Code Analyzer", () => {
             engine_name: "stubEngine2",
             config_root: DEFAULT_CONFIG_ROOT
         });
+        const stubEngine3: StubEngine3 = stubEnginePlugin.getCreatedEngine('stubEngine3') as StubEngine3;
+        expect(stubEngine3.getName()).toEqual('stubEngine3');
+        expect(codeAnalyzer.getEngineConfig('stubEngine3')).toEqual({
+            disable_engine: false,
+            engine_name: "stubEngine3",
+            config_root: DEFAULT_CONFIG_ROOT
+        });
     });
 
     it('When adding engine plugin using non-default config then engines are correctly added with engine specific configurations', async () => {
@@ -48,7 +55,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         const stubEnginePlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
         await codeAnalyzer.addEnginePlugin(stubEnginePlugin);
 
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2","stubEngine3"])
         const stubEngine1: StubEngine1 = stubEnginePlugin.getCreatedEngine('stubEngine1') as StubEngine1;
         expect(stubEngine1.getName()).toEqual('stubEngine1');
         expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
@@ -68,6 +75,13 @@ describe("Tests for adding engines to Code Analyzer", () => {
             engine_name: "stubEngine2",
             config_root: TEST_DATA_DIR
         });
+        const stubEngine3: StubEngine3 = stubEnginePlugin.getCreatedEngine('stubEngine3') as StubEngine3;
+        expect(stubEngine3.getName()).toEqual('stubEngine3');
+        expect(codeAnalyzer.getEngineConfig('stubEngine3')).toEqual({
+            disable_engine: false,
+            engine_name: "stubEngine3",
+            config_root: TEST_DATA_DIR
+        });
     });
 
     it('(Forward Compatibility) When addEnginePlugin receives a plugin with a future api version then cast down to current api version', async () => {
@@ -84,10 +98,11 @@ describe("Tests for adding engines to Code Analyzer", () => {
         await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
 
         const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
-        expect(errorEvents.length).toEqual(2);
+        expect(errorEvents.length).toEqual(3);
         expect(errorEvents[0].message).toEqual(getMessage('DuplicateEngine', 'stubEngine1'));
         expect(errorEvents[1].message).toEqual(getMessage('DuplicateEngine', 'stubEngine2'));
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2"])
+        expect(errorEvents[2].message).toEqual(getMessage('DuplicateEngine', 'stubEngine3'));
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1","stubEngine2","stubEngine3"])
     })
 
     it('When plugin returns engine that contradicts the plugin availableEngineNames method, then we emit error log line and skip that engine', async () => {
@@ -128,7 +143,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
     it('When calling dynamicallyAddEnginePlugin on a module that has a createEnginePlugin function, then it is used to add create the plugin and then added', async () => {
         const pluginModulePath: string = require.resolve('./stubs');
         await codeAnalyzer.dynamicallyAddEnginePlugin(pluginModulePath);
-        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1", "stubEngine2"]);
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual(["stubEngine1", "stubEngine2", "stubEngine3"]);
     });
 
     it('When calling dynamicallyAddEnginePlugin on a module that is missing a createEnginePlugin function, then an error is thrown', async () => {
@@ -155,7 +170,7 @@ describe("Tests for adding engines to Code Analyzer", () => {
         codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
         await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
 
-        expect(codeAnalyzer.getEngineNames()).toEqual(['stubEngine2']);
+        expect(codeAnalyzer.getEngineNames()).toEqual(['stubEngine2', 'stubEngine3']);
         expect(logEvents).toContainEqual({
             type: EventType.LogEvent,
             logLevel: LogLevel.Debug,

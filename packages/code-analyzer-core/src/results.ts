@@ -9,6 +9,7 @@ export interface CodeLocation {
     getFile(): string | undefined
     getStartLine(): number | undefined
     getStartColumn(): number | undefined
+    getComment(): string | undefined
     getEndLine(): number | undefined
     getEndColumn(): number | undefined
 }
@@ -59,6 +60,10 @@ export class CodeLocationImpl implements CodeLocation {
         return this.apiCodeLocation.startColumn;
     }
 
+    getComment(): string | undefined {
+        return this.apiCodeLocation.comment;
+    }
+
     getEndLine(): number | undefined {
         return this.apiCodeLocation.endLine;
     }
@@ -80,6 +85,11 @@ export class UndefinedCodeLocation implements CodeLocation {
     }
 
     getStartColumn(): undefined {
+        return undefined;
+    }
+
+    // istanbul ignore next - Unused method, required for interface
+    getComment(): undefined {
         return undefined;
     }
 

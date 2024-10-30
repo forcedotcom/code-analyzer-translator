@@ -17,7 +17,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
     private readonly createdEngines: Map<string, engApi.Engine> = new Map();
 
     getAvailableEngineNames(): string[] {
-        return ["stubEngine1", "stubEngine2"];
+        return ["stubEngine1", "stubEngine2", "stubEngine3"];
     }
 
 
@@ -46,6 +46,8 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
             this.createdEngines.set(engineName, new StubEngine1(config));
         } else if (engineName == "stubEngine2") {
             this.createdEngines.set(engineName, new StubEngine2(config));
+        } else if (engineName == "stubEngine3") {
+            this.createdEngines.set(engineName, new StubEngine3(config));
         } else {
             throw new Error(`Unsupported engine name: ${engineName}`)
         }
@@ -202,6 +204,46 @@ export class StubEngine2 extends engApi.Engine {
     }
 }
 
+export class StubEngine3 extends engApi.Engine {
+    readonly config: engApi.ConfigObject;
+    readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
+    resultsToReturn: engApi.EngineRunResults = { violations: [] };
+
+    constructor(config: engApi.ConfigObject) {
+        super();
+        this.config = config;
+    }
+
+    getName(): string {
+        return 'stubEngine3';
+    }
+
+    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+        this.describeRulesCallHistory.push({describeOptions});
+        this.emitDescribeRulesProgressEvent(50);
+        this.emitLogEvent(LogLevel.Error, 'someMiscErrorMessageFromStubEngine3');
+        this.emitDescribeRulesProgressEvent(85);
+        return [
+            {
+                name: "stub3RuleA",
+                severityLevel: engApi.SeverityLevel.Moderate,
+                type: engApi.RuleType.Flow,
+                tags: ['Recommended', 'ErrorProne'],
+                description: 'Some description for stub3RuleA',
+                resourceUrls: [] // Purposely left empty
+            }
+        ]
+    }
+
+    async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
+        this.runRulesCallHistory.push({ruleNames, runOptions});
+        this.emitLogEvent(LogLevel.Info, 'someMiscInfoMessageFromStubEngine3');
+        this.emitRunRulesProgressEvent(5);
+        this.emitRunRulesProgressEvent(80);
+        return this.resultsToReturn;
+    }
+}
 
 export function getSampleViolationForStub1RuleA(): engApi.Violation {
     return {
@@ -282,6 +324,39 @@ export function getSampleViolationForStub2RuleC(): engApi.Violation {
         ],
         primaryLocationIndex: 2
     };
+}
+
+export function getSampleViolationForStub3RuleA(): engApi.Violation {
+    return {
+        ruleName: 'stub3RuleA',
+        message: 'SomeViolationMessage4',
+        codeLocations: [
+            {
+                file: 'test/stubs.ts',
+                startLine: 20,
+                startColumn: 10,
+                endLine: 22,
+                endColumn: 25,
+                comment: 'Comment at location 1'
+            },
+            {
+                file: 'test/test-helpers.ts',
+                startLine: 5,
+                startColumn: 10,
+                comment: 'Comment at location 2'
+            },
+            {
+                file: 'test/stubs.ts',
+                startLine: 90,
+                startColumn: 1,
+                endLine: 95,
+                endColumn: 10,
+                // Intentionally left blank
+                comment: undefined
+            },
+        ],
+        primaryLocationIndex: 2
+    }
 }
 
 
