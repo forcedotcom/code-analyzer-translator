@@ -1170,7 +1170,7 @@
       "CodeStyle",
       "javaLanguage"
     ],
-    "description": "Methods that return boolean results should be named as predicate statements to denote this. I.e, 'isReady()', 'hasValues()', 'canCommit()', 'willFail()', etc. Avoid the use of the 'get' prefix for these methods.",
+    "description": "Methods that return boolean or Boolean results should be named as predicate statements to denote this. I.e., 'isReady()', 'hasValues()', 'canCommit()', 'willFail()', etc. Avoid the use of the 'get' prefix for these methods.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_codestyle.html#booleangetmethodname"
     ]
@@ -1680,7 +1680,7 @@
     ]
   },
   {
-    "name": "DefaultLabelNotLastInSwitchStmt",
+    "name": "DefaultLabelNotLastInSwitch",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -1688,9 +1688,9 @@
       "BestPractices",
       "javaLanguage"
     ],
-    "description": "By convention, the default label should be the last label in a switch statement.",
+    "description": "By convention, the default label should be the last label in a switch statement or switch expression. Note: This rule has been renamed from \"DefaultLabelNotLastInSwitchStmt\" with PMD {{PMD_VERSION}}.",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#defaultlabelnotlastinswitchstmt"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#defaultlabelnotlastinswitch"
     ]
   },
   {
@@ -2730,48 +2730,6 @@
     ]
   },
   {
-    "name": "JUnit4TestShouldUseAfterAnnotation",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "In JUnit 3, the tearDown method was used to clean up all data entities required in running tests. JUnit 4 skips the tearDown method and executes all methods annotated with @After after running each test. JUnit 5 introduced @AfterEach and @AfterAll annotations to execute methods after each test or after all tests in the class, respectively.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junit4testshoulduseafterannotation"
-    ]
-  },
-  {
-    "name": "JUnit4TestShouldUseBeforeAnnotation",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "In JUnit 3, the setUp method was used to set up all data entities required in running tests. JUnit 4 skips the setUp method and executes all methods annotated with @Before before all tests. JUnit 5 introduced @BeforeEach and @BeforeAll annotations to execute methods before each test or before all tests in the class, respectively.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junit4testshouldusebeforeannotation"
-    ]
-  },
-  {
-    "name": "JUnit4TestShouldUseTestAnnotation",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "In JUnit 3, the framework executed all methods which started with the word test as a unit test. In JUnit 4, only methods annotated with the @Test annotation are executed. In JUnit 5, one of the following annotations should be used for tests: @Test, @RepeatedTest, @TestFactory, @TestTemplate or @ParameterizedTest. In TestNG, only methods annotated with the @Test annotation are executed.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junit4testshouldusetestannotation"
-    ]
-  },
-  {
     "name": "JUnit5TestShouldBePackagePrivate",
     "severityLevel": 3,
     "type": "Standard",
@@ -2783,20 +2741,6 @@
     "description": "Reports JUnit 5 test classes and methods that are not package-private. Contrary to JUnit 4 tests, which required public visibility to be run by the engine, JUnit 5 tests can also be run if they're package-private. Marking them as such is a good practice to limit their visibility. Test methods are identified as those which use `@Test`, `@RepeatedTest`, `@TestFactory`, `@TestTemplate` or `@ParameterizedTest`.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junit5testshouldbepackageprivate"
-    ]
-  },
-  {
-    "name": "JUnitAssertionsShouldIncludeMessage",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "JUnit assertions should include an informative message - i.e., use the three-argument version of assertEquals(), not the two-argument version.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junitassertionsshouldincludemessage"
     ]
   },
   {
@@ -2825,34 +2769,6 @@
     "description": "The suite() method in a JUnit test needs to be both public and static.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#junitstaticsuite"
-    ]
-  },
-  {
-    "name": "JUnitTestContainsTooManyAsserts",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "Unit tests should not contain too many asserts. Many asserts are indicative of a complex test, for which it is harder to verify correctness. Consider breaking the test scenario into multiple, shorter test scenarios. Customize the maximum number of assertions used by this Rule to suit your needs. This rule checks for JUnit4, JUnit5 and TestNG Tests, as well as methods starting with \"test\".",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junittestcontainstoomanyasserts"
-    ]
-  },
-  {
-    "name": "JUnitTestsShouldIncludeAssert",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "JUnit tests should include at least one assertion. This makes the tests more robust, and using assert with messages provide the developer a clearer idea of what the test does.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#junittestsshouldincludeassert"
     ]
   },
   {
@@ -3332,7 +3248,7 @@
     ]
   },
   {
-    "name": "NonCaseLabelInSwitchStatement",
+    "name": "NonCaseLabelInSwitch",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -3340,9 +3256,23 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "A non-case label (e.g. a named break/continue label) was present in a switch statement. This is legal, but confusing. It is easy to mix up the case labels and the non-case labels.",
+    "description": "A non-case label (e.g. a named break/continue label) was present in a switch statement or switch expression. This is legal, but confusing. It is easy to mix up the case labels and the non-case labels. Note: This rule was renamed from `NonCaseLabelInSwitchStatement` with PMD {{PMD_VERSION}}.",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#noncaselabelinswitchstatement"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#noncaselabelinswitch"
+    ]
+  },
+  {
+    "name": "NonExhaustiveSwitch",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Switch statements should be exhaustive, to make their control flow easier to follow. This can be achieved by adding a `default` case, or, if the switch is on an enum type, by ensuring there is one switch branch for each enum constant. This rule doesn't consider Switch Statements, that use Pattern Matching, since for these the compiler already ensures that all cases are covered. The same is true for Switch Expressions, which are also not considered by this rule.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#nonexhaustiveswitch"
     ]
   },
   {
@@ -4074,20 +4004,6 @@
     ]
   },
   {
-    "name": "SwitchStmtsShouldHaveDefault",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "BestPractices",
-      "javaLanguage"
-    ],
-    "description": "Switch statements should be exhaustive, to make their control flow easier to follow. This can be achieved by adding a `default` case, or, if the switch is on an enum type, by ensuring there is one switch branch for each enum constant.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#switchstmtsshouldhavedefault"
-    ]
-  },
-  {
     "name": "SystemPrintln",
     "severityLevel": 3,
     "type": "Standard",
@@ -4130,7 +4046,7 @@
     ]
   },
   {
-    "name": "TooFewBranchesForASwitchStatement",
+    "name": "TooFewBranchesForSwitch",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
@@ -4138,9 +4054,9 @@
       "Performance",
       "javaLanguage"
     ],
-    "description": "Switch statements are intended to be used to support complex branching behaviour. Using a switch for only a few cases is ill-advised, since switches are not as easy to understand as if-else statements. In these cases use the if-else statement to increase code readability.",
+    "description": "Switch statements are intended to be used to support complex branching behaviour. Using a switch for only a few cases is ill-advised, since switches are not as easy to understand as if-else statements. In these cases use the if-else statement to increase code readability. Note: This rule was named TooFewBranchesForASwitchStatement before PMD {{PMD_VERSION}}.",
     "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#toofewbranchesforaswitchstatement"
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_performance.html#toofewbranchesforswitch"
     ]
   },
   {
@@ -4239,6 +4155,90 @@
     "description": "Do not use \"if\" statements whose conditionals are always true or always false.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#unconditionalifstatement"
+    ]
+  },
+  {
+    "name": "UnitTestAssertionsShouldIncludeMessage",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Unit assertions should include an informative message - i.e., use the three-argument version of `assertEquals()`, not the two-argument version. This rule supports tests using JUnit (3, 4 and 5) and TestNG. Note: This rule was named JUnitAssertionsShouldIncludeMessage before PMD {{PMD_VERSION}}.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestassertionsshouldincludemessage"
+    ]
+  },
+  {
+    "name": "UnitTestContainsTooManyAsserts",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Unit tests should not contain too many asserts. Many asserts are indicative of a complex test, for which it is harder to verify correctness. Consider breaking the test scenario into multiple, shorter test scenarios. Customize the maximum number of assertions used by this Rule to suit your needs. This rule checks for JUnit (3, 4 and 5) and TestNG Tests. Note: This rule was named JUnitTestContainsTooManyAsserts before PMD {{PMD_VERSION}}.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestcontainstoomanyasserts"
+    ]
+  },
+  {
+    "name": "UnitTestShouldIncludeAssert",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "Unit tests should include at least one assertion. This makes the tests more robust, and using assert with messages provide the developer a clearer idea of what the test does. This rule checks for JUnit (3, 4 and 5) and TestNG Tests. Note: This rule was named JUnitTestsShouldIncludeAssert before PMD {{PMD_VERSION}}.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshouldincludeassert"
+    ]
+  },
+  {
+    "name": "UnitTestShouldUseAfterAnnotation",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "This rule detects methods called `tearDown()` that are not properly annotated as a cleanup method. This is primarily intended to assist in upgrading from JUnit 3, where tear down methods were required to be called `tearDown()`. To a lesser extent, this may help detect omissions even under newer JUnit versions or under TestNG, as long as you are following this convention to... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshoulduseafterannotation",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshoulduseafterannotation"
+    ]
+  },
+  {
+    "name": "UnitTestShouldUseBeforeAnnotation",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "This rule detects methods called `setUp()` that are not properly annotated as a setup method. This is primarily intended to assist in upgrading from JUnit 3, where setup methods were required to be called `setUp()`. To a lesser extent, this may help detect omissions even under newer JUnit versions or under TestNG, as long as you are following this convention to name the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshouldusebeforeannotation",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshouldusebeforeannotation"
+    ]
+  },
+  {
+    "name": "UnitTestShouldUseTestAnnotation",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "javaLanguage"
+    ],
+    "description": "The rule will detect any test method starting with \"test\" that is not properly annotated, and will therefore not be run. In JUnit 4, only methods annotated with the `@Test` annotation are executed. In JUnit 5, one of the following annotations should be used for tests: `@Test`, `@RepeatedTest`, `@TestFactory`, `@TestTemplate` or `@ParameterizedTest`. In TestNG, only methods... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshouldusetestannotation",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_bestpractices.html#unittestshouldusetestannotation"
     ]
   },
   {
@@ -4810,7 +4810,7 @@
       "ErrorProne",
       "javaLanguage"
     ],
-    "description": "An operation on an Immutable object (String, BigDecimal or BigInteger) won't change the object itself since the result of the operation is a new object. Therefore, ignoring the operation result is an error.",
+    "description": "An operation on an immutable object will not change the object itself since the result of the operation is a new object. Therefore, ignoring the result of such an operation is likely a mistake. The operation can probably be removed. This rule recognizes the types `String`, `BigDecimal`, `BigInteger` or any type from `java.time.*` as immutable.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#uselessoperationonimmutable"
     ]

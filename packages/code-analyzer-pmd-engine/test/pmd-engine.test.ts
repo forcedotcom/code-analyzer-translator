@@ -278,6 +278,10 @@ function expectDoesNotContainRuleWithName(ruleDescriptions: RuleDescription[], r
 }
 
 describe('Tests for the runRules method of PmdEngine', () => {
+    beforeAll(() => {
+        jest.setTimeout(60000);
+    });
+    
     const expectedOperationWithLimitsInLoopViolation: Violation = {
         ruleName: "OperationWithLimitsInLoop",
         message: 'Avoid operations in loops that may hit governor limits',
