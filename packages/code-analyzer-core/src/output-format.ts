@@ -105,8 +105,20 @@ class CodeLocationOutput {
     }
 
     public toString(): string {
-        const commentPortion: string = this.comment ? ` (${this.comment})` : '';
-        return `${this.file}:${this.line}:${this.column}${commentPortion}`;
+        let locationString: string = '';
+        if (this.file != null) {
+            locationString += this.file;
+            if (this.line != null) {
+                locationString += `:${this.line}`;
+                if (this.column != null) {
+                    locationString += `:${this.column}`;
+                }
+            }
+        }
+        if (this.comment != null) {
+            locationString += ` (${this.comment})`;
+        }
+        return locationString;
     }
 }
 
