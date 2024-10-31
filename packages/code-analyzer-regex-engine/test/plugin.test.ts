@@ -65,11 +65,11 @@ describe('RegexEnginePlugin No Custom Config Tests' , () => {
         expectedVersion: number
     };
     const apiVersionTestCases: ApiVersionTestCase[] = [
-        { date: new Date(Date.UTC(2024,8,15)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-2])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 52 }, // Summer'24 - 3 years = Summer'21 (52.0)
-        { date: new Date(Date.UTC(2022,2,1)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-5])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 45 },  // Spring'22 - 3 years = Spring'19 (45.0)
-        { date: new Date(Date.UTC(2023,5,2)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-3][0-9]|4[0-9])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 49 },  // Summer'23 - 3 years = Summer'20 (49.0)
-        { date: new Date(Date.UTC(2025,9,3)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-4][0-9]|5[0-6])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 56 },  // Winter'26 - 3 years = Winter'23 (56.0)
-        { date: new Date(Date.UTC(2028,3,7)), expectedRegexString: '/(?<=<apiVersion>)([1-9]|[1-5][0-9]|6[0-3])(\\.[0-9])?(?=<\\/apiVersion>)/g', expectedVersion: 63 }   // Spring'28 - 3 years = Spring'25 (63.0)
+        { date: new Date(Date.UTC(2024,8,15)), expectedRegexString: '/<apiVersion>(?<target>([1-9]|[1-4][0-9]|5[0-2])(\\.[0-9])?)<\\/apiVersion>/g', expectedVersion: 52 }, // Summer'24 - 3 years = Summer'21 (52.0)
+        { date: new Date(Date.UTC(2022,2,1)), expectedRegexString: '/<apiVersion>(?<target>([1-9]|[1-3][0-9]|4[0-5])(\\.[0-9])?)<\\/apiVersion>/g', expectedVersion: 45 },  // Spring'22 - 3 years = Spring'19 (45.0)
+        { date: new Date(Date.UTC(2023,5,2)), expectedRegexString: '/<apiVersion>(?<target>([1-9]|[1-3][0-9]|4[0-9])(\\.[0-9])?)<\\/apiVersion>/g', expectedVersion: 49 },  // Summer'23 - 3 years = Summer'20 (49.0)
+        { date: new Date(Date.UTC(2025,9,3)), expectedRegexString: '/<apiVersion>(?<target>([1-9]|[1-4][0-9]|5[0-6])(\\.[0-9])?)<\\/apiVersion>/g', expectedVersion: 56 },  // Winter'26 - 3 years = Winter'23 (56.0)
+        { date: new Date(Date.UTC(2028,3,7)), expectedRegexString: '/<apiVersion>(?<target>([1-9]|[1-5][0-9]|6[0-3])(\\.[0-9])?)<\\/apiVersion>/g', expectedVersion: 63 }   // Spring'28 - 3 years = Spring'25 (63.0)
     ];
     it.each(apiVersionTestCases)('RegexEnginePlugin produces engine with AvoidOldSalesforceApiVersions that depends on current date', async (testCase: ApiVersionTestCase) => {
         enginePlugin._setClock(new FixedClock(testCase.date));

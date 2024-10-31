@@ -60,17 +60,25 @@ function validateEngineName(engineName: string) {
     }
 }
 
+/*
+    NOTE: If the rule contains a group named "target" then we will use the target group boundary instead of the
+    entire match boundary. This is a much faster alternative than trying to use lookaheads or lookbacks.
+    For example for /Before(?<target>PatternOfInterest)After/g is how we can ensure "Before" shows up behind
+    "PatternOfInterest" and is followed by "After"... but the resulting match selected by code analyzer will only be
+    "PatternOfInterest" instead of the whole thing "BeforePatternOfInterestAfter".
+ */
+
 export function createBaseRegexRules(now: Date): RegexRules {
     return {
         NoTrailingWhitespace: {
-            regex: (/[ \t]+((?=\r?\n)|(?=$))/g).toString(),
+            regex: (/(?<target>[ \t]+)((\r?\n)|$)/g).toString(),
             file_extensions: ['.cls', '.trigger'],
             description: getMessage('TrailingWhitespaceRuleDescription'),
             violation_message: getMessage('TrailingWhitespaceRuleMessage'),
             severity: SeverityLevel.Info,
             tags: ['Recommended', 'CodeStyle']
         },
-        AvoidTermsWithImplicitBias: {
+        AvoidTermsWithImplicitBias: { // file_extensions not listed so that it can run on all text files
             regex: (/\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi).toString(),
             description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
             violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
@@ -79,7 +87,8 @@ export function createBaseRegexRules(now: Date): RegexRules {
         },
         AvoidOldSalesforceApiVersions: createAvoidOldSalesforceApiVersionsRule(now),
         AvoidGetHeapSizeInLoop: {
-            regex: (/(?<=(for|while)\s*\([^)]*\)\s*\{[^}]*\b)Limits\.getHeapSize\(\)|(?<=do\s*\{[^}]*\b)Limits\.getHeapSize\(\)/gi).toString(),
+            regex: (/(((for|while)\s*\([^)]*\))|(do))\s*\{[^}]*\b(?<target>Limits\.getHeapSize\(\))/gi).toString(),
+            file_extensions: ['.cls', '.trigger'],
             description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
             violation_message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
             severity: SeverityLevel.High,
@@ -90,9 +99,9 @@ export function createBaseRegexRules(now: Date): RegexRules {
             //    (^|\s+)(virtual|abstract)[^{]*\s+class\s+.*\n\s*
             // Part to match a private method signature:
             //    private [^{]+\([^)]*\)\s*{
-            // Part to match (using look ahead) that the meta data has apiVersion less than 61.0:
+            // Part to match (using look ahead) that the metadata has apiVersion less than 61.0:
             //    .*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>
-            regex: (/(?<=(^|\s+)(virtual|abstract)[^{]*\s+class\s+.*\n\s*)private [^{]+\([^)]*\)\s*{(?=.*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>)/gis).toString(),
+            regex: (/(^|\s+)(virtual|abstract)[^{]*\s+class\s+.*\n\s*(?<target>private [^{]+\([^)]*\)\s*{).*<apiVersion>\s*([1-9]|[1-5][0-9]|60)(\.[0-9])?\s*<\/apiVersion>/gis).toString(),
             file_extensions: ['.cls', '.trigger'],
             description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
             violation_message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
@@ -122,8 +131,8 @@ function generateRegexForAvoidOldSalesforceApiVersionsRule(apiVersionFromThreeYe
     const tensDigit: number = Math.floor(apiVersionFromThreeYearsAgo / 10);
     const onesDigit: number = apiVersionFromThreeYearsAgo % 10;
     const forbiddenVersionsPattern: string = `([1-9]|[1-${tensDigit-1}][0-9]|${tensDigit}[0-${onesDigit}])(\\.[0-9])?`;
-    // Note using (?<= ... ) and (?=< ... ) so that the violation location is just the version number instead of the entire thing
-    return new RegExp(`(?<=<apiVersion>)${forbiddenVersionsPattern}(?=<\\/apiVersion>)`, 'g');
+    // Note using (?<target>...) so that the violation location is just the version number instead of the entire thing
+    return new RegExp(`<apiVersion>(?<target>${forbiddenVersionsPattern})<\\/apiVersion>`, 'g');
 }
 
 function subtractThreeYears(date: Date): Date{
