@@ -141,11 +141,10 @@ describe("Tests for RegexEngine's getName and describeRules methods", () => {
                 path.resolve(__dirname, 'test-data', 'sampleWorkspace', 'dummy3.js')
             ])});
 
-        expect(rulesDescriptions).toHaveLength(4);
+        expect(rulesDescriptions).toHaveLength(3);
         expect(rulesDescriptions[0]).toMatchObject(EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION);
-        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION);
-        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
-        expect(rulesDescriptions[3]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[1]).toMatchObject(EXPECTED_NoTodos_RULE_DESCRIPTION);
+        expect(rulesDescriptions[2]).toMatchObject(EXPECTED_NoHellos_RULE_DESCRIPTION);
     });
 
     it("When workspace contains files are applicable to all available rules, then describeRules returns all rules", async () => {
