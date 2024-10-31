@@ -1,5 +1,4 @@
 import {createTempDir, JavaCommandExecutor} from "./utils";
-import {PmdLanguage} from "./constants";
 import path from "node:path";
 import fs from "node:fs";
 import {getMessage} from "./messages";
@@ -56,14 +55,14 @@ export class PmdWrapperInvoker {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async invokeDescribeCommand(customRulesets: string[], languages: PmdLanguage[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
+    async invokeDescribeCommand(customRulesets: string[], pmdRuleLanguages: string[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const tempDir: string = await this.getTemporaryWorkingDir();
         const pmdRulesOutputFile: string = path.join(tempDir, 'ruleInfo.json');
         const customRulesetsListFile: string = path.join(tempDir, 'customRulesetsList.txt');
         await fs.promises.writeFile(customRulesetsListFile, customRulesets.join('\n'), 'utf-8');
         emitProgress(10);
 
-        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, customRulesetsListFile, languages.join(',')];
+        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, customRulesetsListFile, pmdRuleLanguages.join(',')];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
             ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "DetectCopyPasteForApex",
+    "severityLevel": 5,
+    "type": "MultiLocation",
+    "tags": [
+      "apexLanguage"
+    ],
+    "description": "Identify duplicate code blocks within your workspace files associated with the 'apex' language.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates"
+    ]
+  }
+]

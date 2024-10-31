@@ -20,8 +20,7 @@ export class PmdCpdEnginesPlugin extends EnginePluginV1 {
     }
 
     getAvailableEngineNames(): string[] {
-        // TODO: Will add in CpdEngine.NAME only after we have implemented the cpd engine so that it doesn't show up anywhere
-        return [PmdEngine.NAME];
+        return [PmdEngine.NAME, CpdEngine.NAME];
     }
 
     describeEngineConfig(engineName: string): ConfigDescription { // eslint-disable-line @typescript-eslint/no-unused-vars
