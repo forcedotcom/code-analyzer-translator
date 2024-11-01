@@ -10,12 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.salesforce.sfca.testtools.StdOutCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -39,7 +38,7 @@ class PmdWrapperTest {
     }
 
     @Test
-    void whenCallingMainWithDescribeAndTwoFewArgs_thenError() {
+    void whenCallingMainWithDescribeAndTooFewArgs_thenError() {
         String[] args = {"describe", "notEnough"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
         assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"describe\" command. Expected 3 but received: 1"));
@@ -212,22 +211,3 @@ class PmdWrapperTest {
     }
 }
 
-class StdOutCaptor implements AutoCloseable {
-    private final ByteArrayOutputStream outputStreamCaptor;
-    private final PrintStream origStream;
-
-    public StdOutCaptor() {
-        origStream = System.out;
-        outputStreamCaptor = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStreamCaptor));
-    }
-
-    public String getCapturedOutput() {
-        return outputStreamCaptor.toString();
-    }
-
-    @Override
-    public void close() {
-        System.setOut(this.origStream);
-    }
-}

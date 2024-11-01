@@ -34,10 +34,6 @@ describe('Tests for the getName method of PmdEngine', () => {
 
 
 describe('Tests for the describeRules method of PmdEngine', () => {
-    beforeAll(() => {
-        jest.setTimeout(60000);
-    });
-
     it('When using defaults without workspace, then apex and visualforce rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const logEvents: LogEvent[] = [];
@@ -281,10 +277,6 @@ function expectDoesNotContainRuleWithName(ruleDescriptions: RuleDescription[], r
 }
 
 describe('Tests for the runRules method of PmdEngine', () => {
-    beforeAll(() => {
-        jest.setTimeout(60000);
-    });
-    
     const expectedOperationWithLimitsInLoopViolation: Violation = {
         ruleName: "OperationWithLimitsInLoop",
         message: 'Avoid operations in loops that may hit governor limits',
