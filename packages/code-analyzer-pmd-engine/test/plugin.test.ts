@@ -23,9 +23,8 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         plugin = new PmdCpdEnginesPlugin();
     });
 
-    it(`When the getAvailableEngineNames method is called then both 'cpd' and 'pmd' are returned`, () => {
-        // TODO: Will add in 'cpd' only after we have implemented it, so for now we just check for 'pmd'
-        expect(plugin.getAvailableEngineNames()).toEqual(['pmd']);
+    it(`When the getAvailableEngineNames method is called then both 'pmd' and 'cpd' are returned`, () => {
+        expect(plugin.getAvailableEngineNames()).toEqual(['pmd', 'cpd']);
     });
 
     it(`When describeEngineConfig is passed 'cpd' then the correct config description is returned`, async () => {
@@ -39,7 +38,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         // Sanity check that we list the correct available languages:
         expect(PMD_ENGINE_CONFIG_DESCRIPTION.fieldDescriptions!['rule_languages']).toEqual(
             getMessage('PmdConfigFieldDescription_rule_languages',
-                `'apex', 'html', 'java', 'ecmascript' (or 'javascript'), 'visualforce', 'xml'`));
+                `'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
 
     it('When describeEngineConfig is passed an unsupported engine name, then an error is thrown', async () => {
@@ -122,18 +121,18 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(normalizedConfig.rule_languages).toEqual(['apex', 'java', 'visualforce', 'xml']);
     });
 
-    it(`When createEngineConfig for 'pmd' is given javascript among the list of rule languages, then normalize it to equal ecmascript`, async () => {
-        const rawConfig: ConfigObject = {rule_languages: ['apex', 'javascript']};
+    it(`When createEngineConfig for 'pmd' is given ecmascript among the list of rule languages, then normalize it to equal javascript`, async () => {
+        const rawConfig: ConfigObject = {rule_languages: ['apex', 'ecmascript']};
         const normalizedConfig: PmdEngineConfig = await plugin.createEngineConfig('pmd',
             new ConfigValueExtractor(rawConfig, 'engines.pmd')) as PmdEngineConfig;
-        expect(normalizedConfig.rule_languages).toEqual(['apex', 'ecmascript']);
+        expect(normalizedConfig.rule_languages).toEqual(['apex', 'javascript']);
     });
 
-    it(`When createEngineConfig for 'pmd' is given both javascript and ecmascrijpt among the list of rule languages, then remove dups`, async () => {
+    it(`When createEngineConfig for 'pmd' is given both javascript and ecmascript among the list of rule languages, then remove dups`, async () => {
         const rawConfig: ConfigObject = {rule_languages: ['xml', 'javaScript', 'EcmaScript']};
         const normalizedConfig: PmdEngineConfig = await plugin.createEngineConfig('pmd',
             new ConfigValueExtractor(rawConfig, 'engines.pmd')) as PmdEngineConfig;
-        expect(normalizedConfig.rule_languages).toEqual(['ecmascript', 'xml']);
+        expect(normalizedConfig.rule_languages).toEqual(['javascript', 'xml']);
     });
 
     it(`When createEngineConfig for 'pmd' is given an empty list of rule languages, then use it`, async () => {
@@ -159,7 +158,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd');
         await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleLanguage', 'engines.pmd.rule_languages', 'cpp',
-                `'apex', 'html', 'java', 'ecmascript' (or 'javascript'), 'visualforce', 'xml'`));
+                `'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
 
     it(`When createEngineConfig for 'pmd' is given a non-array value for java_classpath_entries, then error`, async () => {

@@ -336,20 +336,6 @@
     ]
   },
   {
-    "name": "AssignmentInOperand-ecmascript",
-    "severityLevel": 3,
-    "type": "Standard",
-    "tags": [
-      "Recommended",
-      "CodeStyle",
-      "ecmascriptLanguage"
-    ],
-    "description": "Avoid assignments in operands; this can make code more complicated and harder to read. This is sometime indicative of the bug where the assignment operator '=' was used instead of the equality operator '=='.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#assignmentinoperand"
-    ]
-  },
-  {
     "name": "AssignmentInOperand-java",
     "severityLevel": 3,
     "type": "Standard",
@@ -361,6 +347,20 @@
     "description": "Avoid assignments in operands; this can make code more complicated and harder to read.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_java_errorprone.html#assignmentinoperand"
+    ]
+  },
+  {
+    "name": "AssignmentInOperand-javascript",
+    "severityLevel": 3,
+    "type": "Standard",
+    "tags": [
+      "Recommended",
+      "CodeStyle",
+      "javascriptLanguage"
+    ],
+    "description": "Avoid assignments in operands; this can make code more complicated and harder to read. This is sometime indicative of the bug where the assignment operator '=' was used instead of the equality operator '=='.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_codestyle.html#assignmentinoperand"
     ]
   },
   {
@@ -524,7 +524,7 @@
     "tags": [
       "Recommended",
       "Performance",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Using the console for logging in production might negatively impact performance. In addition, logging could expose sensitive data.",
     "resourceUrls": [
@@ -1056,7 +1056,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "This rule helps improve code portability due to differences in browser treatment of trailing commas in object or array literals.",
     "resourceUrls": [
@@ -1140,7 +1140,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Avoid using with - it's bad news",
     "resourceUrls": [
@@ -1560,7 +1560,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "ECMAScript does provide for return types on functions, and therefore there is no solid rule as to their usage. However, when a function does use returns they should all have a value, or all with no value. Mixed return usage is likely a bug, or at best poor style.",
     "resourceUrls": [
@@ -2022,7 +2022,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Using == in condition may lead to unexpected results, as the variables are automatically casted to be of the same type. The === operator avoids the casting.",
     "resourceUrls": [
@@ -2338,13 +2338,13 @@
     ]
   },
   {
-    "name": "ForLoopsMustUseBraces-ecmascript",
+    "name": "ForLoopsMustUseBraces-javascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Avoid using 'for' statements without using curly braces.",
     "resourceUrls": [
@@ -2414,7 +2414,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "This rule helps to avoid using accidently global variables by simply missing the \"var\" declaration. Global variables can lead to side-effects that are hard to debug.",
     "resourceUrls": [
@@ -2506,13 +2506,13 @@
     ]
   },
   {
-    "name": "IfElseStmtsMustUseBraces-ecmascript",
+    "name": "IfElseStmtsMustUseBraces-javascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Avoid using if..else statements without using curly braces.",
     "resourceUrls": [
@@ -2534,13 +2534,13 @@
     ]
   },
   {
-    "name": "IfStmtsMustUseBraces-ecmascript",
+    "name": "IfStmtsMustUseBraces-javascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Avoid using if statements without using curly braces.",
     "resourceUrls": [
@@ -2596,7 +2596,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "The numeric literal will have a different value at runtime, which can happen if you provide too much precision in a floating point number. This may result in numeric calculations being in error. Numbers in JavaScript are represented by 64bit double-precision floating point numbers internally and that's why there are some limits to the available precision of the number. See Number.isSafeInteger() and Number.EPSILON. Note: This rule was named InnaccurateNumericLiteral before PMD 7.4.0.",
     "resourceUrls": [
@@ -3240,7 +3240,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "The else block in a if-else-construct is unnecessary if the `if` block contains a return. Then the content of the else block can be put outside. See also: <http://eslint.org/docs/rules/no-else-return>",
     "resourceUrls": [
@@ -3688,7 +3688,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "A for-in loop in which the variable name is not explicitly scoped to the enclosing scope with the 'var' keyword can refer to a variable in an enclosing scope outside the nearest enclosing scope. This will overwrite the existing value of the variable in the outer scope when the body of the for-in is evaluated. When the for-in loop has finished, the variable will contain the last value... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#scopeforinvariable",
     "resourceUrls": [
@@ -4262,7 +4262,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "An unnecessary Block is present. Such Blocks are often used in other languages to introduce a new variable scope. Blocks do not behave like this in ECMAScipt, and using them can be misleading. Considering removing this unnecessary Block.",
     "resourceUrls": [
@@ -4416,7 +4416,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Unnecessary parentheses should be removed.",
     "resourceUrls": [
@@ -4486,7 +4486,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "A 'return', 'break', 'continue', or 'throw' statement should be the last in a block. Statements after these will never execute. This is a bug, or extremely poor style.",
     "resourceUrls": [
@@ -4668,7 +4668,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "This rule checks for usages of parseInt. While the second parameter is optional and usually defaults to 10 (base/radix is 10 for a decimal number), different implementations may behave differently. It also improves readability, if the base is given. See also: parseInt()",
     "resourceUrls": [
@@ -5096,13 +5096,13 @@
     ]
   },
   {
-    "name": "WhileLoopsMustUseBraces-ecmascript",
+    "name": "WhileLoopsMustUseBraces-javascript",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
-      "ecmascriptLanguage"
+      "javascriptLanguage"
     ],
     "description": "Avoid using 'while' statements without using curly braces.",
     "resourceUrls": [

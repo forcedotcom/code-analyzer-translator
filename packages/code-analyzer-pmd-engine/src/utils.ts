@@ -3,6 +3,8 @@ import {promisify} from "node:util";
 import {ChildProcessWithoutNullStreams, spawn} from "node:child_process";
 import {getMessage} from "./messages";
 import path from "node:path";
+import {Workspace} from "@salesforce/code-analyzer-engine-api";
+import {extensionToLanguageId, LanguageId} from "./constants";
 
 tmp.setGracefulCleanup();
 const tmpDirAsync = promisify((options: tmp.DirOptions, cb: tmp.DirCallback) => tmp.dir(options, cb));
@@ -56,6 +58,57 @@ export class JavaCommandExecutor {
                 }
             });
         });
+    }
+}
+
+// noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
+export class WorkspaceLiaison {
+    private readonly workspace?: Workspace;
+    private readonly selectedLanguages: LanguageId[];
+
+    private relevantLanguages?: LanguageId[];
+    private relevantFiles?: string[];
+
+    constructor(workspace: Workspace | undefined, selectedLanguages: LanguageId[]) {
+        this.workspace = workspace;
+        this.selectedLanguages = selectedLanguages;
+    }
+
+    getWorkspace(): Workspace | undefined {
+        return this.workspace;
+    }
+
+    async getRelevantFiles(): Promise<string[]> {
+        if (this.relevantFiles === undefined) {
+            await this.processWorkspace();
+        }
+        return this.relevantFiles!;
+    }
+
+    async getRelevantLanguages(): Promise<LanguageId[]> {
+        if (this.relevantLanguages === undefined) {
+            await this.processWorkspace();
+        }
+        return this.relevantLanguages!;
+    }
+
+    private async processWorkspace(): Promise<void> {
+        this.relevantFiles = [];
+        if (!this.workspace) {
+            this.relevantLanguages = [... this.selectedLanguages].sort();
+            return;
+        }
+
+        const relevantLanguagesSet: Set<LanguageId> = new Set();
+        for (const file of await this.workspace.getExpandedFiles()) {
+            const fileExt: string = path.extname(file).toLowerCase();
+            const lang: LanguageId | undefined = extensionToLanguageId[fileExt];
+            if (lang && this.selectedLanguages.includes(lang)) {
+                this.relevantFiles.push(file);
+                relevantLanguagesSet.add(lang);
+            }
+        }
+        this.relevantLanguages = [...relevantLanguagesSet].sort();
     }
 }
 
