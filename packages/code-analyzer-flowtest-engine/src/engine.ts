@@ -153,29 +153,19 @@ function toCodeAnalyzerName(queryName: string): string {
 
 function toCodeLocationList(flowNodes: FlowNodeDescriptor[]): CodeLocation[] {
     const results: CodeLocation[] = [];
-    if (flowNodes.length > 0) {
-        const firstNode: FlowNodeDescriptor = flowNodes[0];
-        const firstNodeFullVariable: string = `${firstNode.element_name}.${firstNode.influenced_var}`;
+    let previousFullVariable: string = '';
+    for (let i = 0; i < flowNodes.length; i++) {
+        const fullVariable = `${flowNodes[i].element_name}.${flowNodes[i].influenced_var}`;
+        const comment: string = i == 0 ?
+            getMessage('FirstNodeComment', fullVariable, flowNodes[i].comment) :
+            getMessage('SubsequentNodeComment', previousFullVariable, fullVariable, flowNodes[i].comment);
         results.push({
-            file: firstNode.flow_path,
-            startLine: firstNode.line_no,
+            file: flowNodes[i].flow_path,
+            startLine: flowNodes[i].line_no,
             startColumn: 1,
-            comment: getMessage('FirstNodeComment', firstNodeFullVariable, firstNode.comment)
+            comment: comment
         });
-        if (flowNodes.length > 1) {
-            let previousFullVariable: string = firstNodeFullVariable;
-            for (let i = 1; i < flowNodes.length; i++) {
-                const node: FlowNodeDescriptor = flowNodes[i];
-                const fullVariable: string = `${node.element_name}.${node.influenced_var}`;
-                results.push({
-                    file: node.flow_path,
-                    startLine: node.line_no,
-                    startColumn: 1,
-                    comment: getMessage('SubsequentNodeComment', previousFullVariable, fullVariable, node.comment)
-                });
-                previousFullVariable = fullVariable;
-            }
-        }
+        previousFullVariable = fullVariable;
     }
     return results;
 }
