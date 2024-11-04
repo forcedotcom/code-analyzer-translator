@@ -12,7 +12,7 @@ import {
     FlowNodeDescriptor,
     FlowTestCommandWrapper,
     FlowTestExecutionResult,
-    FlowTestRuleDescriptor, FlowTestRuleResult
+    FlowTestRuleDescriptor
 } from "./python/FlowTestCommandWrapper";
 
 /**
