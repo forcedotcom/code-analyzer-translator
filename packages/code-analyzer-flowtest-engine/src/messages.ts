@@ -39,6 +39,12 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     WorkspaceLacksIdentifiableRoot:
         `Cannot run FlowTest: Workspace consisting of %s has no identifiable root directory.`,
 
+    FirstNodeComment:
+        `%s: %s`,
+
+    SubsequentNodeComment:
+        `%s influences %s: %s`,
+
     PythonCommandError:
         `The following call to python exited with non-zero exit code.\n` +
         `  Command: %s\n` +
