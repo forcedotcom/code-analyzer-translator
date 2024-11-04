@@ -1,4 +1,5 @@
 import {
+    CodeLocation,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -11,7 +12,7 @@ import {
     FlowNodeDescriptor,
     FlowTestCommandWrapper,
     FlowTestExecutionResult,
-    FlowTestRuleDescriptor, FlowTestRuleResult
+    FlowTestRuleDescriptor
 } from "./python/FlowTestCommandWrapper";
 
 /**
@@ -136,14 +137,8 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
 
             results.violations.push({
                 ruleName: toCodeAnalyzerName(flowTestRuleResult.query_name),
-                message: toCodeAnalyzerViolationMessage(flowTestRuleResult),
-                codeLocations: flowTestRuleResult.flow.map(node => {
-                    return {
-                        file: node.flow_path,
-                        startLine: node.line_no,
-                        startColumn: 1
-                    }
-                }),
+                message: flowTestRuleResult.description,
+                codeLocations: toCodeLocationList(flowNodes),
                 primaryLocationIndex: flowTestRuleResult.flow.length - 1,
                 resourceUrls: []
             });
@@ -156,10 +151,23 @@ function toCodeAnalyzerName(queryName: string): string {
     return queryName.replaceAll('Flow: ', '').replaceAll(' ', '-').toLowerCase();
 }
 
-function toCodeAnalyzerViolationMessage(flowTestRuleResult: FlowTestRuleResult): string {
-    const description: string = flowTestRuleResult.description;
-    const elementList: string[] = flowTestRuleResult.flow.map(node => `${node.element_name}.${node.influenced_var}`);
-    return `${description}; ${elementList.join(' => ')}`;
+function toCodeLocationList(flowNodes: FlowNodeDescriptor[]): CodeLocation[] {
+    const results: CodeLocation[] = [];
+    let previousFullVariable: string = '';
+    for (let i = 0; i < flowNodes.length; i++) {
+        const fullVariable = `${flowNodes[i].element_name}.${flowNodes[i].influenced_var}`;
+        const comment: string = i == 0 ?
+            getMessage('FirstNodeComment', fullVariable, flowNodes[i].comment) :
+            getMessage('SubsequentNodeComment', previousFullVariable, fullVariable, flowNodes[i].comment);
+        results.push({
+            file: flowNodes[i].flow_path,
+            startLine: flowNodes[i].line_no,
+            startColumn: 1,
+            comment: comment
+        });
+        previousFullVariable = fullVariable;
+    }
+    return results;
 }
 
 function toCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {
