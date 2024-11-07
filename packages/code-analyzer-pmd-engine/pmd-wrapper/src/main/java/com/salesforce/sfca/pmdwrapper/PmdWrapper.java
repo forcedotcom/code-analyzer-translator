@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
  * Provides following commands:
  *   DESCRIBE:
  *     - Describes the available PMD rules by writing a list of PmdRuleInfo objects to a JSON file
- *     - Invocation: java -cp {classPath} describe {outputFile} {languages}
+ *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper describe {outputFile} {languages}
  *         - {classPath} is the list of entries to add to the class path
  *         - {outputFile} is a file to write the array of PmdRuleInfo objects to in JSON format
  *         - {languages} is a comma separated list of languages associated with the rules to describe
  *   RUN:
  *     - Runs the rules provided by the input ruleset file on a set of files and writes results to a JSON file
- *     - Invocation: java -cp {classPath} run {ruleSetInputFile} {filesToScanInputFile} {resultsOutputFile}
+ *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {ruleSetInputFile} {filesToScanInputFile} {resultsOutputFile}
  *         - {classPath} is the list of entries to add to the class path
  *         - {ruleSetInputFile} is a PMD ruleset file that contains the rules to run
  *         - {filesToScanInputFile} is a file containing a newline separated list of files to scan

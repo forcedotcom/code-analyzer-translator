@@ -58,6 +58,7 @@
       "showcoverage": "npm run showcoverage-java && npm run showcoverage-typescript"
     },
     "jest": {
+      "testTimeout": 60000,
       "preset": "ts-jest",
       "testEnvironment": "node",
       "testMatch": [

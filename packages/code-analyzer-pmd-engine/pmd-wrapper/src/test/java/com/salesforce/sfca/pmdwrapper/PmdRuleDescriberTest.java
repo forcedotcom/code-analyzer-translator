@@ -1,5 +1,6 @@
 package com.salesforce.sfca.pmdwrapper;
 
+import com.salesforce.sfca.testtools.StdOutCaptor;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.PmdAnalysis;
 import net.sourceforge.pmd.lang.rule.Rule;

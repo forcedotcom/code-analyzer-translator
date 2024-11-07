@@ -25,7 +25,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
     });
 
-    it('When using defaults with workspace that only apex code, then only apex rule is returned', async () => {
+    it('When using defaults with workspace that only contains apex code, then only apex rule is returned', async () => {
         const engine: CpdEngine = new CpdEngine();
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.cls')
@@ -44,10 +44,6 @@ async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescriptio
 }
 
 describe('Tests for the runRules method of CpdEngine', () => {
-    beforeAll(() => {
-        jest.setTimeout(60000);
-    });
-
     it('TEMPORARY TEST FOR CODE COVERAGE', async () => {
         // Will delete this test as soon as we implement the CpdEngine.
         const engine: CpdEngine = new CpdEngine();

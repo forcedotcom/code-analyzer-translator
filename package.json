@@ -26,6 +26,7 @@
     "rimraf": "*"
   },
   "jest": {
+    "testTimeout": 60000,
     "coverageThreshold":  {
       "global": {
         "branches": 80,
