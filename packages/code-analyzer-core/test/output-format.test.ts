@@ -120,14 +120,12 @@ describe("Tests for the SARIF output format", () => {
     it("When an empty result is provided, we create a sarif text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();
         const formattedText: string = results.toFormattedOutput(OutputFormat.SARIF);
-        console.log(formattedText);
         const expectedText: string = getContentsOfExpectedOutputFile('zeroViolations.goldfile.sarif');
         expect(formattedText).toEqual(expectedText);
     });
 
     it("When results contain multiple violations , we create sarif text correctly", () => {
         const formattedText: string = runResults.toFormattedOutput(OutputFormat.SARIF);
-        console.log(formattedText);
         const expectedText: string = getContentsOfExpectedOutputFile('multipleViolations.goldfile.sarif');
         expect(formattedText).toEqual(expectedText);
     });
@@ -135,7 +133,6 @@ describe("Tests for the SARIF output format", () => {
     it("When results contain violation of type UnexpectedError, we create sarif text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
         const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.SARIF);
-        console.log(formattedText);
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.sarif');
         expect(formattedText).toEqual(expectedText);
     });

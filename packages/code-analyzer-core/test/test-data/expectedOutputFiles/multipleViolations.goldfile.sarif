@@ -117,7 +117,7 @@
         {
           "executionSuccessful": true,
           "workingDirectory": {
-            "uri": "/Users/jjayaprakash/workspace/code-analyzer-core/packages/code-analyzer-core/"
+            "uri": "{{RUNDIR}}"
           }
         }
       ]
@@ -168,7 +168,7 @@
         {
           "executionSuccessful": true,
           "workingDirectory": {
-            "uri": "/Users/jjayaprakash/workspace/code-analyzer-core/packages/code-analyzer-core/"
+            "uri": "{{RUNDIR}}"
           }
         }
       ]
@@ -221,7 +221,7 @@
         {
           "executionSuccessful": true,
           "workingDirectory": {
-            "uri": "/Users/jjayaprakash/workspace/code-analyzer-core/packages/code-analyzer-core/"
+            "uri": "{{RUNDIR}}"
           }
         }
       ]
