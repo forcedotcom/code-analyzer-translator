@@ -6,7 +6,7 @@ import * as xmlbuilder from "xmlbuilder";
 import * as fs from 'fs';
 import path from "node:path";
 import {Clock, RealClock} from "./utils";
-import { Log, Run, Result, ReportingDescriptor, Location, Region, Notification } from "sarif";
+import * as sarif from "sarif";
 
 export enum OutputFormat {
     CSV = "CSV",
@@ -248,13 +248,14 @@ class SarifOutputFormatter implements OutputFormatter {
             resultsByEngine.get(violation.engine)?.push(violation);
         }
 
-        const sarifRuns : Run[] = [];
+        const sarifRuns : sarif.Run[] = [];
         for (const [engine, violations] of resultsByEngine.entries()) {
             const ruleMap = new Map<string, number>();
             // Convert violations to SARIF results
             const rules = this.populateRuleMap(violations, ruleMap);
-            const sarifResults: Result[] = violations.map(violation => {
-                const location: Location = {
+            const sarifResults: sarif.Result[] = violations.map(violation => {
+
+                const location: sarif.Location = {
                     physicalLocation: {
                         artifactLocation: {
                             uri: violation.file,
@@ -263,16 +264,38 @@ class SarifOutputFormatter implements OutputFormatter {
                             startLine: violation.line,
                             startColumn: violation.column,
                             endLine: violation.endLine,
-                            endColumn: violation.endColumn,
-                        } as Region,
-                    },
+                            endColumn: violation.endColumn
+                        } as sarif.Region
+                    }
                 };
 
-                const result: Result = {
+                const relatedLocations:sarif.Location[] = [];
+                let locIndex:number = 0;
+                violation.locations?.forEach(violationLocation => {
+                    if (locIndex != violation.primaryLocationIndex) {
+                        const relatedLocation: sarif.Location = {
+                            physicalLocation: {
+                                artifactLocation: {
+                                    uri: violationLocation.getFile(),
+                                },
+                                region: {
+                                    startLine: violationLocation.getLine(),
+                                    startColumn: violationLocation.getColumn(),
+                                    endLine: violationLocation.getEndLine(),
+                                    endColumn: violationLocation.getEndColumn(),
+                                } as sarif.Region,
+                            },
+                        };
+                        relatedLocations.push(relatedLocation);
+                        locIndex++;
+                    }   
+                });
+                const result: sarif.Result = {
                     ruleId: violation.rule,
                     ruleIndex: ruleMap.get(violation.rule),
                     message: { text: violation.message },
                     locations: [location],
+                    relatedLocations: relatedLocations,
                     level: this.getLevel(violation.severity),
                 };
 
@@ -280,7 +303,7 @@ class SarifOutputFormatter implements OutputFormatter {
             });
 
             // Define SARIF tool with ruleset information
-            const run: Run = {
+            const run: sarif.Run = {
                 tool: {
                     driver: {
                         name: engine,
@@ -302,7 +325,7 @@ class SarifOutputFormatter implements OutputFormatter {
         }
 
         // Construct SARIF log
-        const sarif: Log = {
+        const sarif: sarif.Log = {
             version: "2.1.0",
             $schema: 'http://json.schemastore.org/sarif-2.1.0',
             runs: sarifRuns,
@@ -312,12 +335,12 @@ class SarifOutputFormatter implements OutputFormatter {
         return JSON.stringify(sarif, null, 2);
     }
 
-    private getLevel(ruleViolation: number): Notification.level {
+    private getLevel(ruleViolation: number): sarif.Notification.level {
         return ruleViolation < 3 ? 'error' : 'warning';
     }
 
-    private populateRuleMap(violations: ViolationOutput[], ruleMap: Map<string, number>): ReportingDescriptor[] {
-        const rules: ReportingDescriptor[] = [];
+    private populateRuleMap(violations: ViolationOutput[], ruleMap: Map<string, number>): sarif.ReportingDescriptor[] {
+        const rules: sarif.ReportingDescriptor[] = [];
         for (const v of violations) {
             if (!ruleMap.has(v.rule)) {
                 ruleMap.set(v.rule, ruleMap.size);
@@ -336,7 +359,7 @@ class SarifOutputFormatter implements OutputFormatter {
             }
         }
 
-		return rules;
+        return rules;
 	}
 }
 
