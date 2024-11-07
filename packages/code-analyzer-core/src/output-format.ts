@@ -304,7 +304,7 @@ class SarifOutputFormatter implements OutputFormatter {
         // Construct SARIF log
         const sarif: Log = {
             version: "2.1.0",
-			$schema: 'http://json.schemastore.org/sarif-2.1.0',
+            $schema: 'http://json.schemastore.org/sarif-2.1.0',
             runs: sarifRuns,
         };
 
@@ -317,8 +317,7 @@ class SarifOutputFormatter implements OutputFormatter {
     }
 
     private populateRuleMap(violations: ViolationOutput[], ruleMap: Map<string, number>): ReportingDescriptor[] {
-		const rules: ReportingDescriptor[] = [];
-		// const normalizeSeverity: boolean = ruleResults.length > 0 && ruleResults[0].violations.length > 0 && !(ruleResults[0].violations[0].normalizedSeverity === undefined);
+        const rules: ReportingDescriptor[] = [];
         for (const v of violations) {
             if (!ruleMap.has(v.rule)) {
                 ruleMap.set(v.rule, ruleMap.size);
