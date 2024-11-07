@@ -4,12 +4,16 @@ import {JavaVersionIdentifier} from "./JavaVersionIdentifier";
 import {SemVer} from "semver";
 import path from "node:path";
 import {indent} from "./utils";
-import {MINIMUM_JAVA_VERSION, PmdLanguage} from "./constants";
+import {MINIMUM_JAVA_VERSION, LanguageId} from "./constants";
 import fs from "node:fs";
 
-const PMD_AVAILABLE_LANGUAGES: string[] = Object.values(PmdLanguage);
+const ALL_LANGUAGES: string[] = Object.values(LanguageId);
+
+export const PMD_AVAILABLE_LANGUAGES: string[] = ALL_LANGUAGES.filter(l => l !== LanguageId.TYPESCRIPT); // Typescript is available in CPD but not PMD
 const PMD_AVAILABLE_LANGUAGES_TEXT: string = PMD_AVAILABLE_LANGUAGES.map(lang => `'${lang}'`)
-    .join(', ').replace(`'ecmascript'`, `'ecmascript' (or 'javascript')`);
+    .join(', ').replace(`'javascript'`, `'javascript' (or 'ecmascript')`);
+
+export const CPD_AVAILABLE_LANGUAGES: string[] = ALL_LANGUAGES;
 
 export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
     overview: getMessage('PmdConfigOverview'),
@@ -29,7 +33,7 @@ export type PmdEngineConfig = {
     java_command: string
 
     // List of languages associated with the PMD rules to be made available for selection
-    // The available languages are: 'apex', 'html', 'java', 'ecmascript' (or 'javascript'), 'visualforce', 'xml'
+    // The available languages are: 'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html
     rule_languages: string[]
 
@@ -104,10 +108,10 @@ class PmdConfigValueExtractor {
         // Make unique and convert to lowercase
         const ruleLanguagesSet: Set<string> = new Set(ruleLanguages.map(l => l.toLowerCase()));
 
-        // Provide support for 'javascript' which is a supported alias of 'ecmascript'
-        if (ruleLanguagesSet.has('javascript')) {
-            ruleLanguagesSet.delete('javascript');
-            ruleLanguagesSet.add('ecmascript');
+        // Provide support for 'ecmascript' which is a supported alias of 'javascript'
+        if (ruleLanguagesSet.has('ecmascript')) {
+            ruleLanguagesSet.delete('ecmascript');
+            ruleLanguagesSet.add('javascript');
         }
 
         // Validate each language is supported

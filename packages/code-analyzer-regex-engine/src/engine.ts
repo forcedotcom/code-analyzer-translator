@@ -122,10 +122,20 @@ export class RegexEngine extends Engine {
         const newlineIndexes: number[] = getNewlineIndices(fileContents);
 
         for (const match of fileContents.matchAll(regex)) {
-            const startLine: number = getLineNumber(match.index, newlineIndexes);
-            const startColumn: number = getColumnNumber(match.index, newlineIndexes);
-            const endLine: number = getLineNumber(match.index + match[0].length, newlineIndexes);
-            const endColumn: number = getColumnNumber(match.index + match[0].length, newlineIndexes);
+            let startIndex: number = match.index;
+            let matchLength: number = match[0].length;
+
+            // If there is a group with name "target" then we make the boundary be around it instead of the whole match.
+            // To name a group with "target": add (?<target>innerPattern) inside the outer regular expression pattern.
+            if (match.groups?.target) {
+                startIndex = startIndex + match[0].indexOf(match.groups.target);
+                matchLength = match.groups.target.length;
+            }
+
+            const startLine: number = getLineNumber(startIndex, newlineIndexes);
+            const startColumn: number = getColumnNumber(startIndex, newlineIndexes);
+            const endLine: number = getLineNumber(startIndex + matchLength, newlineIndexes);
+            const endColumn: number = getColumnNumber(startIndex + matchLength, newlineIndexes);
             const codeLocation: CodeLocation = {
                 file: fileName,
                 startLine: startLine,

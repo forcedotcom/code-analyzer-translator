@@ -9,6 +9,7 @@ import net.sourceforge.pmd.util.log.PmdReporter;
 import org.slf4j.event.Level;
 
 import javax.annotation.Nullable;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -152,9 +153,9 @@ class PmdRuleDescriber {
     }
 }
 
-// This class simply helps us process any errors that may be thrown by PMD. By default PMD suppresses errors so that
+// This class simply helps us process any errors that may be thrown by PMD. By default, PMD suppresses errors so that
 // they are not thrown. So here, we look out for the errors that we care about and process it to throw a better
-// error messages.
+// error messages. We override the logEx method in particular because all other error methods call through to logEx.
 class PmdErrorListener implements PmdReporter {
     @Override
     public void logEx(Level level, @Nullable String s, Object[] objects, @Nullable Throwable throwable) {
@@ -174,6 +175,9 @@ class PmdErrorListener implements PmdReporter {
                 }
             }
             throw new RuntimeException("PMD threw an unexpected exception:\n" + message, throwable);
+        } else if (s != null) {
+            String message = MessageFormat.format(s, objects);
+            throw new RuntimeException("PMD threw an unexpected exception:\n" + message);
         }
     }
 

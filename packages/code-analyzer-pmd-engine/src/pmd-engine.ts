@@ -11,9 +11,9 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {indent, JavaCommandExecutor} from "./utils";
+import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
 import path from "node:path";
-import {extensionToPmdLanguage, PmdLanguage, SHARED_RULE_NAMES} from "./constants";
+import {extensionToLanguageId, LanguageId, SHARED_RULE_NAMES} from "./constants";
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
 import {PmdEngineConfig} from "./config";
@@ -22,10 +22,10 @@ export class PmdEngine extends Engine {
     static readonly NAME: string = "pmd";
 
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
-    private readonly selectedLanguages: PmdLanguage[];
+    private readonly selectedLanguages: LanguageId[];
     private readonly customRulesets: string[];
 
-    private pmdWorkspaceLiaisonCache: Map<string, PmdWorkspaceLiaison> = new Map();
+    private workspaceLiaisonCache: Map<string, WorkspaceLiaison> = new Map();
     private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
 
     constructor(config: PmdEngineConfig) {
@@ -34,7 +34,7 @@ export class PmdEngine extends Engine {
         const userProvidedJavaClasspathEntries: string[] = config.java_classpath_entries;
         this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
-        this.selectedLanguages = config.rule_languages as PmdLanguage[];
+        this.selectedLanguages = config.rule_languages as LanguageId[];
         this.customRulesets = config.custom_rulesets;
     }
 
@@ -43,7 +43,7 @@ export class PmdEngine extends Engine {
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
-        const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(describeOptions.workspace);
+        const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(describeOptions.workspace);
         this.emitDescribeRulesProgressEvent(5);
 
         const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
@@ -56,7 +56,7 @@ export class PmdEngine extends Engine {
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
-        const workspaceLiaison: PmdWorkspaceLiaison = this.getPmdWorkspaceLiaison(runOptions.workspace);
+        const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(runOptions.workspace);
         this.emitRunRulesProgressEvent(2);
 
         const filesToScan: string[] = await workspaceLiaison.getRelevantFiles();
@@ -93,40 +93,41 @@ export class PmdEngine extends Engine {
         };
     }
 
-    private async getPmdRuleInfoList(workspaceLiaison: PmdWorkspaceLiaison, emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
+    private async getPmdRuleInfoList(workspaceLiaison: WorkspaceLiaison, emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
-            const relevantLanguages: PmdLanguage[] = await workspaceLiaison.getRelevantLanguages();
+            const relevantLanguages: LanguageId[] = await workspaceLiaison.getRelevantLanguages();
+            const pmdRuleLanguages: string[] = relevantLanguages.map(toPmdRuleLanguage);
             const ruleInfoList: PmdRuleInfo[] = relevantLanguages.length === 0 ? [] :
-                await this.pmdWrapperInvoker.invokeDescribeCommand(this.customRulesets, relevantLanguages, emitProgress);
+                await this.pmdWrapperInvoker.invokeDescribeCommand(this.customRulesets, pmdRuleLanguages, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;
     }
 
-    private getPmdWorkspaceLiaison(workspace?: Workspace) : PmdWorkspaceLiaison {
+    private getWorkspaceLiaison(workspace?: Workspace) : WorkspaceLiaison {
         const cacheKey: string = getCacheKey(workspace);
-        if (!this.pmdWorkspaceLiaisonCache.has(cacheKey)) {
-            this.pmdWorkspaceLiaisonCache.set(cacheKey, new PmdWorkspaceLiaison(workspace, this.selectedLanguages));
+        if (!this.workspaceLiaisonCache.has(cacheKey)) {
+            this.workspaceLiaisonCache.set(cacheKey, new WorkspaceLiaison(workspace, this.selectedLanguages));
         }
-        return this.pmdWorkspaceLiaisonCache.get(cacheKey)!
+        return this.workspaceLiaisonCache.get(cacheKey)!
     }
 }
 
-function toRuleDescription(pmdRule: PmdRuleInfo): RuleDescription {
-
+function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
+    const languageId: LanguageId = toLanguageId(pmdRuleInfo.language);
     return {
-        name: toUniqueRuleName(pmdRule.name, pmdRule.language as PmdLanguage),
-        severityLevel: toSeverityLevel(pmdRule.priority),
+        name: toUniqueRuleName(pmdRuleInfo.name, languageId),
+        severityLevel: toSeverityLevel(pmdRuleInfo.priority),
         type: RuleType.Standard,
-        tags: ['Recommended', pmdRule.ruleSet.replace(' ', ''), pmdRule.language + "Language"],
-        description: pmdRule.description,
-        resourceUrls: [pmdRule.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links
+        tags: ['Recommended', pmdRuleInfo.ruleSet.replaceAll(' ', ''), languageId + 'Language'],
+        description: pmdRuleInfo.description,
+        resourceUrls: [pmdRuleInfo.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links
     };
 }
 
-function toUniqueRuleName(ruleName: string, ruleLanguage: PmdLanguage): string {
-    if (ruleName in SHARED_RULE_NAMES && ruleLanguage !== PmdLanguage.APEX) {
+function toUniqueRuleName(ruleName: string, ruleLanguage: LanguageId): string {
+    if (ruleName in SHARED_RULE_NAMES && ruleLanguage !== LanguageId.APEX) {
         return `${ruleName}-${ruleLanguage}`;
     }
     return ruleName;
@@ -160,61 +161,10 @@ function toViolation(pmdViolation: PmdViolation, file: string): Violation {
         endColumn: pmdViolation.endcolumn
     }
     return {
-        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToPmdLanguage[path.extname(file)]),
+        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToLanguageId[path.extname(file)]),
         message: pmdViolation.description,
         codeLocations: [codeLocation],
         primaryLocationIndex: 0
-    }
-}
-
-// noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
-class PmdWorkspaceLiaison {
-    private readonly workspace?: Workspace;
-    private readonly selectedLanguages: PmdLanguage[];
-
-    private relevantLanguages?: PmdLanguage[];
-    private relevantFiles?: string[];
-
-    constructor(workspace: Workspace | undefined, selectedLanguages: PmdLanguage[]) {
-        this.workspace = workspace;
-        this.selectedLanguages = selectedLanguages;
-    }
-
-    getWorkspace(): Workspace | undefined {
-        return this.workspace;
-    }
-
-    async getRelevantFiles(): Promise<string[]> {
-        if (this.relevantFiles === undefined) {
-            await this.processWorkspace();
-        }
-        return this.relevantFiles!;
-    }
-
-    async getRelevantLanguages(): Promise<PmdLanguage[]> {
-        if (this.relevantLanguages === undefined) {
-            await this.processWorkspace();
-        }
-        return this.relevantLanguages!;
-    }
-
-    private async processWorkspace(): Promise<void> {
-        this.relevantFiles = [];
-        if (!this.workspace) {
-            this.relevantLanguages = [... this.selectedLanguages].sort();
-            return;
-        }
-
-        const relevantLanguagesSet: Set<PmdLanguage> = new Set();
-        for (const file of await this.workspace.getExpandedFiles()) {
-            const fileExt: string = path.extname(file).toLowerCase();
-            const pmdLang: PmdLanguage | undefined = extensionToPmdLanguage[fileExt];
-            if (pmdLang && this.selectedLanguages.includes(pmdLang)) {
-                this.relevantFiles.push(file);
-                relevantLanguagesSet.add(pmdLang);
-            }
-        }
-        this.relevantLanguages = [...relevantLanguagesSet].sort();
     }
 }
 
@@ -226,9 +176,20 @@ function fetchRuleInfoByRuleName(ruleInfoList: PmdRuleInfo[], uniqueRuleName: st
     // Note that some pmd rule names that were shared among languages were converted to contain a "-<language>" suffix.
     // So we need to map these names (like "TooManyFields-java") back into "TooManyFields" for the "java" language.
     const langSeparator: number = uniqueRuleName.indexOf('-');
-    const specificRuleLanguage: PmdLanguage|undefined = langSeparator > 0 ? uniqueRuleName.substring(langSeparator+1) as PmdLanguage : undefined;
+    const specificLanguageId: LanguageId|undefined = langSeparator > 0 ?
+        uniqueRuleName.substring(langSeparator+1) as LanguageId: undefined;
     const pmdRuleName: string = langSeparator > 0 ? uniqueRuleName.substring(0, langSeparator) : uniqueRuleName;
     return ruleInfoList.find(ruleInfo =>
-        ruleInfo.name === pmdRuleName && (specificRuleLanguage === undefined || ruleInfo.language === specificRuleLanguage)
+        ruleInfo.name === pmdRuleName && (specificLanguageId === undefined || toLanguageId(ruleInfo.language) === specificLanguageId)
     ) || null;
+}
+
+function toPmdRuleLanguage(languageId: LanguageId): string {
+    // We must convert 'javascript' to 'ecmascript' since PMD actually uses 'ecmascript' as the identifier instead of 'javascript'
+    return languageId == LanguageId.JAVASCRIPT ? 'ecmascript' : languageId;
+}
+
+function toLanguageId(pmdRuleLanguage: string): LanguageId {
+    // We must convert 'ecmascript' back to 'javascrijpt'
+    return pmdRuleLanguage == 'ecmascript' ? LanguageId.JAVASCRIPT : pmdRuleLanguage as LanguageId;
 }

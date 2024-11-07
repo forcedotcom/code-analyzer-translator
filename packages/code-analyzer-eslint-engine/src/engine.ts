@@ -97,7 +97,7 @@ export class ESLintEngine extends Engine {
 
                 /* istanbul ignore else */
                 if (ruleNames.has(ruleName)) {
-                    violations.push(toViolation(eslintResult.filePath, resultMsg));
+                    violations.push(violation);
                 } else {
                     // This may be possible if a user tries to suppress an eslint rule in their code that isn't available. We just ignore it but debug it just in case.
                     this.emitLogEvent(LogLevel.Debug, getMessage('ViolationFoundFromUnregisteredRule', ruleName, JSON.stringify(violation,null,2)))
