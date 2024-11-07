@@ -6,12 +6,14 @@ import * as xmlbuilder from "xmlbuilder";
 import * as fs from 'fs';
 import path from "node:path";
 import {Clock, RealClock} from "./utils";
+import { Log, Run, Result, ReportingDescriptor, Location, Region, Notification } from "sarif";
 
 export enum OutputFormat {
     CSV = "CSV",
     JSON = "JSON",
     XML = "XML",
-    HTML = "HTML"
+    HTML = "HTML",
+    SARIF = "SARIF"
 }
 
 export abstract class OutputFormatter {
@@ -27,6 +29,8 @@ export abstract class OutputFormatter {
                 return new XmlOutputFormatter();
             case OutputFormat.HTML:
                 return new HtmlOutputFormatter(clock);
+            case OutputFormat.SARIF:
+                return new SarifOutputFormatter();
             default:
                 throw new Error(`Unsupported output format: ${format}`);
         }
@@ -230,6 +234,113 @@ class XmlOutputFormatter implements OutputFormatter {
         return violationsNode.end({ pretty: true, allowEmpty: true });
     }
 }
+
+class SarifOutputFormatter implements OutputFormatter {
+    format(results: RunResults): string {
+        const resultsOutput: ResultsOutput = toResultsOutput(results);
+        const resultsByEngine: Map<string, ViolationOutput[]> = new Map<string, ViolationOutput[]>();
+
+        for (const engine of results.getEngineNames()) {
+            resultsByEngine.set(engine, []);
+        }
+
+        for (const violation of resultsOutput.violations) {
+            resultsByEngine.get(violation.engine)?.push(violation);
+        }
+
+        const sarifRuns : Run[] = [];
+        for (const [engine, violations] of resultsByEngine.entries()) {
+            const ruleMap = new Map<string, number>();
+            // Convert violations to SARIF results
+            const rules = this.populateRuleMap(violations, ruleMap);
+            const sarifResults: Result[] = violations.map(violation => {
+                const location: Location = {
+                    physicalLocation: {
+                        artifactLocation: {
+                            uri: violation.file,
+                        },
+                        region: {
+                            startLine: violation.line,
+                            startColumn: violation.column,
+                            endLine: violation.endLine,
+                            endColumn: violation.endColumn,
+                        } as Region,
+                    },
+                };
+
+                const result: Result = {
+                    ruleId: violation.rule,
+                    ruleIndex: ruleMap.get(violation.rule),
+                    message: { text: violation.message },
+                    locations: [location],
+                    level: this.getLevel(violation.severity),
+                };
+
+                return result;
+            });
+
+            // Define SARIF tool with ruleset information
+            const run: Run = {
+                tool: {
+                    driver: {
+                        name: engine,
+                        informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+                        rules: rules,
+                    }
+                },
+                results: sarifResults,
+                invocations: [
+                    {
+                        executionSuccessful: true,
+                        workingDirectory: {
+                            uri: results.getRunDirectory(),
+                        },
+                    },
+                ],
+            };
+            sarifRuns.push(run);
+        }
+
+        // Construct SARIF log
+        const sarif: Log = {
+            version: "2.1.0",
+			$schema: 'http://json.schemastore.org/sarif-2.1.0',
+            runs: sarifRuns,
+        };
+
+        // Return formatted SARIF JSON string
+        return JSON.stringify(sarif, null, 2);
+    }
+
+    private getLevel(ruleViolation: number): Notification.level {
+        return ruleViolation < 3 ? 'error' : 'warning';
+    }
+
+    private populateRuleMap(violations: ViolationOutput[], ruleMap: Map<string, number>): ReportingDescriptor[] {
+		const rules: ReportingDescriptor[] = [];
+		// const normalizeSeverity: boolean = ruleResults.length > 0 && ruleResults[0].violations.length > 0 && !(ruleResults[0].violations[0].normalizedSeverity === undefined);
+        for (const v of violations) {
+            if (!ruleMap.has(v.rule)) {
+                ruleMap.set(v.rule, ruleMap.size);
+                const rule = {
+                    id: v.rule,
+                    properties: {
+                        category: v.tags,
+                        severity: v.severity
+                    },
+                    helpUri: ''
+                };
+                if (v.resources) {
+                    rule['helpUri'] = v.resources[0];
+                }
+                rules.push(rule);
+            }
+        }
+
+		return rules;
+	}
+}
+
 
 const HTML_TEMPLATE_VERSION: string = '0.0.1';
 const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
