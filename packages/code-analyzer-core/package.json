@@ -16,7 +16,7 @@
     "@salesforce/code-analyzer-engine-api": "0.12.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.0.0",
-    "@types/sarif": "^2.1.4",
+    "@types/sarif": "^2.1.7",
     "csv-stringify": "^6.5.0",
     "js-yaml": "^4.1.0",
     "xmlbuilder": "^15.1.1"

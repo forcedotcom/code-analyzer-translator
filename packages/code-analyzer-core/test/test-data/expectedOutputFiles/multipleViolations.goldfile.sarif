@@ -55,7 +55,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test/config.test.ts"
+                  "uri": "test{{PATHSEP}}config.test.ts"
                 },
                 "region": {
                   "startLine": 3,
@@ -78,7 +78,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test/run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts"
                 },
                 "region": {
                   "startLine": 21,
@@ -101,7 +101,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test/run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts"
                 },
                 "region": {
                   "startLine": 56,
@@ -152,7 +152,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test/stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts"
                 },
                 "region": {
                   "startLine": 76,
@@ -203,7 +203,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test/stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts"
                 },
                 "region": {
                   "startLine": 90,
