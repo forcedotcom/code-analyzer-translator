@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -29,24 +28,27 @@ import com.google.gson.Gson;
  *         - {resultsOutputFile} is a JSON file to write CPD results to.
  *             Example:
  *                 {
- *                     "apex": [
- *                         {
- *                             "numTokensInBlock": 18,
- *                             "numNonemptyLinesInBlock": 5,
- *                             "numBlocks": 2,
- *                             "blockLocations": [
- *                                 {
- *                                     "file": "/full/path/to/file1.cls",
- *                                     "startLine": 1, "startCol": 1, "endLine": 5, "endCol": 2
- *                                 },
- *                                 {
- *                                     "file": "/full/path/to/file2.cls",
- *                                     "startLine": 18, "startCol": 6, "endLine": 22, "endCol": 8
- *                                 }
- *                             ]
- *                         },
- *                         ...
- *                     ],
+ *                     "apex": {
+ *                         matches: [
+ *                             {
+ *                                 "numTokensInBlock": 18,
+ *                                 "numNonemptyLinesInBlock": 5,
+ *                                 "numBlocks": 2,
+ *                                 "blockLocations": [
+ *                                     {
+ *                                         "file": "/full/path/to/file1.cls",
+ *                                         "startLine": 1, "startCol": 1, "endLine": 5, "endCol": 2
+ *                                     },
+ *                                     {
+ *                                         "file": "/full/path/to/file2.cls",
+ *                                         "startLine": 18, "startCol": 6, "endLine": 22, "endCol": 8
+ *                                     }
+ *                                 ]
+ *                             },
+ *                             ...
+ *                         ],
+ *                         processingErrors: []
+ *                     },
  *                     "xml": ...
  *                 }
  */
@@ -84,7 +86,7 @@ public class CpdWrapper {
         }
 
         CpdRunner cpdRunner = new CpdRunner();
-        Map<String, List<CpdMatch>> results;
+        Map<String, CpdLanguageRunResults> results;
         try {
             results = cpdRunner.run(inputData);
         } catch (Exception e) {

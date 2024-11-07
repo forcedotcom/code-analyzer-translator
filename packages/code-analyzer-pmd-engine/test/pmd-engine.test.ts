@@ -61,7 +61,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults with workspace containing only apex code, then only apex rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.cls')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.cls')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
@@ -70,8 +70,8 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults with workspace containing only apex and xml code, then only apex rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.trigger'),
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.xml')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.trigger'),
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
@@ -80,7 +80,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults with workspace containing only visualforce code, then only visualforce rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.page')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.page')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_visualforceOnly.goldfile.json');
@@ -89,7 +89,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults with workspace containing no supported files, then no rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.txt')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         expect(ruleDescriptions).toHaveLength(0);
@@ -126,7 +126,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             rule_languages: ['javascript', 'xml' /* not in workspace */]
         });
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.js')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.js')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_javascriptOnly.goldfile.json');
@@ -282,7 +282,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid operations in loops that may hit governor limits',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'OperationWithLimitsInLoop.cls'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'OperationWithLimitsInLoop.cls'),
                 startLine: 4,
                 startColumn: 38,
                 endLine: 4,
@@ -297,7 +297,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid unescaped user controlled content in EL',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
                 startLine: 3,
                 startColumn: 19,
                 endLine: 3,
@@ -312,7 +312,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid unescaped user controlled content in EL',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'VfUnescapeEl.page'),
                 startLine: 5,
                 startColumn: 19,
                 endLine: 5,
@@ -327,7 +327,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'A function should not mix return statements with and without a result.',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'ConsistentReturn.js'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'ConsistentReturn.js'),
                 startLine: 1,
                 startColumn: 1,
                 endLine: 6,
@@ -342,7 +342,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid using while statements without curly braces',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'WhileLoopsMustUseBraces.js'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'WhileLoopsMustUseBraces.js'),
                 startLine: 2,
                 startColumn: 1,
                 endLine: 3,
@@ -357,7 +357,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid debug statements since they impact on performance',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'AvoidDebugStatements.cls'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'AvoidDebugStatements.cls'),
                 startLine: 4,
                 startColumn: 9,
                 endLine: 4,
@@ -372,7 +372,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         message: 'Avoid debug statements since they impact on performance',
         codeLocations: [
             {
-                file: path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'sampleViolations', 'AvoidDebugStatements.cls'),
+                file: path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'AvoidDebugStatements.cls'),
                 startLine: 4,
                 startColumn: 9,
                 endLine: 4,
@@ -385,7 +385,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
     it('When zero rule names are provided then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const results: EngineRunResults = await engine.runRules([], {workspace: workspace});
         expect(results.violations).toHaveLength(0);
     });
@@ -395,7 +395,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
 
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.xml')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
@@ -410,7 +410,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
             ...DEFAULT_PMD_ENGINE_CONFIG,
             rule_languages: ['xml']
         });
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace', 'dummy.xml')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
@@ -424,7 +424,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
 
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
@@ -445,7 +445,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
     it('When a single rule is selected, then return only violations for that rule', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
         expect(results.violations).toHaveLength(1);
@@ -454,7 +454,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
     it('When selected rules are not violated, then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['WhileLoopsMustUseBraces', 'ExcessiveParameterList', 'VfCsrf'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
         expect(results.violations).toHaveLength(0);
@@ -465,7 +465,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
             ... DEFAULT_PMD_ENGINE_CONFIG,
             rule_languages: ['javascript', 'xml' /* sanity check: not relevant to workspace */, 'apex']
         });
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['ConsistentReturn', 'WhileLoopsMustUseBraces-javascript', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
         expect(results.violations).toHaveLength(3);
@@ -485,7 +485,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
                 path.join(TEST_DATA_FOLDER, 'custom rules', 'somecat3.xml')
             ]
         });
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleWorkspace')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['fakerule1', 'fakerule2', 'fakerule7', 'fakerule8'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
         expect(results.violations).toHaveLength(2); // Expecting fakerule1 and fakerule7 (which both have a definition equivalent to the AvoidDebugStatements rule)

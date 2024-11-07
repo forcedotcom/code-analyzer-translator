@@ -224,87 +224,93 @@ class CpdWrapperTest {
         String resultsJsonString = new String(Files.readAllBytes(Paths.get(outputFile)));
 
         String expectedOutput = "{\n" +
-                "  \"apex\": [\n" +
-                "    {\n" +
-                "      \"numTokensInBlock\": 12,\n" +
-                "      \"numNonemptyLinesInBlock\": 4,\n" +
-                "      \"numBlocks\": 2,\n" +
-                "      \"blockLocations\": [\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(apexFile1) + "\",\n" +
-                "          \"startLine\": 2,\n" +
-                "          \"startCol\": 17,\n" +
-                "          \"endLine\": 5,\n" +
-                "          \"endCol\": 2\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(apexFile2) + "\",\n" +
-                "          \"startLine\": 2,\n" +
-                "          \"startCol\": 10,\n" +
-                "          \"endLine\": 6,\n" +
-                "          \"endCol\": 2\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"ecmascript\": [\n" +
-                "    {\n" +
-                "      \"numTokensInBlock\": 36,\n" +
-                "      \"numNonemptyLinesInBlock\": 10,\n" +
-                "      \"numBlocks\": 2,\n" +
-                "      \"blockLocations\": [\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 14,\n" +
-                "          \"endLine\": 10,\n" +
-                "          \"endCol\": 2\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 14,\n" +
-                "          \"endLine\": 10,\n" +
-                "          \"endCol\": 2\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"numTokensInBlock\": 13,\n" +
-                "      \"numNonemptyLinesInBlock\": 4,\n" +
-                "      \"numBlocks\": 4,\n" +
-                "      \"blockLocations\": [\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 15,\n" +
-                "          \"endLine\": 4,\n" +
-                "          \"endCol\": 2\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
-                "          \"startLine\": 6,\n" +
-                "          \"startCol\": 10,\n" +
-                "          \"endLine\": 9,\n" +
-                "          \"endCol\": 4\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 15,\n" +
-                "          \"endLine\": 4,\n" +
-                "          \"endCol\": 2\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
-                "          \"startLine\": 6,\n" +
-                "          \"startCol\": 10,\n" +
-                "          \"endLine\": 9,\n" +
-                "          \"endCol\": 4\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
+                "  \"apex\": {" +
+                "    \"matches\": [\n" +
+                "      {\n" +
+                "        \"numTokensInBlock\": 12,\n" +
+                "        \"numNonemptyLinesInBlock\": 4,\n" +
+                "        \"numBlocks\": 2,\n" +
+                "        \"blockLocations\": [\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(apexFile1) + "\",\n" +
+                "            \"startLine\": 2,\n" +
+                "            \"startCol\": 17,\n" +
+                "            \"endLine\": 5,\n" +
+                "            \"endCol\": 2\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(apexFile2) + "\",\n" +
+                "            \"startLine\": 2,\n" +
+                "            \"startCol\": 10,\n" +
+                "            \"endLine\": 6,\n" +
+                "            \"endCol\": 2\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"processingErrors\": []\n" +
+                "  },\n" +
+                "  \"ecmascript\": {" +
+                "    \"matches\": [\n" +
+                "      {\n" +
+                "        \"numTokensInBlock\": 36,\n" +
+                "        \"numNonemptyLinesInBlock\": 10,\n" +
+                "        \"numBlocks\": 2,\n" +
+                "        \"blockLocations\": [\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 14,\n" +
+                "            \"endLine\": 10,\n" +
+                "            \"endCol\": 2\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 14,\n" +
+                "            \"endLine\": 10,\n" +
+                "            \"endCol\": 2\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"numTokensInBlock\": 13,\n" +
+                "        \"numNonemptyLinesInBlock\": 4,\n" +
+                "        \"numBlocks\": 4,\n" +
+                "        \"blockLocations\": [\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 15,\n" +
+                "            \"endLine\": 4,\n" +
+                "            \"endCol\": 2\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile1) + "\",\n" +
+                "            \"startLine\": 6,\n" +
+                "            \"startCol\": 10,\n" +
+                "            \"endLine\": 9,\n" +
+                "            \"endCol\": 4\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 15,\n" +
+                "            \"endLine\": 4,\n" +
+                "            \"endCol\": 2\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(jsFile2) + "\",\n" +
+                "            \"startLine\": 6,\n" +
+                "            \"startCol\": 10,\n" +
+                "            \"endLine\": 9,\n" +
+                "            \"endCol\": 4\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"processingErrors\": []\n" +
+                "  }\n" +
                 "}";
         expectedOutput = expectedOutput.replaceAll("\\s+", "");
         assertThat(resultsJsonString, is(expectedOutput));
@@ -363,29 +369,32 @@ class CpdWrapperTest {
         String resultsJsonString = new String(Files.readAllBytes(Paths.get(outputFile)));
 
         String expectedOutput = "{\n" +
-                "  \"apex\": [\n" +
-                "    {\n" +
-                "      \"numTokensInBlock\": 18,\n" +
-                "      \"numNonemptyLinesInBlock\": 5,\n" +
-                "      \"numBlocks\": 2,\n" +
-                "      \"blockLocations\": [\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(apexFileInParentFolder) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 1,\n" +
-                "          \"endLine\": 5,\n" +
-                "          \"endCol\": 2\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"file\": \"" + makePathJsonSafe(apexFileInSubFolder) + "\",\n" +
-                "          \"startLine\": 1,\n" +
-                "          \"startCol\": 1,\n" +
-                "          \"endLine\": 5,\n" +
-                "          \"endCol\": 2\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
+                "  \"apex\": {" +
+                "    \"matches\": [\n" +
+                "      {\n" +
+                "        \"numTokensInBlock\": 18,\n" +
+                "        \"numNonemptyLinesInBlock\": 5,\n" +
+                "        \"numBlocks\": 2,\n" +
+                "        \"blockLocations\": [\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(apexFileInParentFolder) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 1,\n" +
+                "            \"endLine\": 5,\n" +
+                "            \"endCol\": 2\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"file\": \"" + makePathJsonSafe(apexFileInSubFolder) + "\",\n" +
+                "            \"startLine\": 1,\n" +
+                "            \"startCol\": 1,\n" +
+                "            \"endLine\": 5,\n" +
+                "            \"endCol\": 2\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"processingErrors\": []\n" +
+                "  }\n" +
                 "}";
         expectedOutput = expectedOutput.replaceAll("\\s+", "");
 

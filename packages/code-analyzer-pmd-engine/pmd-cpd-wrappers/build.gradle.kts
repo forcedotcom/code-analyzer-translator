@@ -42,7 +42,7 @@ application {
 
 
 // Directories of interest
-val pmdWrapperDistDir: String = layout.projectDirectory.dir("../dist/pmd-wrapper").asFile.path;
+val pmdCpdWrappersDistDir: String = layout.projectDirectory.dir("../dist/pmd-cpd-wrappers").asFile.path;
 val reportsDir: String = layout.buildDirectory.dir("reports").get().asFile.path
 
 
@@ -59,7 +59,7 @@ tasks.distTar {
 // During assemble, we want to run the installDist task (which comes from the distribution plugin which comes from the application plugin)
 // instead ... but first we need to modify the location where the jar files should be placed.
 tasks.installDist {
-    into(pmdWrapperDistDir)
+    into(pmdCpdWrappersDistDir)
     includeEmptyDirs = false
 }
 tasks.assemble {
@@ -102,9 +102,9 @@ tasks.register("showCoverageReport") {
 
 
 // ======== CLEAN RELATED TASKS ========================================================================================
-tasks.register<Delete>("deletePmdWrapperFromDist") {
-    delete(pmdWrapperDistDir)
+tasks.register<Delete>("deletePmdCpdWrappersFromDist") {
+    delete(pmdCpdWrappersDistDir)
 }
 tasks.named("clean") {
-    dependsOn("deletePmdWrapperFromDist")
+    dependsOn("deletePmdCpdWrappersFromDist")
 }

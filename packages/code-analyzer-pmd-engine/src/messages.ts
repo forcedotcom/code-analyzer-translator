@@ -63,14 +63,17 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     InvalidJavaClasspathEntry:
         `The '%s' configuration value is invalid. The path must either be a '.jar' file or a folder.`,
 
-    ErrorParsingPmdWrapperOutputFile:
-        `An internal error was thrown when trying to read the internal PmdWrapper output file '%s':\n%s'`,
+    ErrorParsingOutputFile:
+        `An internal error was thrown when trying to read the internal output file '%s':\n%s'`,
 
     PmdProcessingErrorForFile:
         `PMD issued a processing error for file '%s':\n%s`,
 
     DetectCopyPasteForLanguageRuleDescription:
-        `Identify duplicate code blocks within your workspace files associated with the '%s' language.`
+        `Identify duplicate code blocks within your workspace files associated with the '%s' language.`,
+
+    DetectCopyPasteForLanguageViolationMessage:
+        `Duplicate code detected for language '%s'. Found %d code locations containing the same block of code consisting of %d tokens across %d lines.`
 }
 
 /**
