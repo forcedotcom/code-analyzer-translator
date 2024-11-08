@@ -237,15 +237,14 @@ class XmlOutputFormatter implements OutputFormatter {
 
 class SarifOutputFormatter implements OutputFormatter {
     format(results: RunResults): string {
-        const resultsOutput: ResultsOutput = toResultsOutput(results);
-        const resultsByEngine: Map<string, ViolationOutput[]> = new Map<string, ViolationOutput[]>();
+        const resultsByEngine: Map<string, Violation[]> = new Map<string, Violation[]>();
 
         for (const engine of results.getEngineNames()) {
             resultsByEngine.set(engine, []);
         }
 
-        for (const violation of resultsOutput.violations) {
-            resultsByEngine.get(violation.engine)?.push(violation);
+        for (const violation of results.getViolations()) {
+            resultsByEngine.get(violation.getRule().getEngineName())?.push(violation);
         }
 
         const sarifRuns : sarif.Run[] = [];
@@ -254,31 +253,31 @@ class SarifOutputFormatter implements OutputFormatter {
             // Convert violations to SARIF results
             const rules = this.populateRuleMap(violations, ruleMap);
             const sarifResults: sarif.Result[] = violations.map(violation => {
-
+                const primaryViolation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
                 const location: sarif.Location = {
                     physicalLocation: {
                         artifactLocation: {
-                            uri: violation.file,
+                            uri: primaryViolation.getFile(),
                         },
                         region: {
-                            startLine: violation.line,
-                            startColumn: violation.column,
-                            endLine: violation.endLine,
-                            endColumn: violation.endColumn
+                            startLine: primaryViolation.getStartLine(),
+                            startColumn: primaryViolation.getStartColumn(),
+                            endLine: primaryViolation.getEndLine(),
+                            endColumn: primaryViolation.getEndColumn()
                         } as sarif.Region
                     }
                 };
                 const relatedLocations:sarif.Location[] = [];
-                if(violation.primaryLocationIndex && violation.locations) {
-                    violation.locations.forEach(violationLocation => {
+                if(typeSupportsMultipleLocations(violation.getRule().getType())) {
+                    violation.getCodeLocations().forEach(violationLocation => {
                         const relatedLocation: sarif.Location = {
                             physicalLocation: {
                                 artifactLocation: {
                                     uri: violationLocation.getFile(),
                                 },
                                 region: {
-                                    startLine: violationLocation.getLine(),
-                                    startColumn: violationLocation.getColumn(),
+                                    startLine: violationLocation.getStartLine(),
+                                    startColumn: violationLocation.getStartColumn(),
                                     endLine: violationLocation.getEndLine(),
                                     endColumn: violationLocation.getEndColumn(),
                                 } as sarif.Region,
@@ -288,12 +287,12 @@ class SarifOutputFormatter implements OutputFormatter {
                     });
                 }
                 const result: sarif.Result = {
-                    ruleId: violation.rule,
-                    ruleIndex: ruleMap.get(violation.rule),
-                    message: { text: violation.message },
+                    ruleId: violation.getRule().getName(),
+                    ruleIndex: ruleMap.get(violation.getRule().getName()),
+                    message: { text: violation.getMessage() },
                     locations: [location],
                     ...(relatedLocations.length > 0 && { relatedLocations }),
-                    level: this.getLevel(violation.severity),
+                    level: this.getLevel(violation.getRule().getSeverityLevel()),
                 };
 
                 return result;
@@ -336,21 +335,21 @@ class SarifOutputFormatter implements OutputFormatter {
         return ruleViolation < 3 ? 'error' : 'warning';
     }
 
-    private populateRuleMap(violations: ViolationOutput[], ruleMap: Map<string, number>): sarif.ReportingDescriptor[] {
+    private populateRuleMap(violations: Violation[], ruleMap: Map<string, number>): sarif.ReportingDescriptor[] {
         const rules: sarif.ReportingDescriptor[] = [];
         for (const v of violations) {
-            if (!ruleMap.has(v.rule)) {
-                ruleMap.set(v.rule, ruleMap.size);
+            if (!ruleMap.has(v.getRule().getName())) {
+                ruleMap.set(v.getRule().getName(), ruleMap.size);
                 const rule = {
-                    id: v.rule,
+                    id: v.getRule().getName(),
                     properties: {
-                        category: v.tags,
-                        severity: v.severity
+                        category: v.getRule().getTags(),
+                        severity: v.getRule().getSeverityLevel()
                     },
                     helpUri: ''
                 };
-                if (v.resources) {
-                    rule['helpUri'] = v.resources[0];
+                if (v.getResourceUrls()) {
+                    rule['helpUri'] = v.getResourceUrls()[0];
                 }
                 rules.push(rule);
             }
@@ -423,15 +422,15 @@ function createViolationOutput(violation: Violation, runDir: string, sanitizeFcn
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        primaryLocationIndex: typeSupportsMultipleLocations(rule) ? violation.getPrimaryLocationIndex() : undefined,
-        locations: typeSupportsMultipleLocations(rule) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
+        primaryLocationIndex: typeSupportsMultipleLocations(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
+        locations: typeSupportsMultipleLocations(rule.getType()) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
 }
 
-function typeSupportsMultipleLocations(rule: Rule) {
-    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(rule.getType());
+function typeSupportsMultipleLocations(ruleType: RuleType) {
+    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(ruleType);
 }
 
 function createCodeLocationOutputs(codeLocations: CodeLocation[], runDir: string): CodeLocationOutput[] {
