@@ -268,11 +268,9 @@ class SarifOutputFormatter implements OutputFormatter {
                         } as sarif.Region
                     }
                 };
-
                 const relatedLocations:sarif.Location[] = [];
-                let locIndex:number = 0;
-                violation.locations?.forEach(violationLocation => {
-                    if (locIndex != violation.primaryLocationIndex) {
+                if(violation.primaryLocationIndex && violation.locations) {
+                    violation.locations.forEach(violationLocation => {
                         const relatedLocation: sarif.Location = {
                             physicalLocation: {
                                 artifactLocation: {
@@ -287,15 +285,14 @@ class SarifOutputFormatter implements OutputFormatter {
                             },
                         };
                         relatedLocations.push(relatedLocation);
-                        locIndex++;
-                    }   
-                });
+                    });
+                }
                 const result: sarif.Result = {
                     ruleId: violation.rule,
                     ruleIndex: ruleMap.get(violation.rule),
                     message: { text: violation.message },
                     locations: [location],
-                    relatedLocations: relatedLocations,
+                    ...(relatedLocations.length > 0 && { relatedLocations }),
                     level: this.getLevel(violation.severity),
                 };
 
@@ -426,11 +423,15 @@ function createViolationOutput(violation: Violation, runDir: string, sanitizeFcn
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        primaryLocationIndex: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
-        locations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
+        primaryLocationIndex: typeSupportsMultipleLocations(rule) ? violation.getPrimaryLocationIndex() : undefined,
+        locations: typeSupportsMultipleLocations(rule) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
+}
+
+function typeSupportsMultipleLocations(rule: Rule) {
+    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(rule.getType());
 }
 
 function createCodeLocationOutputs(codeLocations: CodeLocation[], runDir: string): CodeLocationOutput[] {
