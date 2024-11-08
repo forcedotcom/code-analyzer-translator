@@ -49,7 +49,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         expect(await engine.runRules([],{workspace: new Workspace([__dirname])})).toEqual({violations: []});
     });
 
-    it('When rule name is not associated with a language that CPD knows about', async () => {
+    it('When rule name is not associated with a language that CPD knows about, then throw error', async () => {
         const engine: CpdEngine = new CpdEngine();
         await expect(engine.runRules(['DetectCopyPasteForOops'], {workspace: new Workspace([__dirname])})).rejects.toThrow(
             /Unexpected error: The rule 'DetectCopyPasteForOops' does not map to a supported CPD language:.*/);
