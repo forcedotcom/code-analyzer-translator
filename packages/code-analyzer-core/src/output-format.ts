@@ -236,99 +236,98 @@ class XmlOutputFormatter implements OutputFormatter {
 }
 
 class SarifOutputFormatter implements OutputFormatter {
-    format(results: RunResults): string {
-        const resultsByEngine: Map<string, Violation[]> = new Map<string, Violation[]>();
 
+    format(results: RunResults): string {
+        const resultsByEngine = this.groupViolationsByEngine(results);
+        const sarifRuns = Array.from(resultsByEngine.entries()).map(([engine, violations]) => 
+            this.createSarifRun(engine, violations, results)
+        );
+        const sarifLog = this.createSarifLog(sarifRuns);
+        return JSON.stringify(sarifLog, null, 2);
+    }
+    
+    private groupViolationsByEngine(results: RunResults): Map<string, Violation[]> {
+        const resultsByEngine = new Map<string, Violation[]>();
         for (const engine of results.getEngineNames()) {
             resultsByEngine.set(engine, []);
         }
-
         for (const violation of results.getViolations()) {
             resultsByEngine.get(violation.getRule().getEngineName())?.push(violation);
         }
-
-        const sarifRuns : sarif.Run[] = [];
-        for (const [engine, violations] of resultsByEngine.entries()) {
-            const ruleMap = new Map<string, number>();
-            // Convert violations to SARIF results
-            const rules = this.populateRuleMap(violations, ruleMap);
-            const sarifResults: sarif.Result[] = violations.map(violation => {
-                const primaryViolation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
-                const location: sarif.Location = {
-                    physicalLocation: {
-                        artifactLocation: {
-                            uri: primaryViolation.getFile(),
-                        },
-                        region: {
-                            startLine: primaryViolation.getStartLine(),
-                            startColumn: primaryViolation.getStartColumn(),
-                            endLine: primaryViolation.getEndLine(),
-                            endColumn: primaryViolation.getEndColumn()
-                        } as sarif.Region
-                    }
-                };
-                const relatedLocations:sarif.Location[] = [];
-                if(typeSupportsMultipleLocations(violation.getRule().getType())) {
-                    violation.getCodeLocations().forEach(violationLocation => {
-                        const relatedLocation: sarif.Location = {
-                            physicalLocation: {
-                                artifactLocation: {
-                                    uri: violationLocation.getFile(),
-                                },
-                                region: {
-                                    startLine: violationLocation.getStartLine(),
-                                    startColumn: violationLocation.getStartColumn(),
-                                    endLine: violationLocation.getEndLine(),
-                                    endColumn: violationLocation.getEndColumn(),
-                                } as sarif.Region,
-                            },
-                        };
-                        relatedLocations.push(relatedLocation);
-                    });
+        return resultsByEngine;
+    }
+    
+    private getRelatedLocations(violation: Violation): sarif.Location[] {
+        if (!typeSupportsMultipleLocations(violation.getRule().getType())) return [];
+    
+        return violation.getCodeLocations().map(location => ({
+            physicalLocation: {
+                artifactLocation: { uri: location.getFile() },
+                region: {
+                    startLine: location.getStartLine(),
+                    startColumn: location.getStartColumn(),
+                    endLine: location.getEndLine(),
+                    endColumn: location.getEndColumn(),
+                } as sarif.Region
+            }
+        }));
+    }
+    
+    private createSarifRun(engine: string, violations: Violation[], results: RunResults): sarif.Run {
+        const ruleMap = new Map<string, number>();
+        const rules = this.populateRuleMap(violations, ruleMap);
+        const sarifResults = violations.map(violation => this.createSarifResult(violation, ruleMap));
+    
+        return {
+            tool: {
+                driver: {
+                    name: engine,
+                    informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+                    rules: rules,
                 }
-                const result: sarif.Result = {
-                    ruleId: violation.getRule().getName(),
-                    ruleIndex: ruleMap.get(violation.getRule().getName()),
-                    message: { text: violation.getMessage() },
-                    locations: [location],
-                    ...(relatedLocations.length > 0 && { relatedLocations }),
-                    level: this.getLevel(violation.getRule().getSeverityLevel()),
-                };
-
-                return result;
-            });
-
-            // Define SARIF tool with ruleset information
-            const run: sarif.Run = {
-                tool: {
-                    driver: {
-                        name: engine,
-                        informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
-                        rules: rules,
-                    }
+            },
+            results: sarifResults,
+            invocations: [
+                {
+                    executionSuccessful: true,
+                    workingDirectory: { uri: results.getRunDirectory() },
                 },
-                results: sarifResults,
-                invocations: [
-                    {
-                        executionSuccessful: true,
-                        workingDirectory: {
-                            uri: results.getRunDirectory(),
-                        },
-                    },
-                ],
-            };
-            sarifRuns.push(run);
-        }
+            ],
+        };
+    }
 
-        // Construct SARIF log
-        const sarif: sarif.Log = {
+    private createSarifResult(violation: Violation, ruleMap: Map<string, number>): sarif.Result {
+        const primaryLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
+        const location: sarif.Location = {
+            physicalLocation: {
+                artifactLocation: { uri: primaryLocation.getFile() },
+                region: {
+                    startLine: primaryLocation.getStartLine(),
+                    startColumn: primaryLocation.getStartColumn(),
+                    endLine: primaryLocation.getEndLine(),
+                    endColumn: primaryLocation.getEndColumn()
+                } as sarif.Region
+            }
+        };
+    
+        const relatedLocations = this.getRelatedLocations(violation);
+    
+        return {
+            ruleId: violation.getRule().getName(),
+            ruleIndex: ruleMap.get(violation.getRule().getName()),
+            message: { text: violation.getMessage() },
+            locations: [location],
+            ...(relatedLocations.length > 0 && { relatedLocations }),
+            level: this.getLevel(violation.getRule().getSeverityLevel()),
+        };
+    }
+    
+    private createSarifLog(sarifRuns: sarif.Run[]): sarif.Log {
+        return {
             version: "2.1.0",
             $schema: 'http://json.schemastore.org/sarif-2.1.0',
             runs: sarifRuns,
         };
-
-        // Return formatted SARIF JSON string
-        return JSON.stringify(sarif, null, 2);
     }
 
     private getLevel(ruleViolation: number): sarif.Notification.level {
