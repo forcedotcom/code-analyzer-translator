@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +24,10 @@ import java.util.stream.Collectors;
  * Class to help us invoke CPD - once for each language that should be processed
  */
 class CpdRunner {
-    public Map<String, List<CpdMatch>> run(CpdRunInputData runInputData) throws IOException {
+    public Map<String, CpdLanguageRunResults> run(CpdRunInputData runInputData) throws IOException {
         validateRunInputData(runInputData);
 
-        Map<String, List<CpdMatch>> results = new HashMap<>();
+        Map<String, CpdLanguageRunResults> results = new HashMap<>();
 
         for (Map.Entry<String, List<String>> entry : runInputData.filesToScanPerLanguage.entrySet()) {
             String language = entry.getKey();
@@ -37,17 +36,17 @@ class CpdRunner {
                 continue;
             }
             List<Path> pathsToScan = filesToScan.stream().map(Paths::get).collect(Collectors.toList());
-            List<CpdMatch> languageMatches = runLanguage(language, pathsToScan, runInputData.minimumTokens, runInputData.skipDuplicateFiles);
+            CpdLanguageRunResults languageRunResults = runLanguage(language, pathsToScan, runInputData.minimumTokens, runInputData.skipDuplicateFiles);
 
-            if (!languageMatches.isEmpty()) {
-                results.put(language, languageMatches);
+            if (!languageRunResults.matches.isEmpty() || !languageRunResults.processingErrors.isEmpty()) {
+                results.put(language, languageRunResults);
             }
         }
 
         return results;
     }
 
-    private List<CpdMatch> runLanguage(String language, List<Path> pathsToScan, int minimumTokens, boolean skipDuplicateFiles) throws IOException {
+    private CpdLanguageRunResults runLanguage(String language, List<Path> pathsToScan, int minimumTokens, boolean skipDuplicateFiles) throws IOException {
         // Note that the name "minimumTokens" comes from the public facing documentation and the cli but
         // behind the scenes, it maps to MinimumTileSize. To learn more about the mappings to the config, see:
         // https://github.com/pmd/pmd/blob/main/pmd-cli/src/main/java/net/sourceforge/pmd/cli/commands/internal/CpdCommand.java
@@ -62,23 +61,27 @@ class CpdRunner {
         config.setSkipDuplicates(skipDuplicateFiles);
         config.setReporter(new CpdErrorListener());
 
-        List<CpdMatch> cpdMatches = new ArrayList<>();
+        CpdLanguageRunResults languageRunResults = new CpdLanguageRunResults();
 
         try (CpdAnalysis cpd = CpdAnalysis.create(config)) {
             cpd.performAnalysis(report -> {
-                for (Report.ProcessingError processingError : report.getProcessingErrors()) {
-                    // We don't expect any processing errors, but if there are any, then we can push them
-                    // to stdOut so that they ultimately get logged. But we should continue as normal here.
-                    System.out.println("Unexpected CPD processing error: " + processingError.getError().getMessage());
+
+                for (Report.ProcessingError reportProcessingError : report.getProcessingErrors()) {
+                    CpdLanguageRunResults.ProcessingError processingErr = new CpdLanguageRunResults.ProcessingError();
+                    processingErr.file = reportProcessingError.getFileId().getAbsolutePath();
+                    processingErr.message = reportProcessingError.getMsg();
+                    processingErr.detail = reportProcessingError.getDetail();
+                    languageRunResults.processingErrors.add(processingErr);
                 }
+
                 for (Match match : report.getMatches()) {
-                    CpdMatch cpdMatch = new CpdMatch();
+                    CpdLanguageRunResults.Match cpdMatch = new CpdLanguageRunResults.Match();
                     cpdMatch.numBlocks = match.getMarkCount();
                     cpdMatch.numTokensInBlock = match.getTokenCount();
                     cpdMatch.numNonemptyLinesInBlock = match.getLineCount();
 
                     for (Mark mark : match.getMarkSet()) {
-                        CpdMatch.BlockLocation blockLocation = new CpdMatch.BlockLocation();
+                        CpdLanguageRunResults.Match.BlockLocation blockLocation = new CpdLanguageRunResults.Match.BlockLocation();
                         FileLocation location = mark.getLocation();
                         blockLocation.file = location.getFileId().getAbsolutePath();
                         blockLocation.startLine = location.getStartLine();
@@ -89,12 +92,12 @@ class CpdRunner {
                         cpdMatch.blockLocations.add(blockLocation);
                     }
 
-                    cpdMatches.add(cpdMatch);
+                    languageRunResults.matches.add(cpdMatch);
                 }
             });
         }
 
-        return cpdMatches;
+        return languageRunResults;
     }
 
     private void validateRunInputData(CpdRunInputData runInputData) {

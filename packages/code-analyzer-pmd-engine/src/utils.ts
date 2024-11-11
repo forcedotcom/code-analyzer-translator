@@ -64,14 +64,13 @@ export class JavaCommandExecutor {
 // noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
 export class WorkspaceLiaison {
     private readonly workspace?: Workspace;
-    private readonly selectedLanguages: LanguageId[];
+    private readonly selectedLanguages: Set<LanguageId>;
 
-    private relevantLanguages?: LanguageId[];
-    private relevantFiles?: string[];
+    private relevantLanguageToFilesMap?: Map<LanguageId, string[]>;
 
     constructor(workspace: Workspace | undefined, selectedLanguages: LanguageId[]) {
         this.workspace = workspace;
-        this.selectedLanguages = selectedLanguages;
+        this.selectedLanguages = new Set(selectedLanguages);
     }
 
     getWorkspace(): Workspace | undefined {
@@ -79,36 +78,37 @@ export class WorkspaceLiaison {
     }
 
     async getRelevantFiles(): Promise<string[]> {
-        if (this.relevantFiles === undefined) {
-            await this.processWorkspace();
-        }
-        return this.relevantFiles!;
+        return [... (await this.getRelevantLanguageToFilesMap()).values()].flat();
     }
 
     async getRelevantLanguages(): Promise<LanguageId[]> {
-        if (this.relevantLanguages === undefined) {
-            await this.processWorkspace();
-        }
-        return this.relevantLanguages!;
+        return [...(await this.getRelevantLanguageToFilesMap()).keys()].sort();
     }
 
-    private async processWorkspace(): Promise<void> {
-        this.relevantFiles = [];
+    async getRelevantLanguageToFilesMap(): Promise<Map<LanguageId, string[]>> {
+        if (this.relevantLanguageToFilesMap) {
+            return this.relevantLanguageToFilesMap;
+        }
         if (!this.workspace) {
-            this.relevantLanguages = [... this.selectedLanguages].sort();
-            return;
+            this.relevantLanguageToFilesMap = new Map([...this.selectedLanguages].map(lang => [lang, []]));
+            return this.relevantLanguageToFilesMap;
         }
 
-        const relevantLanguagesSet: Set<LanguageId> = new Set();
-        for (const file of await this.workspace.getExpandedFiles()) {
+        const files: string[] = await this.workspace.getExpandedFiles();
+        this.relevantLanguageToFilesMap = new Map<LanguageId, string[]>();
+
+        for (const file of files) {
             const fileExt: string = path.extname(file).toLowerCase();
             const lang: LanguageId | undefined = extensionToLanguageId[fileExt];
-            if (lang && this.selectedLanguages.includes(lang)) {
-                this.relevantFiles.push(file);
-                relevantLanguagesSet.add(lang);
+            if (!lang || !this.selectedLanguages.has(lang)) {
+                continue;
             }
+            if(!this.relevantLanguageToFilesMap.has(lang)) {
+                this.relevantLanguageToFilesMap.set(lang,[]);
+            }
+            this.relevantLanguageToFilesMap.get(lang)!.push(file);
         }
-        this.relevantLanguages = [...relevantLanguagesSet].sort();
+        return this.relevantLanguageToFilesMap;
     }
 }
 

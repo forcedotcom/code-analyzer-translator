@@ -1,2 +1,2 @@
 rootProject.name = "code-analyzer-pmd-engine"
-include("pmd-wrapper")
+include("pmd-cpd-wrappers")

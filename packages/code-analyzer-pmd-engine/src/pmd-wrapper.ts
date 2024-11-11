@@ -5,7 +5,7 @@ import {getMessage} from "./messages";
 import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 
 const PMD_WRAPPER_JAVA_CLASS: string = "com.salesforce.sfca.pmdwrapper.PmdWrapper";
-const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pmd-wrapper', 'lib');
+const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pmd-cpd-wrappers', 'lib');
 
 export type PmdRuleInfo = {
     name: string,
@@ -86,7 +86,7 @@ export class PmdWrapperInvoker {
             return pmdRuleInfoList;
         } catch (err) /* istanbul ignore next */ {
             const errMsg: string = err instanceof Error ? err.message : String(err);
-            throw new Error(getMessage('ErrorParsingPmdWrapperOutputFile', pmdRulesOutputFile, errMsg), {cause: err});
+            throw new Error(getMessage('ErrorParsingOutputFile', pmdRulesOutputFile, errMsg), {cause: err});
         }
     }
 
@@ -131,11 +131,11 @@ export class PmdWrapperInvoker {
 
         } catch (err) /* istanbul ignore next */ {
             const errMsg: string = err instanceof Error ? err.message : String(err);
-            throw new Error(getMessage('ErrorParsingPmdWrapperOutputFile', resultsOutputFile, errMsg), {cause: err});
+            throw new Error(getMessage('ErrorParsingOutputFile', resultsOutputFile, errMsg), {cause: err});
         }
     }
 
-    async getTemporaryWorkingDir(): Promise<string> {
+    private async getTemporaryWorkingDir(): Promise<string> {
         if (this.temporaryWorkingDir === undefined) {
             this.temporaryWorkingDir = await createTempDir();
         }
