@@ -1,4 +1,4 @@
-global class ApexClass2 {
+global class ApexClass2_ContainsMoreThan100SameTokensAsApexClass1 {
   public void insertObj(Account account) {
     insert account;
   }

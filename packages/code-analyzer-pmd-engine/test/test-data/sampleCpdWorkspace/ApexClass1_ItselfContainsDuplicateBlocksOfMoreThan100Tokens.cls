@@ -1,4 +1,4 @@
-global class ApexClass1 {
+global class ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens {
     global static void insertObj1(Account account) {
         insert account;
     }

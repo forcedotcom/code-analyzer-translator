@@ -28,7 +28,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When using defaults with workspace that only contains apex code, then only apex rule is returned', async () => {
         const engine: CpdEngine = new CpdEngine();
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1.cls')
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
 
@@ -57,7 +57,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
 
     it('When specified rules are not relevant to users workspace, then return zero violations', async () => {
         const engine: CpdEngine = new CpdEngine();
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1.cls')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')]);
         const ruleNames: string[] = ['DetectCopyPasteForHtml'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
@@ -67,8 +67,8 @@ describe('Tests for the runRules method of CpdEngine', () => {
     it('When specified rules contain relevant files containing no duplicate blocks using the default minimumToken value, then return zero violations', async () => {
         const engine: CpdEngine = new CpdEngine();
         const workspace: Workspace = new Workspace([
-            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1.js'),
-            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2.js') // duplicate blocks are smaller than default 100 tokens
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTOkensAsSampleJavascript1.js') // duplicate blocks are smaller than default 100 tokens
         ]);
         const ruleNames: string[] = ['DetectCopyPasteForJavascript'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
@@ -88,14 +88,14 @@ describe('Tests for the runRules method of CpdEngine', () => {
             primaryLocationIndex: 0,
             codeLocations: [
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFile.html'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFileWithOver100Tokens.html'),
                     startLine: 1,
                     startColumn: 1,
                     endLine: 43, // This should be 44 - this might be a bug with CPD: https://github.com/pmd/pmd/issues/5313
                     endColumn: 8
                 },
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'subFolder', 'someReplicatedFile.html'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'subFolder', 'someReplicatedFileWithOver100Tokens.html'),
                     startLine: 1,
                     startColumn: 1,
                     endLine: 43, // This should be 44 - this might be a bug with CPD: https://github.com/pmd/pmd/issues/5313
@@ -110,14 +110,14 @@ describe('Tests for the runRules method of CpdEngine', () => {
             primaryLocationIndex: 0,
             codeLocations: [
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1.cls'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
                     startLine: 2,
                     startColumn: 34,
                     endLine: 28,
                     endColumn: 6
                 },
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass2.cls'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass2_ContainsMoreThan100SameTokensAsApexClass1.cls'),
                     startLine: 2,
                     startColumn: 24,
                     endLine: 29,
@@ -132,21 +132,21 @@ describe('Tests for the runRules method of CpdEngine', () => {
             primaryLocationIndex: 0,
             codeLocations: [
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1.cls'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
                     startLine: 5,
                     startColumn: 5,
                     endLine: 28,
                     endColumn: 6
                 },
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1.cls'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
                     startLine: 31,
                     startColumn: 9,
                     endLine: 54,
                     endColumn: 10
                 },
                 {
-                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass2.cls'),
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass2_ContainsMoreThan100SameTokensAsApexClass1.cls'),
                     startLine: 6,
                     startColumn: 3,
                     endLine: 29,
