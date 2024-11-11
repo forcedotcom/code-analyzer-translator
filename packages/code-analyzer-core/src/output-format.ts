@@ -1,4 +1,4 @@
-import {CodeLocation, RunResults, Violation} from "./results";
+import {CodeLocation, RunResults, Violation, EngineRunResults} from "./results";
 import {Rule, RuleType, SeverityLevel} from "./rules";
 import {stringify as stringifyToCsv} from "csv-stringify/sync";
 import {Options as CsvOptions} from "csv-stringify";
@@ -6,12 +6,14 @@ import * as xmlbuilder from "xmlbuilder";
 import * as fs from 'fs';
 import path from "node:path";
 import {Clock, RealClock} from "./utils";
+import * as sarif from "sarif";
 
 export enum OutputFormat {
     CSV = "CSV",
     JSON = "JSON",
     XML = "XML",
-    HTML = "HTML"
+    HTML = "HTML",
+    SARIF = "SARIF"
 }
 
 export abstract class OutputFormatter {
@@ -27,6 +29,8 @@ export abstract class OutputFormatter {
                 return new XmlOutputFormatter();
             case OutputFormat.HTML:
                 return new HtmlOutputFormatter(clock);
+            case OutputFormat.SARIF:
+                return new SarifOutputFormatter();
             default:
                 throw new Error(`Unsupported output format: ${format}`);
         }
@@ -231,6 +235,99 @@ class XmlOutputFormatter implements OutputFormatter {
     }
 }
 
+class SarifOutputFormatter implements OutputFormatter {
+    format(results: RunResults): string {
+        const runDir = results.getRunDirectory();
+
+        const sarifRuns: sarif.Run[] = results.getEngineNames()
+            .map(engineName => results.getEngineRunResults(engineName))
+            .filter(engineRunResults => engineRunResults.getViolationCount() > 0)
+            .map(engineRunResults => toSarifRun(engineRunResults, runDir));
+
+        // Construct SARIF log
+        const sarifLog: sarif.Log = {
+            version: "2.1.0",
+            $schema: 'http://json.schemastore.org/sarif-2.1.0',
+            runs: sarifRuns,
+        };
+
+        // Return formatted SARIF JSON string
+        return JSON.stringify(sarifLog, null, 2);
+    }
+}
+
+function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.Run {
+    const violations: Violation[] = engineRunResults.getViolations();
+    const rules: Rule[] = [... new Set(violations.map(v => v.getRule()))];
+    const ruleNames: string[] = rules.map(r => r.getName());
+
+    return {
+        tool: {
+            driver: {
+                name: engineRunResults.getEngineName(),
+                informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+                rules: rules.map(toSarifReportingDescriptor),
+            }
+        },
+        results: violations.map(v => toSarifResult(v, ruleNames.indexOf(v.getRule().getName()))),
+        invocations: [
+            {
+                executionSuccessful: true,
+                workingDirectory: {
+                    uri: runDir,
+                },
+            },
+        ],
+    };
+}
+
+function toSarifResult(violation: Violation, ruleIndex: number) : sarif.Result {
+    const primaryCodeLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
+    const result: sarif.Result = {
+        ruleId: violation.getRule().getName(),
+        ruleIndex: ruleIndex,
+        message: { text: violation.getMessage() },
+        locations: [toSarifLocation(primaryCodeLocation)],
+    };
+    if(typeSupportsMultipleLocations(violation.getRule().getType())) {
+        result.relatedLocations = violation.getCodeLocations().map(toSarifLocation);
+    }
+    result.level = toSarifNotificationLevel(violation.getRule().getSeverityLevel());
+    return result;
+}
+
+function toSarifLocation(codeLocation: CodeLocation): sarif.Location {
+    return {
+        physicalLocation: {
+            artifactLocation: {
+                uri: codeLocation.getFile(),
+            },
+            region: {
+                startLine: codeLocation.getStartLine(),
+                startColumn: codeLocation.getStartColumn(),
+                endLine: codeLocation.getEndLine(),
+                endColumn: codeLocation.getEndColumn()
+            } as sarif.Region
+        }
+    }
+}
+
+function toSarifReportingDescriptor(rule: Rule): sarif.ReportingDescriptor {
+    return {
+        id: rule.getName(),
+        properties: {
+            category: rule.getTags(),
+            severity: rule.getSeverityLevel()
+        },
+        ...(rule.getResourceUrls()?.[0] && { helpUri: rule.getResourceUrls()[0] })
+    }
+}
+
+function toSarifNotificationLevel(severity: SeverityLevel): sarif.Notification.level {
+    return severity < 3 ? 'error' : 'warning'; // IF satif.Notification.level is an enum then please return the num instead of the string.
+}
+
+
 const HTML_TEMPLATE_VERSION: string = '0.0.1';
 const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
 class HtmlOutputFormatter implements OutputFormatter {
@@ -293,11 +390,15 @@ function createViolationOutput(violation: Violation, runDir: string, sanitizeFcn
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        primaryLocationIndex: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
-        locations: [RuleType.DataFlow, RuleType.Flow].includes(rule.getType()) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
+        primaryLocationIndex: typeSupportsMultipleLocations(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
+        locations: typeSupportsMultipleLocations(rule.getType()) ? createCodeLocationOutputs(codeLocations, runDir) : undefined,
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
+}
+
+function typeSupportsMultipleLocations(ruleType: RuleType) {
+    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(ruleType);
 }
 
 function createCodeLocationOutputs(codeLocations: CodeLocation[], runDir: string): CodeLocationOutput[] {

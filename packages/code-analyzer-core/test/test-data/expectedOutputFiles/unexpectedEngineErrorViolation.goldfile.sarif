@@ -1,0 +1,49 @@
+{
+  "version": "2.1.0",
+  "$schema": "http://json.schemastore.org/sarif-2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "throwingEngine",
+          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+          "rules": [
+            {
+              "id": "UnexpectedEngineError",
+              "properties": {
+                "category": [],
+                "severity": 1
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "UnexpectedEngineError",
+          "ruleIndex": 0,
+          "message": {
+            "text": "The engine with name 'throwingEngine' threw an unexpected error: SomeErrorMessageFromThrowingEngine"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {},
+                "region": {}
+              }
+            }
+          ],
+          "level": "error"
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "workingDirectory": {
+            "uri": "{{RUNDIR}}"
+          }
+        }
+      ]
+    }
+  ]
+}
