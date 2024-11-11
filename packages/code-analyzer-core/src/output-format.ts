@@ -1,4 +1,4 @@
-import {CodeLocation, RunResults, Violation} from "./results";
+import {CodeLocation, RunResults, Violation, EngineRunResults} from "./results";
 import {Rule, RuleType, SeverityLevel} from "./rules";
 import {stringify as stringifyToCsv} from "csv-stringify/sync";
 import {Options as CsvOptions} from "csv-stringify";
@@ -236,126 +236,95 @@ class XmlOutputFormatter implements OutputFormatter {
 }
 
 class SarifOutputFormatter implements OutputFormatter {
-
     format(results: RunResults): string {
-        const resultsByEngine = this.groupViolationsByEngine(results);
-        const sarifRuns = Array.from(resultsByEngine.entries()).map(([engine, violations]) => 
-            this.createSarifRun(engine, violations, results)
-        );
-        const sarifLog = this.createSarifLog(sarifRuns);
-        return JSON.stringify(sarifLog, null, 2);
-    }
-    
-    private groupViolationsByEngine(results: RunResults): Map<string, Violation[]> {
-        const resultsByEngine = new Map<string, Violation[]>();
-        for (const engine of results.getEngineNames()) {
-            resultsByEngine.set(engine, []);
-        }
-        for (const violation of results.getViolations()) {
-            resultsByEngine.get(violation.getRule().getEngineName())?.push(violation);
-        }
-        return resultsByEngine;
-    }
-    
-    private getRelatedLocations(violation: Violation): sarif.Location[] {
-        if (!typeSupportsMultipleLocations(violation.getRule().getType())) return [];
-    
-        return violation.getCodeLocations().map(location => ({
-            physicalLocation: {
-                artifactLocation: { uri: location.getFile() },
-                region: {
-                    startLine: location.getStartLine(),
-                    startColumn: location.getStartColumn(),
-                    endLine: location.getEndLine(),
-                    endColumn: location.getEndColumn(),
-                } as sarif.Region
-            }
-        }));
-    }
-    
-    private createSarifRun(engine: string, violations: Violation[], results: RunResults): sarif.Run {
-        const ruleMap = new Map<string, number>();
-        const rules = this.populateRuleMap(violations, ruleMap);
-        const sarifResults = violations.map(violation => this.createSarifResult(violation, ruleMap));
-    
-        return {
-            tool: {
-                driver: {
-                    name: engine,
-                    informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
-                    rules: rules,
-                }
-            },
-            results: sarifResults,
-            invocations: [
-                {
-                    executionSuccessful: true,
-                    workingDirectory: { uri: results.getRunDirectory() },
-                },
-            ],
-        };
-    }
+        const runDir = results.getRunDirectory();
 
-    private createSarifResult(violation: Violation, ruleMap: Map<string, number>): sarif.Result {
-        const primaryLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
-        const location: sarif.Location = {
-            physicalLocation: {
-                artifactLocation: { uri: primaryLocation.getFile() },
-                region: {
-                    startLine: primaryLocation.getStartLine(),
-                    startColumn: primaryLocation.getStartColumn(),
-                    endLine: primaryLocation.getEndLine(),
-                    endColumn: primaryLocation.getEndColumn()
-                } as sarif.Region
-            }
-        };
-    
-        const relatedLocations = this.getRelatedLocations(violation);
-    
-        return {
-            ruleId: violation.getRule().getName(),
-            ruleIndex: ruleMap.get(violation.getRule().getName()),
-            message: { text: violation.getMessage() },
-            locations: [location],
-            ...(relatedLocations.length > 0 && { relatedLocations }),
-            level: this.getLevel(violation.getRule().getSeverityLevel()),
-        };
-    }
-    
-    private createSarifLog(sarifRuns: sarif.Run[]): sarif.Log {
-        return {
+        const sarifRuns: sarif.Run[] = results.getEngineNames()
+            .map(engineName => results.getEngineRunResults(engineName))
+            .filter(engineRunResults => engineRunResults.getViolationCount() > 0)
+            .map(engineRunResults => toSarifRun(engineRunResults, runDir));
+
+        // Construct SARIF log
+        const sarifLog: sarif.Log = {
             version: "2.1.0",
             $schema: 'http://json.schemastore.org/sarif-2.1.0',
             runs: sarifRuns,
         };
-    }
 
-    private getLevel(ruleViolation: number): sarif.Notification.level {
-        return ruleViolation < 3 ? 'error' : 'warning';
+        // Return formatted SARIF JSON string
+        return JSON.stringify(sarifLog, null, 2);
     }
+}
 
-    private populateRuleMap(violations: Violation[], ruleMap: Map<string, number>): sarif.ReportingDescriptor[] {
-        const rules: sarif.ReportingDescriptor[] = [];
-        for (const v of violations) {
-            if (!ruleMap.has(v.getRule().getName())) {
-                ruleMap.set(v.getRule().getName(), ruleMap.size);
-                const rule = {
-                    id: v.getRule().getName(),
-                    properties: {
-                        category: v.getRule().getTags(),
-                        severity: v.getRule().getSeverityLevel()
-                    },
-                    helpUri: ''
-                };
-                if (v.getResourceUrls()) {
-                    rule['helpUri'] = v.getResourceUrls()[0];
-                }
-                rules.push(rule);
+function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.Run {
+    const violations: Violation[] = engineRunResults.getViolations();
+    const rules: Rule[] = [... new Set(violations.map(v => v.getRule()))];
+    const ruleNames: string[] = rules.map(r => r.getName());
+
+    return {
+        tool: {
+            driver: {
+                name: engineRunResults.getEngineName(),
+                informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+                rules: rules.map(toSarifReportingDescriptor),
             }
-        }
+        },
+        results: violations.map(v => toSarifResult(v, ruleNames.indexOf(v.getRule().getName()))),
+        invocations: [
+            {
+                executionSuccessful: true,
+                workingDirectory: {
+                    uri: runDir,
+                },
+            },
+        ],
+    };
+}
 
-        return rules;
-	}
+function toSarifResult(violation: Violation, ruleIndex: number) : sarif.Result {
+    const primaryCodeLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
+    const result: sarif.Result = {
+        ruleId: violation.getRule().getName(),
+        ruleIndex: ruleIndex,
+        message: { text: violation.getMessage() },
+        locations: [toSarifLocation(primaryCodeLocation)],
+    };
+    if(typeSupportsMultipleLocations(violation.getRule().getType())) {
+        result.relatedLocations = violation.getCodeLocations().map(toSarifLocation);
+    }
+    result.level = toSarifNotificationLevel(violation.getRule().getSeverityLevel());
+    return result;
+}
+
+function toSarifLocation(codeLocation: CodeLocation): sarif.Location {
+    return {
+        physicalLocation: {
+            artifactLocation: {
+                uri: codeLocation.getFile(),
+            },
+            region: {
+                startLine: codeLocation.getStartLine(),
+                startColumn: codeLocation.getStartColumn(),
+                endLine: codeLocation.getEndLine(),
+                endColumn: codeLocation.getEndColumn()
+            } as sarif.Region
+        }
+    }
+}
+
+function toSarifReportingDescriptor(rule: Rule): sarif.ReportingDescriptor {
+    return {
+        id: rule.getName(),
+        properties: {
+            category: rule.getTags(),
+            severity: rule.getSeverityLevel()
+        },
+        ...(rule.getResourceUrls()?.[0] && { helpUri: rule.getResourceUrls()[0] })
+    }
+}
+
+function toSarifNotificationLevel(severity: SeverityLevel): sarif.Notification.level {
+    return severity < 3 ? 'error' : 'warning'; // IF satif.Notification.level is an enum then please return the num instead of the string.
 }
 
 
