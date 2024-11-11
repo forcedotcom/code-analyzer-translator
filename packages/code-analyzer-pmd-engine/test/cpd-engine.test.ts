@@ -68,7 +68,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const engine: CpdEngine = new CpdEngine();
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
-            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTOkensAsSampleJavascript1.js') // duplicate blocks are smaller than default 100 tokens
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js') // duplicate blocks are smaller than default 100 tokens
         ]);
         const ruleNames: string[] = ['DetectCopyPasteForJavascript'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
