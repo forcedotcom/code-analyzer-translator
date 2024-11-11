@@ -1,5 +1,13 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {EngineRunResults, RuleDescription, Violation, Workspace} from "@salesforce/code-analyzer-engine-api";
+import {
+    DescribeRulesProgressEvent,
+    EngineRunResults,
+    EventType,
+    RuleDescription,
+    RunRulesProgressEvent,
+    Violation,
+    Workspace
+} from "@salesforce/code-analyzer-engine-api";
 import {CpdEngine} from "../src/cpd-engine";
 import fs from "node:fs";
 import path from "node:path";
@@ -20,9 +28,17 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         // TODO: BEFORE GA, we need to eventually decide on what the default languages should be. For now we just return all.
 
         const engine: CpdEngine = new CpdEngine();
+        const progressEvents: DescribeRulesProgressEvent[] = [];
+        engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
+
+
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
+
+        // Also check that we have all the correct progress events
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([33, 100]);
+
     });
 
     it('When using defaults with workspace that only contains apex code, then only apex rule is returned', async () => {
@@ -78,8 +94,12 @@ describe('Tests for the runRules method of CpdEngine', () => {
 
     it('When using defaults and workspace contains relevant files containing duplicate blocks, then return violations', async () => {
         const engine: CpdEngine = new CpdEngine();
+        const progressEvents: RunRulesProgressEvent[] = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
+
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
         const ruleNames: string[] = ['DetectCopyPasteForApex', 'DetectCopyPasteForHtml', 'DetectCopyPasteForJavascript'];
+
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
         const expViolation1: Violation = {
@@ -159,5 +179,9 @@ describe('Tests for the runRules method of CpdEngine', () => {
         expect(results.violations).toContainEqual(expViolation1);
         expect(results.violations).toContainEqual(expViolation2);
         expect(results.violations).toContainEqual(expViolation3);
+
+        // Also check that we have all the correct progress events
+        expect(progressEvents.map(e => e.percentComplete)).toEqual([2, 5, 9.65, 14.3, 17.4, 20.5,
+            26.7, 32.9, 39.1, 42.2, 45.3, 51.5, 57.7, 63.9, 67, 70.1, 76.3, 82.5, 88.7, 93.35, 98, 100]);
     });
 });

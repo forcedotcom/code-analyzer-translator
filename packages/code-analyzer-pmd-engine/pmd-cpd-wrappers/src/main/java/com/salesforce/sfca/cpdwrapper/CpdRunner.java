@@ -1,6 +1,7 @@
 package com.salesforce.sfca.cpdwrapper;
 
 import net.sourceforge.pmd.cpd.CPDConfiguration;
+import net.sourceforge.pmd.cpd.CPDListener;
 import net.sourceforge.pmd.cpd.CpdAnalysis;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
@@ -24,25 +25,27 @@ import java.util.stream.Collectors;
  * Class to help us invoke CPD - once for each language that should be processed
  */
 class CpdRunner {
+    private final ProgressReporter progressReporter = new ProgressReporter();
+
     public Map<String, CpdLanguageRunResults> run(CpdRunInputData runInputData) throws IOException {
         validateRunInputData(runInputData);
 
-        Map<String, CpdLanguageRunResults> results = new HashMap<>();
+        List<String> languagesToProcess = runInputData.filesToScanPerLanguage.entrySet().stream()
+                .filter(entry -> !entry.getValue().isEmpty())  // Keep only non-empty lists
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
 
-        for (Map.Entry<String, List<String>> entry : runInputData.filesToScanPerLanguage.entrySet()) {
-            String language = entry.getKey();
-            List<String> filesToScan = entry.getValue();
-            if (filesToScan.isEmpty()) {
-                continue;
-            }
+        progressReporter.initialize(languagesToProcess);
+
+        Map<String, CpdLanguageRunResults> results = new HashMap<>();
+        for (String language : languagesToProcess) {
+            List<String> filesToScan = runInputData.filesToScanPerLanguage.get(language);
             List<Path> pathsToScan = filesToScan.stream().map(Paths::get).collect(Collectors.toList());
             CpdLanguageRunResults languageRunResults = runLanguage(language, pathsToScan, runInputData.minimumTokens, runInputData.skipDuplicateFiles);
-
             if (!languageRunResults.matches.isEmpty() || !languageRunResults.processingErrors.isEmpty()) {
                 results.put(language, languageRunResults);
             }
         }
-
         return results;
     }
 
@@ -64,8 +67,15 @@ class CpdRunner {
         CpdLanguageRunResults languageRunResults = new CpdLanguageRunResults();
 
         try (CpdAnalysis cpd = CpdAnalysis.create(config)) {
-            cpd.performAnalysis(report -> {
 
+            // Note that we could use cpd.files().getCollectedFiles().size() to get the true totalNumFiles but
+            // unfortunately getCollectedFiles doesn't cache and does a sort operation which is expensive.
+            // So instead we use pathsToScan.size() since we send in the list of files instead of folders and so
+            // these numbers should be the same.
+            int totalNumFiles = pathsToScan.size();
+            cpd.setCpdListener(new CpdLanguageRunListener(progressReporter, language, totalNumFiles));
+
+            cpd.performAnalysis(report -> {
                 for (Report.ProcessingError reportProcessingError : report.getProcessingErrors()) {
                     CpdLanguageRunResults.ProcessingError processingErr = new CpdLanguageRunResults.ProcessingError();
                     processingErr.file = reportProcessingError.getFileId().getAbsolutePath();
@@ -133,5 +143,78 @@ class CpdErrorListener implements PmdReporter {
     @Override
     public int numErrors() {
         return 0;
+    }
+}
+
+// This class helps us track the overall progress of all language runs
+class ProgressReporter {
+    private Map<String, Float> progressPerLanguage = new HashMap<>();
+    private float lastReportedProgress = 0.0f;
+
+    public void initialize(List<String> languages) {
+        progressPerLanguage = new HashMap<>();
+        languages.forEach(l -> this.updateProgressForLanguage(l, 0.0f));
+    }
+
+    public void updateProgressForLanguage(String language, float percComplete) {
+        progressPerLanguage.put(language, percComplete);
+    }
+
+    public void reportOverallProgress() {
+        float currentProgress = this.calculateOverallPercentage();
+        // The progress goes very fast, so we make sure to only report progress if there has been a significant enough increase (at least 1%)
+        if (currentProgress >= lastReportedProgress + 1) {
+            System.out.println("[Progress]" + currentProgress);
+            lastReportedProgress = currentProgress;
+        }
+    }
+
+    private float calculateOverallPercentage() {
+        float sum = 0.0f;
+        for (float progress : progressPerLanguage.values()) {
+            sum += progress;
+        }
+        return sum / progressPerLanguage.size();
+    }
+}
+
+// This class is a specific listener for a run of cpd for a single language.
+class CpdLanguageRunListener implements CPDListener {
+    private final ProgressReporter progressReporter;
+    private final String language;
+    private final int totalNumFiles;
+    private int numFilesAdded = 0;
+    private int currentPhase = CPDListener.INIT;
+
+    public CpdLanguageRunListener(ProgressReporter progressReporter, String language, int totalNumFiles) {
+        this.progressReporter = progressReporter;
+        this.language = language;
+        this.totalNumFiles = totalNumFiles;
+    }
+
+    @Override
+    public void addedFile(int i) {
+        // All files are added while we still are on phase 0 - INIT, i.e. before the phase is updated to phase 1 - HASH.
+        this.numFilesAdded += i;
+        updateAndReportCompletePercentage();
+    }
+
+    @Override
+    public void phaseUpdate(int i) {
+        this.currentPhase = i;
+        updateAndReportCompletePercentage();
+    }
+
+    private void updateAndReportCompletePercentage() {
+        this.progressReporter.updateProgressForLanguage(this.language, calculateCompletePercentage());
+        this.progressReporter.reportOverallProgress();
+    }
+
+    private float calculateCompletePercentage() {
+        if (this.currentPhase == CPDListener.INIT) {
+            // Using Math.min just in case the totalNumFiles is inaccurate - although it shouldn't be.
+            return 25*(Math.min((float) this.numFilesAdded / this.totalNumFiles, 1.0f));
+        }
+        return 100 * ((float) this.currentPhase / CPDListener.DONE);
     }
 }
