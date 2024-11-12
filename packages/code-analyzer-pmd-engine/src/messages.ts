@@ -5,15 +5,15 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `PMD ENGINE CONFIGURATION\n` +
         `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
 
-    PmdConfigFieldDescription_java_command:
-        `Indicates the specific 'java' command associated with the JRE or JDK to use for the 'pmd' engine.\n` +
+    SharedConfigFieldDescription_java_command:
+        `Indicates the specific 'java' command associated with the JRE or JDK to use for the '%s' engine.\n` +
         `May be provided as the name of a command that exists on the path, or an absolute file path location.\n` +
         `If unspecified, or specified as null, then an attempt will be made to automatically discover a 'java' command from your environment.`,
 
     PmdConfigFieldDescription_rule_languages:
-        `List of languages associated with the PMD rules to be made available for selection.\n` +
-        `The available languages are: %s\n` +
-        `See https://pmd.github.io/pmd/tag_rule_references.html`,
+        `List of languages associated with the PMD rules to be made available for 'pmd' engine rule selection.\n` +
+        `The languages that you may choose from are: %s.\n` +
+        `See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.`,
 
     PmdConfigFieldDescription_java_classpath_entries:
         `List of jar files and/or folders to add the Java classpath when running PMD.\n` +
@@ -28,7 +28,15 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `  - or a relative resource found on the Java classpath.\n` +
         `Not all custom rules can be fully defined within an xml ruleset file. For example, Java based rules may be defined in jar files.\n` +
         `In these cases, you will need to also add your additional files to the Java classpath using the 'java_classpath_entries' field.\n` +
-        `See https://pmd.github.io/pmd/pmd_userdocs_making_rulesets.html`,
+        `See https://pmd.github.io/pmd/pmd_userdocs_making_rulesets.html to learn more about PMD rulesets.`,
+
+    CpdConfigOverview:
+        `CPD ENGINE CONFIGURATION\n` +
+        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+
+    CpdConfigFieldDescription_rule_languages:
+        `List of languages associated with CPD to be made available for 'cpd' engine rule selection.\n` +
+        `The languages that you may choose from are: %s.`,
 
     UnsupportedEngineName:
         `The PmdCpdEnginesPlugin does not support an engine with name '%s'.`,
@@ -66,8 +74,11 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     ErrorParsingOutputFile:
         `An internal error was thrown when trying to read the internal output file '%s':\n%s'`,
 
-    PmdProcessingErrorForFile:
-        `PMD issued a processing error for file '%s':\n%s`,
+    ProcessingErrorForFile:
+        `%s issued a processing error for file '%s':\n%s`,
+
+    CpdTerminatingExceptionThrown:
+        `CPD threw an exception while processing files for language '%s' which terminated the CPD process:\n%s`,
 
     DetectCopyPasteForLanguageRuleDescription:
         `Identify duplicate code blocks within your workspace files associated with the '%s' language.`,

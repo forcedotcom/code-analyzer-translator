@@ -11,10 +11,10 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {LanguageId} from "./constants";
+import {CPD_ENGINE_NAME, LanguageId} from "./constants";
 import {getMessage} from "./messages";
 import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
-import {CPD_AVAILABLE_LANGUAGES} from "./config";
+import {CPD_AVAILABLE_LANGUAGES, CpdEngineConfig} from "./config";
 import {
     CpdBlockLocation,
     CpdLanguageRunResults,
@@ -28,8 +28,6 @@ import {
 const RULE_NAME_PREFIX: string = 'DetectCopyPasteFor';
 
 export class CpdEngine extends Engine {
-    static readonly NAME: string = "cpd";
-
     private readonly cpdWrapperInvoker: CpdWrapperInvoker;
     private readonly selectedLanguages: LanguageId[];
     private readonly minimumTokens: number;
@@ -37,20 +35,19 @@ export class CpdEngine extends Engine {
 
     private workspaceLiaisonCache: Map<string, WorkspaceLiaison> = new Map();
 
-    constructor() {
+    constructor(config: CpdEngineConfig) {
         super();
-        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor('java'); // TODO: Soon java_command will be configurable
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
         this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
 
-        // We may pass this into the construct as a configurable option in the near future, at which point we'll need to decide on which languages to keep as default.
-        this.selectedLanguages = CPD_AVAILABLE_LANGUAGES as LanguageId[]; // Using all languages for now
+        this.selectedLanguages = config.rule_languages as LanguageId[];
         this.minimumTokens = 100; // Will be configurable soon
         this.skipDuplicateFiles = false; // Will be configurable soon
     }
 
     getName(): string {
-        return CpdEngine.NAME;
+        return CPD_ENGINE_NAME;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
@@ -99,8 +96,13 @@ export class CpdEngine extends Engine {
             }
             for (const cpdProcessingError of cpdLanguageRunResults.processingErrors) {
                 /* istanbul ignore next */
-                this.emitLogEvent(LogLevel.Error, getMessage('PmdProcessingErrorForFile', cpdProcessingError.file,
-                    indent(cpdProcessingError.message)));
+                if (cpdProcessingError.detail == '[TERMINATING_EXCEPTION]') {
+                    this.emitLogEvent(LogLevel.Error, getMessage('CpdTerminatingExceptionThrown', languageId,
+                        indent(cpdProcessingError.message)));
+                } else {
+                    this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'CPD', cpdProcessingError.file,
+                        indent(cpdProcessingError.message)));
+                }
             }
         }
 
@@ -124,7 +126,7 @@ function createRuleForLanguage(languageId: LanguageId): RuleDescription {
         name: getRuleNameFromLanguage(languageId),
         severityLevel: SeverityLevel.Info,
         type: RuleType.MultiLocation,
-        tags: [`${languageId}Language`],
+        tags: ['Recommended', `${languageId}Language`],
         description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']
     }

@@ -11,6 +11,7 @@ import {
 import {CpdEngine} from "../src/cpd-engine";
 import fs from "node:fs";
 import path from "node:path";
+import {DEFAULT_CPD_ENGINE_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -18,37 +19,70 @@ const TEST_DATA_FOLDER: string = path.join(__dirname, 'test-data');
 
 describe('Tests for the getName method of CpdEngine', () => {
     it('When getName is called, then cpd is returned', () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         expect(engine.getName()).toEqual('cpd');
     });
 });
 
 describe('Tests for the describeRules method of PmdEngine', () => {
-    it('When using defaults without workspace, then all rules are returned', async () => {
-        // TODO: BEFORE GA, we need to eventually decide on what the default languages should be. For now we just return all.
-
-        const engine: CpdEngine = new CpdEngine();
+    it('When using defaults without workspace, then all default language rules are returned', async () => {
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const progressEvents: DescribeRulesProgressEvent[] = [];
         engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
 
-
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
 
-        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allDefaultLanguages.goldfile.json');
 
         // Also check that we have all the correct progress events
         expect(progressEvents.map(e => e.percentComplete)).toEqual([33, 100]);
-
     });
 
     it('When using defaults with workspace that only contains apex code, then only apex rule is returned', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
+    });
+
+    it('When selecting no languages, then zero rules are returned', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            rule_languages: []
+        });
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+
+        expect(ruleDescriptions).toHaveLength(0);
+    });
+
+    it('When selecting only the apex language and no workspace, only apex rule is returned', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            rule_languages: ['apex']
+        });
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
+    });
+
+    it('When selecting three languages but workspace only contains files for two of the languages, then only those two rules are returned', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            rule_languages: ['apex', 'html', 'xml']
+        });
+        const workspace: Workspace = new Workspace([
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFileWIthOver100Tokens.html')
+        ]);
+
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndHtmlOnly.goldfile.json');
     });
 });
 
@@ -61,18 +95,18 @@ async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescriptio
 
 describe('Tests for the runRules method of CpdEngine', () => {
     it('When zero rules names are provided then return zero violations', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         expect(await engine.runRules([],{workspace: new Workspace([__dirname])})).toEqual({violations: []});
     });
 
     it('When rule name is not associated with a language that CPD knows about, then throw error', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         await expect(engine.runRules(['DetectCopyPasteForOops'], {workspace: new Workspace([__dirname])})).rejects.toThrow(
             /Unexpected error: The rule 'DetectCopyPasteForOops' does not map to a supported CPD language:.*/);
     });
 
     it('When specified rules are not relevant to users workspace, then return zero violations', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')]);
         const ruleNames: string[] = ['DetectCopyPasteForHtml'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
@@ -81,7 +115,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
     });
 
     it('When specified rules contain relevant files containing no duplicate blocks using the default minimumToken value, then return zero violations', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js') // duplicate blocks are smaller than default 100 tokens
@@ -93,7 +127,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
     });
 
     it('When using defaults and workspace contains relevant files containing duplicate blocks, then return violations', async () => {
-        const engine: CpdEngine = new CpdEngine();
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
 

@@ -8,8 +8,16 @@ import {
 import {getMessage} from "./messages";
 import {PmdEngine} from "./pmd-engine";
 import {CpdEngine} from "./cpd-engine";
-import {PMD_ENGINE_CONFIG_DESCRIPTION, PmdEngineConfig, validateAndNormalizePmdConfig} from "./config";
+import {
+    CPD_ENGINE_CONFIG_DESCRIPTION,
+    CpdEngineConfig,
+    PMD_ENGINE_CONFIG_DESCRIPTION,
+    PmdEngineConfig,
+    validateAndNormalizeCpdConfig,
+    validateAndNormalizePmdConfig
+} from "./config";
 import {JavaVersionIdentifier, RuntimeJavaVersionIdentifier} from "./JavaVersionIdentifier";
+import {CPD_ENGINE_NAME, PMD_ENGINE_NAME} from "./constants";
 
 export class PmdCpdEnginesPlugin extends EnginePluginV1 {
     private readonly javaVersionIdentifier: JavaVersionIdentifier;
@@ -20,31 +28,31 @@ export class PmdCpdEnginesPlugin extends EnginePluginV1 {
     }
 
     getAvailableEngineNames(): string[] {
-        return [PmdEngine.NAME, CpdEngine.NAME];
+        return [PMD_ENGINE_NAME, CPD_ENGINE_NAME];
     }
 
     describeEngineConfig(engineName: string): ConfigDescription { // eslint-disable-line @typescript-eslint/no-unused-vars
-        if (engineName === CpdEngine.NAME) {
-            return super.describeEngineConfig(engineName); // TODO: Return the correct ConfigDescription once we implement the CPD engine.
-        } else if (engineName === PmdEngine.NAME) {
+        if (engineName === CPD_ENGINE_NAME) {
+            return CPD_ENGINE_CONFIG_DESCRIPTION;
+        } else if (engineName === PMD_ENGINE_NAME) {
             return PMD_ENGINE_CONFIG_DESCRIPTION;
         }
         throw new Error(getMessage('UnsupportedEngineName', engineName));
     }
 
     async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> { // eslint-disable-line @typescript-eslint/no-unused-vars
-        if (engineName === CpdEngine.NAME) {
-            return super.createEngineConfig(engineName, configValueExtractor); // TODO: Return the correct ConfigObject once we implement the CPD engine.
-        } else if (engineName === PmdEngine.NAME) {
+        if (engineName === CPD_ENGINE_NAME) {
+            return await validateAndNormalizeCpdConfig(configValueExtractor, this.javaVersionIdentifier) as ConfigObject;
+        } else if (engineName === PMD_ENGINE_NAME) {
             return await validateAndNormalizePmdConfig(configValueExtractor, this.javaVersionIdentifier) as ConfigObject;
         }
         throw new Error(getMessage('UnsupportedEngineName', engineName));
     }
 
     async createEngine(engineName: string, engineConfig: ConfigObject): Promise<Engine> {
-        if (engineName === CpdEngine.NAME) {
-            return new CpdEngine();
-        } else if (engineName === PmdEngine.NAME) {
+        if (engineName === CPD_ENGINE_NAME) {
+            return new CpdEngine(engineConfig as CpdEngineConfig);
+        } else if (engineName === PMD_ENGINE_NAME) {
             return new PmdEngine(engineConfig as PmdEngineConfig);
         }
         throw new Error(getMessage('UnsupportedEngineName', engineName));
