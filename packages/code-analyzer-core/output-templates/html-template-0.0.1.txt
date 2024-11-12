@@ -1412,7 +1412,7 @@
       <header class="header">
         <h1 class="logo">Salesforce</h1>
         <h2 class="title">
-          <strong>Code Analyzer Report</strong> – Jun 26th, 2024 3:24pm
+          <strong>Code Analyzer Report</strong> – {{###TIMESTAMP###}}
         </h2>
         <p class="help" aria-label="documentation">
           <a href="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview">Developer Docs</a>
