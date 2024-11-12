@@ -28,8 +28,13 @@ export class LegacyBaseConfigFactory {
 
         return {
             globals: {
-                // Mark $A as known global for Aura: https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_jsapi_dollarA.htm
-                "$A": "readonly",
+                // Mark variables as known globals for Aura
+                "$A": "readonly",            // See: https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/ref_jsapi_dollarA.htm
+                "$Browser": "readonly",      // See: https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/expr_source.htm
+                "$ContentAsset": "readonly", // ^
+                "$Label": "readonly",        // ^
+                "$Locale": "readonly",       // ^
+                "$Resource": "readonly"      // ^
             },
             overrides: overrides
         };
