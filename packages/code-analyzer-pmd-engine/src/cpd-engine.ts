@@ -55,13 +55,17 @@ export class CpdEngine extends Engine {
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(describeOptions.workspace);
+        this.emitDescribeRulesProgressEvent(33);
         const relevantLanguages: LanguageId[] = await workspaceLiaison.getRelevantLanguages();
-        return relevantLanguages.map(createRuleForLanguage);
+        const ruleDescriptions: RuleDescription[] = relevantLanguages.map(createRuleForLanguage);
+        this.emitDescribeRulesProgressEvent(100);
+        return ruleDescriptions;
     }
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(runOptions.workspace);
         const relevantLanguageToFilesMap: Map<LanguageId, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
+        this.emitRunRulesProgressEvent(2);
 
         const filesToScanPerLanguage: CpdLanguageToFilesMap = {};
         for (const languageId of ruleNames.map(getLanguageFromRuleName)) {
@@ -72,6 +76,7 @@ export class CpdEngine extends Engine {
         }
 
         if (Object.keys(filesToScanPerLanguage).length == 0) {
+            this.emitRunRulesProgressEvent(100);
             return { violations: [] };
         }
 
@@ -80,8 +85,10 @@ export class CpdEngine extends Engine {
             minimumTokens: this.minimumTokens,
             skipDuplicateFiles: this.skipDuplicateFiles
         }
+        this.emitRunRulesProgressEvent(5);
 
-        const cpdRunResults: CpdRunResults = await this.cpdWrapperInvoker.invokeRunCommand(inputData);
+        const cpdRunResults: CpdRunResults = await this.cpdWrapperInvoker.invokeRunCommand(inputData,
+            (innerPerc: number) => this.emitRunRulesProgressEvent(5 + 93*(innerPerc/100))); // 5 to 98%
 
         const violations: Violation[] = [];
         for (const cpdLanguage in cpdRunResults) {
@@ -97,6 +104,7 @@ export class CpdEngine extends Engine {
             }
         }
 
+        this.emitRunRulesProgressEvent(100);
         return {
             violations: violations
         };

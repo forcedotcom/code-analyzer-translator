@@ -318,6 +318,19 @@ class CpdWrapperTest {
         // Also check that stdOut contains runtime information
         assertThat(stdOut, containsString("ARGUMENTS:"));
         assertThat(stdOut, containsString("milliseconds"));
+
+        // Also check that stdOut contains correct progress information
+        assertThat(stdOut, allOf(
+                containsString("[Progress]6.25"),
+                containsString("[Progress]12.5"),
+                containsString("[Progress]25.0"),
+                containsString("[Progress]37.5"),
+                containsString("[Progress]50.0"),
+                containsString("[Progress]56.25"),
+                containsString("[Progress]62.5"),
+                containsString("[Progress]75.0"),
+                containsString("[Progress]87.5"),
+                containsString("[Progress]100.0")));
     }
 
     @Test
@@ -364,7 +377,7 @@ class CpdWrapperTest {
         String outputFile = tempDir.resolve("output.json").toAbsolutePath().toString();
         String[] args = {"run", inputFile, outputFile};
 
-        callCpdWrapper(args);
+        String stdOut = callCpdWrapper(args);
 
         String resultsJsonString = new String(Files.readAllBytes(Paths.get(outputFile)));
 
@@ -399,6 +412,13 @@ class CpdWrapperTest {
         expectedOutput = expectedOutput.replaceAll("\\s+", "");
 
         assertThat(resultsJsonString, is(expectedOutput));
+
+        assertThat(stdOut, allOf(
+                containsString("[Progress]12.5"),
+                containsString("[Progress]25.0"),
+                containsString("[Progress]50.0"),
+                containsString("[Progress]75.0"),
+                containsString("[Progress]100.0")));
     }
 
     @Test
