@@ -303,7 +303,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.minimum_tokens', 'number', 'string'));
     });
 
-    it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens number that is %s, then error`, async (invalidValue) => {
+    it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens number %s that is not a positive integer, then error`, async (invalidValue) => {
         const rawConfig: ConfigObject = {minimum_tokens: invalidValue};
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
@@ -324,7 +324,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.skip_duplicate_files', 'boolean', 'number'));
     });
 
-    it(`When createEngineConfig for 'cpd' is given a valid minimum_tokens value, then it is used`, async() => {
+    it(`When createEngineConfig for 'cpd' is given a valid skip_duplicate_files value, then it is used`, async() => {
         const rawConfig: ConfigObject = {skip_duplicate_files: true};
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         const resolvedConfig: ConfigObject = await plugin.createEngineConfig('cpd', configValueExtractor);
