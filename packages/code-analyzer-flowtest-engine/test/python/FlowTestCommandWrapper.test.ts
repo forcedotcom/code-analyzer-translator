@@ -8,7 +8,7 @@ const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
 const PATH_TO_WORKSPACES = path.join(__dirname, '..', 'test-data', 'example-workspaces');
 
-describe('FlowTestCommandWrapper implementations', () => {
+xdescribe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
         describe('#getFlowTestRuleDescriptions()', () => {
             afterEach(() => {

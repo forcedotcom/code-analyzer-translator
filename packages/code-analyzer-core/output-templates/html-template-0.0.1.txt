@@ -15,7 +15,7 @@
           !(relList && relList.supports && relList.supports("modulepreload"))
         ) {
           for (const link of document.querySelectorAll(
-            'link[rel="modulepreload"]'
+            'link[rel="modulepreload"]',
           ))
             processPreload(link);
           new MutationObserver((mutations) => {
@@ -71,7 +71,7 @@
             .reduce(
               (acc, part) =>
                 acc && void 0 !== acc[part] ? acc[part] : defaultValue,
-              obj
+              obj,
             );
         }
         processViolations(data2) {
@@ -156,6 +156,9 @@
         }
         groupByEngine(data2) {
           return this.groupBy(data2, "engine");
+        }
+        groupByRule(data2) {
+          return this.groupBy(data2, "rule");
         }
       }
       class View {
@@ -322,7 +325,12 @@
                       this.model.groupByEngine(data2),
                       false,
                     )
-                  : data2.forEach((violation) => this.populateRow(violation)),
+                  : "rule" === groupBy
+                    ? this.populateGroupedTable(
+                        this.model.groupByRule(data2),
+                        false,
+                      )
+                    : data2.forEach((violation) => this.populateRow(violation)),
             this.updateSummary(data2);
         }
         populateGroupedTable(groupedData, isSeverity) {
@@ -330,6 +338,7 @@
             (this.tableBody.insertRow().innerHTML = `<td colspan="8" class="group">
         ${isSeverity ? `<span class="dot sev${this.getSeverityValue(parseInt(groupKey))}"></span>` : ""}
         ${isSeverity ? this.getSeverityText(parseInt(groupKey)) : groupKey}
+        <span class="count">(${violations.length})</span>
       </td>`),
               violations.forEach((violation) => this.populateRow(violation));
           });
@@ -490,6 +499,7 @@
             n: () => this.handleGroupBy("file"),
             e: () => this.handleGroupBy("engine"),
             s: () => this.handleGroupBy("severity"),
+            r: () => this.handleGroupBy("rule"),
             u: () => this.handleGroupBy(""),
             escape: () => this.handleEscapeKey(),
             arrowup: () => this.handleArrowKey(-1),
@@ -992,6 +1002,10 @@
         white-space: nowrap;
       }
 
+      table .count {
+        color: var(--color-shade-7);
+      }
+
       table .line,
       table .column {
         min-width: 80px;
@@ -1415,7 +1429,10 @@
           <strong>Code Analyzer Report</strong> – {{###TIMESTAMP###}}
         </h2>
         <p class="help" aria-label="documentation">
-          <a href="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview">Developer Docs</a>
+          <a
+            href="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/overview"
+            >Developer Docs</a
+          >
         </p>
       </header>
 
@@ -1479,12 +1496,14 @@
 
           <div class="view">
             <h3>Group</h3>
+
             <select id="groupBy">
               <option value="">Ungrouped</option>
               <option disabled>───</option>
-              <option value="file">Filename</option>
-              <option value="severity">Severity</option>
               <option value="engine">Engine</option>
+              <option value="file">Filename</option>
+              <option value="rule">Rule</option>
+              <option value="severity">Severity</option>
             </select>
           </div>
         </div>
@@ -1502,6 +1521,7 @@
               <th data-sort="column" class="column">Column</th>
             </tr>
           </thead>
+
           <tbody></tbody>
         </table>
       </main>

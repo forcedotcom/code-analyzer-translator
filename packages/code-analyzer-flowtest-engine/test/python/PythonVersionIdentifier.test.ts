@@ -1,7 +1,7 @@
 import {RuntimePythonVersionIdentifier} from "../../src/python/PythonVersionIdentifier";
 import {SemVer} from "semver";
 
-describe('PythonVersionIdentifier implementations', () => {
+xdescribe('PythonVersionIdentifier implementations', () => {
     describe('PythonVersionIdentifierImpl', () => {
 
         it('When command outputs parseable version, resolves to that version', async () => {

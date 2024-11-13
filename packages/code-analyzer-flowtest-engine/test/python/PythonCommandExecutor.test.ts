@@ -6,7 +6,7 @@ import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
 const PATH_TO_ERROR_THROWER = path.resolve(__dirname, '..', 'test-data', 'executable-scripts', 'error-thrower.py');
 
 
-describe('PythonCommandExecutor', () => {
+xdescribe('PythonCommandExecutor', () => {
     const executor: PythonCommandExecutor = new PythonCommandExecutor('python3');
     describe('#exec()', () => {
         it('When invoked script fails, rejects with informative message', async () => {

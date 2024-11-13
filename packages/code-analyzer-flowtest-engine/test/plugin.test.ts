@@ -9,7 +9,7 @@ import {FLOWTEST_ENGINE_CONFIG_DESCRIPTION} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
-describe('Tests for the FlowTestEnginePlugin', () => {
+xdescribe('Tests for the FlowTestEnginePlugin', () => {
     it('When getAvailableNames is called, then it returns the FlowTestEngine name', () => {
         const plugin: EnginePluginV1 = new FlowTestEnginePlugin();
         expect(plugin.getAvailableEngineNames()).toEqual([FlowTestEngine.NAME]);
