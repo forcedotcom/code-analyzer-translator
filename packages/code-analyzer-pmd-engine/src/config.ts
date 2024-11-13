@@ -27,6 +27,8 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
     fieldDescriptions: {
         java_command: getMessage('SharedConfigFieldDescription_java_command', CPD_ENGINE_NAME),
         rule_languages: getMessage('CpdConfigFieldDescription_rule_languages', toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)),
+        minimum_tokens: getMessage('CpdConfigFieldDescription_minimum_tokens'),
+        skip_duplicate_files: getMessage('CpdConfigFieldDescription_skip_duplicate_files')
     }
 }
 
@@ -75,11 +77,22 @@ export type CpdEngineConfig = {
     // List of languages associated with CPD to be made available for 'cpd' engine rule selection.
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
     rule_languages: string[]
+
+    // The minimum number of tokens required to be in a duplicate block of code in order to be reported as a violation.
+    // The concept of a token may be defined differently per language, but in general it a distinct basic element of source code.
+    // For example, this could be language specific keywords, identifiers, operators, literals, and more.
+    // See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.
+    minimum_tokens: number
+
+    // Indicates whether to ignore multiple copies of files of the same name and length.
+    skip_duplicate_files: boolean
 }
 
 export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
-    rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml']
+    rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml'],
+    minimum_tokens: 100,
+    skip_duplicate_files: false
 }
 
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
@@ -103,7 +116,9 @@ export async function validateAndNormalizeCpdConfig(configValueExtractor: Config
 
     return {
         java_command: await cpdConfigValueExtractor.extractJavaCommand(),
-        rule_languages: cpdConfigValueExtractor.extractRuleLanguages()
+        rule_languages: cpdConfigValueExtractor.extractRuleLanguages(),
+        minimum_tokens: cpdConfigValueExtractor.extractMinimumTokens(),
+        skip_duplicate_files: cpdConfigValueExtractor.extractSkipDuplicateFiles()
     }
 }
 
@@ -277,6 +292,18 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
 
     protected getDefaultRuleLanguages(): string[] {
         return DEFAULT_CPD_ENGINE_CONFIG.rule_languages;
+    }
+
+    extractMinimumTokens(): number {
+        const minimumTokens: number = this.configValueExtractor.extractNumber('minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens)!;
+        if (minimumTokens <= 0 || Math.floor(minimumTokens) != minimumTokens) {
+            throw new Error(getMessage('InvalidPositiveInteger', this.configValueExtractor.getFieldPath('minimum_tokens')));
+        }
+        return minimumTokens;
+    }
+
+    extractSkipDuplicateFiles(): boolean {
+        return this.configValueExtractor.extractBoolean('skip_duplicate_files', DEFAULT_CPD_ENGINE_CONFIG.skip_duplicate_files)!;
     }
 }
 

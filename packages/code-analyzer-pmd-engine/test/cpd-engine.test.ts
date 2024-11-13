@@ -96,7 +96,7 @@ async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescriptio
 describe('Tests for the runRules method of CpdEngine', () => {
     it('When zero rules names are provided then return zero violations', async () => {
         const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
-        expect(await engine.runRules([],{workspace: new Workspace([__dirname])})).toEqual({violations: []});
+        expect(await engine.runRules([], {workspace: new Workspace([__dirname])})).toEqual({violations: []});
     });
 
     it('When rule name is not associated with a language that CPD knows about, then throw error', async () => {
@@ -214,8 +214,103 @@ describe('Tests for the runRules method of CpdEngine', () => {
         expect(results.violations).toContainEqual(expViolation2);
         expect(results.violations).toContainEqual(expViolation3);
 
+        // Notice how with the default 100 minimum_tokens that the sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens
+        // file doesn't get picked up even though we specified the DetectCopyPasteForJavascript rule. See the next test.
+
         // Also check that we have all the correct progress events
         expect(progressEvents.map(e => e.percentComplete)).toEqual([2, 5, 9.65, 14.3, 17.4, 20.5,
             26.7, 32.9, 39.1, 42.2, 45.3, 51.5, 57.7, 63.9, 67, 70.1, 76.3, 82.5, 88.7, 93.35, 98, 100]);
+    });
+
+    it('When specifying a minimum_tokens length that is small enough to pick up smaller code blocks, then violations are returned', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ...DEFAULT_CPD_ENGINE_CONFIG,
+            minimum_tokens: 10
+        });
+        const progressEvents: RunRulesProgressEvent[] = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
+
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
+        const ruleNames: string[] = ['DetectCopyPasteForJavascript'];
+
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
+        const expViolation1: Violation = {
+            ruleName: "DetectCopyPasteForJavascript",
+            message: "Duplicate code detected for language 'javascript'. Found 2 code locations containing the same block of code consisting of 36 tokens across 10 lines.",
+            primaryLocationIndex: 0,
+            codeLocations: [
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
+                    startLine: 1,
+                    startColumn: 14,
+                    endLine: 10,
+                    endColumn: 2
+                },
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js'),
+                    startLine: 1,
+                    startColumn: 14,
+                    endLine: 10,
+                    endColumn: 2
+                }
+            ]
+        };
+
+        const expViolation2: Violation = {
+            ruleName: "DetectCopyPasteForJavascript",
+            message: "Duplicate code detected for language 'javascript'. Found 4 code locations containing the same block of code consisting of 13 tokens across 4 lines.",
+            primaryLocationIndex: 0,
+            codeLocations: [
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
+                    startLine: 1,
+                    startColumn: 15,
+                    endLine: 4,
+                    endColumn: 2
+                },
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript1_ItselfContainsDuplicateBlocksButWithVeryFewTokens.js'),
+                    startLine: 6,
+                    startColumn: 10,
+                    endLine: 9,
+                    endColumn: 4
+                },
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js'),
+                    startLine: 1,
+                    startColumn: 15,
+                    endLine: 4,
+                    endColumn: 2
+                },
+                {
+                    file: path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js'),
+                    startLine: 6,
+                    startColumn: 10,
+                    endLine: 9,
+                    endColumn: 4
+                }
+            ]
+        };
+
+        expect(results.violations).toHaveLength(2);
+        expect(results.violations).toContainEqual(expViolation1);
+        expect(results.violations).toContainEqual(expViolation2);
+    });
+
+    it('When skipping duplicate files, then results should not include duplicates from files of same name and length', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            skip_duplicate_files: true
+        });
+        const progressEvents: RunRulesProgressEvent[] = [];
+        engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
+
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
+        const ruleNames: string[] = ['DetectCopyPasteForHtml'];
+
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
+        expect(results.violations).toHaveLength(0); // Should not pick up the someReplicatedFileWithOver100Tokens.html files
     });
 });
