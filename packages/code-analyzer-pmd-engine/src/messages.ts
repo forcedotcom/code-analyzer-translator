@@ -38,6 +38,15 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `List of languages associated with CPD to be made available for 'cpd' engine rule selection.\n` +
         `The languages that you may choose from are: %s.`,
 
+    CpdConfigFieldDescription_minimum_tokens:
+        `The minimum number of tokens required to be in a duplicate block of code in order to be reported as a violation.\n` +
+        `The concept of a token may be defined differently per language, but in general it a distinct basic element of source code.\n` +
+        `For example, this could be language specific keywords, identifiers, operators, literals, and more.\n` +
+        `See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.`,
+
+    CpdConfigFieldDescription_skip_duplicate_files:
+        `Indicates whether to ignore multiple copies of files of the same name and length.`,
+
     UnsupportedEngineName:
         `The PmdCpdEnginesPlugin does not support an engine with name '%s'.`,
 
@@ -84,7 +93,10 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Identify duplicate code blocks within your workspace files associated with the '%s' language.`,
 
     DetectCopyPasteForLanguageViolationMessage:
-        `Duplicate code detected for language '%s'. Found %d code locations containing the same block of code consisting of %d tokens across %d lines.`
+        `Duplicate code detected for language '%s'. Found %d code locations containing the same block of code consisting of %d tokens across %d lines.`,
+
+    InvalidPositiveInteger:
+        `The '%s' configuration value is invalid. The value must be a positive integer.`,
 }
 
 /**

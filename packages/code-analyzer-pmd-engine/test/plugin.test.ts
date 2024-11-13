@@ -57,7 +57,9 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig.java_command.endsWith('java')).toEqual(true);
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
-            rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml']
+            rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml'],
+            minimum_tokens: 100,
+            skip_duplicate_files: false
         });
     });
 
@@ -271,7 +273,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.pmd.custom_rulesets[2]', 'string', 'object'));
     });
 
-    it(`When createEngineConfig is given valid custom ruleset values, then make sure they are in resolved config`, async() => {
+    it(`When createEngineConfig for 'pmd' is given valid custom ruleset values, then make sure they are in resolved config`, async () => {
         const rawConfig: ConfigObject = {
             java_classpath_entries: [
                 path.join('test-data','custom rules','category_joshapex_somecat2.jar'),
@@ -292,6 +294,41 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
             path.join(__dirname, 'test-data','custom rules','subfolder', 'somecat4.xml'), // resolved to absolute (from folder added to java classpath)
             'category/joshapex/somecat2.xml' // not on disk so left as is since it might be inside a jar that is on the java classpath
         ]);
+    });
+
+    it(`When createEngineConfig for 'cpd' is given a minimum_tokens value that is not a number, then error`, async () => {
+        const rawConfig: ConfigObject = {minimum_tokens: 'oops'};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.minimum_tokens', 'number', 'string'));
+    });
+
+    it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens number %s that is not a positive integer, then error`, async (invalidValue) => {
+        const rawConfig: ConfigObject = {minimum_tokens: invalidValue};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessage('InvalidPositiveInteger', 'engines.cpd.minimum_tokens'));
+    });
+
+    it(`When createEngineConfig for 'cpd' is given a valid minimum_tokens value, then it is used`, async() => {
+        const rawConfig: ConfigObject = {minimum_tokens: 18};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig('cpd', configValueExtractor);
+        expect(resolvedConfig['minimum_tokens']).toEqual(18);
+    });
+
+    it(`When createEngineConfig for 'cpd' is given a skip_duplicate_files value that is not a boolean, then error`, async () => {
+        const rawConfig: ConfigObject = {skip_duplicate_files: 3};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.skip_duplicate_files', 'boolean', 'number'));
+    });
+
+    it(`When createEngineConfig for 'cpd' is given a valid skip_duplicate_files value, then it is used`, async() => {
+        const rawConfig: ConfigObject = {skip_duplicate_files: true};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig('cpd', configValueExtractor);
+        expect(resolvedConfig['skip_duplicate_files']).toEqual(true);
     });
 
     it('When createEngineConfig is called with an unsupported engine name, then an error is thrown', async () => {

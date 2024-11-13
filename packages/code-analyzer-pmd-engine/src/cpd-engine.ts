@@ -29,9 +29,7 @@ const RULE_NAME_PREFIX: string = 'DetectCopyPasteFor';
 
 export class CpdEngine extends Engine {
     private readonly cpdWrapperInvoker: CpdWrapperInvoker;
-    private readonly selectedLanguages: LanguageId[];
-    private readonly minimumTokens: number;
-    private readonly skipDuplicateFiles: boolean;
+    private readonly config: CpdEngineConfig;
 
     private workspaceLiaisonCache: Map<string, WorkspaceLiaison> = new Map();
 
@@ -40,10 +38,7 @@ export class CpdEngine extends Engine {
         const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
         this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
-
-        this.selectedLanguages = config.rule_languages as LanguageId[];
-        this.minimumTokens = 100; // Will be configurable soon
-        this.skipDuplicateFiles = false; // Will be configurable soon
+        this.config = config;
     }
 
     getName(): string {
@@ -79,8 +74,8 @@ export class CpdEngine extends Engine {
 
         const inputData: CpdRunInputData = {
             filesToScanPerLanguage: filesToScanPerLanguage,
-            minimumTokens: this.minimumTokens,
-            skipDuplicateFiles: this.skipDuplicateFiles
+            minimumTokens: this.config.minimum_tokens,
+            skipDuplicateFiles: this.config.skip_duplicate_files
         }
         this.emitRunRulesProgressEvent(5);
 
@@ -115,7 +110,7 @@ export class CpdEngine extends Engine {
     private getWorkspaceLiaison(workspace?: Workspace) : WorkspaceLiaison {
         const cacheKey: string = getCacheKey(workspace);
         if (!this.workspaceLiaisonCache.has(cacheKey)) {
-            this.workspaceLiaisonCache.set(cacheKey, new WorkspaceLiaison(workspace, this.selectedLanguages));
+            this.workspaceLiaisonCache.set(cacheKey, new WorkspaceLiaison(workspace, this.config.rule_languages as LanguageId[]));
         }
         return this.workspaceLiaisonCache.get(cacheKey)!
     }
