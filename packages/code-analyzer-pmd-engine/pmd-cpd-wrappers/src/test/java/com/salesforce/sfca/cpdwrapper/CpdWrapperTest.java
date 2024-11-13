@@ -182,7 +182,7 @@ class CpdWrapperTest {
     }
 
     @Test
-    void whenCallingRunWithFileToScanThatDoesNotExist_thenError(@TempDir Path tempDir) throws Exception {
+    void whenCallingRunWithFileToScanThatDoesNotExist_thenExceptionIsForwardedAsProcessingErrorWithTerminatingExceptionMarker(@TempDir Path tempDir) throws Exception {
         String doesNotExist = tempDir.resolve("doesNotExist.cls").toAbsolutePath().toString();
         String inputFileContents = "{" +
                 "  \"filesToScanPerLanguage\": {" +
@@ -192,11 +192,16 @@ class CpdWrapperTest {
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+        String outputFile = tempDir.resolve("output.json").toAbsolutePath().toString();
 
-        String[] args = {"run", inputFile, "/does/not/matter"};
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
-        assertThat(thrown.getMessage(), is(
-                "Error while attempting to invoke CpdRunner.run: CPD threw an unexpected exception:\nNo such file " + doesNotExist));
+        String[] args = {"run", inputFile, outputFile};
+        callCpdWrapper(args);
+
+        String resultsJsonString = new String(Files.readAllBytes(Paths.get(outputFile)));
+        assertThat(resultsJsonString, allOf(
+                containsString("\"processingErrors\":[{"),
+                containsString("No such file"),
+                containsString("\"detail\":\"[TERMINATING_EXCEPTION]\"")));
     }
 
     @Test

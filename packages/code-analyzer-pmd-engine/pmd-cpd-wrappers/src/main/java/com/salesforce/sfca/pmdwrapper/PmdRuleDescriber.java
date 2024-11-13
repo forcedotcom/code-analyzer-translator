@@ -43,16 +43,6 @@ class PmdRuleDescriber {
             "html", Set.of(
                     "category/html/bestpractices.xml"
             ),
-            "java", Set.of(
-                    "category/java/bestpractices.xml",
-                    "category/java/codestyle.xml",
-                    "category/java/design.xml",
-                    "category/java/documentation.xml",
-                    "category/java/errorprone.xml",
-                    "category/java/multithreading.xml",
-                    "category/java/performance.xml",
-                    "category/java/security.xml"
-            ),
             "pom", Set.of(
                     "category/pom/errorprone.xml"
             ),

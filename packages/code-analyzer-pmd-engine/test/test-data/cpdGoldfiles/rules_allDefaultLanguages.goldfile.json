@@ -4,6 +4,7 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "apexLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'apex' language.",
@@ -16,21 +17,10 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "htmlLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'html' language.",
-    "resourceUrls": [
-      "https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates"
-    ]
-  },
-  {
-    "name": "DetectCopyPasteForJava",
-    "severityLevel": 5,
-    "type": "MultiLocation",
-    "tags": [
-      "javaLanguage"
-    ],
-    "description": "Identify duplicate code blocks within your workspace files associated with the 'java' language.",
     "resourceUrls": [
       "https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates"
     ]
@@ -40,6 +30,7 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "javascriptLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'javascript' language.",
@@ -52,6 +43,7 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "typescriptLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'typescript' language.",
@@ -64,6 +56,7 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "visualforceLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'visualforce' language.",
@@ -76,6 +69,7 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
+      "Recommended",
       "xmlLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'xml' language.",

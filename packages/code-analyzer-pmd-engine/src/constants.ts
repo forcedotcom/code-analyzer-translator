@@ -1,11 +1,13 @@
 // !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
 export const PMD_VERSION: string = '7.7.0';
 
+export const PMD_ENGINE_NAME: string = "pmd";
+export const CPD_ENGINE_NAME: string = "cpd";
+
 // !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
 export enum LanguageId {
     APEX = 'apex', // [CPD+PMD]
     HTML = 'html', // [CPD+PMD]
-    JAVA = 'java', // [CPD+PMD] - We might remove support for this in the near future since we aren't seeing any valid use cases for it within Salesforce projects
     JAVASCRIPT = 'javascript', // [CPD+PMD] Note that this id gets converted to 'ecmascript' when communicating to PMD since it uses 'ecmascript' instead as the identifier
     TYPESCRIPT = 'typescript', // [CPD only - No PMD support] Note that TSLanguageModule is defined within the pmd-javascript jar file so no additional jar to add in here.
     VISUALFORCE = 'visualforce', // [CPD+PMD]
@@ -22,10 +24,6 @@ export const extensionToLanguageId: Record<string, LanguageId> = {
     // (Apex - 'apex') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-apex/src/main/java/net/sourceforge/pmd/lang/apex/ApexLanguageModule.java
     '.cls': LanguageId.APEX,
     '.trigger': LanguageId.APEX,
-
-    // TODO: Decide if we actually want to support java or if we should just remove this until a user asks for it
-    // (Java - 'java') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-java/src/main/java/net/sourceforge/pmd/lang/java/JavaLanguageModule.java
-    '.java': LanguageId.JAVA,
 
     // (JavaScript - 'ecmascript') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/ecmascript/EcmascriptLanguageModule.java
     '.js': LanguageId.JAVASCRIPT,
@@ -50,25 +48,8 @@ export const extensionToLanguageId: Record<string, LanguageId> = {
 
 // This object lists all the PMD rule names that are shared across languages which helps us map back and forth to unique names
 export const SHARED_RULE_NAMES: Record<string, LanguageId[]> = {
-    AssignmentInOperand: [LanguageId.JAVASCRIPT, LanguageId.JAVA],
-    AvoidDeeplyNestedIfStmts: [LanguageId.APEX, LanguageId.JAVA],
-    ClassNamingConventions: [LanguageId.APEX, LanguageId.JAVA],
-    CognitiveComplexity: [LanguageId.APEX, LanguageId.JAVA],
-    CyclomaticComplexity: [LanguageId.APEX, LanguageId.JAVA],
-    EmptyCatchBlock: [LanguageId.APEX, LanguageId.JAVA],
-    ExcessiveParameterList: [LanguageId.APEX, LanguageId.JAVA],
-    ExcessivePublicCount: [LanguageId.APEX, LanguageId.JAVA],
-    FieldNamingConventions: [LanguageId.APEX, LanguageId.JAVA],
     ForLoopsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
-    FormalParameterNamingConventions: [LanguageId.APEX, LanguageId.JAVA],
     IfElseStmtsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
     IfStmtsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
-    LocalVariableNamingConventions: [LanguageId.APEX, LanguageId.JAVA],
-    MethodNamingConventions: [LanguageId.APEX, LanguageId.JAVA],
-    MethodWithSameNameAsEnclosingClass: [LanguageId.APEX, LanguageId.JAVA],
-    OneDeclarationPerLine: [LanguageId.APEX, LanguageId.JAVA],
-    OverrideBothEqualsAndHashcode: [LanguageId.APEX, LanguageId.JAVA],
-    TooManyFields: [LanguageId.APEX, LanguageId.JAVA],
-    UnusedLocalVariable: [LanguageId.APEX, LanguageId.JAVA],
     WhileLoopsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT]
 };

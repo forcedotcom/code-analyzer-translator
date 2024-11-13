@@ -1,6 +1,6 @@
 [
   {
-    "name": "AssignmentInOperand-javascript",
+    "name": "AssignmentInOperand",
     "severityLevel": 3,
     "type": "Standard",
     "tags": [

@@ -72,23 +72,6 @@ public class PmdRuleDescriberTest {
     }
 
     @Test
-    void whenDescribeRulesForJava_thenCorrectRulesAreReturned()  {
-        List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("java"));
-        assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
-        for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            assertThat(ruleInfo.language, is("java"));
-        }
-
-        // Sanity check one of the rules:
-        PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AvoidReassigningParameters", "java");
-        assertThat(ruleInfo.description, is("Reassigning values to incoming parameters of a method or constructor is not recommended, as this can make the code more difficult to understand. The code is often read with the assumption that parameter values don't change and an assignment violates therefore the principle of least astonishment. This is especially a problem if the parameter is documented e.g. in the method's... Learn more: " + ruleInfo.externalInfoUrl));
-        assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#avoidreassigningparameters")));
-        assertThat(ruleInfo.ruleSet, is("Best Practices"));
-        assertThat(ruleInfo.priority, is("Medium High"));
-        assertThat(ruleInfo.ruleSetFile, is("category/java/bestpractices.xml"));
-    }
-
-    @Test
     void whenDescribeRulesForEcmascript_thenCorrectRulesAreReturned() {
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("ecmascript"));
         assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
@@ -192,10 +175,10 @@ public class PmdRuleDescriberTest {
         // cause any conflicts or errors.
         try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
             List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(
-                    List.of("category/java/codestyle.xml"),
-                    Set.of("java"));
+                    List.of("category/apex/codestyle.xml"),
+                    Set.of("apex"));
 
-            assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AtLeastOneConstructor", "java");
+            assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "ClassNamingConventions", "apex");
             assertThat(stdoutCaptor.getCapturedOutput(), containsString("Skipping rule "));
         }
     }
@@ -209,11 +192,11 @@ public class PmdRuleDescriberTest {
 
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(
                 List.of(rulesetFile1.toAbsolutePath().toString(), rulesetFile2.toAbsolutePath().toString()),
-                Set.of("java", "visualforce")); // ... but we don't have apex here but we do have visualforce...
+                Set.of("ecmascript", "visualforce")); // ... but we don't have apex here but we do have visualforce...
 
         assertContainsNoRuleWithNameAndLanguage(ruleInfoList, "sampleRule1", "apex"); // ... thus this rule should not show
         assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule2", "visualforce"); // Should show since visualforce is provided
-        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AtLeastOneConstructor", "java"); // Should show since visualforce is provided
+        assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "AvoidWithStatement", "ecmascript"); // Should show since ecmascript is provided
     }
 
     @Test

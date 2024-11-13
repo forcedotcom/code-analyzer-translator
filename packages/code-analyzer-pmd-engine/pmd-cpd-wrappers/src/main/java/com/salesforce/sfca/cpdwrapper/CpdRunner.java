@@ -13,9 +13,12 @@ import org.slf4j.event.Level;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +65,9 @@ class CpdRunner {
         config.setMinimumTileSize(minimumTokens);
         config.setInputPathList(pathsToScan);
         config.setSkipDuplicates(skipDuplicateFiles);
-        config.setReporter(new CpdErrorListener());
+        CpdErrorListener errorListener = new CpdErrorListener();
+
+        config.setReporter(errorListener);
 
         CpdLanguageRunResults languageRunResults = new CpdLanguageRunResults();
 
@@ -105,6 +110,16 @@ class CpdRunner {
                     languageRunResults.matches.add(cpdMatch);
                 }
             });
+
+            // Instead of throwing exceptions and causing the entire run to fail, instead we report exceptions as
+            // if they are processing errors so that they can better be handled on the typescript side
+            for (Exception ex : errorListener.exceptionsCaught) {
+                CpdLanguageRunResults.ProcessingError processingErr = new CpdLanguageRunResults.ProcessingError();
+                processingErr.file = "unknown";
+                processingErr.message = getStackTraceAsString(ex);
+                processingErr.detail = "[TERMINATING_EXCEPTION]"; // Marker to help typescript side know this isn't just a normal processing error
+                languageRunResults.processingErrors.add(processingErr);
+            }
         }
 
         return languageRunResults;
@@ -119,19 +134,28 @@ class CpdRunner {
             throw new RuntimeException("The \"minimumTokens\" field was not set to a positive number.");
         }
     }
+
+    private static String getStackTraceAsString(Throwable e) {
+        StringWriter sw = new StringWriter();
+        try (PrintWriter pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+        }
+        return sw.toString();
+    }
 }
 
 // This class simply helps us process any errors that may be thrown by CPD. By default, CPD suppresses errors so that
 // they are not thrown. So here, we look out for the errors that we care about and process it to throw a better
 // error messages. We override the logEx method in particular because all other error methods call through to logEx.
 class CpdErrorListener implements PmdReporter {
+    List<Exception> exceptionsCaught = new ArrayList<>();
     @Override
     public void logEx(Level level, @javax.annotation.Nullable String s, Object[] objects, @Nullable Throwable throwable) {
         if (throwable != null) {
-            throw new RuntimeException("CPD threw an unexpected exception:\n" + throwable.getMessage(), throwable);
+            exceptionsCaught.add(new RuntimeException("CPD threw an unexpected exception:\n" + throwable.getMessage(), throwable));
         } else if (s != null) {
             String message = MessageFormat.format(s, objects);
-            throw new RuntimeException("CPD threw an unexpected exception:\n" + message);
+            exceptionsCaught.add(new RuntimeException("CPD threw an unexpected exception:\n" + message));
         }
     }
 

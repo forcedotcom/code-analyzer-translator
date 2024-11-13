@@ -13,14 +13,12 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
 import path from "node:path";
-import {extensionToLanguageId, LanguageId, SHARED_RULE_NAMES} from "./constants";
+import {extensionToLanguageId, LanguageId, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
 import {PmdEngineConfig} from "./config";
 
 export class PmdEngine extends Engine {
-    static readonly NAME: string = "pmd";
-
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
     private readonly selectedLanguages: LanguageId[];
     private readonly customRulesets: string[];
@@ -39,7 +37,7 @@ export class PmdEngine extends Engine {
     }
 
     getName(): string {
-        return PmdEngine.NAME;
+        return PMD_ENGINE_NAME;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
@@ -83,7 +81,7 @@ export class PmdEngine extends Engine {
             }
         }
         for (const pmdProcessingError of pmdResults.processingErrors) {
-            this.emitLogEvent(LogLevel.Error, getMessage('PmdProcessingErrorForFile', pmdProcessingError.filename,
+            this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'PMD', pmdProcessingError.filename,
                 indent(pmdProcessingError.message)));
         }
 
