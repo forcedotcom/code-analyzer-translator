@@ -126,7 +126,7 @@ function createRuleForLanguage(languageId: LanguageId): RuleDescription {
         name: getRuleNameFromLanguage(languageId),
         severityLevel: SeverityLevel.Info,
         type: RuleType.MultiLocation,
-        tags: ['Recommended', `${languageId}Language`],
+        tags: [`${languageId}Language`],
         description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']
     }

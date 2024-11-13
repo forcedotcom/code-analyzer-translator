@@ -38,7 +38,7 @@ export type PmdEngineConfig = {
     java_command: string
 
     // List of languages associated with the PMD rules to be made available for 'pmd' engine rule selection.
-    // The languages that you may choose from are: 'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
+    // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.
     rule_languages: string[]
 
@@ -73,7 +73,7 @@ export type CpdEngineConfig = {
     java_command: string
 
     // List of languages associated with CPD to be made available for 'cpd' engine rule selection.
-    // The languages that you may choose from are: 'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
+    // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
     rule_languages: string[]
 }
 

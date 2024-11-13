@@ -19,11 +19,10 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 pmd-apex = { module = "net.sourceforge.pmd:pmd-apex", version.ref = "pmd" }
 pmd-core = { module = "net.sourceforge.pmd:pmd-core", version.ref = "pmd" }
 pmd-html = { module = "net.sourceforge.pmd:pmd-html", version.ref = "pmd" }
-pmd-java = { module = "net.sourceforge.pmd:pmd-java", version.ref = "pmd" }
 pmd-javascript = { module = "net.sourceforge.pmd:pmd-javascript", version.ref = "pmd" }
 pmd-visualforce = { module = "net.sourceforge.pmd:pmd-visualforce", version.ref = "pmd" }
 pmd-xml = { module = "net.sourceforge.pmd:pmd-xml", version.ref = "pmd" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
 
 [bundles]
-pmd7 = ["pmd-apex", "pmd-core", "pmd-html", "pmd-java", "pmd-javascript", "pmd-visualforce", "pmd-xml"]
+pmd7 = ["pmd-apex", "pmd-core", "pmd-html", "pmd-javascript", "pmd-visualforce", "pmd-xml"]

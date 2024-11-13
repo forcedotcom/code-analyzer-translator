@@ -4,7 +4,6 @@
     "severityLevel": 5,
     "type": "MultiLocation",
     "tags": [
-      "Recommended",
       "apexLanguage"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'apex' language.",

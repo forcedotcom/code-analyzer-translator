@@ -42,7 +42,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         // Sanity check that we list the correct available languages:
         expect(PMD_ENGINE_CONFIG_DESCRIPTION.fieldDescriptions!['rule_languages']).toEqual(
             getMessage('PmdConfigFieldDescription_rule_languages',
-                `'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
+                `'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
 
     it('When describeEngineConfig is passed an unsupported engine name, then an error is thrown', async () => {
@@ -169,7 +169,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd');
         await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleLanguage', 'engines.pmd.rule_languages', 'typescript',
-                `'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
+                `'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
 
     it(`When createEngineConfig for 'cpd' is given an unsupported rule language, then error`, async () => {
@@ -177,7 +177,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
             getMessage('InvalidRuleLanguage', 'engines.cpd.rule_languages', 'cpp',
-                `'apex', 'html', 'java', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'`));
+                `'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'`));
     });
 
     it(`When createEngineConfig for 'pmd' is given a non-array value for java_classpath_entries, then error`, async () => {
