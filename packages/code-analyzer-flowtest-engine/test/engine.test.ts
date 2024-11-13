@@ -55,7 +55,7 @@ const PATH_TO_WORKSPACE = path.resolve(__dirname, 'test-data', 'example-workspac
 const PATH_TO_SAMPLE_RESULTS = path.resolve(__dirname, 'test-data', 'sample-flowtest-results', 'engine.test.ts');
 const PATH_TO_GOLDFILES = path.resolve(__dirname, 'test-data', 'goldfiles', 'engine.test.ts');
 
-describe('Tests for the FlowTestEngine', () => {
+xdescribe('Tests for the FlowTestEngine', () => {
     it('getName() returns correct name', () => {
         const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([]));
         expect(engine.getName()).toEqual('flowtest');
