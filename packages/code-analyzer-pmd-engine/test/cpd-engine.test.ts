@@ -77,7 +77,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         });
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
-            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFileWIthOver100Tokens.html')
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFileWithOver100Tokens.html')
         ]);
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
