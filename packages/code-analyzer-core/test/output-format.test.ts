@@ -94,6 +94,10 @@ describe("Tests for the JSON output format", () => {
     });
 });
 
+describe("Tests for the JUNIT-XML output format", () => {
+    it("When an empty result is provided,")
+});
+
 describe("Tests for the XML output format", () => {
     it("When an empty result is provided, we create a xml text with summary having zeros", () => {
         const results: RunResults = new RunResultsImpl();

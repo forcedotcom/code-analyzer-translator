@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+    <runDir>{{RUNDIR}}</runDir>
+    <violationCounts>
+        <total>5</total>
+        <sev1>0</sev1>
+        <sev2>1</sev2>
+        <sev3>3</sev3>
+        <sev4>1</sev4>
+        <sev5>0</sev5>
+    </violationCounts>
+    <testsuites>
+        <testsuite name="stubEngine1" tests="3" errors="3">
+            <testcase name="test{{PATHSEP}}config.test.ts">
+                <failure message="SomeViolationMessage1" type="4">
+                    4: SomeViolationMessage1
+                    Rule: stub1RuleA
+                    Rule Type: Standard
+                    Tags: Recommended, CodeStyle
+                    Locations: test{{PATHSEP}}config.test.ts:3:6-11:8
+                    Resources: https://example.com/stub1RuleA
+                </failure>
+            </testcase>
+            <testcase name="test{{PATHSEP}}run.test.ts">
+                <failure message="SomeViolationMessage2" type="3">
+                    3: SomeViolationMessage2
+                    Rule: stub1RuleC
+                    Rule Type: Standard
+                    Tags: Recommended, Performance, Custom
+                    Locations: test{{PATHSEP}}run.test.ts:21:7-25:4
+                    Resources:
+                        - https://example.com/stub1RuleC
+                        - https://example.com/aViolationSpecificUrl1
+                        - https://example.com/violationSpecificUrl2
+                </failure>
+                <failure message="Some Violation that contains
+a new line in `it` and &quot;various&quot; 'quotes'. Also it has <brackets> that may need to be {escaped}." type="3">
+                    3: Some Violation that contains
+                    a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may need to be {escaped}. 
+                    Rule: stub1RuleE
+                    Rule Type: Standard
+                    Tags: Performance
+                    Locations: test{{PATHSEP}}run.test.ts:56:4
+                    Resources:
+                    - https://example.com/stub1RuleE
+                    - https://example.com/stub1RuleE_2
+                </failure>
+            </testcase>
+        </testsuite>
+        <testsuite name="stubEngine2" tests="2" errors="2">
+            <testcase name="test{{PATHSEP}}stubs.ts">
+                <failure message="SomeViolationMessage3" type="2">
+                    2: SomeViolationMessage3
+                    Rule: stub2RuleC
+                    Rule Type: DataFlow
+                    Tags: Recommended, BestPractice
+                    Locations:
+                        - (main) test{{PATHSEP}}stubs.ts:4:13
+                        - test{{PATHSEP}}test-helpers.ts:9:1
+                        - test{{PATHSEP}}stubs.ts:76:8
+                </failure>
+            </testcase>
+        </testsuite>
+        <testsuite name="stubEngine3" tests="1" errors="1">
+            <testcase name="test{{PATHSEP}}stubs.ts">
+                <failure message="SomeViolationMessage4" type="3">
+                    3: SomeViolationMessage4
+                    Rule: stub3RuleA
+                    Rule Type: Flow
+                    Tags: Recommended, ErrorProne
+                    Locations:
+                        - test{{PATHSEP}}stubs.ts:20:10-22:25: Comment at location 1
+                        - test{{PATHSEP}}test-helpers.ts:5:10: Comment at location 2
+                        - (main) test{{PATHSEP}}stubs.ts:90:1-95:10
+                </failure>
+            </testcase>
+        </testsuite>
+    </testsuites>

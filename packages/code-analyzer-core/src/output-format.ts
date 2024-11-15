@@ -11,6 +11,7 @@ import * as sarif from "sarif";
 export enum OutputFormat {
     CSV = "CSV",
     JSON = "JSON",
+    JUNIT = "JUNIT",
     XML = "XML",
     HTML = "HTML",
     SARIF = "SARIF"
