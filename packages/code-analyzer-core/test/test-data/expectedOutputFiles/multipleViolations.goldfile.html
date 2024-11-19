@@ -234,7 +234,7 @@
               return `<li>
         ${this.isMainLocation(violation, location) ? "<strong>Main</strong> " : ""}
         <span class="file">${location.file} (${position})</span>
-        <span class="comment">${location.comment}</span>
+        ${location.comment ? `<span class="comment">${location.comment}</span>` : ""}
       </li>`;
             })
             .join("")}</ul>`;
