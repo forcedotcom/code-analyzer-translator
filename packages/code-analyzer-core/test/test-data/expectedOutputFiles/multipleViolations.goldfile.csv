@@ -1,4 +1,4 @@
-"rule","engine","severity","tags","file","line","column","endLine","endColumn","message","resources"
+"rule","engine","severity","tags","file","startLine","startColumn","endLine","endColumn","message","resources"
 "stub1RuleA","stubEngine1",4,"Recommended,CodeStyle","test{{PATHSEP}}config.test.ts",3,6,11,8,"SomeViolationMessage1","https://example.com/stub1RuleA"
 "stub1RuleC","stubEngine1",3,"Recommended,Performance,Custom","test{{PATHSEP}}run.test.ts",21,7,25,4,"SomeViolationMessage2","https://example.com/stub1RuleC,https://example.com/aViolationSpecificUrl1,https://example.com/violationSpecificUrl2"
 "stub1RuleE","stubEngine1",3,"Performance","test{{PATHSEP}}run.test.ts",56,4,,,"Some Violation that contains

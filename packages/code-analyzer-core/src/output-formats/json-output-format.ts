@@ -20,74 +20,19 @@ export type JsonViolationOutput = {
     engine: string
     severity: number
     tags: string[]
-    file?: string
-    line?: number
-    column?: number
-    endLine?: number
-    endColumn?: number
     primaryLocationIndex?: number
     locations?: JsonCodeLocationOutput[]
     message: string
     resources?: string[]
 }
 
-export class JsonCodeLocationOutput {
-    private readonly file?: string;
-    private readonly line?: number;
-    private readonly column?: number;
-    private readonly endLine?: number;
-    private readonly endColumn?: number;
-    private readonly comment?: string;
-
-    public constructor(codeLocation: CodeLocation, runDir: string) {
-        this.file = codeLocation.getFile() ? makeRelativeIfPossible(codeLocation.getFile()!, runDir) : /* istanbul ignore next */ undefined;
-        this.line = codeLocation.getStartLine();
-        this.column = codeLocation.getStartColumn();
-        this.endLine = codeLocation.getEndLine();
-        this.endColumn = codeLocation.getEndColumn();
-        this.comment = codeLocation.getComment();
-    }
-
-    public getFile(): string | undefined {
-        return this.file;
-    }
-
-    public getLine(): number | undefined {
-        return this.line;
-    }
-
-    public getColumn(): number | undefined {
-        return this.column;
-    }
-
-    public getEndLine(): number | undefined {
-        return this.endLine;
-    }
-
-    public getEndColumn(): number | undefined {
-        return this.endColumn;
-    }
-
-    public getComment(): string | undefined {
-        return this.comment;
-    }
-
-    public toString(): string {
-        let locationString: string = '';
-        if (this.file != null) {
-            locationString += this.file;
-            if (this.line != null) {
-                locationString += `:${this.line}`;
-                if (this.column != null) {
-                    locationString += `:${this.column}`;
-                }
-            }
-        }
-        if (this.comment != null) {
-            locationString += ` (${this.comment})`;
-        }
-        return locationString;
-    }
+export type JsonCodeLocationOutput = {
+    file?: string;
+    startLine?: number;
+    startColumn?: number;
+    endLine?: number;
+    endColumn?: number;
+    comment?: string;
 }
 
 export class JsonOutputFormatter implements OutputFormatter {
@@ -95,13 +40,6 @@ export class JsonOutputFormatter implements OutputFormatter {
         const resultsOutput: JsonResultsOutput = toJsonResultsOutput(results);
         return JSON.stringify(resultsOutput, undefined, 2);
     }
-}
-
-function makeRelativeIfPossible(file: string, rootDir: string): string {
-    if (file.startsWith(rootDir)) {
-        file = file.substring(rootDir.length);
-    }
-    return file;
 }
 
 export function toJsonResultsOutput(results: RunResults, sanitizeFcn: (text: string) => string = t => t): JsonResultsOutput {
@@ -125,28 +63,36 @@ export function toJsonViolationOutputArray(violations: Violation[], runDir: stri
 
 function toJsonViolationOutput(violation: Violation, runDir: string, sanitizeFcn: (text: string) => string): JsonViolationOutput {
     const rule: Rule = violation.getRule();
-    const codeLocations: CodeLocation[] = violation.getCodeLocations();
-    const primaryLocation: CodeLocation = codeLocations[violation.getPrimaryLocationIndex()];
-
     return {
         rule: sanitizeFcn(rule.getName()),
         engine: sanitizeFcn(rule.getEngineName()),
         severity: rule.getSeverityLevel(),
         tags: rule.getTags().map(sanitizeFcn),
-        file: primaryLocation.getFile() ? makeRelativeIfPossible(primaryLocation.getFile() as string, runDir) : undefined,
-        line: primaryLocation.getStartLine(),
-        column: primaryLocation.getStartColumn(),
-        endLine: primaryLocation.getEndLine(),
-        endColumn: primaryLocation.getEndColumn(),
         primaryLocationIndex: violation.getPrimaryLocationIndex(),
-        locations: toJsonCodeLocationOutputArray(codeLocations, runDir),
+        locations: toJsonCodeLocationOutputArray(violation.getCodeLocations(), runDir),
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
 }
 
 function toJsonCodeLocationOutputArray(codeLocations: CodeLocation[], runDir: string): JsonCodeLocationOutput[] {
-    return codeLocations.map(loc => {
-        return new JsonCodeLocationOutput(loc, runDir);
-    })
+    return codeLocations.map(loc => toJsonCodeLocationOutput(loc, runDir));
+}
+
+function toJsonCodeLocationOutput(codeLocation: CodeLocation, runDir: string): JsonCodeLocationOutput {
+    return {
+        file:  makeRelativeIfPossible(codeLocation.getFile(), runDir),
+        startLine: codeLocation.getStartLine(),
+        startColumn: codeLocation.getStartColumn(),
+        endLine: codeLocation.getEndLine(),
+        endColumn: codeLocation.getEndColumn(),
+        comment: codeLocation.getComment()
+    }
+}
+
+export function makeRelativeIfPossible(file: string|undefined, rootDir: string): string|undefined {
+    if (file && file.startsWith(rootDir)) {
+        file = file.substring(rootDir.length);
+    }
+    return file;
 }

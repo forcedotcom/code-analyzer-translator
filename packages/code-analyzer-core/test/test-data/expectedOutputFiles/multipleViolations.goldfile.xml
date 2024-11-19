@@ -18,17 +18,12 @@
         <tag>Recommended</tag>
         <tag>CodeStyle</tag>
       </tags>
-      <file>test{{PATHSEP}}config.test.ts</file>
-      <line>3</line>
-      <column>6</column>
-      <endLine>11</endLine>
-      <endColumn>8</endColumn>
       <primaryLocationIndex>0</primaryLocationIndex>
       <locations>
         <location>
           <file>test{{PATHSEP}}config.test.ts</file>
-          <line>3</line>
-          <column>6</column>
+          <startLine>3</startLine>
+          <startColumn>6</startColumn>
           <endLine>11</endLine>
           <endColumn>8</endColumn>
         </location>
@@ -47,17 +42,12 @@
         <tag>Performance</tag>
         <tag>Custom</tag>
       </tags>
-      <file>test{{PATHSEP}}run.test.ts</file>
-      <line>21</line>
-      <column>7</column>
-      <endLine>25</endLine>
-      <endColumn>4</endColumn>
       <primaryLocationIndex>0</primaryLocationIndex>
       <locations>
         <location>
           <file>test{{PATHSEP}}run.test.ts</file>
-          <line>21</line>
-          <column>7</column>
+          <startLine>21</startLine>
+          <startColumn>7</startColumn>
           <endLine>25</endLine>
           <endColumn>4</endColumn>
         </location>
@@ -76,15 +66,12 @@
       <tags>
         <tag>Performance</tag>
       </tags>
-      <file>test{{PATHSEP}}run.test.ts</file>
-      <line>56</line>
-      <column>4</column>
       <primaryLocationIndex>0</primaryLocationIndex>
       <locations>
         <location>
           <file>test{{PATHSEP}}run.test.ts</file>
-          <line>56</line>
-          <column>4</column>
+          <startLine>56</startLine>
+          <startColumn>4</startColumn>
         </location>
       </locations>
       <message>Some Violation that contains
@@ -102,25 +89,22 @@ a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may
         <tag>Recommended</tag>
         <tag>BestPractice</tag>
       </tags>
-      <file>test{{PATHSEP}}stubs.ts</file>
-      <line>76</line>
-      <column>8</column>
       <primaryLocationIndex>2</primaryLocationIndex>
       <locations>
         <location>
           <file>test{{PATHSEP}}stubs.ts</file>
-          <line>4</line>
-          <column>13</column>
+          <startLine>4</startLine>
+          <startColumn>13</startColumn>
         </location>
         <location>
           <file>test{{PATHSEP}}test-helpers.ts</file>
-          <line>9</line>
-          <column>1</column>
+          <startLine>9</startLine>
+          <startColumn>1</startColumn>
         </location>
         <location>
           <file>test{{PATHSEP}}stubs.ts</file>
-          <line>76</line>
-          <column>8</column>
+          <startLine>76</startLine>
+          <startColumn>8</startColumn>
         </location>
       </locations>
       <message>SomeViolationMessage3</message>
@@ -134,31 +118,26 @@ a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may
         <tag>Recommended</tag>
         <tag>ErrorProne</tag>
       </tags>
-      <file>test{{PATHSEP}}stubs.ts</file>
-      <line>90</line>
-      <column>1</column>
-      <endLine>95</endLine>
-      <endColumn>10</endColumn>
       <primaryLocationIndex>2</primaryLocationIndex>
       <locations>
         <location>
           <file>test{{PATHSEP}}stubs.ts</file>
-          <line>20</line>
-          <column>10</column>
+          <startLine>20</startLine>
+          <startColumn>10</startColumn>
           <endLine>22</endLine>
           <endColumn>25</endColumn>
           <comment>Comment at location 1</comment>
         </location>
         <location>
           <file>test{{PATHSEP}}test-helpers.ts</file>
-          <line>5</line>
-          <column>10</column>
+          <startLine>5</startLine>
+          <startColumn>10</startColumn>
           <comment>Comment at location 2</comment>
         </location>
         <location>
           <file>test{{PATHSEP}}stubs.ts</file>
-          <line>90</line>
-          <column>1</column>
+          <startLine>90</startLine>
+          <startColumn>1</startColumn>
           <endLine>95</endLine>
           <endColumn>10</endColumn>
         </location>
