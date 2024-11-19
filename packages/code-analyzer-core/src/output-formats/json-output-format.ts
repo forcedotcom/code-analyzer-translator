@@ -1,6 +1,6 @@
 import {CodeLocation, RunResults, Violation} from "../results";
 import {OutputFormatter} from "../output-format";
-import {Rule, RuleType, SeverityLevel} from "../rules";
+import {Rule, SeverityLevel} from "../rules";
 
 export type JsonResultsOutput = {
     runDir: string
@@ -19,7 +19,6 @@ export type JsonViolationOutput = {
     rule: string
     engine: string
     severity: number
-    type: string
     tags: string[]
     file?: string
     line?: number
@@ -133,22 +132,17 @@ function toJsonViolationOutput(violation: Violation, runDir: string, sanitizeFcn
         rule: sanitizeFcn(rule.getName()),
         engine: sanitizeFcn(rule.getEngineName()),
         severity: rule.getSeverityLevel(),
-        type: rule.getType(),
         tags: rule.getTags().map(sanitizeFcn),
         file: primaryLocation.getFile() ? makeRelativeIfPossible(primaryLocation.getFile() as string, runDir) : undefined,
         line: primaryLocation.getStartLine(),
         column: primaryLocation.getStartColumn(),
         endLine: primaryLocation.getEndLine(),
         endColumn: primaryLocation.getEndColumn(),
-        primaryLocationIndex: typeSupportsMultipleLocations(rule.getType()) ? violation.getPrimaryLocationIndex() : undefined,
-        locations: typeSupportsMultipleLocations(rule.getType()) ? toJsonCodeLocationOutputArray(codeLocations, runDir) : undefined,
+        primaryLocationIndex: violation.getPrimaryLocationIndex(),
+        locations: toJsonCodeLocationOutputArray(codeLocations, runDir),
         message: sanitizeFcn(violation.getMessage()),
         resources: violation.getResourceUrls()
     };
-}
-
-function typeSupportsMultipleLocations(ruleType: RuleType) {
-    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(ruleType);
 }
 
 function toJsonCodeLocationOutputArray(codeLocations: CodeLocation[], runDir: string): JsonCodeLocationOutput[] {

@@ -14,8 +14,11 @@
       <rule>UnexpectedEngineError</rule>
       <engine>throwingEngine</engine>
       <severity>1</severity>
-      <type>UnexpectedError</type>
       <tags></tags>
+      <primaryLocationIndex>0</primaryLocationIndex>
+      <locations>
+        <location></location>
+      </locations>
       <message>The engine with name 'throwingEngine' threw an unexpected error: SomeErrorMessageFromThrowingEngine</message>
       <resources></resources>
     </violation>

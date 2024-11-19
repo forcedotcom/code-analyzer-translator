@@ -48,6 +48,7 @@
         {
           "ruleId": "stub1RuleA",
           "ruleIndex": 0,
+          "level": "warning",
           "message": {
             "text": "SomeViolationMessage1"
           },
@@ -66,11 +67,26 @@
               }
             }
           ],
-          "level": "warning"
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "{{RUNDIR}}test{{PATHSEP}}config.test.ts"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 6,
+                  "endLine": 11,
+                  "endColumn": 8
+                }
+              }
+            }
+          ]
         },
         {
           "ruleId": "stub1RuleC",
           "ruleIndex": 1,
+          "level": "warning",
           "message": {
             "text": "SomeViolationMessage2"
           },
@@ -89,11 +105,26 @@
               }
             }
           ],
-          "level": "warning"
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                },
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 7,
+                  "endLine": 25,
+                  "endColumn": 4
+                }
+              }
+            }
+          ]
         },
         {
           "ruleId": "stub1RuleE",
           "ruleIndex": 2,
+          "level": "warning",
           "message": {
             "text": "Some Violation that contains\na new line in `it` and \"various\" 'quotes'. Also it has <brackets> that may need to be {escaped}."
           },
@@ -110,7 +141,19 @@
               }
             }
           ],
-          "level": "warning"
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                },
+                "region": {
+                  "startLine": 56,
+                  "startColumn": 4
+                }
+              }
+            }
+          ]
         }
       ],
       "invocations": [
@@ -145,6 +188,7 @@
         {
           "ruleId": "stub2RuleC",
           "ruleIndex": 0,
+          "level": "error",
           "message": {
             "text": "SomeViolationMessage3"
           },
@@ -195,8 +239,7 @@
                 }
               }
             }
-          ],
-          "level": "error"
+          ]
         }
       ],
       "invocations": [
@@ -231,6 +274,7 @@
         {
           "ruleId": "stub3RuleA",
           "ruleIndex": 0,
+          "level": "warning",
           "message": {
             "text": "SomeViolationMessage4"
           },
@@ -287,8 +331,7 @@
                 }
               }
             }
-          ],
-          "level": "warning"
+          ]
         }
       ],
       "invocations": [
