@@ -118,7 +118,7 @@ class Segment(JSONSerializable):
 
     @classmethod
     def build_from_parser(cls, parser: parse.Parser,
-                          elem: ET._Element,
+                          elem: ET.Element,
                           seen_names: [str] = None):
 
         label = get_name(elem)
@@ -365,6 +365,11 @@ def crawl_iter(cfg: ControlFlowGraph) -> Generator[(BranchVisitor, [Segment]), N
         if visitor is None and len(worklist) > 0:
             # nowhere to jump, so pull from worklist
             visitor = worklist.pop(0)
+
+        # skip orphaned references
+        if visitor.current_label not in cfg.segment_map:
+            visitor = None
+            continue
 
         segment = cfg.segment_map[visitor.current_label]
         next_visitors = segment.accept(visitor)

@@ -15,8 +15,7 @@ setup(
             'flowtest = flowtest.__main__:main'
         ]},
     python_requires='>=3.10.12',
-    install_requires=['lxml>=4.9.3', 'lxml-stubs>=0.4.0', 'immutables>=0.20'],
     package_data={'flowtest': ['data/FlowSecurity_preset.txt', 'data/flowtest_query_data.txt',
                                'data/footer.out', 'data/header.out']}
-    )
+)
 

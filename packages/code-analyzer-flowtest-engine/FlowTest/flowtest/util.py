@@ -43,10 +43,7 @@ def get_flows_in_dir(root_dir: str) -> {str: str}:
     flow_paths = dict()
     for root, dir_names, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.endswith(FLOW_EXTENSION):
-                flow_paths[get_label(root, filename[:-14])] = os.path.join(root, filename)
-            elif filename.endswith(PACKAGE_FLOW_EXTENSION):
-                flow_paths[get_label(root, filename[:-5])] = os.path.join(root, filename)
+            flow_paths[get_label(root, filename)] = os.path.join(root, filename)
 
     return flow_paths
 
@@ -67,6 +64,13 @@ def get_label(root: str, filename: str) -> (str, str):
         tuple (namespaced_label, local_label)
 
     """
+    if filename.endswith(PACKAGE_FLOW_EXTENSION):
+        short_fname = filename[:-5]
+    elif filename.endswith(FLOW_EXTENSION):
+        short_fname = filename[:-14]
+    else:
+        short_fname = filename
+
     local_label = filename.split('-')[0]
     parent_dirname = pathlib.PurePath(root).name
     namespaced_label = f"{parent_dirname}__{local_label}"

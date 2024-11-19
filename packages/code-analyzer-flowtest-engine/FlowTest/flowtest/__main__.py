@@ -60,6 +60,19 @@ def check_dir_exists(x: str) -> str:
     return x
 
 
+def check_dir_exists_or_create(x: str) -> str:
+    """Checks if the argument is a valid directory. Creates directory if it doesn't exist.
+
+    Args:
+        x: string to check
+
+    Returns:
+        None
+    """
+    os.makedirs(x, exist_ok=True)
+    return x
+
+
 def check_not_exist(x: str) -> str:
     """lambda that checks if this path exists or not. Raises an error if it does exist.
 
@@ -87,23 +100,31 @@ def get_flow_paths(args: argparse.Namespace) -> (list[str], {str: str}):
     """
     arg_flow = args.flow
     arg_dir = args.dir
+    count = 0
 
-    if arg_flow is None and arg_dir is None:
+    if arg_dir is None:
         arg_dir = CURR_DIR
 
-    if arg_flow is not None:
-        print(f"scanning the single flow: {arg_flow}")
-        return [arg_flow], util.get_flows_in_dir(os.path.dirname(os.path.abspath(arg_flow)))
+    flow_map = util.get_flows_in_dir(arg_dir)
 
-    elif arg_dir is not None:
-        flow_paths = util.get_flows_in_dir(arg_dir)
-        count = len(flow_paths)
-        if count > 0:
-            print(f"found {count} flows to scan in {arg_dir}")
-            return list(flow_paths.values()), flow_paths
-        else:
-            print("No flow files found to scan. Exiting...")
-            sys.exit(1)
+    if arg_flow is None:
+        flows = list(flow_map.values())
+        flow_paths = [os.path.abspath(x) for x in flows]
+
+    else:
+        flow_paths = [os.path.abspath(x) for x in arg_flow.split(",")]
+        for a_flow in flow_paths:
+            label = util.get_label(os.path.dirname(a_flow), a_flow)
+            if label is not None and label not in flow_map:
+                flow_map[label] = a_flow
+
+    count = len(flow_paths)
+    if count > 0:
+        print(f"found {count} flows to scan")
+        return flow_paths, flow_map
+    else:
+        print("No flow files found to scan. Exiting...")
+        sys.exit(1)
 
 
 def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
@@ -126,7 +147,7 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
         epilog="Please reach out to your security contact with feedback and bugreports",
     )
     """
-        most important option
+        options that display status and tool info
     """
     parser.add_argument("-v", "--version", action='version',
                         version='%(prog)s ' + version.__version__)
@@ -138,11 +159,13 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
     """
     paths = parser.add_mutually_exclusive_group()
 
-    paths.add_argument("-f", "--flow", help=("path of flow-meta.xml file if only a single "
-                                             "flow is to be scanned"),
-                       type=check_file_exists, required=False)
+    paths.add_argument("-f", "--flow", help=("path of flow files scan, csv separated. "
+                                             "If provided, only these will be scanned."),
+                       required=False)
     paths.add_argument("-d", "--dir", help=("directory containing flow-meta.xml files "
-                                            "subdirectories are also searched. Defaults to working directory."),
+                                            "subdirectories are also searched. Defaults to working directory. If no"
+                                            "flows specified all flows in directory will be scanned, otherwise only"
+                                            "subflows in this directory will be scanned"),
                        type=check_dir_exists)
 
     """
@@ -154,6 +177,12 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
 
     parser.add_argument("--debug", action='store_true', help="whether to set logging level to debug")
 
+    """
+        Options for crawl-spec generation
+    """
+    parser.add_argument("--crawl_dir", default=None,
+                        help="where to store crawl specification",
+                        type=check_dir_exists)
     """
         Options for storing reports
     """
@@ -269,11 +298,16 @@ def main(argv: list[str] = None) -> str | None:
                                                 query_module_path=args.query_path,
                                                 query_class_name=args.query_class,
                                                 query_preset=args.preset,
+                                                crawl_dir=args.crawl_dir,
                                                 all_flows=all_flows)
         except:
             print(f"error processing flow {flow_path}")
             print(traceback.format_exc())
             print("...continuing to next flow..")
+
+    if query_manager is None:
+        print("No flow could be scanned. Exiting.")
+        sys.exit(-1)
 
     print("scanning complete.")
     print(f"{STATUS_LABEL} {STATUS_REPORT_GEN}")

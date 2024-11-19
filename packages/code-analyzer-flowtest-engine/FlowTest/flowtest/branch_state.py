@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import logging
+import traceback
 
 from flow_parser import parse
 from flow_parser.parse import ET
@@ -69,7 +70,7 @@ class BranchState(State):
         self.current_elem_name: str = '*'
 
         #: current Flow element (xml)
-        self.current_elem: ET._Element = None
+        self.current_elem: ET.Element = None
 
         #: resolves formulas and templates (late binding indirect references)
         self.formula_map: {(str, str): {DataInfluencePath}} = {}
@@ -112,7 +113,7 @@ class BranchState(State):
         """
         return self.parser
 
-    def get_current_elem(self) -> ET._Element:
+    def get_current_elem(self) -> ET.Element:
         """Get current element being processed
 
         Returns:
@@ -407,7 +408,7 @@ class BranchState(State):
             return (self.flow_path, var_name) in influence_map
 
     def add_vectors_from_other_flow(self, src_flow_path: str, output_vector_map: {(str, str): FlowVector},
-                                    src2tgt_variable_map: {str: str}, transition_elem: ET._Element,
+                                    src2tgt_variable_map: {str: str}, transition_elem: ET.Element,
                                     ) -> {(str, str): FlowVector} or None:
         """Pushes vectors in the source to vectors in the target, by wiring a flow across flow boundaries::
 
@@ -581,7 +582,7 @@ class BranchState(State):
         else:
             return dict.get(self.__influence_map, cs, None)
 
-    def _initialize_variables_from_elems(self, elems: set[ET._Element] | None) -> None:
+    def _initialize_variables_from_elems(self, elems: set[ET.Element] | None) -> None:
         """Adds variables to the influence map (if not already present)
 
             .. WARNING:: Expert use. Only to initialize from named elements that are actually
@@ -671,7 +672,7 @@ class BranchState(State):
 
         return dict.get(self._get_influence_map(crawl_step=step), (flow_path, name))
 
-    def _init_vec_from_elem(self, elem: ET._Element, store=True) -> FlowVector | None:
+    def _init_vec_from_elem(self, elem: ET.Element, store=True) -> FlowVector | None:
         """Initializes a FlowVector from the provided (named) xml element
 
         Args:
@@ -832,8 +833,13 @@ def _build_path_from_history(parser: parse.Parser, history: tuple[DataInfluenceS
     last = history[-1]
     first = history[0]
 
-    (first_parent, first_member, first_type) = parser.resolve_by_name(first.influencer_var, strict=strict)
-    (last_parent, last_member, last_type) = parser.resolve_by_name(last.influenced_var, strict=strict)
+    try:
+        (first_parent, first_member, first_type) = parser.resolve_by_name(first.influencer_var, strict=strict)
+        (last_parent, last_member, last_type) = parser.resolve_by_name(last.influenced_var, strict=strict)
+    except TypeError as e:
+        print(f"Resolver error for {first.influencer_var} or {last.influenced_var} ")
+        print(traceback.format_exc())
+        raise e
 
     my_type = propagate(src_type=first_type, dest_type=last_type, **type_replacements)
 
@@ -946,7 +952,7 @@ def _extend_formula_map_by_flows(start_flows: set[DataInfluencePath],
     return accum
 
 
-def _resolve_influencers(elem_ref_name: ET._Element,
+def _resolve_influencers(elem_ref_name: ET.Element,
                          raw_formula_map: {str: [DataInfluenceStatement]},
                          parser: parse.Parser) -> {DataInfluencePath}:
     """Resolves indirect references

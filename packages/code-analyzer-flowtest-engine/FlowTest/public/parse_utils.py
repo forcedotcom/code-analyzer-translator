@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import logging
 import re
+import sys
 
-from lxml import etree as ET
+sys.modules['_elementtree'] = None
+import xml.etree.ElementTree as ET
+
 
 from public.enums import DataType, ConnType
 
@@ -71,22 +74,22 @@ def parse_expression(txt: str) -> list[str]:
     return accum
 
 
-def get_tag(elem: ET._Element) -> str:
-    if isinstance(elem, ET._Comment):
-        return ''
-    elif isinstance(elem, ET._Element):
+def get_tag(elem: ET.Element) -> str:
+    if isinstance(elem, ET.Element):
         return elem.tag[NS_LEN:]
+    # elif isinstance(elem, ET._Comment):
+    #    return ''
     else:
         return ''
 
 
-def is_subflow(elem: ET._Element) -> bool:
+def is_subflow(elem: ET.Element) -> bool:
     if elem is None:
         return False
     return get_tag(elem) == 'subflows'
 
 
-def is_loop(elem: ET._Element) -> bool:
+def is_loop(elem: ET.Element) -> bool:
     """Is this a Loop Flow Element?
 
     Args:
@@ -100,7 +103,7 @@ def is_loop(elem: ET._Element) -> bool:
     return elem.tag.endswith("loops")
 
 
-def is_goto_connector(elem: ET._Element) -> bool:
+def is_goto_connector(elem: ET.Element) -> bool:
     """Is this element a goto?
 
     Args:
@@ -116,7 +119,7 @@ def is_goto_connector(elem: ET._Element) -> bool:
             return False
 
 
-def is_decision(elem: ET._Element) -> bool:
+def is_decision(elem: ET.Element) -> bool:
     """True if this is a decision Flow Element
 
     Args:
@@ -128,7 +131,7 @@ def is_decision(elem: ET._Element) -> bool:
     return get_tag(elem) == 'decisions'
 
 
-def get_by_tag(elem: ET._Element, tagname: str) -> list[ET.etree._Element]:
+def get_by_tag(elem: ET.Element, tagname: str) -> list[ET.etree._Element]:
     """Get list of all elem with the tag (ignoring ns).
 
         Convenience method as manually dealing with namespaces is clumsy.
@@ -144,7 +147,7 @@ def get_by_tag(elem: ET._Element, tagname: str) -> list[ET.etree._Element]:
     return elem.findall(f'{ns}{tagname}')
 
 
-def get_named_elems(elem: ET._Element) -> list[ET._Element]:
+def get_named_elems(elem: ET.Element) -> list[ET.Element]:
     """Get all descendents (recursive) of elem that have a ``name`` tag
 
     Args:
@@ -158,7 +161,7 @@ def get_named_elems(elem: ET._Element) -> list[ET._Element]:
     return [x for x in named if get_tag(x) != f'{ns}processMetadataValues']
 
 
-def get_name(elem: ET._Element | None) -> str | None:
+def get_name(elem: ET.Element | None) -> str | None:
     """returns the string name of elem or None if no name or '*'"""
     if elem is None:
         return None
@@ -171,14 +174,15 @@ def get_name(elem: ET._Element | None) -> str | None:
         return name.text
 
 
-def get_elem_string(elem: ET._Element) -> str | None:
+def get_elem_string(elem: ET.Element) -> str | None:
     if elem is None:
         return ''
     else:
-        return ET.tounicode(elem).strip()
+        return ET.tostring(elem, encoding='unicode',
+                           default_namespace='http://soap.sforce.com/2006/04/metadata').strip()
 
 
-def get_line_no(elem: ET._Element) -> int:
+def get_line_no(elem: ET.Element) -> int:
     return elem.sourceline
 
 
@@ -186,7 +190,7 @@ def get_subflow_name(subflow):
     return get_by_tag(subflow, "flowName")[0].text
 
 
-def get_assignment_statement_dicts(elem: ET._Element) -> list[(str, {str: str})] | None:
+def get_assignment_statement_dicts(elem: ET.Element) -> list[(str, {str: str})] | None:
     """Returns assignment statement keywords in 'assignments' elems
     Args:
         elem: elem to parse, should have a tag of "assignments"
@@ -210,7 +214,7 @@ def get_assignment_statement_dicts(elem: ET._Element) -> list[(str, {str: str})]
     return None
 
 
-def get_filters(elem: ET._Element) -> [ET._Element]:
+def get_filters(elem: ET.Element) -> [ET.Element]:
     """Find all filter elements
 
     Searches recursively to find all <filters> elements that are children
@@ -226,7 +230,7 @@ def get_filters(elem: ET._Element) -> [ET._Element]:
     return elem.findall(f'.//{ns}filters')
 
 
-def get_input_assignments(elem: ET._Element) -> [ET._Element]:
+def get_input_assignments(elem: ET.Element) -> [ET.Element]:
     """Find all input assignments
 
     Searches recursively to find all <inputAssignments> elements that are children
@@ -242,7 +246,7 @@ def get_input_assignments(elem: ET._Element) -> [ET._Element]:
     return elem.findall(f'.//{ns}inputAssignments')
 
 
-def get_sinks_from_field_values(elems: ET._Element) -> list[(str, str)]:
+def get_sinks_from_field_values(elems: ET.Element) -> list[(str, str)]:
     """Find variables that flow into field/value pairs
 
     E.g.if a recordLookup field has a filter::
@@ -297,7 +301,7 @@ def get_sinks_from_field_values(elems: ET._Element) -> list[(str, str)]:
     return accum
 
 
-def get_conn_target_map(elem: ET._Element) -> {ET._Element: (str, ConnType, bool)}:
+def get_conn_target_map(elem: ET.Element) -> {ET.Element: (str, ConnType, bool)}:
     """returns map from connectors at elem to where they point
 
     Args:
@@ -332,7 +336,8 @@ def get_conn_target_map(elem: ET._Element) -> {ET._Element: (str, ConnType, bool
 
                 res = get_by_tag(elem=x, tagname='targetReference')
                 if res is None or len(res) == 0:
-                    logger.error(f"ERROR: found a connector without a target reference! {ET.tounicode(elem)}")
+                    logger.error(f"ERROR: found a connector without a target reference! "
+                                 f"{ET.tostring(elem, encoding='unicode')}")
                     continue
                 else:
                     # don't overwrite existing value -- each connector should have a single target reference
@@ -360,14 +365,14 @@ def get_conn_target_map(elem: ET._Element) -> {ET._Element: (str, ConnType, bool
 #
 
 
-def is_assign_null(elem: ET._Element) -> bool | None:
+def is_assign_null(elem: ET.Element) -> bool | None:
     res = elem.find(f'{ns}assignNullValuesIfNoRecordsFound')
     if res is None:
         return None
     return res.text == 'true'
 
 
-def is_auto_store(elem: ET._Element) -> bool | None:
+def is_auto_store(elem: ET.Element) -> bool | None:
     # None if the field is missing or can't be parsed
     # otherwise true or false
     res = elem.find(f'{ns}storeOutputAutomatically')
@@ -376,7 +381,7 @@ def is_auto_store(elem: ET._Element) -> bool | None:
     return res.text == 'true'
 
 
-def is_collection(elem: ET._Element) -> bool | None:
+def is_collection(elem: ET.Element) -> bool | None:
     # None if the field is missing or can't be parsed
     # otherwise true or false
     res = elem.find(f'{ns}isCollection')
@@ -385,7 +390,7 @@ def is_collection(elem: ET._Element) -> bool | None:
     return res.text == 'true'
 
 
-def get_input_fields(elem: ET._Element) -> set[ET._Element] | None:
+def get_input_fields(elem: ET.Element) -> set[ET.Element] | None:
     accum = set()
     elems = elem.findall(f'.//{ns}fields')
     for el in elems:
@@ -399,21 +404,21 @@ def get_input_fields(elem: ET._Element) -> set[ET._Element] | None:
         return accum
 
 
-def get_obj_name(elem: ET._Element) -> str | None:
+def get_obj_name(elem: ET.Element) -> str | None:
     object_name = elem.find(f'{ns}object')
     if object_name is None:
         return None
     return object_name.text
 
 
-def get_output_reference(elem: ET._Element) -> str | None:
+def get_output_reference(elem: ET.Element) -> str | None:
     object_name = elem.find(f'{ns}outputReference')
     if object_name is None:
         return None
     return object_name.text
 
 
-def get_datatype(elem: ET._Element) -> DataType | None:
+def get_datatype(elem: ET.Element) -> DataType | None:
     obj_ = elem.find(f'{ns}dataType')
     if obj_ is None:
         return None
@@ -431,19 +436,19 @@ def get_datatype(elem: ET._Element) -> DataType | None:
     return DataType.Literal
 
 
-def is_get_first_record_only(elem: ET._Element) -> bool | None:
+def is_get_first_record_only(elem: ET.Element) -> bool | None:
     res = elem.find(f'{ns}getFirstRecordOnly')
     if res is None:
         return None
     return res.text == 'true'
 
 
-def is_input(elem: ET._Element) -> bool:
+def is_input(elem: ET.Element) -> bool:
     res = get_by_tag(elem, 'isInput')
     return len(res) > 0 and res[0].text == 'true'
 
 
-def is_output(elem: ET._Element) -> bool:
+def is_output(elem: ET.Element) -> bool:
     res = get_by_tag(elem, 'isOutput')
     return len(res) > 0 and res[0].text == 'true'
 
@@ -455,7 +460,7 @@ def is_output(elem: ET._Element) -> bool:
 """
 
 
-def _process_assignment_item(elem: ET._Element) -> (str, {str: str}):
+def _process_assignment_item(elem: ET.Element) -> (str, {str: str}):
     """Returns assignment item dict from assignment element
 
     Args:
@@ -500,7 +505,7 @@ def _process_assignment_item(elem: ET._Element) -> (str, {str: str}):
         return None
 
 
-def _get_value(el: ET._Eleement) -> str:
+def _get_value(el: ET.Element) -> str:
     for child in el:
         if get_tag(child) == 'elementReference':
             return child.text
@@ -508,7 +513,7 @@ def _get_value(el: ET._Eleement) -> str:
             return STRING_LITERAL_TOKEN
 
 
-def get_subflow_output_map(subflow: ET._Element):
+def get_subflow_output_map(subflow: ET.Element):
     """returns a tuple (bool:, map: child name --> parent name)
        where the first return value is true if outputs are automatically assigned
        in which case they are flow_name.flow_var
@@ -531,7 +536,7 @@ def get_subflow_output_map(subflow: ET._Element):
     return auto, mappings
 
 
-def get_subflow_input_map(subflow: ET._Element) -> {str: str}:
+def get_subflow_input_map(subflow: ET.Element) -> {str: str}:
     """Returns a map from caller variable to variable in called flow
 
         E.g. in this example::
@@ -564,3 +569,22 @@ def get_subflow_input_map(subflow: ET._Element) -> {str: str}:
         key = key_refs[0].text
         accum[key] = val
     return accum
+
+
+class LineNumberingParser(ET.XMLParser):
+    def _start(self, *args, **kwargs):
+        # Here we assume the default XML parser which is expat
+        # and copy its element position attributes into output Elements
+        element = super(self.__class__, self)._start(*args, **kwargs)
+        element.sourceline = self.parser.CurrentLineNumber
+        element._start_column_number = self.parser.CurrentColumnNumber
+        element._start_byte_index = self.parser.CurrentByteIndex
+        return element
+
+    def _end(self, *args, **kwargs):
+        element = super(self.__class__, self)._end(*args, **kwargs)
+        element._end_line_number = self.parser.CurrentLineNumber
+        element._end_column_number = self.parser.CurrentColumnNumber
+        element._end_byte_index = self.parser.CurrentByteIndex
+        return element
+

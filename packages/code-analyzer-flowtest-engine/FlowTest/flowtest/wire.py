@@ -48,7 +48,7 @@ from public.parse_utils import ET
 logger = logging.getLogger(__name__)
 
 
-def handle_auto_store(state: BranchState, elem: ET._Element, elem_name: str) -> None:
+def handle_auto_store(state: BranchState, elem: ET.Element, elem_name: str) -> None:
     """Add this element name to influence map if it represents its own output data
 
     (Element name is passed in so we don't need to keep looking it up)
@@ -70,7 +70,7 @@ def handle_auto_store(state: BranchState, elem: ET._Element, elem_name: str) -> 
         state.get_or_make_vector(name=ref, store=True)
 
 
-def wire(state: BranchState, elem: ET._Element):
+def wire(state: BranchState, elem: ET.Element):
     """Wires influence statements and variable initialization.
 
     When the value of one variable changes based on another.
@@ -128,7 +128,7 @@ def wire(state: BranchState, elem: ET._Element):
                 state.get_or_make_vector(name=parse_utils.get_name(el), store=True)
 
 
-def wire_assignment(state: BranchState, elem: ET._Element, elem_name: str):
+def wire_assignment(state: BranchState, elem: ET.Element, elem_name: str):
     """Wires assignment statements to influence map in `state`
 
     Args:
@@ -172,7 +172,7 @@ def wire_assignment(state: BranchState, elem: ET._Element, elem_name: str):
                               store=True)
 
 
-def wire_loop(state: BranchState, elem: ET._Element, elem_name: str):
+def wire_loop(state: BranchState, elem: ET.Element, elem_name: str):
     """Wires collection loop is over to loop variable.
 
     Args:
@@ -192,7 +192,8 @@ def wire_loop(state: BranchState, elem: ET._Element, elem_name: str):
         influenced_var=loop_var,
         influencer_var=collection_ref_var,
         element_name=elem_name,
-        source_text=parse.ET.tounicode(collection_ref_el),
+        source_text=parse.ET.tostring(collection_ref_el, encoding='unicode',
+                                      default_namespace='http://soap.sforce.com/2006/04/metadata'),
         line_no=collection_ref_el.sourceline,
         comment='assign to loop variable',
         flow_path=state.flow_path
@@ -200,7 +201,7 @@ def wire_loop(state: BranchState, elem: ET._Element, elem_name: str):
     state.propagate_flows(statement=stmt, assign=True, store=True)
 
 
-def wire_collection_processor(state: BranchState, elem: ET._Element, elem_name: str):
+def wire_collection_processor(state: BranchState, elem: ET.Element, elem_name: str):
     """Wires collection reference in collection processor to collection elem.
 
     Args:
@@ -224,7 +225,8 @@ def wire_collection_processor(state: BranchState, elem: ET._Element, elem_name: 
         influenced_var=collection_var,
         influencer_var=collection_ref_var,
         element_name=elem_name,
-        source_text=parse.ET.tounicode(collection_el),
+        source_text=parse.ET.tostring(collection_el, encoding='unicode',
+                                      default_namespace='http://soap.sforce.com/2006/04/metadata'),
         line_no=collection_el.sourceline,
         comment='collection filter',
         flow_path=state.flow_path
