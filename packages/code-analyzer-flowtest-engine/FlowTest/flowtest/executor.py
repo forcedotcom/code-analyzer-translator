@@ -8,12 +8,15 @@ query handlers and dataflow updates as appropriate
 
 from __future__ import annotations
 
+import json
 import logging
+import os
 from typing import TYPE_CHECKING
 
+import flowtest.control_flow as crawl_spec
 import flow_parser.parse as parse
 import public.parse_utils
-from flowtest.control_flow import Crawler
+from flowtest.control_flow import Crawler, ControlFlowGraph
 from flowtest.branch_state import BranchState
 from flowtest.query_manager import QueryManager, QueryAction
 from public import parse_utils
@@ -288,7 +291,7 @@ class Frame(object):
         self.crawler: Crawler | None = None
 
         #: Subflow XML element that launched this flow (can be None)
-        self.parent_subflow: ET._Element | None = None
+        self.parent_subflow: ET.Element | None = None
 
         #: binary semaphore so when we return, we don't execute spawn the subflow again
         self.child_spawned: bool = False
@@ -321,7 +324,7 @@ class Frame(object):
     def build(cls, current_flow_path: str | None = None,
               all_flow_paths: {str: str} = None,
               resolved_subflows: {} = None,
-              parent_subflow: ET._Element = None,
+              parent_subflow: ET.Element = None,
               query_manager: QueryManager = None) -> Frame:
         """Call this whenever program analysis starts or a subflow is reached
 
@@ -463,7 +466,7 @@ class Frame(object):
 
         return new_map
 
-    def spawn_child_frame(self, subflow: ET._Element,
+    def spawn_child_frame(self, subflow: ET.Element,
                           sub_path: str,
                           input_map: {str: str},
                           vector_map: {(str, str): flows.FlowVector}
@@ -523,7 +526,7 @@ class Frame(object):
         self.child_spawned = True
         return new_frame
 
-    def handle_subflows(self, current_elem: ET._Element) -> Frame | None:
+    def handle_subflows(self, current_elem: ET.Element) -> Frame | None:
         """Checks whether we have encountered a subflow elem.
 
         Different behavior required if we are returning from the element or entering into it.
@@ -653,6 +656,7 @@ def parse_flow(flow_path: str,
                query_class_name: str = None,
                query_preset: str = None,
                query_manager: QueryManager | None = None,
+               crawl_dir: str = None,
                all_flows: {str: str} = None) -> QueryManager:
     """Main loop that performs control and dataflow analysis
 
@@ -668,6 +672,7 @@ def parse_flow(flow_path: str,
         query_preset: name of preset to run
         query_manager: existing instance that invokes queries across entire run. Start with None
                        and one will be created.
+        crawl_dir: directory of where to store crawl specifications
         all_flows: map flow name -> path of flow (used for looking up flow paths of subflows)
 
     Returns:
@@ -677,6 +682,18 @@ def parse_flow(flow_path: str,
 
     # build parser
     parser = parse.Parser.from_file(filepath=flow_path)
+
+    if crawl_dir is not None:
+        cfg = ControlFlowGraph.from_parser(parser)
+        schedule = crawl_spec.get_crawl_schedule(cfg)
+        cleaned_path = flow_path.replace(os.sep, "_")
+
+        with open(os.path.join(crawl_dir, f"{cleaned_path}__crawl_schedule.json"),
+                  'w') as fp:
+            json.dump(schedule, fp, cls=crawl_spec.CrawlEncoder, indent=4)
+
+        with open(os.path.join(crawl_dir, f"{cleaned_path}_cfg.json"), 'w') as fp:
+            crawl_spec.dump_cfg(cfg, fp)
 
     if query_manager is None:
         # 1. build result processor
@@ -723,7 +740,7 @@ def report(state: BranchState, current_step: int, total_steps: int) -> None:
     logger.debug(msg)
 
 
-def get_output_variable_map(subflow_elem: ET._Element, subflow_output_vars: [(str, str)]) -> {str: str}:
+def get_output_variable_map(subflow_elem: ET.Element, subflow_output_vars: [(str, str)]) -> {str: str}:
     # output_variable_map: child name --> parent name the child influences
     auto, output_variable_map = public.parse_utils.get_subflow_output_map(subflow_elem)
     if auto is True:

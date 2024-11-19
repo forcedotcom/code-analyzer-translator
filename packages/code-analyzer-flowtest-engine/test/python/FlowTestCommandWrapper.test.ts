@@ -8,7 +8,7 @@ const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
 const PATH_TO_WORKSPACES = path.join(__dirname, '..', 'test-data', 'example-workspaces');
 
-xdescribe('FlowTestCommandWrapper implementations', () => {
+describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
         describe('#getFlowTestRuleDescriptions()', () => {
             afterEach(() => {
@@ -57,7 +57,7 @@ xdescribe('FlowTestCommandWrapper implementations', () => {
                 }, 30000);
 
                 it('Correctly reads and parses results', async () => {
-                    const goldfileName: string = os.platform() === 'win32' ? 'results-windows.goldfile.json' : 'results-non-windows.goldfile.json';
+                    const goldfileName: string = 'results.goldfile.json';
                     const goldFileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfileName), {encoding: 'utf-8'}))
                         .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'subflow_test1.flow-meta.xml')))
                         .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'inner_subflow_example.flow-meta.xml')))

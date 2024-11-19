@@ -3,7 +3,11 @@
 """
 
 from __future__ import annotations
-from lxml import etree as ET
+
+import sys
+
+sys.modules['_elementtree'] = None
+import xml.etree.ElementTree as ET
 
 from typing import Optional
 import logging
@@ -27,7 +31,7 @@ NS_LEN: int = len(ns)
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def get_root(path: str) -> ET._Element:
+def get_root(path: str) -> ET.Element:
     """Get flow root
 
     Args:
@@ -37,7 +41,7 @@ def get_root(path: str) -> ET._Element:
         the root of the xml file
 
     """
-    return ET.parse(path).getroot()
+    return ET.parse(path, parser=parse_utils.LineNumberingParser()).getroot()
 
 
 class Parser(FlowParser):
@@ -59,7 +63,7 @@ class Parser(FlowParser):
 
     def __init__(self, root):
         #: XMl root of a single flow
-        self.root: ET._Element = root
+        self.root: ET.Element = root
 
         #: current filepath of flow
         self.flow_path: str | None = None
@@ -74,7 +78,7 @@ class Parser(FlowParser):
         self.flow_type: FlowType | None = None
 
         #: frozen set of all elements that have a child of <name> and are thus flow globals
-        self.all_named_elems: frozenset[ET._Element] | None = None
+        self.all_named_elems: frozenset[ET.Element] | None = None
 
         #: variables marked 'available for input', as a pair (flow_path, name)
         self.input_variables: frozenset[(str, str)] | None = None
@@ -100,7 +104,7 @@ class Parser(FlowParser):
     def get_filename(self) -> str:
         return self.flow_path
 
-    def get_root(self) -> ET._Element:
+    def get_root(self) -> ET.Element:
         return self.root
 
     def get_literal_var(self) -> VariableType:
@@ -124,41 +128,47 @@ class Parser(FlowParser):
         # Process Builder
         # no <start> but <startElementReference>
         res = get_by_tag(self.root, 'startElementReference')
-        if len(res) > 0:
-            flow_type = FlowType.ProcessBuilder
+        if len(res) == 0:
+            res = get_by_tag(self.root, 'start')
+            if len(res) == 0:
+                # this is an old format record trigger flow
+                self.flow_type = FlowType.RecordTrigger
+                return FlowType.RecordTrigger
+        start = res[0]
+
+        # Trigger, record
+        # <start> has a child <triggerType>
+        child = get_by_tag(start, 'triggerType')
+        if len(child) > 0:
+            flow_type = FlowType.RecordTrigger
+
+        elif len(get_by_tag(start, 'schedule')) > 0:
+            flow_type = FlowType.Scheduled
 
         else:
-            res = get_by_tag(self.root, 'start')
-            assert len(res) != 0
-            start = res[0]
+            # We couldn't determine flow type by looking at
+            # <start> elem, so now look at processType elem
+            pt = get_by_tag(self.root, 'processType')
+            if len(pt) > 0:
+                pt = pt[0].text
 
-            # Trigger, record
-            # <start> has a child <triggerType>
-            child = get_by_tag(start, 'triggerType')
-            if len(child) > 0:
-                flow_type = FlowType.RecordTrigger
+                # Screen
+                # <processType>Flow and start does not have trigger or schedule
+                if pt == 'Flow' or len(get_by_tag(self.root, 'screens')) > 0:
+                    flow_type = FlowType.Screen
 
-            elif len(get_by_tag(start, 'schedule')) > 0:
-                flow_type = FlowType.Scheduled
+                elif pt.lower() == 'workflow':
+                    flow_type = FlowType.Workflow
 
-            else:
-                # We couldn't determine flow type by looking at
-                # <start> elem, so now look at processType elem
-                pt = get_by_tag(self.root, 'processType')
-                if len(pt) > 0:
-                    pt = pt[0].text
+                elif pt.lower() == 'invocableprocess':
+                    flow_type = FlowType.InvocableProcess
 
-                    # Screen
-                    # <processType>Flow and start does not have trigger or schedule
-                    if pt == 'Flow' or len(get_by_tag(self.root, 'screens')) > 0:
-                        flow_type = FlowType.Screen
-
-                    # AutoLaunched
-                    # Some teams have their own names, e.g. FooAutolaunchedFlow
-                    # Notice this messes up capitalization from normal 'AutoLaunchedFlow'
-                    # there are also recommendation strategies, etc.
-                    else:
-                        flow_type = FlowType.AutoLaunched
+                # AutoLaunched
+                # Some teams have their own names, e.g. FooAutolaunchedFlow
+                # Notice this messes up capitalization from normal 'AutoLaunchedFlow'
+                # there are also recommendation strategies, etc.
+                else:
+                    flow_type = FlowType.AutoLaunched
 
         if flow_type is not None:
             self.flow_type = flow_type
@@ -174,7 +184,8 @@ class Parser(FlowParser):
 
             "Account_var.Name" --> ("Account_var", "Name", VariableType)
             "account_var" --> (account_var, None, VariableType).
-            (my_subflow.account.Name) --> (my_subflow.account, Name, VarType)
+            (my_subflow.account.Name) --> (my_subflow.account, Name, VariableType)
+            (my_action_call.account) --> (my_action_call.account, None, VariableType)
 
         Args:
             name: raw name as it is used in the flow xml file (e.g. foo.bar.baz)
@@ -206,6 +217,9 @@ class Parser(FlowParser):
         if spl_len == 1:
             logger.warning(f"RESOLUTION ERROR {name}")
             if strict is False:
+                # 'strict' = False means that any unknown variable name
+                # is assumed to be a string literal that is hardcoded into
+                # the flows runtime and so not declared in flow xml file
                 return name, None, self.literal_var
             else:
                 return None
@@ -231,7 +245,7 @@ class Parser(FlowParser):
 
     @classmethod
     def from_file(cls, filepath: str, old_parser: Parser = None) -> Parser:
-        root = ET.parse(filepath).getroot()
+        root = ET.parse(filepath, parser=parse_utils.LineNumberingParser()).getroot()
         parser = Parser(root)
         parser.flow_path = filepath
         parser.update(old_parser=old_parser)
@@ -300,10 +314,10 @@ class Parser(FlowParser):
             path = self.flow_path
         return {(x, y) for (x, y) in self.input_variables if x == path}
 
-    def get_input_field_elems(self) -> set[ET._Element] | None:
+    def get_input_field_elems(self) -> set[ET.Element] | None:
         return parse_utils.get_input_fields(self.root)
 
-    def get_input_output_elems(self) -> {str: set[ET._Element]}:
+    def get_input_output_elems(self) -> {str: set[ET.Element]}:
         """
         Returns::
               {"input": input variable elements,
@@ -325,7 +339,7 @@ class Parser(FlowParser):
                 "output": output_accum
                 }
 
-    def get_by_name(self, name_to_match: str, scope: ET._Element | None = None) -> ET._Element | None:
+    def get_by_name(self, name_to_match: str, scope: ET.Element | None = None) -> ET.Element | None:
         """returns the first elem with the given name that is a child of the scope element"""
         if name_to_match == '*':
             return self.get_start_elem()
@@ -356,9 +370,17 @@ class Parser(FlowParser):
 
         """
         flow_type = self.get_flow_type()
-        if flow_type is not FlowType.Screen and flow_type is not FlowType.AutoLaunched:
+
+        if flow_type is FlowType.InvocableProcess:
+            # always runs in user mode
+            return RunMode.DefaultMode
+
+        if flow_type in [FlowType.Workflow, FlowType.RecordTrigger, FlowType.Scheduled, FlowType.ProcessBuilder]:
+            # always runs in system mode
             return RunMode.SystemModeWithoutSharing
 
+        # for screen and other autolaunched, check if there is a declaration
+        # otherwise go with default
         elems = get_by_tag(self.root, 'runInMode')
         if len(elems) == 0:
             return RunMode.DefaultMode
@@ -368,7 +390,7 @@ class Parser(FlowParser):
     def get_api_version(self) -> str:
         return get_by_tag(self.root, 'apiVersion')[0].text
 
-    def get_all_traversable_flow_elements(self) -> [ET._Element]:
+    def get_all_traversable_flow_elements(self) -> [ET.Element]:
         """ ignore start"""
         return [child for child in self.root if
                 get_tag(child) in ['actionCalls', 'assignments', 'decisions', 'loops',
@@ -376,40 +398,40 @@ class Parser(FlowParser):
                                    'collectionProcessors', 'recordDeletes', 'recordCreates', 'screens', 'subflows',
                                    'waits', 'recordRollbacks']]
 
-    def get_all_variable_elems(self) -> [ET._Element] or None:
+    def get_all_variable_elems(self) -> [ET.Element] or None:
         elems = get_by_tag(self.root, 'variables')
         if len(elems) == 0:
             return None
         else:
             return elems
 
-    def get_templates(self) -> [ET._Element]:
+    def get_templates(self) -> [ET.Element]:
         """Grabs all template elements.
            Returns empty list if none found
         """
         templates = get_by_tag(self.root, 'textTemplates')
         return templates
 
-    def get_formulas(self) -> [ET._Element]:
+    def get_formulas(self) -> [ET.Element]:
         """Grabs all formula elements.
                 Returns empty list if none found
         """
         formulas = get_by_tag(self.root, 'formulas')
         return formulas
 
-    def get_choices(self) -> [ET._Element]:
+    def get_choices(self) -> [ET.Element]:
         choices = get_by_tag(self.root, 'choices')
         return choices
 
-    def get_dynamic_choice_sets(self) -> [ET._Element]:
+    def get_dynamic_choice_sets(self) -> [ET.Element]:
         dcc = get_by_tag(self.root, 'dynamicChoiceSets')
         return dcc
 
-    def get_constants(self) -> [ET._Element]:
+    def get_constants(self) -> [ET.Element]:
         constants = get_by_tag(self.root, 'constants')
         return constants
 
-    def get_start_elem(self) -> ET._Element:
+    def get_start_elem(self) -> ET.Element:
         """Get first element of flow
 
         Returns:
@@ -424,10 +446,16 @@ class Parser(FlowParser):
         elif len(res2) == 1:
             return self.get_by_name(res2[0].text)
 
+        # Put in provision for older flows that are missing start elements but have only
+        # a single crud element
+        candidates = get_by_tag(self.root, 'recordUpdates')
+        if len(candidates) == 1:
+            return candidates[0]
+
         else:
             raise RuntimeError("Currently only flows with a single 'start' or 'startElementReference' can be scanned")
 
-    def get_all_indirect_tuples(self) -> list[tuple[str, ET._Element]]:
+    def get_all_indirect_tuples(self) -> list[tuple[str, ET.Element]]:
         """returns a list of tuples of all indirect references, e.g.
         str, elem, where str influences elem.
         The elem is a formula or template element and
@@ -483,13 +511,13 @@ class Parser(FlowParser):
 
         else:
             logger.info(f"Auto-resolving {name} in file {self.flow_path}")
-            if strict is False:
+            if strict is True:
                 return self.literal_var
             else:
                 return None
 
 
-def build_vartype_from_elem(elem: ET._Element) -> VariableType | None:
+def build_vartype_from_elem(elem: ET.Element) -> VariableType | None:
     """Build VariableType from XML Element
 
     The purpose of this function is to assign types to named
@@ -537,6 +565,15 @@ def build_vartype_from_elem(elem: ET._Element) -> VariableType | None:
                 return VariableType(tag=tag, datatype=type_, is_collection=is_,
                                     object_name=parse_utils.get_obj_name(elem),
                                     is_optional=nulls_provided is not None and nulls_provided is False)
+
+        if tag == 'actionCalls':
+            is_ = parse_utils.is_auto_store(elem)
+            if is_ is True:
+                reference = ReferenceType.ActionCallReference
+                # TODO: see if we can get datatype info from return value
+
+                return VariableType(tag=tag, datatype=DataType.StringValue,
+                                    reference=reference, is_optional=False)
 
         if tag == 'recordCreates':
             # Todo: get collection parsing correct, look if record being created is itself
@@ -640,7 +677,7 @@ def build_vartype_from_elem(elem: ET._Element) -> VariableType | None:
     return None
 
 
-def _get_global_flow_data(flow_path, root: ET._Element) -> ([ET._Element], {str: VariableType}):
+def _get_global_flow_data(flow_path, root: ET.Element) -> ([ET.Element], {str: VariableType}):
     all_named = get_named_elems(root)
 
     # all named cannot be None, each flow must have at least one named element.
@@ -655,15 +692,15 @@ def _get_global_flow_data(flow_path, root: ET._Element) -> ([ET._Element], {str:
         try:
             var = build_vartype_from_elem(x)
         except Exception:
-            logger.error(f"ERROR parsing element {ET.tounicode(x)}")
+            logger.error(f"ERROR parsing element {ET.tostring(x, encoding='unicode')}")
             continue
         if var is not None:
             vars_[(flow_path, name_dict[x])] = var
 
-            if var.is_input and var.is_input is True:
+            if var.is_input is True:
                 inputs.append((flow_path, name_dict[x]))
 
-            if var.is_output and var.is_output is True:
+            if var.is_output is True:
                 outputs.append((flow_path, name_dict[x]))
 
     return all_named, vars_, frozenset(inputs), frozenset(outputs)

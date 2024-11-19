@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import logging
 
 if TYPE_CHECKING:
-    from lxml import etree as ET
+    import xml.etree.ElementTree as ET
 
 from public import parse_utils
 from public.data_obj import DataInfluenceStatement, QueryResult
@@ -95,7 +95,7 @@ class DefaultQueryProcessor(QueryProcessor):
         self.parser: FlowParser | None = None
 
         #: flow (xml) root
-        self.root: ET._Element
+        self.root: ET.Element
 
         #: path of flow
         self.flow_paths: [str] = None
@@ -139,7 +139,7 @@ class DefaultQueryProcessor(QueryProcessor):
         # dataflow graph of the entire fully executed program
         return None
 
-    def process_element(self, elem: ET._Element, state: State) -> list[QueryResult] | None:
+    def process_element(self, elem: ET.Element, state: State) -> list[QueryResult] | None:
         """Looks for CRUD influencers from sources (input fields or input variables)
 
             Searches the xml element looking for tainted variables that are selector or data influencers.
@@ -196,7 +196,7 @@ class DefaultQueryProcessor(QueryProcessor):
                 assert x.paths is not None
             return res
 
-    def process_influencers(self, state: State, current_elem: ET._Element,
+    def process_influencers(self, state: State, current_elem: ET.Element,
                             filter_influencers: [str], input_influencers: [str],
                             elem_type: str,
                             parser: FlowParser) -> [QueryResult]:
@@ -254,7 +254,7 @@ class DefaultQueryProcessor(QueryProcessor):
                                                    comment=f"flow into {elem_type} via influence over {a_field}"
                                                            f" in run mode {run_mode.name}",
                                                    line_no=current_elem.sourceline,
-                                                   source_text=parse_utils.ET.tounicode(current_elem),
+                                                   source_text=parse_utils.ET.tostring(current_elem, encoding='unicode'),
                                                    flow_path=flow_path
                                                    )
                 to_return.append(QueryResult(query_id=query_id,

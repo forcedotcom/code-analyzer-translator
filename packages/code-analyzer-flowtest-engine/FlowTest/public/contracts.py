@@ -14,7 +14,7 @@ import public.enums
 
 if TYPE_CHECKING:
     from public.data_obj import DataInfluencePath, VariableType
-    from lxml import etree as ET
+    import xml.etree.ElementTree as ET
 
 from public.enums import RunMode
 
@@ -161,7 +161,7 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def get_current_elem(self) -> ET._Element:
+    def get_current_elem(self) -> ET.Element:
         pass
 
     @abstractmethod
@@ -206,7 +206,7 @@ class FlowParser(ABC):
         pass
 
     @abstractmethod
-    def get_root(self) -> ET._Element:
+    def get_root(self) -> ET.Element:
         pass
 
     @abstractmethod
@@ -232,7 +232,7 @@ class FlowParser(ABC):
         pass
 
     @abstractmethod
-    def get_input_field_elems(self) -> set[ET._Element] | None:
+    def get_input_field_elems(self) -> set[ET.Element] | None:
         """Named XML elements that are children of Screen Flow Input Text Elements
 
         .. Note:: Only returns variables from current flow
@@ -243,5 +243,5 @@ class FlowParser(ABC):
         pass
 
     @abstractmethod
-    def get_by_name(self, name_to_match: str, scope: ET._Element | None = None) -> ET._Element | None:
+    def get_by_name(self, name_to_match: str, scope: ET.Element | None = None) -> ET.Element | None:
         pass

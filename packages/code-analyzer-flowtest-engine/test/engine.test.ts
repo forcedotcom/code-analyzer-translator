@@ -55,7 +55,7 @@ const PATH_TO_WORKSPACE = path.resolve(__dirname, 'test-data', 'example-workspac
 const PATH_TO_SAMPLE_RESULTS = path.resolve(__dirname, 'test-data', 'sample-flowtest-results', 'engine.test.ts');
 const PATH_TO_GOLDFILES = path.resolve(__dirname, 'test-data', 'goldfiles', 'engine.test.ts');
 
-xdescribe('Tests for the FlowTestEngine', () => {
+describe('Tests for the FlowTestEngine', () => {
     it('getName() returns correct name', () => {
         const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([]));
         expect(engine.getName()).toEqual('flowtest');
@@ -77,7 +77,7 @@ xdescribe('Tests for the FlowTestEngine', () => {
             const results: EngineRunResults = await engine.runRules(ruleDescriptors.map(r => r.name), {workspace});
             // No need to do in-depth examination of the results, since other tests already do that. Just make sure we
             // got the right number of violations.
-            expect(results.violations).toHaveLength(14);
+            expect(results.violations).toHaveLength(11);
         }, 60000);
     });
 

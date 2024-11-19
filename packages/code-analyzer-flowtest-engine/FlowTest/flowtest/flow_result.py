@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import json
 import logging
+import sys
 from datetime import datetime
 from typing import TextIO
 
-import lxml.etree as ET
+sys.modules['_elementtree'] = None
+import xml.etree.ElementTree as ET
 
 from flowtest import ESAPI
 from flowtest import flow_metrics
@@ -156,7 +158,7 @@ class ResultsProcessor(object):
 
                     result_str += (f'<Result NodeId="{counter}" '
                                    f'FileName="{ESAPI.html_encode(start_path)}">'
-                                   f'<Path SimilarityId="{counter}">')
+                                   f'<Path SimilarityId="{counter}FT">')
                     for index, node in enumerate(statements):
                         filename = node.flow_path
                         line = node.line_no
@@ -211,7 +213,7 @@ class ResultsProcessor(object):
 
         Used internally to generate popcrab compatible
         xml and html report formats.
-        
+
         Also useful for testing
 
         Returns:
@@ -309,7 +311,7 @@ def _validate_and_prettify_xml(xml_str: str) -> str:
     """
     my_root = ET.fromstring(bytes(xml_str, encoding='utf-8'))
     ET.indent(my_root)
-    return ET.tounicode(my_root)
+    return ET.tostring(my_root, encoding='unicode', default_namespace='http://soap.sforce.com/2006/04/metadata')
 
 
 def _merge_results(results: list[QueryResult]) -> [QueryResult]:
@@ -359,7 +361,7 @@ def _merge_results(results: list[QueryResult]) -> [QueryResult]:
             query_id=qr.query_id,
             influence_statement=qr.influence_statement,
             paths=frozenset(new_paths)
-            )
+        )
         )
 
     return new_list

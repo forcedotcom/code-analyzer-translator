@@ -1,8 +1,11 @@
 import {ChildProcessWithoutNullStreams, spawn} from 'node:child_process';
+import path from 'node:path';
 import {getMessage} from "../messages";
 
 type ProcessStdOutFn = (stdoutMsg: string) => void;
 const NO_OP = () => {};
+
+const PATH_TO_FLOWTEST_ROOT = path.join(__dirname, '..', '..', 'FlowTest');
 
 export class PythonCommandExecutor {
     private readonly pythonCommand: string;
@@ -15,7 +18,12 @@ export class PythonCommandExecutor {
         return new Promise<void>((res, rej) => {
             const stderrMessages: string[] = [];
 
-            const pythonProcess: ChildProcessWithoutNullStreams = spawn(this.pythonCommand, pythonCmdArgs);
+            const pythonProcess: ChildProcessWithoutNullStreams = spawn(this.pythonCommand, pythonCmdArgs, {
+                env: {
+                    ...process.env,
+                    PYTHONPATH: PATH_TO_FLOWTEST_ROOT
+                }
+            });
 
             pythonProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();

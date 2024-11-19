@@ -69,8 +69,6 @@ export type FlowNodeDescriptor = {
     source_text: string;
 }
 
-const PATH_TO_PIPX_PYZ = path.join(__dirname, '..', '..', 'pipx.pyz');
-const PATH_TO_FLOWTEST_ROOT = path.join(__dirname, '..', '..', 'FlowTest');
 const STATUS_DELIMITER = '**STATUS:';
 
 export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
@@ -82,11 +80,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
 
     public async getFlowTestRuleDescriptions(): Promise<FlowTestRuleDescriptor[]> {
         const pythonArgs: string[] = [
-            PATH_TO_PIPX_PYZ,
-            'run',
-            '--spec',
-            PATH_TO_FLOWTEST_ROOT,
-            '--',
+            '-m',
             'flowtest',
             '-p'
         ];
@@ -108,11 +102,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
     public async runFlowTestRules(dir: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {
         const tmpFile: string = this.createTmpFileName();
         const pythonArgs: string[] = [
-            PATH_TO_PIPX_PYZ,
-            'run',
-            '--spec',
-            PATH_TO_FLOWTEST_ROOT,
-            '--',
+            '-m',
             'flowtest',
             '-j',
             tmpFile,
