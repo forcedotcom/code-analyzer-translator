@@ -1,0 +1,85 @@
+import {RunResults} from "../results";
+import * as xmlbuilder from "xmlbuilder";
+import {OutputFormatter} from "../output-format";
+import {JsonResultsOutput, toJsonResultsOutput} from "./json-output-format";
+
+export class XmlOutputFormatter implements OutputFormatter {
+    format(results: RunResults): string {
+        // XML and JSON output formats are very similar, so leveraging the same data structure from JSON for now.
+        const resultsOutput: JsonResultsOutput = toJsonResultsOutput(results);
+
+        const resultsNode: xmlbuilder.XMLElement = xmlbuilder.create('results', {version: '1.0', encoding: 'UTF-8'});
+        resultsNode.node('runDir').text(resultsOutput.runDir);
+        const violationCountsNode: xmlbuilder.XMLElement = resultsNode.node('violationCounts');
+        violationCountsNode.node('total').text(`${resultsOutput.violationCounts.total}`);
+        violationCountsNode.node('sev1').text(`${resultsOutput.violationCounts.sev1}`);
+        violationCountsNode.node('sev2').text(`${resultsOutput.violationCounts.sev2}`);
+        violationCountsNode.node('sev3').text(`${resultsOutput.violationCounts.sev3}`);
+        violationCountsNode.node('sev4').text(`${resultsOutput.violationCounts.sev4}`);
+        violationCountsNode.node('sev5').text(`${resultsOutput.violationCounts.sev5}`);
+
+        const violationsNode: xmlbuilder.XMLElement = resultsNode.node('violations');
+        for (const violationOutput of resultsOutput.violations) {
+            const violationNode: xmlbuilder.XMLElement = violationsNode.node('violation');
+            violationNode.node('rule').text(violationOutput.rule);
+            violationNode.node('engine').text(violationOutput.engine);
+            violationNode.node('severity').text(`${violationOutput.severity}`);
+            violationNode.node('type').text(violationOutput.type);
+            const tagsNode: xmlbuilder.XMLElement = violationNode.node('tags');
+            for (const tag of violationOutput.tags) {
+                tagsNode.node('tag').text(tag);
+            }
+            if (violationOutput.file) {
+                violationNode.node('file').text(violationOutput.file);
+            }
+            if (violationOutput.line) {
+                violationNode.node('line').text(`${violationOutput.line}`);
+            }
+            if (violationOutput.column) {
+                violationNode.node('column').text(`${violationOutput.column}`);
+            }
+            if (violationOutput.endLine) {
+                violationNode.node('endLine').text(`${violationOutput.endLine}`);
+            }
+            if (violationOutput.endColumn) {
+                violationNode.node('endColumn').text(`${violationOutput.endColumn}`);
+            }
+            if (violationOutput.primaryLocationIndex != null) {
+                violationNode.node('primaryLocationIndex').text(`${violationOutput.primaryLocationIndex}`);
+            }
+            if (violationOutput.locations) {
+                const pathLocationsNode: xmlbuilder.XMLElement = violationNode.node('locations');
+                for (const location of violationOutput.locations) {
+                    const locationNode: xmlbuilder.XMLElement = pathLocationsNode.node('location');
+                    if (location.getFile() != null ) {
+                        locationNode.node('file').text(location.getFile()!);
+                    }
+                    if (location.getLine() != null) {
+                        locationNode.node('line').text(`${location.getLine()}`);
+                    }
+                    if (location.getColumn() != null) {
+                        locationNode.node('column').text(`${location.getColumn()}`);
+                    }
+                    if (location.getEndLine() != null) {
+                        locationNode.node('endLine').text(`${location.getEndLine()}`);
+                    }
+                    if (location.getEndColumn() != null) {
+                        locationNode.node('endColumn').text(`${location.getEndColumn()}`);
+                    }
+                    if (location.getComment() != null) {
+                        locationNode.node('comment').text(location.getComment()!);
+                    }
+                }
+            }
+            violationNode.node('message').text(violationOutput.message);
+            if (violationOutput.resources) {
+                const resourcesNode: xmlbuilder.XMLElement = violationNode.node('resources');
+                for (const resource of violationOutput.resources) {
+                    resourcesNode.node('resource').text(resource);
+                }
+            }
+        }
+
+        return violationsNode.end({ pretty: true, allowEmpty: true });
+    }
+}
