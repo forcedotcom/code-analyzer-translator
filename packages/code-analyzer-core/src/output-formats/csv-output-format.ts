@@ -32,7 +32,7 @@ export class CsvOutputFormatter implements OutputFormatter {
     }
 }
 
-export type CsvRow = {
+type CsvRow = {
     rule: string
     engine: string
     severity: number
