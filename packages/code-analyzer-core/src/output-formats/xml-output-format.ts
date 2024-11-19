@@ -24,7 +24,6 @@ export class XmlOutputFormatter implements OutputFormatter {
             violationNode.node('rule').text(violationOutput.rule);
             violationNode.node('engine').text(violationOutput.engine);
             violationNode.node('severity').text(`${violationOutput.severity}`);
-            violationNode.node('type').text(violationOutput.type);
             const tagsNode: xmlbuilder.XMLElement = violationNode.node('tags');
             for (const tag of violationOutput.tags) {
                 tagsNode.node('tag').text(tag);

@@ -14,7 +14,6 @@
       <rule>stub1RuleA</rule>
       <engine>stubEngine1</engine>
       <severity>4</severity>
-      <type>Standard</type>
       <tags>
         <tag>Recommended</tag>
         <tag>CodeStyle</tag>
@@ -24,6 +23,16 @@
       <column>6</column>
       <endLine>11</endLine>
       <endColumn>8</endColumn>
+      <primaryLocationIndex>0</primaryLocationIndex>
+      <locations>
+        <location>
+          <file>test{{PATHSEP}}config.test.ts</file>
+          <line>3</line>
+          <column>6</column>
+          <endLine>11</endLine>
+          <endColumn>8</endColumn>
+        </location>
+      </locations>
       <message>SomeViolationMessage1</message>
       <resources>
         <resource>https://example.com/stub1RuleA</resource>
@@ -33,7 +42,6 @@
       <rule>stub1RuleC</rule>
       <engine>stubEngine1</engine>
       <severity>3</severity>
-      <type>Standard</type>
       <tags>
         <tag>Recommended</tag>
         <tag>Performance</tag>
@@ -44,6 +52,16 @@
       <column>7</column>
       <endLine>25</endLine>
       <endColumn>4</endColumn>
+      <primaryLocationIndex>0</primaryLocationIndex>
+      <locations>
+        <location>
+          <file>test{{PATHSEP}}run.test.ts</file>
+          <line>21</line>
+          <column>7</column>
+          <endLine>25</endLine>
+          <endColumn>4</endColumn>
+        </location>
+      </locations>
       <message>SomeViolationMessage2</message>
       <resources>
         <resource>https://example.com/stub1RuleC</resource>
@@ -55,13 +73,20 @@
       <rule>stub1RuleE</rule>
       <engine>stubEngine1</engine>
       <severity>3</severity>
-      <type>Standard</type>
       <tags>
         <tag>Performance</tag>
       </tags>
       <file>test{{PATHSEP}}run.test.ts</file>
       <line>56</line>
       <column>4</column>
+      <primaryLocationIndex>0</primaryLocationIndex>
+      <locations>
+        <location>
+          <file>test{{PATHSEP}}run.test.ts</file>
+          <line>56</line>
+          <column>4</column>
+        </location>
+      </locations>
       <message>Some Violation that contains
 a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may need to be {escaped}.</message>
       <resources>
@@ -73,7 +98,6 @@ a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may
       <rule>stub2RuleC</rule>
       <engine>stubEngine2</engine>
       <severity>2</severity>
-      <type>DataFlow</type>
       <tags>
         <tag>Recommended</tag>
         <tag>BestPractice</tag>
@@ -106,7 +130,6 @@ a new line in `it` and "various" 'quotes'. Also it has &lt;brackets&gt; that may
       <rule>stub3RuleA</rule>
       <engine>stubEngine3</engine>
       <severity>3</severity>
-      <type>Flow</type>
       <tags>
         <tag>Recommended</tag>
         <tag>ErrorProne</tag>

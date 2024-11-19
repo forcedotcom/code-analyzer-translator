@@ -1,6 +1,6 @@
 import {CodeLocation, EngineRunResults, RunResults, Violation} from "../results";
 import * as sarif from "sarif";
-import {Rule, RuleType, SeverityLevel} from "../rules";
+import {Rule, SeverityLevel} from "../rules";
 import {OutputFormatter} from "../output-format";
 
 export class SarifOutputFormatter implements OutputFormatter {
@@ -51,17 +51,19 @@ function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.R
 
 function toSarifResult(violation: Violation, ruleIndex: number) : sarif.Result {
     const primaryCodeLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
-    const result: sarif.Result = {
+    return {
         ruleId: violation.getRule().getName(),
         ruleIndex: ruleIndex,
+        level: toSarifNotificationLevel(violation.getRule().getSeverityLevel()),
         message: { text: violation.getMessage() },
+
+        // Note that sarif format has a limit of 10 elements in the locations array, so we only store
+        // the primary location (which is what most utilities expect) here
         locations: [toSarifLocation(primaryCodeLocation)],
+
+        // And then we store the full locations array in the relatedLocations field if users want to see all of them
+        relatedLocations: violation.getCodeLocations().map(toSarifLocation)
     };
-    if(typeSupportsMultipleLocations(violation.getRule().getType())) {
-        result.relatedLocations = violation.getCodeLocations().map(toSarifLocation);
-    }
-    result.level = toSarifNotificationLevel(violation.getRule().getSeverityLevel());
-    return result;
 }
 
 function toSarifLocation(codeLocation: CodeLocation): sarif.Location {
@@ -92,9 +94,5 @@ function toSarifReportingDescriptor(rule: Rule): sarif.ReportingDescriptor {
 }
 
 function toSarifNotificationLevel(severity: SeverityLevel): sarif.Notification.level {
-    return severity < 3 ? 'error' : 'warning'; // IF satif.Notification.level is an enum then please return the num instead of the string.
-}
-
-function typeSupportsMultipleLocations(ruleType: RuleType) {
-    return [RuleType.DataFlow, RuleType.Flow, RuleType.MultiLocation].includes(ruleType);
+    return severity < 3 ? 'error' : 'warning'; // IF sarif.Notification.level is an enum then please return the num instead of the string.
 }

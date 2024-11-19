@@ -8,7 +8,7 @@ import {
     toJsonViolationOutputArray
 } from "./json-output-format";
 
-const HTML_TEMPLATE_VERSION: string = '0.0.1';
+const HTML_TEMPLATE_VERSION: string = '0.0.2';
 const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
 export class HtmlOutputFormatter implements OutputFormatter {
     private static readonly TIMESTAMP_HOLE: string = '{{###TIMESTAMP###}}';

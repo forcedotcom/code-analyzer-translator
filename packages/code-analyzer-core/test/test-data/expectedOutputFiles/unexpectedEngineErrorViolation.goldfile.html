@@ -48,7 +48,7 @@
         }
       })();
 // === START OF VIOLATION DATA ===
-      const data = [{"rule":"UnexpectedEngineError","engine":"throwingEngine","severity":1,"type":"UnexpectedError","tags":[],"message":"The engine with name &#39;throwingEngine&#39; threw an unexpected error: SomeErrorMessageFromThrowingEngine","resources":[]}];
+      const data = [{"rule":"UnexpectedEngineError","engine":"throwingEngine","severity":1,"tags":[],"primaryLocationIndex":0,"locations":[{}],"message":"The engine with name &#39;throwingEngine&#39; threw an unexpected error: SomeErrorMessageFromThrowingEngine","resources":[]}];
 // === END OF VIOLATION DATA ===
       class Model {
         constructor(data2) {
@@ -76,25 +76,33 @@
         }
         processViolations(data2) {
           return (Array.isArray(data2) ? data2 : data2.violations || []).map(
-            (violation) => ({
-              file: this.sanitize(violation, "file", ""),
-              severity: this.sanitize(violation, "severity", ""),
-              rule: this.sanitize(violation, "rule", ""),
-              engine: this.sanitize(violation, "engine", ""),
-              message: this.sanitize(violation, "message", ""),
-              tags: Array.isArray(violation.tags) ? violation.tags : [],
-              line: this.sanitize(violation, "line", ""),
-              column: this.sanitize(violation, "column", ""),
-              endLine: this.sanitize(violation, "endLine", ""),
-              endColumn: this.sanitize(violation, "endColumn", ""),
-              resources: Array.isArray(violation.resources)
-                ? violation.resources
-                : [],
-              type: this.sanitize(violation, "type", ""),
-              locations: Array.isArray(violation.locations)
-                ? violation.locations
-                : [],
-            }),
+            (violation) => {
+              const primaryLocationIndex = violation.primaryLocationIndex || 0,
+                primaryLocation =
+                  Array.isArray(violation.locations) &&
+                  violation.locations.length > 0
+                    ? violation.locations[primaryLocationIndex]
+                    : {};
+              return {
+                file: this.sanitize(primaryLocation, "file", ""),
+                severity: this.sanitize(violation, "severity", ""),
+                rule: this.sanitize(violation, "rule", ""),
+                engine: this.sanitize(violation, "engine", ""),
+                message: this.sanitize(violation, "message", ""),
+                tags: Array.isArray(violation.tags) ? violation.tags : [],
+                line: this.sanitize(primaryLocation, "line", ""),
+                column: this.sanitize(primaryLocation, "column", ""),
+                endLine: this.sanitize(primaryLocation, "endLine", ""),
+                endColumn: this.sanitize(primaryLocation, "endColumn", ""),
+                resources: Array.isArray(violation.resources)
+                  ? violation.resources
+                  : [],
+                primaryLocationIndex,
+                locations: Array.isArray(violation.locations)
+                  ? violation.locations
+                  : [],
+              };
+            },
           );
         }
         filterViolations(severityFilter, engineFilter, searchTerm) {
@@ -108,8 +116,7 @@
                 searchRegex.test(violation.file) ||
                 searchRegex.test(violation.rule) ||
                 searchRegex.test(violation.tags.join(", ")) ||
-                searchRegex.test(violation.message) ||
-                searchRegex.test(violation.type)),
+                searchRegex.test(violation.message)),
           );
         }
         sortViolations(data2, sortColumn, sortDirection) {
@@ -229,22 +236,15 @@
           if (!((_a = violation.locations) == null ? void 0 : _a.length))
             return "";
           return `<ul>${violation.locations
-            .map((location) => {
+            .map((location, index) => {
               const position = this.getPosition(location);
               return `<li>
-        ${this.isMainLocation(violation, location) ? "<strong>Main</strong> " : ""}
+        ${index == violation.primaryLocationIndex ? "<strong>Main</strong> " : ""}
         <span class="file">${location.file} (${position})</span>
         ${location.comment ? `<span class="comment">${location.comment}</span>` : ""}
       </li>`;
             })
             .join("")}</ul>`;
-        }
-        isMainLocation(violation, location) {
-          return (
-            location.file === violation.file &&
-            location.line === violation.line &&
-            location.column === violation.column
-          );
         }
         updateSummary(data2) {
           const uniqueFiles = new Set(data2.map((v) => v.file));
@@ -398,9 +398,9 @@
               { label: "Message", content: violation.message },
               {
                 label:
-                  0 === violation.locations.length ? "Location" : "Locations",
+                  violation.locations.length <= 1 ? "Location" : "Locations",
                 content:
-                  0 === violation.locations.length
+                  violation.locations.length <= 1
                     ? this.getLocation(violation)
                     : this.getLocationsList(violation),
               },

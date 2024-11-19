@@ -13,8 +13,11 @@
       "rule": "UnexpectedEngineError",
       "engine": "throwingEngine",
       "severity": 1,
-      "type": "UnexpectedError",
       "tags": [],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {}
+      ],
       "message": "The engine with name 'throwingEngine' threw an unexpected error: SomeErrorMessageFromThrowingEngine",
       "resources": []
     }

@@ -13,7 +13,6 @@
       "rule": "stub1RuleA",
       "engine": "stubEngine1",
       "severity": 4,
-      "type": "Standard",
       "tags": [
         "Recommended",
         "CodeStyle"
@@ -23,6 +22,16 @@
       "column": 6,
       "endLine": 11,
       "endColumn": 8,
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{PATHSEP}}config.test.ts",
+          "line": 3,
+          "column": 6,
+          "endLine": 11,
+          "endColumn": 8
+        }
+      ],
       "message": "SomeViolationMessage1",
       "resources": [
         "https://example.com/stub1RuleA"
@@ -32,7 +41,6 @@
       "rule": "stub1RuleC",
       "engine": "stubEngine1",
       "severity": 3,
-      "type": "Standard",
       "tags": [
         "Recommended",
         "Performance",
@@ -43,6 +51,16 @@
       "column": 7,
       "endLine": 25,
       "endColumn": 4,
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{PATHSEP}}run.test.ts",
+          "line": 21,
+          "column": 7,
+          "endLine": 25,
+          "endColumn": 4
+        }
+      ],
       "message": "SomeViolationMessage2",
       "resources": [
         "https://example.com/stub1RuleC",
@@ -54,13 +72,20 @@
       "rule": "stub1RuleE",
       "engine": "stubEngine1",
       "severity": 3,
-      "type": "Standard",
       "tags": [
         "Performance"
       ],
       "file": "test{{PATHSEP}}run.test.ts",
       "line": 56,
       "column": 4,
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{PATHSEP}}run.test.ts",
+          "line": 56,
+          "column": 4
+        }
+      ],
       "message": "Some Violation that contains\na new line in `it` and \"various\" 'quotes'. Also it has <brackets> that may need to be {escaped}.",
       "resources": [
         "https://example.com/stub1RuleE",
@@ -71,7 +96,6 @@
       "rule": "stub2RuleC",
       "engine": "stubEngine2",
       "severity": 2,
-      "type": "DataFlow",
       "tags": [
         "Recommended",
         "BestPractice"
@@ -104,7 +128,6 @@
       "rule": "stub3RuleA",
       "engine": "stubEngine3",
       "severity": 3,
-      "type": "Flow",
       "tags": [
         "Recommended",
         "ErrorProne"
