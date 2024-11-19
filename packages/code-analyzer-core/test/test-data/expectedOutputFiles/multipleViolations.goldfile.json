@@ -17,17 +17,12 @@
         "Recommended",
         "CodeStyle"
       ],
-      "file": "test{{PATHSEP}}config.test.ts",
-      "line": 3,
-      "column": 6,
-      "endLine": 11,
-      "endColumn": 8,
       "primaryLocationIndex": 0,
       "locations": [
         {
           "file": "test{{PATHSEP}}config.test.ts",
-          "line": 3,
-          "column": 6,
+          "startLine": 3,
+          "startColumn": 6,
           "endLine": 11,
           "endColumn": 8
         }
@@ -46,17 +41,12 @@
         "Performance",
         "Custom"
       ],
-      "file": "test{{PATHSEP}}run.test.ts",
-      "line": 21,
-      "column": 7,
-      "endLine": 25,
-      "endColumn": 4,
       "primaryLocationIndex": 0,
       "locations": [
         {
           "file": "test{{PATHSEP}}run.test.ts",
-          "line": 21,
-          "column": 7,
+          "startLine": 21,
+          "startColumn": 7,
           "endLine": 25,
           "endColumn": 4
         }
@@ -75,15 +65,12 @@
       "tags": [
         "Performance"
       ],
-      "file": "test{{PATHSEP}}run.test.ts",
-      "line": 56,
-      "column": 4,
       "primaryLocationIndex": 0,
       "locations": [
         {
           "file": "test{{PATHSEP}}run.test.ts",
-          "line": 56,
-          "column": 4
+          "startLine": 56,
+          "startColumn": 4
         }
       ],
       "message": "Some Violation that contains\na new line in `it` and \"various\" 'quotes'. Also it has <brackets> that may need to be {escaped}.",
@@ -100,25 +87,22 @@
         "Recommended",
         "BestPractice"
       ],
-      "file": "test{{PATHSEP}}stubs.ts",
-      "line": 76,
-      "column": 8,
       "primaryLocationIndex": 2,
       "locations": [
         {
           "file": "test{{PATHSEP}}stubs.ts",
-          "line": 4,
-          "column": 13
+          "startLine": 4,
+          "startColumn": 13
         },
         {
           "file": "test{{PATHSEP}}test-helpers.ts",
-          "line": 9,
-          "column": 1
+          "startLine": 9,
+          "startColumn": 1
         },
         {
           "file": "test{{PATHSEP}}stubs.ts",
-          "line": 76,
-          "column": 8
+          "startLine": 76,
+          "startColumn": 8
         }
       ],
       "message": "SomeViolationMessage3",
@@ -132,31 +116,26 @@
         "Recommended",
         "ErrorProne"
       ],
-      "file": "test{{PATHSEP}}stubs.ts",
-      "line": 90,
-      "column": 1,
-      "endLine": 95,
-      "endColumn": 10,
       "primaryLocationIndex": 2,
       "locations": [
         {
           "file": "test{{PATHSEP}}stubs.ts",
-          "line": 20,
-          "column": 10,
+          "startLine": 20,
+          "startColumn": 10,
           "endLine": 22,
           "endColumn": 25,
           "comment": "Comment at location 1"
         },
         {
           "file": "test{{PATHSEP}}test-helpers.ts",
-          "line": 5,
-          "column": 10,
+          "startLine": 5,
+          "startColumn": 10,
           "comment": "Comment at location 2"
         },
         {
           "file": "test{{PATHSEP}}stubs.ts",
-          "line": 90,
-          "column": 1,
+          "startLine": 90,
+          "startColumn": 1,
           "endLine": 95,
           "endColumn": 10
         }

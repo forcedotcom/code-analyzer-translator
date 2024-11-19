@@ -28,21 +28,6 @@ export class XmlOutputFormatter implements OutputFormatter {
             for (const tag of violationOutput.tags) {
                 tagsNode.node('tag').text(tag);
             }
-            if (violationOutput.file) {
-                violationNode.node('file').text(violationOutput.file);
-            }
-            if (violationOutput.line) {
-                violationNode.node('line').text(`${violationOutput.line}`);
-            }
-            if (violationOutput.column) {
-                violationNode.node('column').text(`${violationOutput.column}`);
-            }
-            if (violationOutput.endLine) {
-                violationNode.node('endLine').text(`${violationOutput.endLine}`);
-            }
-            if (violationOutput.endColumn) {
-                violationNode.node('endColumn').text(`${violationOutput.endColumn}`);
-            }
             if (violationOutput.primaryLocationIndex != null) {
                 violationNode.node('primaryLocationIndex').text(`${violationOutput.primaryLocationIndex}`);
             }
@@ -50,23 +35,23 @@ export class XmlOutputFormatter implements OutputFormatter {
                 const pathLocationsNode: xmlbuilder.XMLElement = violationNode.node('locations');
                 for (const location of violationOutput.locations) {
                     const locationNode: xmlbuilder.XMLElement = pathLocationsNode.node('location');
-                    if (location.getFile() != null ) {
-                        locationNode.node('file').text(location.getFile()!);
+                    if (location.file !== undefined) {
+                        locationNode.node('file').text(location.file);
                     }
-                    if (location.getLine() != null) {
-                        locationNode.node('line').text(`${location.getLine()}`);
+                    if (location.startLine !== undefined) {
+                        locationNode.node('startLine').text(`${location.startLine}`);
                     }
-                    if (location.getColumn() != null) {
-                        locationNode.node('column').text(`${location.getColumn()}`);
+                    if (location.startColumn !== undefined) {
+                        locationNode.node('startColumn').text(`${location.startColumn}`);
                     }
-                    if (location.getEndLine() != null) {
-                        locationNode.node('endLine').text(`${location.getEndLine()}`);
+                    if (location.endLine !== undefined) {
+                        locationNode.node('endLine').text(`${location.endLine}`);
                     }
-                    if (location.getEndColumn() != null) {
-                        locationNode.node('endColumn').text(`${location.getEndColumn()}`);
+                    if (location.endColumn !== undefined) {
+                        locationNode.node('endColumn').text(`${location.endColumn}`);
                     }
-                    if (location.getComment() != null) {
-                        locationNode.node('comment').text(location.getComment()!);
+                    if (location.comment !== undefined) {
+                        locationNode.node('comment').text(location.comment);
                     }
                 }
             }

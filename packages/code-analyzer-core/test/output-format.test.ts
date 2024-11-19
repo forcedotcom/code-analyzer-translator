@@ -168,7 +168,10 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
         runDirVar = runDirVar.replaceAll('\\','\\\\');
     }
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
-        .replaceAll('{{RUNDIR}}', runDirVar);
+        .replaceAll('{{RUNDIR}}', runDirVar)
+        .replaceAll('{{###RUNDIR###}}', runDirVar)
+        .replaceAll('{{###TIMESTAMP###}}', fixedTime.toLocaleString('en-us', {year: "numeric", month: "short",
+            day: "numeric", hour: "numeric", minute: "numeric", hour12: true}))
 }
 
 async function createResultsWithUnexpectedError(): Promise<RunResults> {

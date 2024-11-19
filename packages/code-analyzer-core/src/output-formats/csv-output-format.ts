@@ -1,8 +1,9 @@
-import {RunResults} from "../results";
+import {CodeLocation, RunResults, Violation} from "../results";
 import {stringify as stringifyToCsv} from "csv-stringify/sync";
 import {Options as CsvOptions} from "csv-stringify";
 import {OutputFormatter} from "../output-format";
-import {JsonViolationOutput, toJsonViolationOutputArray} from "./json-output-format";
+import {Rule} from "../rules";
+import {makeRelativeIfPossible} from "./json-output-format";
 
 // Note that CSV format is limited and doesn't support showing certain information, like multiple code
 // locations. CSV format will be a lot like our table view or the main table in the html format.
@@ -11,11 +12,11 @@ import {JsonViolationOutput, toJsonViolationOutputArray} from "./json-output-for
 export class CsvOutputFormatter implements OutputFormatter {
     format(results: RunResults): string {
         // Leveraging the JsonViolationOutput data structure for now. This may change in the near future.
-        const violationOutputs: JsonViolationOutput[] = toJsonViolationOutputArray(results.getViolations(), results.getRunDirectory());
+        const csvRows: CsvRow[] = results.getViolations().map(v => toCsvRow(v, results.getRunDirectory()));
         const options: CsvOptions = {
             header: true,
             quoted_string: true,
-            columns: ['rule', 'engine', 'severity', 'tags', 'file', 'line', 'column',
+            columns: ['rule', 'engine', 'severity', 'tags', 'file', 'startLine', 'startColumn',
                 'endLine', 'endColumn', 'message', 'resources'],
             cast: {
                 object: value => {
@@ -27,6 +28,39 @@ export class CsvOutputFormatter implements OutputFormatter {
                 }
             }
         };
-        return stringifyToCsv(violationOutputs, options);
+        return stringifyToCsv(csvRows, options);
+    }
+}
+
+type CsvRow = {
+    rule: string
+    engine: string
+    severity: number
+    tags: string[]
+    file?: string
+    startLine?: number
+    startColumn?: number
+    endLine?: number
+    endColumn?: number
+    message: string
+    resources?: string[]
+}
+
+function toCsvRow(violation: Violation, runDir: string): CsvRow {
+    const rule: Rule = violation.getRule();
+    const primaryLocation: CodeLocation|undefined = violation.getCodeLocations().length == 0 ? undefined :
+        violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
+    return {
+        rule: rule.getName(),
+        engine: rule.getEngineName(),
+        severity: rule.getSeverityLevel(),
+        tags: rule.getTags(),
+        file: makeRelativeIfPossible(primaryLocation?.getFile(), runDir),
+        startLine: primaryLocation?.getStartLine(),
+        startColumn: primaryLocation?.getStartColumn(),
+        endLine: primaryLocation?.getEndLine(),
+        endColumn: primaryLocation?.getEndColumn(),
+        message: violation.getMessage(),
+        resources: violation.getResourceUrls()
     }
 }
