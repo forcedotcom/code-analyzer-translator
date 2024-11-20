@@ -2,7 +2,6 @@
   {
     "name": "AssignmentInOperand",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -16,7 +15,6 @@
   {
     "name": "AvoidConsoleStatements",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -30,7 +28,6 @@
   {
     "name": "AvoidTrailingComma",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -44,7 +41,6 @@
   {
     "name": "AvoidWithStatement",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -58,7 +54,6 @@
   {
     "name": "ConsistentReturn",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -72,7 +67,6 @@
   {
     "name": "EqualComparison",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -86,7 +80,6 @@
   {
     "name": "ForLoopsMustUseBraces-javascript",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -100,7 +93,6 @@
   {
     "name": "GlobalVariable",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -114,7 +106,6 @@
   {
     "name": "IfElseStmtsMustUseBraces-javascript",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -128,7 +119,6 @@
   {
     "name": "IfStmtsMustUseBraces-javascript",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -142,7 +132,6 @@
   {
     "name": "InaccurateNumericLiteral",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -156,7 +145,6 @@
   {
     "name": "NoElseReturn",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -170,7 +158,6 @@
   {
     "name": "ScopeForInVariable",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -184,7 +171,6 @@
   {
     "name": "UnnecessaryBlock",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -198,7 +184,6 @@
   {
     "name": "UnnecessaryParentheses",
     "severityLevel": 4,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -212,7 +197,6 @@
   {
     "name": "UnreachableCode",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -226,7 +210,6 @@
   {
     "name": "UseBaseWithParseInt",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -240,7 +223,6 @@
   {
     "name": "WhileLoopsMustUseBraces-javascript",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",

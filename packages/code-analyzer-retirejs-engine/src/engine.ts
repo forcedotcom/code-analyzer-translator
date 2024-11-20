@@ -8,7 +8,6 @@ import {
     LogEvent,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -103,7 +102,6 @@ function createRuleDescription(rjsSeverity: RetireJsSeverity): RuleDescription {
     return {
         name: toRuleName(rjsSeverity),
         severityLevel: toSeverityLevel(rjsSeverity),
-        type: RuleType.Standard,
         tags: ['Recommended'],
         description: getMessage('RetireJsRuleDescription', `${rjsSeverity}`),
         resourceUrls: ['https://retirejs.github.io/retire.js/']

@@ -2,7 +2,6 @@
   {
     "name": "DetectCopyPasteForApex",
     "severityLevel": 5,
-    "type": "MultiLocation",
     "tags": [
       "Recommended",
       "apexLanguage"
@@ -15,7 +14,6 @@
   {
     "name": "DetectCopyPasteForHtml",
     "severityLevel": 5,
-    "type": "MultiLocation",
     "tags": [
       "Recommended",
       "htmlLanguage"

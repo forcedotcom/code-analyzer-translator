@@ -4,7 +4,6 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -121,7 +120,6 @@ function toRuleDescription(name: string, metadata: Rule.RuleMetaData, status: ES
     return {
         name: name,
         severityLevel: toSeverityLevel(metadata, status),
-        type: RuleType.Standard,
         tags: toTags(metadata, status),
         description: metadata.docs?.description || '',
         resourceUrls: metadata.docs?.url ? [metadata.docs.url] : []

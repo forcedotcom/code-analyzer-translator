@@ -8,7 +8,6 @@ import {
     Rule,
     RuleSelection,
     RuleSelectionProgressEvent,
-    RuleType,
     SelectOptions,
     SeverityLevel
 } from "../src";
@@ -58,7 +57,6 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getResourceUrls()).toEqual(['https://example.com/stub1RuleB']);
         expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.High);
         expect(stub1RuleB.getTags()).toEqual(['Recommended', 'Security']);
-        expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
 
         // Sanity check we can directly get one of the rules from the selection
         expect(selection.getRule('stubEngine1', 'stub1RuleB')).toEqual(stub1RuleB);
@@ -204,7 +202,6 @@ describe('Tests for selecting rules', () => {
         expect(stub1RuleB.getResourceUrls()).toEqual(['https://example.com/stub1RuleB']);
         expect(stub1RuleB.getSeverityLevel()).toEqual(SeverityLevel.Critical); // This changed
         expect(stub1RuleB.getTags()).toEqual(['Recommended', 'Security']);
-        expect(stub1RuleB.getType()).toEqual(RuleType.Standard);
     });
 
     it('When config contains rule overrides, then we can select based on the new tags', async () => {
@@ -223,7 +220,6 @@ describe('Tests for selecting rules', () => {
         expect(stub2RuleA.getResourceUrls()).toEqual(['https://example.com/stub2RuleA']);
         expect(stub2RuleA.getSeverityLevel()).toEqual(SeverityLevel.Moderate);
         expect(stub2RuleA.getTags()).toEqual(['Security', 'SomeNewTag']); // This changed
-        expect(stub2RuleA.getType()).toEqual(RuleType.DataFlow);
     });
 
     it('When config contains severity overrides, then we can select based on the severity values', async () => {

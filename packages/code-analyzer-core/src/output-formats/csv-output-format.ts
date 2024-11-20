@@ -48,7 +48,7 @@ type CsvRow = {
 
 function toCsvRow(violation: Violation, runDir: string): CsvRow {
     const rule: Rule = violation.getRule();
-    const primaryLocation: CodeLocation|undefined = violation.getCodeLocations().length == 0 ? undefined :
+    const primaryLocation: CodeLocation|undefined = violation.getCodeLocations().length == 0 ? /* istanbul ignore next */ undefined :
         violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
     return {
         rule: rule.getName(),

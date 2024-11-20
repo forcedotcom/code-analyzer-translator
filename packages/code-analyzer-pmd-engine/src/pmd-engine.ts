@@ -5,7 +5,6 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -117,7 +116,6 @@ function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
     return {
         name: toUniqueRuleName(pmdRuleInfo.name, languageId),
         severityLevel: toSeverityLevel(pmdRuleInfo.priority),
-        type: RuleType.Standard,
         tags: ['Recommended', pmdRuleInfo.ruleSet.replaceAll(' ', ''), languageId + 'Language'],
         description: pmdRuleInfo.description,
         resourceUrls: [pmdRuleInfo.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links

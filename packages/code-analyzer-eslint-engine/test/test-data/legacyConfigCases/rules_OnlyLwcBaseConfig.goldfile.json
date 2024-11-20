@@ -2,7 +2,6 @@
   {
     "name": "@lwc/lwc/no-deprecated",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -14,7 +13,6 @@
   {
     "name": "@lwc/lwc/no-disallowed-lwc-imports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -26,7 +24,6 @@
   {
     "name": "@lwc/lwc/no-unexpected-wire-adapter-usages",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -38,7 +35,6 @@
   {
     "name": "@lwc/lwc/no-unknown-wire-adapters",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -50,7 +46,6 @@
   {
     "name": "@lwc/lwc/valid-api",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -62,7 +57,6 @@
   {
     "name": "@lwc/lwc/valid-track",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -74,7 +68,6 @@
   {
     "name": "@lwc/lwc/valid-wire",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -86,7 +79,6 @@
   {
     "name": "no-restricted-imports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"

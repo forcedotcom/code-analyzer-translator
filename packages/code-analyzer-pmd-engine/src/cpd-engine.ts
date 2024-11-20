@@ -5,7 +5,6 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -120,7 +119,6 @@ function createRuleForLanguage(languageId: LanguageId): RuleDescription {
     return {
         name: getRuleNameFromLanguage(languageId),
         severityLevel: SeverityLevel.Info,
-        type: RuleType.MultiLocation,
         tags: ['Recommended', `${languageId}Language`],
         description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']

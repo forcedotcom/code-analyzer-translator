@@ -4,7 +4,6 @@ import {
     Engine,
     EngineRunResults,
     RuleDescription,
-    RuleType,
     RunOptions,
     Violation,
     Workspace
@@ -79,7 +78,6 @@ export class RegexEngine extends Engine {
         return {
             name: ruleName,
             severityLevel: regexRule.severity,
-            type: RuleType.Standard,
             tags: regexRule.tags,
             description: regexRule.description,
             resourceUrls: this.ruleResourceUrls.get(ruleName) ?? []
