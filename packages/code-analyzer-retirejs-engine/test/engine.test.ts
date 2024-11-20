@@ -5,7 +5,6 @@ import {
     EnginePluginV1,
     EngineRunResults,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -123,7 +122,6 @@ describe('Tests for the RetireJsEngine', () => {
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownCriticalSeverityVulnerability',
             severityLevel: SeverityLevel.Critical,
-            type: RuleType.Standard,
             tags: ['Recommended'],
             description: getMessage('RetireJsRuleDescription', 'critical'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
@@ -131,7 +129,6 @@ describe('Tests for the RetireJsEngine', () => {
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownHighSeverityVulnerability',
             severityLevel: SeverityLevel.High,
-            type: RuleType.Standard,
             tags: ['Recommended'],
             description: getMessage('RetireJsRuleDescription', 'high'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
@@ -139,7 +136,6 @@ describe('Tests for the RetireJsEngine', () => {
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownMediumSeverityVulnerability',
             severityLevel: SeverityLevel.Moderate,
-            type: RuleType.Standard,
             tags: ['Recommended'],
             description: getMessage('RetireJsRuleDescription', 'medium'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
@@ -147,7 +143,6 @@ describe('Tests for the RetireJsEngine', () => {
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownLowSeverityVulnerability',
             severityLevel: SeverityLevel.Low,
-            type: RuleType.Standard,
             tags: ['Recommended'],
             description: getMessage('RetireJsRuleDescription', 'low'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']

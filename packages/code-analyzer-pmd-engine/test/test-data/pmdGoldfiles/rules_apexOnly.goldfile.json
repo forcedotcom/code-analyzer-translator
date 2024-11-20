@@ -2,7 +2,6 @@
   {
     "name": "ApexAssertionsShouldIncludeMessage",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -16,7 +15,6 @@
   {
     "name": "ApexBadCrypto",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -30,7 +28,6 @@
   {
     "name": "ApexCRUDViolation",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -44,7 +41,6 @@
   {
     "name": "ApexCSRF",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -58,7 +54,6 @@
   {
     "name": "ApexDangerousMethods",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -72,7 +67,6 @@
   {
     "name": "ApexDoc",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Documentation",
@@ -86,7 +80,6 @@
   {
     "name": "ApexInsecureEndpoint",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -100,7 +93,6 @@
   {
     "name": "ApexOpenRedirect",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -114,7 +106,6 @@
   {
     "name": "ApexSharingViolations",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -128,7 +119,6 @@
   {
     "name": "ApexSOQLInjection",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -142,7 +132,6 @@
   {
     "name": "ApexSuggestUsingNamedCred",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -156,7 +145,6 @@
   {
     "name": "ApexUnitTestClassShouldHaveAsserts",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -170,7 +158,6 @@
   {
     "name": "ApexUnitTestClassShouldHaveRunAs",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -184,7 +171,6 @@
   {
     "name": "ApexUnitTestMethodShouldHaveIsTestAnnotation",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -198,7 +184,6 @@
   {
     "name": "ApexUnitTestShouldNotUseSeeAllDataTrue",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -212,7 +197,6 @@
   {
     "name": "ApexXSSFromEscapeFalse",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -226,7 +210,6 @@
   {
     "name": "ApexXSSFromURLParam",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -240,7 +223,6 @@
   {
     "name": "AvoidDebugStatements",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -254,7 +236,6 @@
   {
     "name": "AvoidDeeplyNestedIfStmts",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -268,7 +249,6 @@
   {
     "name": "AvoidDirectAccessTriggerMap",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -282,7 +262,6 @@
   {
     "name": "AvoidGlobalModifier",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -296,7 +275,6 @@
   {
     "name": "AvoidHardcodingId",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -310,7 +288,6 @@
   {
     "name": "AvoidLogicInTrigger",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -324,7 +301,6 @@
   {
     "name": "AvoidNonExistentAnnotations",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -338,7 +314,6 @@
   {
     "name": "AvoidNonRestrictiveQueries",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -352,7 +327,6 @@
   {
     "name": "ClassNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -366,7 +340,6 @@
   {
     "name": "CognitiveComplexity",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -380,7 +353,6 @@
   {
     "name": "CyclomaticComplexity",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -394,7 +366,6 @@
   {
     "name": "DebugsShouldUseLoggingLevel",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -408,7 +379,6 @@
   {
     "name": "EagerlyLoadedDescribeSObjectResult",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -422,7 +392,6 @@
   {
     "name": "EmptyCatchBlock",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -436,7 +405,6 @@
   {
     "name": "EmptyIfStmt",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -450,7 +418,6 @@
   {
     "name": "EmptyStatementBlock",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -464,7 +431,6 @@
   {
     "name": "EmptyTryOrFinallyBlock",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -478,7 +444,6 @@
   {
     "name": "EmptyWhileStmt",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -492,7 +457,6 @@
   {
     "name": "ExcessiveClassLength",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -506,7 +470,6 @@
   {
     "name": "ExcessiveParameterList",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -520,7 +483,6 @@
   {
     "name": "ExcessivePublicCount",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -534,7 +496,6 @@
   {
     "name": "FieldDeclarationsShouldBeAtStart",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -548,7 +509,6 @@
   {
     "name": "FieldNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -562,7 +522,6 @@
   {
     "name": "ForLoopsMustUseBraces",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -576,7 +535,6 @@
   {
     "name": "FormalParameterNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -590,7 +548,6 @@
   {
     "name": "IfElseStmtsMustUseBraces",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -604,7 +561,6 @@
   {
     "name": "IfStmtsMustUseBraces",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -618,7 +574,6 @@
   {
     "name": "InaccessibleAuraEnabledGetter",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -632,7 +587,6 @@
   {
     "name": "LocalVariableNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -646,7 +600,6 @@
   {
     "name": "MethodNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -660,7 +613,6 @@
   {
     "name": "MethodWithSameNameAsEnclosingClass",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -674,7 +626,6 @@
   {
     "name": "NcssConstructorCount",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -688,7 +639,6 @@
   {
     "name": "NcssMethodCount",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -702,7 +652,6 @@
   {
     "name": "NcssTypeCount",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -716,7 +665,6 @@
   {
     "name": "OneDeclarationPerLine",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -730,7 +678,6 @@
   {
     "name": "OperationWithHighCostInLoop",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -744,7 +691,6 @@
   {
     "name": "OperationWithLimitsInLoop",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Performance",
@@ -758,7 +704,6 @@
   {
     "name": "OverrideBothEqualsAndHashcode",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -772,7 +717,6 @@
   {
     "name": "PropertyNamingConventions",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -786,7 +730,6 @@
   {
     "name": "StdCyclomaticComplexity",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -800,7 +743,6 @@
   {
     "name": "TestMethodsMustBeInTestClasses",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -814,7 +756,6 @@
   {
     "name": "TooManyFields",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -828,7 +769,6 @@
   {
     "name": "UnusedLocalVariable",
     "severityLevel": 4,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "BestPractices",
@@ -842,7 +782,6 @@
   {
     "name": "UnusedMethod",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Design",
@@ -856,7 +795,6 @@
   {
     "name": "WhileLoopsMustUseBraces",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "CodeStyle",

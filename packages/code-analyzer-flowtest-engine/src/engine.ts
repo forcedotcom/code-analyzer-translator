@@ -4,8 +4,9 @@ import {
     Engine,
     EngineRunResults,
     LogLevel,
-    RuleDescription, RuleType,
-    RunOptions, SeverityLevel,
+    RuleDescription,
+    RunOptions,
+    SeverityLevel,
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {
@@ -99,8 +100,6 @@ export function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDes
         // The name maps directly over.
         name: toCodeAnalyzerName(flowTestRule.query_name),
         severityLevel: toCodeAnalyzerSeverity(flowTestRule.severity),
-        // All rules in FlowTest are obviously Flow-type.
-        type: RuleType.Flow,
         // All rules are Recommended, but not all rules are Security rules.
         tags: flowTestRule.is_security.toLowerCase() === 'true' ? ['Recommended', 'Security'] : ['Recommended'],
         // The description maps directly over.

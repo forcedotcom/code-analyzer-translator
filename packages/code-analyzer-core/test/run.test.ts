@@ -14,7 +14,6 @@ import {
     RunResults,
     SeverityLevel,
     Violation,
-    RuleType,
     Workspace
 } from "../src";
 import * as stubs from "./stubs";
@@ -504,7 +503,6 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getRule().getResourceUrls()).toEqual([]);
         expect(violations[0].getRule().getSeverityLevel()).toEqual(SeverityLevel.Critical);
         expect(violations[0].getRule().getTags()).toEqual([]);
-        expect(violations[0].getRule().getType()).toEqual(RuleType.UnexpectedError);
         expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
         expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
         expect(violations[0].getMessage()).toEqual(getMessage('UnexpectedEngineErrorViolationMessage',

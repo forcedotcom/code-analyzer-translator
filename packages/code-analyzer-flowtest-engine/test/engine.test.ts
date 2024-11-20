@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {EngineRunResults, RuleDescription, RuleType, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
+import {EngineRunResults, RuleDescription, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "../src/engine";
 import {FlowTestCommandWrapper, FlowTestExecutionResult, FlowTestRuleDescriptor, RunTimeFlowTestCommandWrapper} from "../src/python/FlowTestCommandWrapper";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
@@ -94,7 +94,6 @@ describe('Tests for the FlowTestEngine', () => {
                     expect(ruleDescriptors[0]).toEqual({
                         name: 'fake-flow-rule-1',
                         severityLevel: SeverityLevel.High,
-                        type: RuleType.Flow,
                         tags: ['Recommended', 'Security'],
                         description: 'Fake Description 1',
                         resourceUrls: ['https://www.salesforce.com']
@@ -102,7 +101,6 @@ describe('Tests for the FlowTestEngine', () => {
                     expect(ruleDescriptors[1]).toEqual({
                         name: 'fake-flow-rule-2',
                         severityLevel: SeverityLevel.Moderate,
-                        type: RuleType.Flow,
                         tags: ['Recommended', 'Security'],
                         description: 'Fake Description 2',
                         resourceUrls: ['https://www.github.com/forcedotcom/code-analyzer-core']
@@ -110,7 +108,6 @@ describe('Tests for the FlowTestEngine', () => {
                     expect(ruleDescriptors[2]).toEqual({
                         name: 'fake-flow-rule-3',
                         severityLevel: SeverityLevel.Low,
-                        type: RuleType.Flow,
                         tags: ['Recommended'],
                         description: 'Fake Description 3',
                         resourceUrls: []
@@ -118,7 +115,6 @@ describe('Tests for the FlowTestEngine', () => {
                     expect(ruleDescriptors[3]).toEqual({
                         name: 'fake-flow-rule-4',
                         severityLevel: SeverityLevel.Low,
-                        type: RuleType.Flow,
                         tags: ['Recommended'],
                         description: 'Fake Description 4',
                         resourceUrls: []

@@ -57,7 +57,7 @@ export function toJsonResultsOutput(results: RunResults, sanitizeFcn: (text: str
     };
 }
 
-export function toJsonViolationOutputArray(violations: Violation[], runDir: string, sanitizeFcn: (text: string) => string = t => t): JsonViolationOutput[] {
+export function toJsonViolationOutputArray(violations: Violation[], runDir: string, sanitizeFcn: (text: string) => string): JsonViolationOutput[] {
     return violations.map(v => toJsonViolationOutput(v, runDir, sanitizeFcn));
 }
 

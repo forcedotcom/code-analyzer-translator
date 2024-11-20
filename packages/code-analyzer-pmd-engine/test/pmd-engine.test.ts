@@ -8,7 +8,6 @@ import {
     LogEvent,
     LogLevel,
     RuleDescription,
-    RuleType,
     RunRulesProgressEvent,
     SeverityLevel,
     Violation,
@@ -145,7 +144,6 @@ describe('Tests for the describeRules method of PmdEngine', () => {
 
         const fakeRule7Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule7'); // From somecat3.xml
         expect(fakeRule7Description.severityLevel).toEqual(SeverityLevel.Low);
-        expect(fakeRule7Description.type).toEqual(RuleType.Standard);
         expect(fakeRule7Description.tags).toEqual(['Recommended', 'SomeCat3', 'apexLanguage']);
         expect(fakeRule7Description.resourceUrls).toEqual(['https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_apex_performance.html#avoiddebugstatements']);
         expect(fakeRule7Description.description).toContain('Debug statements contribute');
@@ -153,7 +151,6 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         expectContainsRuleWithName(ruleDescriptions, 'fakerule9'); // From somecat3.xml
         const fakeRule10Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule10'); // From somecat4.xml
         expect(fakeRule10Description.severityLevel).toEqual(SeverityLevel.High);
-        expect(fakeRule10Description.type).toEqual(RuleType.Standard);
         expect(fakeRule10Description.tags).toEqual(['Recommended', 'SomeCat4', 'javascriptLanguage']);
         expectContainsRuleWithName(ruleDescriptions, 'fakerule11'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule12'); // From somecat4.xml

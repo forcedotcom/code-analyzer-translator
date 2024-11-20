@@ -2,7 +2,6 @@
   {
     "name": "VfCsrf",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -16,7 +15,6 @@
   {
     "name": "VfHtmlStyleTagXss",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",
@@ -30,7 +28,6 @@
   {
     "name": "VfUnescapeEl",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "Security",

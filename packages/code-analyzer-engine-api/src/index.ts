@@ -42,7 +42,6 @@ export {
 
 export {
     RuleDescription,
-    RuleType,
     SeverityLevel
 } from "./rules"
 

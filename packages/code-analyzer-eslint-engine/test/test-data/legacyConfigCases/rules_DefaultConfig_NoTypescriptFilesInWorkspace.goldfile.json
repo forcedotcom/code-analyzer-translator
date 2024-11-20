@@ -2,7 +2,6 @@
   {
     "name": "@lwc/lwc/no-deprecated",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -14,7 +13,6 @@
   {
     "name": "@lwc/lwc/no-disallowed-lwc-imports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -26,7 +24,6 @@
   {
     "name": "@lwc/lwc/no-unexpected-wire-adapter-usages",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -38,7 +35,6 @@
   {
     "name": "@lwc/lwc/no-unknown-wire-adapters",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -50,7 +46,6 @@
   {
     "name": "@lwc/lwc/valid-api",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -62,7 +57,6 @@
   {
     "name": "@lwc/lwc/valid-track",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -74,7 +68,6 @@
   {
     "name": "@lwc/lwc/valid-wire",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended"
     ],
@@ -86,7 +79,6 @@
   {
     "name": "accessor-pairs",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -98,7 +90,6 @@
   {
     "name": "array-callback-return",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -110,7 +101,6 @@
   {
     "name": "arrow-body-style",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -122,7 +112,6 @@
   {
     "name": "block-scoped-var",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -134,7 +123,6 @@
   {
     "name": "camelcase",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -146,7 +134,6 @@
   {
     "name": "capitalized-comments",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -158,7 +145,6 @@
   {
     "name": "class-methods-use-this",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -170,7 +156,6 @@
   {
     "name": "complexity",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -182,7 +167,6 @@
   {
     "name": "consistent-return",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -194,7 +178,6 @@
   {
     "name": "consistent-this",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -206,7 +189,6 @@
   {
     "name": "constructor-super",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -219,7 +201,6 @@
   {
     "name": "curly",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -231,7 +212,6 @@
   {
     "name": "default-case",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -243,7 +223,6 @@
   {
     "name": "default-case-last",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -255,7 +234,6 @@
   {
     "name": "default-param-last",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -267,7 +245,6 @@
   {
     "name": "dot-notation",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -279,7 +256,6 @@
   {
     "name": "eqeqeq",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -291,7 +267,6 @@
   {
     "name": "for-direction",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -304,7 +279,6 @@
   {
     "name": "func-name-matching",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -316,7 +290,6 @@
   {
     "name": "func-names",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -328,7 +301,6 @@
   {
     "name": "func-style",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -340,7 +312,6 @@
   {
     "name": "getter-return",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -353,7 +324,6 @@
   {
     "name": "grouped-accessor-pairs",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -365,7 +335,6 @@
   {
     "name": "guard-for-in",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -377,7 +346,6 @@
   {
     "name": "id-denylist",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -389,7 +357,6 @@
   {
     "name": "id-length",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -401,7 +368,6 @@
   {
     "name": "id-match",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -413,7 +379,6 @@
   {
     "name": "init-declarations",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -425,7 +390,6 @@
   {
     "name": "line-comment-position",
     "severityLevel": 4,
-    "type": "Standard",
     "tags": [
       "layout"
     ],
@@ -437,7 +401,6 @@
   {
     "name": "logical-assignment-operators",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -449,7 +412,6 @@
   {
     "name": "max-classes-per-file",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -461,7 +423,6 @@
   {
     "name": "max-depth",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -473,7 +434,6 @@
   {
     "name": "max-lines",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -485,7 +445,6 @@
   {
     "name": "max-lines-per-function",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -497,7 +456,6 @@
   {
     "name": "max-nested-callbacks",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -509,7 +467,6 @@
   {
     "name": "max-params",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -521,7 +478,6 @@
   {
     "name": "max-statements",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -533,7 +489,6 @@
   {
     "name": "multiline-comment-style",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -545,7 +500,6 @@
   {
     "name": "new-cap",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -557,7 +511,6 @@
   {
     "name": "no-alert",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -569,7 +522,6 @@
   {
     "name": "no-array-constructor",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -581,7 +533,6 @@
   {
     "name": "no-async-promise-executor",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -594,7 +545,6 @@
   {
     "name": "no-await-in-loop",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -606,7 +556,6 @@
   {
     "name": "no-bitwise",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -618,7 +567,6 @@
   {
     "name": "no-caller",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -630,7 +578,6 @@
   {
     "name": "no-case-declarations",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -643,7 +590,6 @@
   {
     "name": "no-class-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -656,7 +602,6 @@
   {
     "name": "no-compare-neg-zero",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -669,7 +614,6 @@
   {
     "name": "no-cond-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -682,7 +626,6 @@
   {
     "name": "no-console",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -694,7 +637,6 @@
   {
     "name": "no-const-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -707,7 +649,6 @@
   {
     "name": "no-constant-binary-expression",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -719,7 +660,6 @@
   {
     "name": "no-constant-condition",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -732,7 +672,6 @@
   {
     "name": "no-constructor-return",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -744,7 +683,6 @@
   {
     "name": "no-continue",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -756,7 +694,6 @@
   {
     "name": "no-control-regex",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -769,7 +706,6 @@
   {
     "name": "no-debugger",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -782,7 +718,6 @@
   {
     "name": "no-delete-var",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -795,7 +730,6 @@
   {
     "name": "no-div-regex",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -807,7 +741,6 @@
   {
     "name": "no-dupe-args",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -820,7 +753,6 @@
   {
     "name": "no-dupe-class-members",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -833,7 +765,6 @@
   {
     "name": "no-dupe-else-if",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -846,7 +777,6 @@
   {
     "name": "no-dupe-keys",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -859,7 +789,6 @@
   {
     "name": "no-duplicate-case",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -872,7 +801,6 @@
   {
     "name": "no-duplicate-imports",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -884,7 +812,6 @@
   {
     "name": "no-else-return",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -896,7 +823,6 @@
   {
     "name": "no-empty",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -909,7 +835,6 @@
   {
     "name": "no-empty-character-class",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -922,7 +847,6 @@
   {
     "name": "no-empty-function",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -934,7 +858,6 @@
   {
     "name": "no-empty-pattern",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -947,7 +870,6 @@
   {
     "name": "no-empty-static-block",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -959,7 +881,6 @@
   {
     "name": "no-eq-null",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -971,7 +892,6 @@
   {
     "name": "no-eval",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -983,7 +903,6 @@
   {
     "name": "no-ex-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -996,7 +915,6 @@
   {
     "name": "no-extend-native",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1008,7 +926,6 @@
   {
     "name": "no-extra-bind",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1020,7 +937,6 @@
   {
     "name": "no-extra-boolean-cast",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1033,7 +949,6 @@
   {
     "name": "no-extra-label",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1045,7 +960,6 @@
   {
     "name": "no-fallthrough",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1058,7 +972,6 @@
   {
     "name": "no-func-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1071,7 +984,6 @@
   {
     "name": "no-global-assign",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1084,7 +996,6 @@
   {
     "name": "no-implicit-coercion",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1096,7 +1007,6 @@
   {
     "name": "no-implicit-globals",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1108,7 +1018,6 @@
   {
     "name": "no-implied-eval",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1120,7 +1029,6 @@
   {
     "name": "no-import-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1133,7 +1041,6 @@
   {
     "name": "no-inline-comments",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1145,7 +1052,6 @@
   {
     "name": "no-inner-declarations",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1158,7 +1064,6 @@
   {
     "name": "no-invalid-regexp",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1171,7 +1076,6 @@
   {
     "name": "no-invalid-this",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1183,7 +1087,6 @@
   {
     "name": "no-irregular-whitespace",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1196,7 +1099,6 @@
   {
     "name": "no-iterator",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1208,7 +1110,6 @@
   {
     "name": "no-label-var",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1220,7 +1121,6 @@
   {
     "name": "no-labels",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1232,7 +1132,6 @@
   {
     "name": "no-lone-blocks",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1244,7 +1143,6 @@
   {
     "name": "no-lonely-if",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1256,7 +1154,6 @@
   {
     "name": "no-loop-func",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1268,7 +1165,6 @@
   {
     "name": "no-loss-of-precision",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1281,7 +1177,6 @@
   {
     "name": "no-magic-numbers",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1293,7 +1188,6 @@
   {
     "name": "no-misleading-character-class",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1306,7 +1200,6 @@
   {
     "name": "no-multi-assign",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1318,7 +1211,6 @@
   {
     "name": "no-multi-str",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1330,7 +1222,6 @@
   {
     "name": "no-negated-condition",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1342,7 +1233,6 @@
   {
     "name": "no-nested-ternary",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1354,7 +1244,6 @@
   {
     "name": "no-new",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1366,7 +1255,6 @@
   {
     "name": "no-new-func",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1378,7 +1266,6 @@
   {
     "name": "no-new-native-nonconstructor",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1390,7 +1277,6 @@
   {
     "name": "no-new-symbol",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1403,7 +1289,6 @@
   {
     "name": "no-new-wrappers",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1415,7 +1300,6 @@
   {
     "name": "no-nonoctal-decimal-escape",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1428,7 +1312,6 @@
   {
     "name": "no-obj-calls",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1441,7 +1324,6 @@
   {
     "name": "no-object-constructor",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1453,7 +1335,6 @@
   {
     "name": "no-octal",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1466,7 +1347,6 @@
   {
     "name": "no-octal-escape",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1478,7 +1358,6 @@
   {
     "name": "no-param-reassign",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1490,7 +1369,6 @@
   {
     "name": "no-plusplus",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1502,7 +1380,6 @@
   {
     "name": "no-promise-executor-return",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1514,7 +1391,6 @@
   {
     "name": "no-proto",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1526,7 +1402,6 @@
   {
     "name": "no-prototype-builtins",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1539,7 +1414,6 @@
   {
     "name": "no-redeclare",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1552,7 +1426,6 @@
   {
     "name": "no-regex-spaces",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1565,7 +1438,6 @@
   {
     "name": "no-restricted-exports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1577,7 +1449,6 @@
   {
     "name": "no-restricted-globals",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1589,7 +1460,6 @@
   {
     "name": "no-restricted-imports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1602,7 +1472,6 @@
   {
     "name": "no-restricted-properties",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1614,7 +1483,6 @@
   {
     "name": "no-restricted-syntax",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1626,7 +1494,6 @@
   {
     "name": "no-return-assign",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1638,7 +1505,6 @@
   {
     "name": "no-script-url",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1650,7 +1516,6 @@
   {
     "name": "no-self-assign",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1663,7 +1528,6 @@
   {
     "name": "no-self-compare",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1675,7 +1539,6 @@
   {
     "name": "no-sequences",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1687,7 +1550,6 @@
   {
     "name": "no-setter-return",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1700,7 +1562,6 @@
   {
     "name": "no-shadow",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1712,7 +1573,6 @@
   {
     "name": "no-shadow-restricted-names",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1725,7 +1585,6 @@
   {
     "name": "no-sparse-arrays",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1738,7 +1597,6 @@
   {
     "name": "no-template-curly-in-string",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1750,7 +1608,6 @@
   {
     "name": "no-ternary",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1762,7 +1619,6 @@
   {
     "name": "no-this-before-super",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1775,7 +1631,6 @@
   {
     "name": "no-throw-literal",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1787,7 +1642,6 @@
   {
     "name": "no-undef",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1800,7 +1654,6 @@
   {
     "name": "no-undef-init",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1812,7 +1665,6 @@
   {
     "name": "no-undefined",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1824,7 +1676,6 @@
   {
     "name": "no-underscore-dangle",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1836,7 +1687,6 @@
   {
     "name": "no-unexpected-multiline",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1849,7 +1699,6 @@
   {
     "name": "no-unmodified-loop-condition",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1861,7 +1710,6 @@
   {
     "name": "no-unneeded-ternary",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1873,7 +1721,6 @@
   {
     "name": "no-unreachable",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1886,7 +1733,6 @@
   {
     "name": "no-unreachable-loop",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1898,7 +1744,6 @@
   {
     "name": "no-unsafe-finally",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1911,7 +1756,6 @@
   {
     "name": "no-unsafe-negation",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1924,7 +1768,6 @@
   {
     "name": "no-unsafe-optional-chaining",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1937,7 +1780,6 @@
   {
     "name": "no-unused-expressions",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -1949,7 +1791,6 @@
   {
     "name": "no-unused-labels",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -1962,7 +1803,6 @@
   {
     "name": "no-unused-private-class-members",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1974,7 +1814,6 @@
   {
     "name": "no-unused-vars",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -1987,7 +1826,6 @@
   {
     "name": "no-use-before-define",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -1999,7 +1837,6 @@
   {
     "name": "no-useless-backreference",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -2012,7 +1849,6 @@
   {
     "name": "no-useless-call",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2024,7 +1860,6 @@
   {
     "name": "no-useless-catch",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -2037,7 +1872,6 @@
   {
     "name": "no-useless-computed-key",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2049,7 +1883,6 @@
   {
     "name": "no-useless-concat",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2061,7 +1894,6 @@
   {
     "name": "no-useless-constructor",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2073,7 +1905,6 @@
   {
     "name": "no-useless-escape",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -2086,7 +1917,6 @@
   {
     "name": "no-useless-rename",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2098,7 +1928,6 @@
   {
     "name": "no-useless-return",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2110,7 +1939,6 @@
   {
     "name": "no-var",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2122,7 +1950,6 @@
   {
     "name": "no-void",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2134,7 +1961,6 @@
   {
     "name": "no-warning-comments",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2146,7 +1972,6 @@
   {
     "name": "no-with",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -2159,7 +1984,6 @@
   {
     "name": "object-shorthand",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2171,7 +1995,6 @@
   {
     "name": "one-var",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2183,7 +2006,6 @@
   {
     "name": "operator-assignment",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2195,7 +2017,6 @@
   {
     "name": "prefer-arrow-callback",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2207,7 +2028,6 @@
   {
     "name": "prefer-const",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2219,7 +2039,6 @@
   {
     "name": "prefer-destructuring",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2231,7 +2050,6 @@
   {
     "name": "prefer-exponentiation-operator",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2243,7 +2061,6 @@
   {
     "name": "prefer-named-capture-group",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2255,7 +2072,6 @@
   {
     "name": "prefer-numeric-literals",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2267,7 +2083,6 @@
   {
     "name": "prefer-object-has-own",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2279,7 +2094,6 @@
   {
     "name": "prefer-object-spread",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2291,7 +2105,6 @@
   {
     "name": "prefer-promise-reject-errors",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2303,7 +2116,6 @@
   {
     "name": "prefer-regex-literals",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2315,7 +2127,6 @@
   {
     "name": "prefer-rest-params",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2327,7 +2138,6 @@
   {
     "name": "prefer-spread",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2339,7 +2149,6 @@
   {
     "name": "prefer-template",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2351,7 +2160,6 @@
   {
     "name": "radix",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2363,7 +2171,6 @@
   {
     "name": "require-atomic-updates",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "problem"
     ],
@@ -2375,7 +2182,6 @@
   {
     "name": "require-await",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2387,7 +2193,6 @@
   {
     "name": "require-unicode-regexp",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2399,7 +2204,6 @@
   {
     "name": "require-yield",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -2412,7 +2216,6 @@
   {
     "name": "sort-imports",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2424,7 +2227,6 @@
   {
     "name": "sort-keys",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2436,7 +2238,6 @@
   {
     "name": "sort-vars",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2448,7 +2249,6 @@
   {
     "name": "strict",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2460,7 +2260,6 @@
   {
     "name": "symbol-description",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2472,7 +2271,6 @@
   {
     "name": "unicode-bom",
     "severityLevel": 4,
-    "type": "Standard",
     "tags": [
       "layout"
     ],
@@ -2484,7 +2282,6 @@
   {
     "name": "use-isnan",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -2497,7 +2294,6 @@
   {
     "name": "valid-typeof",
     "severityLevel": 2,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -2510,7 +2306,6 @@
   {
     "name": "vars-on-top",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],
@@ -2522,7 +2317,6 @@
   {
     "name": "yoda",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "suggestion"
     ],

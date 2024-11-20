@@ -4,7 +4,6 @@ import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
     EngineRunResults,
     RuleDescription,
-    RuleType,
     RunOptions,
     SeverityLevel,
     Violation,
@@ -41,7 +40,6 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
 const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
     name: "NoTrailingWhitespace",
     severityLevel: SeverityLevel.Info,
-    type: RuleType.Standard,
     tags: ["Recommended", "CodeStyle"],
     description: getMessage('TrailingWhitespaceRuleDescription'),
     resourceUrls: []
@@ -50,7 +48,6 @@ const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
 const EXPECTED_NoTodos_RULE_DESCRIPTION: RuleDescription = {
     name: "NoTodos",
     severityLevel: DEFAULT_SEVERITY_LEVEL,
-    type: RuleType.Standard,
     tags: DEFAULT_TAGS,
     description: "Detects TODO comments in code base.",
     resourceUrls: []
@@ -59,7 +56,6 @@ const EXPECTED_NoTodos_RULE_DESCRIPTION: RuleDescription = {
 const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     name: "NoHellos",
     severityLevel: DEFAULT_SEVERITY_LEVEL,
-    type: RuleType.Standard,
     tags: DEFAULT_TAGS,
     description: "Detects hellos in project.",
     resourceUrls: []
@@ -69,7 +65,6 @@ const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
     name: "AvoidTermsWithImplicitBias",
     description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
     severityLevel: SeverityLevel.Info,
-    type: RuleType.Standard,
     tags: ['Recommended'],
     resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
 }
@@ -78,7 +73,6 @@ const EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION: RuleDescription =
     name: "AvoidOldSalesforceApiVersions",
     description: getMessage('AvoidOldSalesforceApiVersionsRuleDescription'),
     severityLevel: SeverityLevel.High,
-    type: RuleType.Standard,
     tags: ['Recommended', 'Security'],
     resourceUrls: []
 }
@@ -87,7 +81,6 @@ const EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION: RuleDescription = {
     name: "AvoidGetHeapSizeInLoop",
     description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
     severityLevel: SeverityLevel.High,
-    type: RuleType.Standard,
     tags: ['Recommended', 'Performance'],
     resourceUrls: []
 }
@@ -96,7 +89,6 @@ const EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIP
     name: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
     description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
     severityLevel: SeverityLevel.High,
-    type: RuleType.Standard,
     tags: ['Recommended'],
     resourceUrls: []
 }

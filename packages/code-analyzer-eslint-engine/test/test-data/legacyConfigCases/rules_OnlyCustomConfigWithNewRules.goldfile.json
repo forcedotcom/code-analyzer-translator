@@ -2,7 +2,6 @@
   {
     "name": "dummy/my-rule-1",
     "severityLevel": 3,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "suggestion"
@@ -15,7 +14,6 @@
   {
     "name": "dummy/my-rule-2",
     "severityLevel": 5,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "problem"
@@ -28,7 +26,6 @@
   {
     "name": "dummy/my-rule-3",
     "severityLevel": 4,
-    "type": "Standard",
     "tags": [
       "Recommended",
       "layout"

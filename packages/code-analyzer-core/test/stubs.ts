@@ -89,7 +89,6 @@ export class StubEngine1 extends engApi.Engine {
             {
                 name: "stub1RuleA",
                 severityLevel: engApi.SeverityLevel.Low,
-                type: engApi.RuleType.Standard,
                 tags: ["Recommended", "CodeStyle"],
                 description: "Some description for stub1RuleA",
                 resourceUrls: ["https://example.com/stub1RuleA"]
@@ -97,7 +96,6 @@ export class StubEngine1 extends engApi.Engine {
             {
                 name: "stub1RuleB",
                 severityLevel: engApi.SeverityLevel.High,
-                type: engApi.RuleType.Standard,
                 tags: ["Recommended", "Security"],
                 description: "Some description for stub1RuleB",
                 resourceUrls: ["https://example.com/stub1RuleB"]
@@ -105,7 +103,6 @@ export class StubEngine1 extends engApi.Engine {
             {
                 name: "stub1RuleC",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.Standard,
                 tags: ["Recommended", "Performance", "Custom"],
                 description: "Some description for stub1RuleC",
                 resourceUrls: ["https://example.com/stub1RuleC"]
@@ -113,7 +110,6 @@ export class StubEngine1 extends engApi.Engine {
             {
                 name: "stub1RuleD",
                 severityLevel: engApi.SeverityLevel.Low,
-                type: engApi.RuleType.Standard,
                 tags: ["CodeStyle"],
                 description: "Some description for stub1RuleD",
                 resourceUrls: ["https://example.com/stub1RuleD"]
@@ -121,7 +117,6 @@ export class StubEngine1 extends engApi.Engine {
             {
                 name: "stub1RuleE",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.Standard,
                 tags: ["Performance"],
                 description: "Some description for stub1RuleE",
                 resourceUrls: ["https://example.com/stub1RuleE", "https://example.com/stub1RuleE_2"]
@@ -171,7 +166,6 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleA",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "Security"],
                 description: "Some description for stub2RuleA",
                 resourceUrls: ["https://example.com/stub2RuleA"]
@@ -179,7 +173,6 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleB",
                 severityLevel: engApi.SeverityLevel.Low,
-                type: engApi.RuleType.DataFlow,
                 tags: ["Performance", "Custom"],
                 description: "Some description for stub2RuleB",
                 resourceUrls: ["https://example.com/stub2RuleB"]
@@ -187,7 +180,6 @@ export class StubEngine2 extends engApi.Engine {
             {
                 name: "stub2RuleC",
                 severityLevel: engApi.SeverityLevel.High,
-                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "BestPractice"],
                 description: "Some description for stub2RuleC",
                 resourceUrls: [] // Purposely putting in nothing here
@@ -228,7 +220,6 @@ export class StubEngine3 extends engApi.Engine {
             {
                 name: "stub3RuleA",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.Flow,
                 tags: ['Recommended', 'ErrorProne'],
                 description: 'Some description for stub3RuleA',
                 resourceUrls: [] // Purposely left empty
@@ -523,7 +514,6 @@ class RepeatedRuleNameEngine extends engApi.Engine {
             {
                 name: "repeatedRule",
                 severityLevel: engApi.SeverityLevel.Moderate,
-                type: engApi.RuleType.DataFlow,
                 tags: ["Recommended", "Security"],
                 description: "Some description 1",
                 resourceUrls: ["https://example.com/repeatedRule1"]
@@ -531,7 +521,6 @@ class RepeatedRuleNameEngine extends engApi.Engine {
             {
                 name: "repeatedRule", // Same name as above
                 severityLevel: engApi.SeverityLevel.Low,
-                type: engApi.RuleType.Standard,
                 tags: ["Performance", "Custom"],
                 description: "Some description 2",
                 resourceUrls: ["https://example.com/repeatedRule2"]
