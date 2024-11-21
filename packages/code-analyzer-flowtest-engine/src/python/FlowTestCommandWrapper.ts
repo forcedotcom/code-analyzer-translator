@@ -6,42 +6,7 @@ import {getMessage} from '../messages';
 
 
 export interface FlowTestCommandWrapper {
-    getFlowTestRuleDescriptions(): Promise<FlowTestRuleDescriptor[]>;
     runFlowTestRules(dir: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult>;
-}
-
-/**
- * The format used by FlowTest to describe the Queries (FlowTest's term for what we'd call rules) it can run.
- */
-export type FlowTestRuleDescriptor = {
-    /**
-     * A machine-readable ID consisting of a unique string. E.g., "FlowSecurity.SystemModeWithSharing.recordCreates.data".
-     */
-    query_id: string;
-    /**
-     * A human-readable name consisting of a unique string. E.g., "Flow: SystemModeWithSharing recordCreates data".
-     */
-    query_name: string;
-    /**
-     * A string indicating relative severity. either {@code Flow_Low_Severity}, {@code Flow_Moderate_Severity}, or {@code Flow_High_Severity}.
-     */
-    severity: string;
-    /**
-     * A string describing the specific case the query identifies.
-     */
-    query_description: string;
-    /**
-     * A URL for help text.
-     */
-    help_url: string;
-    /**
-     * Not a property we care about.
-     */
-    query_version: string;
-    /**
-     * A string-wrapped boolean indicating whether the rule is security-related.
-     */
-    is_security: string;
 }
 
 export type FlowTestExecutionResult = {
@@ -76,27 +41,6 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
 
     public constructor(pythonCommand: string) {
         this.pythonCommandExecutor = new PythonCommandExecutor(pythonCommand);
-    }
-
-    public async getFlowTestRuleDescriptions(): Promise<FlowTestRuleDescriptor[]> {
-        const pythonArgs: string[] = [
-            '-m',
-            'flowtest',
-            '-p'
-        ];
-
-        let stdout: string = '';
-        const processStdout = (stdoutMsg: string) => {
-            stdout += stdoutMsg;
-        }
-        await this.pythonCommandExecutor.exec(pythonArgs, processStdout);
-        // We typically try to avoid reading output directly from stdout, but in this case there's no option to write the rule
-        // descriptions to a file, so we have no choice. At the very least, we can wrap it in a try-catch.
-        try {
-            return JSON.parse(stdout) as FlowTestRuleDescriptor[];
-        } catch (e) {
-            throw new Error(getMessage('CouldNotParseRuleDescriptions', stdout));
-        }
     }
 
     public async runFlowTestRules(dir: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {

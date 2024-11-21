@@ -2,54 +2,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {EngineRunResults, RuleDescription, SeverityLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEngine} from "../src/engine";
-import {FlowTestCommandWrapper, FlowTestExecutionResult, FlowTestRuleDescriptor, RunTimeFlowTestCommandWrapper} from "../src/python/FlowTestCommandWrapper";
+import {FlowTestCommandWrapper, FlowTestExecutionResult, RunTimeFlowTestCommandWrapper} from "../src/python/FlowTestCommandWrapper";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 
 changeWorkingDirectoryToPackageRoot();
-
-const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
-    query_id: "FlowSecurity.SystemModeWithSharing.recordCreates.data",
-    query_name: "Flow: SystemModeWithSharing recordCreates data",
-    severity: "Flow_Low_Severity",
-    query_description: "User controlled data flows into recordCreates element data in run mode: SystemModeWithSharing",
-    help_url: "None",
-    query_version: "0",
-    is_security: "True"
-}, {
-    query_id: "FlowSecurity.SystemModeWithSharing.recordDeletes.selector",
-    query_name: "Flow: SystemModeWithSharing recordDeletes selector",
-    severity: "Flow_Low_Severity",
-    query_description: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithSharing",
-    help_url: "None",
-    query_version: "0",
-    is_security: "True"
-}, {
-    query_id: "FlowSecurity.SystemModeWithoutSharing.recordCreates.data",
-    query_name: "Flow: SystemModeWithoutSharing recordCreates data",
-    severity: "Flow_Moderate_Severity",
-    query_description: "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    help_url: "None",
-    query_version: "0",
-    is_security: "True"
-}, {
-    query_id: "FlowSecurity.SystemModeWithoutSharing.recordDeletes.selector",
-    query_name: "Flow: SystemModeWithoutSharing recordDeletes selector",
-    severity: "Flow_High_Severity",
-    query_description: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithoutSharing",
-    help_url: "None",
-    query_version: "0",
-    is_security: "True"
-}];
-
-const MALFORMED_RULES: FlowTestRuleDescriptor[] = [{
-    query_id: 'This.Selector.Violates.Naming.Conventions',
-    query_name: 'Rule with name that violates conventions',
-    severity: 'Flow_High_Severity',
-    query_description: 'This rule has a name and ID that violate conventions',
-    help_url: 'https://www.salesforce.com',
-    query_version: "0",
-    is_security: "True"
-}];
 
 const PATH_TO_WORKSPACE = path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-multiple-flows');
 const PATH_TO_SAMPLE_RESULTS = path.resolve(__dirname, 'test-data', 'sample-flowtest-results', 'engine.test.ts');
@@ -57,7 +13,7 @@ const PATH_TO_GOLDFILES = path.resolve(__dirname, 'test-data', 'goldfiles', 'eng
 
 describe('Tests for the FlowTestEngine', () => {
     it('getName() returns correct name', () => {
-        const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([]));
+        const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper());
         expect(engine.getName()).toEqual('flowtest');
     });
 
@@ -86,38 +42,25 @@ describe('Tests for the FlowTestEngine', () => {
             describe('Rule description parsing', () => {
                 it('Consolidates well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
                     // Construct the engine, injecting a Stub wrapper to replace the real one.
-                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
+                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper());
 
                     const ruleDescriptors: RuleDescription[] = await engine.describeRules({});
 
                     expect(ruleDescriptors).toHaveLength(2);
                     expect(ruleDescriptors[0]).toEqual({
-                        name: 'PreventPassingUserDataIntoElementWithSharing',
-                        severityLevel: SeverityLevel.Low,
-                        tags: ['Recommended', 'Security'],
-                        description: 'Avoid passing user data into flow elements in run mode: With Sharing',
-                        resourceUrls: []
-                    });
-                    expect(ruleDescriptors[1]).toEqual({
                         name: 'PreventPassingUserDataIntoElementWithoutSharing',
                         severityLevel: SeverityLevel.High,
                         tags: ['Recommended', 'Security'],
                         description: 'Avoid passing user data into flow elements in run mode: Without Sharing',
                         resourceUrls: []
                     });
-                });
-
-                it.each([
-                    {ruleIndex: 0, defect: 'invalid name'}
-                ])('Throws coherent error for malformed FlowTest rule descriptors. Case: $defect', async ({
-                                                                                                              ruleIndex,
-                                                                                                              defect
-                                                                                                          }) => {
-                    // Construct the engine, injecting a Stub wrapper to replace the real one.
-                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([MALFORMED_RULES[ruleIndex]]));
-
-                    // Expect the Describe call to fail with a message containing the defect description.
-                    await expect(engine.describeRules({})).rejects.toThrow(defect);
+                    expect(ruleDescriptors[1]).toEqual({
+                        name: 'PreventPassingUserDataIntoElementWithSharing',
+                        severityLevel: SeverityLevel.Low,
+                        tags: ['Recommended', 'Security'],
+                        description: 'Avoid passing user data into flow elements in run mode: With Sharing',
+                        resourceUrls: []
+                    });
                 });
             });
 
@@ -134,7 +77,7 @@ describe('Tests for the FlowTestEngine', () => {
                     }
                 ])('When workspace $desc, rules are returned', async ({workspace}) => {
                     // Construct the engine, injecting a Stub wrapper to replace the real one.
-                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
+                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper());
 
                     const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
 
@@ -144,7 +87,7 @@ describe('Tests for the FlowTestEngine', () => {
                 it('When workspace contains no flow files, no rules are returned', async () => {
                     const workspace = new Workspace([path.resolve(__dirname, 'test-data', 'example-workspaces', 'contains-no-flow-files')]);
                     // Construct the engine, injecting a Stub wrapper to replace the real one.
-                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
+                    const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper());
 
                     const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
 
@@ -196,7 +139,7 @@ describe('Tests for the FlowTestEngine', () => {
                 const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, inputFile));
 
                 // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
-                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(fakeFlowTestResults));
 
                 // ==== TESTED BEHAVIOR ====
                 // Specify every rule
@@ -223,7 +166,7 @@ describe('Tests for the FlowTestEngine', () => {
                 });
 
                 // Instantiate an engine that will return no results.
-                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], {results: {}}));
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper({results: {}}));
 
                 // ==== TESTED BEHAVIOR ====
                 // Specify a rule. It doesn't matter which one.
@@ -242,7 +185,7 @@ describe('Tests for the FlowTestEngine', () => {
                 const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'));
 
                 // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
-                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(fakeFlowTestResults));
 
                 // ==== TESTED BEHAVIOR ====
                 // Specify only one of the rules, creating a scenario where the FlowTest result includes violations of rules
@@ -264,7 +207,7 @@ describe('Tests for the FlowTestEngine', () => {
                 const fakeFlowTestResults: FlowTestExecutionResult = await readAndParseInputFile(path.join(PATH_TO_SAMPLE_RESULTS, 'non-empty-results.json'));
 
                 // Instantiate the engine with a stubbed wrapper that will return the desired FlowTestExecutionResult.
-                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper([], fakeFlowTestResults));
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(fakeFlowTestResults));
 
                 // ==== TESTED BEHAVIOR ====
                 // Specify all rules
@@ -288,16 +231,10 @@ describe('Tests for the FlowTestEngine', () => {
 });
 
 class StubCommandWrapper implements FlowTestCommandWrapper {
-    private readonly rules: FlowTestRuleDescriptor[];
     private readonly results: FlowTestExecutionResult;
 
-    public constructor(rules: FlowTestRuleDescriptor[], results: FlowTestExecutionResult = {results: {}}) {
-        this.rules = rules;
+    public constructor(results: FlowTestExecutionResult = {results: {}}) {
         this.results = results;
-    }
-
-    public getFlowTestRuleDescriptions(): Promise<FlowTestRuleDescriptor[]> {
-        return Promise.resolve(this.rules);
     }
 
     public runFlowTestRules(_dir: string, _fn: (percent: number) => void ): Promise<FlowTestExecutionResult> {

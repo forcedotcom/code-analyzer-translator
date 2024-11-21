@@ -34,7 +34,12 @@ const CONSOLIDATED_RULE_DESCRIPTIONS_BY_NAME: Map<string, RuleDescription> = new
     }]
 ]);
 
+export function getConsolidatedRuleNames(): string[] {
+    return [...QUERY_NAMES_TO_CONSOLIDATED_NAMES.values()];
+}
+
 export function getConsolidatedRuleName(unconsolidatedName: string): string {
+    // istanbul ignore else
     if (QUERY_NAMES_TO_CONSOLIDATED_NAMES.has(unconsolidatedName)) {
         return QUERY_NAMES_TO_CONSOLIDATED_NAMES.get(unconsolidatedName)!;
     } else {

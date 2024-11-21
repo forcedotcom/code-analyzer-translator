@@ -11,10 +11,9 @@ import {getMessage} from './messages';
 import {
     FlowNodeDescriptor,
     FlowTestCommandWrapper,
-    FlowTestExecutionResult,
-    FlowTestRuleDescriptor
+    FlowTestExecutionResult
 } from "./python/FlowTestCommandWrapper";
-import {getConsolidatedRuleName, getConsolidatedRuleByName} from "./hardcoded-catalog";
+import {getConsolidatedRuleName, getConsolidatedRuleNames, getConsolidatedRuleByName} from "./hardcoded-catalog";
 
 /**
  * An arbitrarily chosen value for how close the engine is to completion before the underlying FlowTest tool is invoked,
@@ -51,9 +50,8 @@ export class FlowTestEngine extends Engine {
                 return [];
             }
         }
-        const flowTestRules: FlowTestRuleDescriptor[] = await this.commandWrapper.getFlowTestRuleDescriptions();
         this.emitDescribeRulesProgressEvent(75);
-        const consolidatedNames: Set<string> = new Set(flowTestRules.map(descriptor => getConsolidatedRuleName(descriptor.query_name)));
+        const consolidatedNames: Set<string> = new Set(getConsolidatedRuleNames());
         const convertedRules: RuleDescription[] = [...consolidatedNames.values()].map(getConsolidatedRuleByName);
         this.emitDescribeRulesProgressEvent(100);
         return convertedRules;
