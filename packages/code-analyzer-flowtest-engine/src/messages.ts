@@ -42,6 +42,9 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     FirstNodeComment:
         `%s: %s`,
 
+    ConsolidatedRuleDescription:
+        `Avoid passing user data into flow elements in run mode: %s`,
+
     SubsequentNodeComment:
         `%s influences %s: %s`,
 

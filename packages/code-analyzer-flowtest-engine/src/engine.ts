@@ -5,16 +5,15 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RunOptions,
-    SeverityLevel,
+    RunOptions
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {
     FlowNodeDescriptor,
     FlowTestCommandWrapper,
-    FlowTestExecutionResult,
-    FlowTestRuleDescriptor
+    FlowTestExecutionResult
 } from "./python/FlowTestCommandWrapper";
+import {getConsolidatedRuleName, getConsolidatedRuleNames, getConsolidatedRuleByName} from "./hardcoded-catalog";
 
 /**
  * An arbitrarily chosen value for how close the engine is to completion before the underlying FlowTest tool is invoked,
@@ -51,9 +50,9 @@ export class FlowTestEngine extends Engine {
                 return [];
             }
         }
-        const flowTestRules: FlowTestRuleDescriptor[] = await this.commandWrapper.getFlowTestRuleDescriptions();
         this.emitDescribeRulesProgressEvent(75);
-        const convertedRules = flowTestRules.map(toRuleDescription);
+        const consolidatedNames: string[] = getConsolidatedRuleNames();
+        const convertedRules: RuleDescription[] = consolidatedNames.map(getConsolidatedRuleByName);
         this.emitDescribeRulesProgressEvent(100);
         return convertedRules;
     }
@@ -95,20 +94,7 @@ function normalizeRelativeCompletionPercentage(flowTestPercentage: number): numb
     return PRE_INVOCATION_RUN_PERCENT + ((flowTestPercentage * percentageSpread) / 100);
 }
 
-export function toRuleDescription(flowTestRule: FlowTestRuleDescriptor): RuleDescription {
-    return {
-        // The name maps directly over.
-        name: toCodeAnalyzerName(flowTestRule.query_name),
-        severityLevel: toCodeAnalyzerSeverity(flowTestRule.severity),
-        // All rules are Recommended, but not all rules are Security rules.
-        tags: flowTestRule.is_security.toLowerCase() === 'true' ? ['Recommended', 'Security'] : ['Recommended'],
-        // The description maps directly over.
-        description: flowTestRule.query_description,
-        resourceUrls: toResourceUrls(flowTestRule.help_url)
-    }
-}
-
-export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[], allowedFiles: string[]): EngineRunResults {
+function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[], allowedFiles: string[]): EngineRunResults {
     const requestedRulesSet: Set<string> = new Set(requestedRules);
     const allowedFilesSet: Set<string> = new Set(allowedFiles);
     const results: EngineRunResults = {
@@ -118,7 +104,7 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
     for (const queryName of Object.keys(flowTestExecutionResult.results)) {
         const flowTestRuleResults = flowTestExecutionResult.results[queryName];
         for (const flowTestRuleResult of flowTestRuleResults) {
-            const ruleName = toCodeAnalyzerName(flowTestRuleResult.query_name);
+            const ruleName = getConsolidatedRuleName(flowTestRuleResult.query_name);
             // FlowTest runs extremely quickly, and its rule selection is fiddly. So it's easier to just run all the rules,
             // and then throw away results for rules that the user didn't request.
             if (!requestedRulesSet.has(ruleName)) {
@@ -135,7 +121,7 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
             }
 
             results.violations.push({
-                ruleName: toCodeAnalyzerName(flowTestRuleResult.query_name),
+                ruleName,
                 message: flowTestRuleResult.description,
                 codeLocations: toCodeLocationList(flowNodes),
                 primaryLocationIndex: flowTestRuleResult.flow.length - 1,
@@ -144,10 +130,6 @@ export function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionRes
         }
     }
     return results;
-}
-
-function toCodeAnalyzerName(queryName: string): string {
-    return queryName.replaceAll('Flow: ', '').replaceAll(' ', '-').toLowerCase();
 }
 
 function toCodeLocationList(flowNodes: FlowNodeDescriptor[]): CodeLocation[] {
@@ -167,25 +149,4 @@ function toCodeLocationList(flowNodes: FlowNodeDescriptor[]): CodeLocation[] {
         previousFullVariable = fullVariable;
     }
     return results;
-}
-
-function toCodeAnalyzerSeverity(flowTestSeverity: string): SeverityLevel {
-    switch (flowTestSeverity) {
-        case 'Flow_High_Severity':
-            return SeverityLevel.High;
-        case 'Flow_Moderate_Severity':
-            return SeverityLevel.Moderate;
-        case 'Flow_Low_Severity':
-            return SeverityLevel.Low
-    }
-    throw new Error(`Developer error: invalid severity level ${flowTestSeverity}`);
-}
-
-function toResourceUrls(helpUrl: string): string[] {
-    // Treat the hardcoded string "none" as equivalent to an empty string.
-    if (helpUrl.toLowerCase() === 'none' || helpUrl === '') {
-        return [];
-    } else {
-        return [helpUrl];
-    }
 }

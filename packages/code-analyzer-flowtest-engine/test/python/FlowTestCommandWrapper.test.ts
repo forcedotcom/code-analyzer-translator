@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import os from 'node:os';
-import {FlowTestExecutionResult, FlowTestRuleDescriptor, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
+import {FlowTestExecutionResult, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
 import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
 
 const PYTHON_COMMAND = 'python3';
@@ -10,38 +9,6 @@ const PATH_TO_WORKSPACES = path.join(__dirname, '..', 'test-data', 'example-work
 
 describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
-        describe('#getFlowTestRuleDescriptions()', () => {
-            afterEach(() => {
-                jest.restoreAllMocks();
-            })
-            it('Returns valid, well-formed rule descriptions', async () => {
-                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PYTHON_COMMAND);
-
-                const rules: FlowTestRuleDescriptor[] = await wrapper.getFlowTestRuleDescriptions();
-
-                const expectedRules: FlowTestRuleDescriptor[] = JSON.parse(await fs.readFile(
-                    path.join(PATH_TO_GOLDFILES, 'catalog.goldfile.json'),
-                    {encoding: 'utf-8'}
-                )) as FlowTestRuleDescriptor[];
-
-                expect(rules).toEqual(expectedRules);
-            // For the sake of CI/CD, set the timeout to a truly absurd value.
-            }, 60000);
-
-            it('When output is unparseable, an informative error is thrown', async () => {
-                jest.spyOn(PythonCommandExecutor.prototype, 'exec').mockImplementation(async (_args, processStdout) => {
-                    processStdout!('This will not parse as valid JSON');
-                });
-
-                const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PYTHON_COMMAND);
-
-                await expect(wrapper.getFlowTestRuleDescriptions())
-                    .rejects
-                    .toThrow('Could not parse rule descriptions from FlowTest output: This will not parse as valid JSON');
-            // For the sake of CI/CD, set the timeout to a truly absurd value.
-            }, 30000);
-        });
-
         describe('#runFlowTestRules()', () => {
 
             describe('Successful execution', () => {
@@ -54,6 +21,12 @@ describe('FlowTestCommandWrapper implementations', () => {
 
                 beforeAll(async () => {
                     results = await wrapper.runFlowTestRules(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows'), statusProcessorFunction);
+                    // The `counter` property is irrelevant to us, and causes problems across platforms. So delete it.
+                    for (const queryName of Object.keys(results.results)) {
+                        for (const queryResults of results.results[queryName]) {
+                            delete (queryResults as any).counter;
+                        }
+                    }
                 }, 30000);
 
                 it('Correctly reads and parses results', async () => {
@@ -61,7 +34,8 @@ describe('FlowTestCommandWrapper implementations', () => {
                     const goldFileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfileName), {encoding: 'utf-8'}))
                         .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'subflow_test1.flow-meta.xml')))
                         .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'inner_subflow_example.flow-meta.xml')))
-                        .replaceAll('"__PATH_TO_EXAMPLE__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'example.flow-meta.xml')));
+                        .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'example1.flow-meta.xml')))
+                        .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'example2.flow-meta.xml')));
 
                     const expectedResults: FlowTestExecutionResult = JSON.parse(goldFileContents) as FlowTestExecutionResult;
 
@@ -79,7 +53,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 });
 
                 it('Correctly parses status updates from stdout', () => {
-                    expect(completionPercentages).toEqual([0, 33.3, 66.7]);
+                    expect(completionPercentages).toEqual([0, 25, 50, 75]);
                 });
             });
 
