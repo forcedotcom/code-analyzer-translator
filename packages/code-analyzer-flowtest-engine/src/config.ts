@@ -10,7 +10,7 @@ export const PYTHON_COMMAND = 'python_command';
 export const FLOWTEST_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
     overview: getMessage('ConfigOverview'),
     fieldDescriptions: {
-        custom_rules: getMessage('ConfigFieldDescription_python_command')
+        python_command: getMessage('ConfigFieldDescription_python_command')
     }
 }
 
