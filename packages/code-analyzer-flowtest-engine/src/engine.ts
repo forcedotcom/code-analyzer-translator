@@ -51,8 +51,8 @@ export class FlowTestEngine extends Engine {
             }
         }
         this.emitDescribeRulesProgressEvent(75);
-        const consolidatedNames: Set<string> = new Set(getConsolidatedRuleNames());
-        const convertedRules: RuleDescription[] = [...consolidatedNames.values()].map(getConsolidatedRuleByName);
+        const consolidatedNames: string[] = getConsolidatedRuleNames();
+        const convertedRules: RuleDescription[] = consolidatedNames.map(getConsolidatedRuleByName);
         this.emitDescribeRulesProgressEvent(100);
         return convertedRules;
     }

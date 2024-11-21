@@ -35,7 +35,7 @@ const CONSOLIDATED_RULE_DESCRIPTIONS_BY_NAME: Map<string, RuleDescription> = new
 ]);
 
 export function getConsolidatedRuleNames(): string[] {
-    return [...QUERY_NAMES_TO_CONSOLIDATED_NAMES.values()];
+    return [...new Set(QUERY_NAMES_TO_CONSOLIDATED_NAMES.values())];
 }
 
 export function getConsolidatedRuleName(unconsolidatedName: string): string {
