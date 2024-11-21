@@ -8,44 +8,44 @@ import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 changeWorkingDirectoryToPackageRoot();
 
 const WELL_FORMED_RULES: FlowTestRuleDescriptor[] = [{
-    query_id: 'FakeId1',
-    query_name: 'Fake Flow Rule 1',
-    severity: 'Flow_High_Severity',
-    query_description: 'Fake Description 1',
-    help_url: 'https://www.salesforce.com',
+    query_id: "FlowSecurity.SystemModeWithSharing.recordCreates.data",
+    query_name: "Flow: SystemModeWithSharing recordCreates data",
+    severity: "Flow_Low_Severity",
+    query_description: "User controlled data flows into recordCreates element data in run mode: SystemModeWithSharing",
+    help_url: "None",
     query_version: "0",
     is_security: "True"
 }, {
-    query_id: 'FakeId2',
-    query_name: 'Fake Flow Rule 2',
-    severity: 'Flow_Moderate_Severity',
-    query_description: 'Fake Description 2',
-    help_url: 'https://www.github.com/forcedotcom/code-analyzer-core',
+    query_id: "FlowSecurity.SystemModeWithSharing.recordDeletes.selector",
+    query_name: "Flow: SystemModeWithSharing recordDeletes selector",
+    severity: "Flow_Low_Severity",
+    query_description: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithSharing",
+    help_url: "None",
     query_version: "0",
     is_security: "True"
 }, {
-    query_id: 'FakeId3',
-    query_name: 'Fake Flow Rule 3',
-    severity: 'Flow_Low_Severity',
-    query_description: 'Fake Description 3',
-    help_url: 'None',
+    query_id: "FlowSecurity.SystemModeWithoutSharing.recordCreates.data",
+    query_name: "Flow: SystemModeWithoutSharing recordCreates data",
+    severity: "Flow_Moderate_Severity",
+    query_description: "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
+    help_url: "None",
     query_version: "0",
-    is_security: "False"
+    is_security: "True"
 }, {
-    query_id: 'FakeId4',
-    query_name: 'Fake Flow Rule 4',
-    severity: 'Flow_Low_Severity',
-    query_description: 'Fake Description 4',
-    help_url: '',
+    query_id: "FlowSecurity.SystemModeWithoutSharing.recordDeletes.selector",
+    query_name: "Flow: SystemModeWithoutSharing recordDeletes selector",
+    severity: "Flow_High_Severity",
+    query_description: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithoutSharing",
+    help_url: "None",
     query_version: "0",
-    is_security: "False"
+    is_security: "True"
 }];
 
 const MALFORMED_RULES: FlowTestRuleDescriptor[] = [{
-    query_id: 'FakeId1',
-    query_name: 'Fake Flow Rule 1',
-    severity: 'InvalidSeverityValue',
-    query_description: 'This Rule has an invalid Severity',
+    query_id: 'This.Selector.Violates.Naming.Conventions',
+    query_name: 'Rule with name that violates conventions',
+    severity: 'Flow_High_Severity',
+    query_description: 'This rule has a name and ID that violate conventions',
     help_url: 'https://www.salesforce.com',
     query_version: "0",
     is_security: "True"
@@ -71,58 +71,44 @@ describe('Tests for the FlowTestEngine', () => {
             const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
             // No need to do in-depth examination of the rules, since other tests already do that. Just make sure we got
             // the right number of rules.
-            expect(ruleDescriptors).toHaveLength(10);
+            expect(ruleDescriptors).toHaveLength(2);
 
             // Part 2: Running production rules.
             const results: EngineRunResults = await engine.runRules(ruleDescriptors.map(r => r.name), {workspace});
             // No need to do in-depth examination of the results, since other tests already do that. Just make sure we
             // got the right number of violations.
-            expect(results.violations).toHaveLength(11);
+            expect(results.violations).toHaveLength(22);
         }, 60000);
     });
 
     describe('Unit tests', () => {
         describe('#describeRules()', () => {
             describe('Rule description parsing', () => {
-                it('Parses well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
+                it('Consolidates well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
                     // Construct the engine, injecting a Stub wrapper to replace the real one.
                     const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper(WELL_FORMED_RULES));
 
                     const ruleDescriptors: RuleDescription[] = await engine.describeRules({});
 
-                    expect(ruleDescriptors).toHaveLength(4);
+                    expect(ruleDescriptors).toHaveLength(2);
                     expect(ruleDescriptors[0]).toEqual({
-                        name: 'fake-flow-rule-1',
-                        severityLevel: SeverityLevel.High,
-                        tags: ['Recommended', 'Security'],
-                        description: 'Fake Description 1',
-                        resourceUrls: ['https://www.salesforce.com']
-                    });
-                    expect(ruleDescriptors[1]).toEqual({
-                        name: 'fake-flow-rule-2',
-                        severityLevel: SeverityLevel.Moderate,
-                        tags: ['Recommended', 'Security'],
-                        description: 'Fake Description 2',
-                        resourceUrls: ['https://www.github.com/forcedotcom/code-analyzer-core']
-                    });
-                    expect(ruleDescriptors[2]).toEqual({
-                        name: 'fake-flow-rule-3',
+                        name: 'PreventPassingUserDataIntoElementWithSharing',
                         severityLevel: SeverityLevel.Low,
-                        tags: ['Recommended'],
-                        description: 'Fake Description 3',
+                        tags: ['Recommended', 'Security'],
+                        description: 'Avoid passing user data into flow elements in run mode: With Sharing',
                         resourceUrls: []
                     });
-                    expect(ruleDescriptors[3]).toEqual({
-                        name: 'fake-flow-rule-4',
-                        severityLevel: SeverityLevel.Low,
-                        tags: ['Recommended'],
-                        description: 'Fake Description 4',
+                    expect(ruleDescriptors[1]).toEqual({
+                        name: 'PreventPassingUserDataIntoElementWithoutSharing',
+                        severityLevel: SeverityLevel.High,
+                        tags: ['Recommended', 'Security'],
+                        description: 'Avoid passing user data into flow elements in run mode: Without Sharing',
                         resourceUrls: []
                     });
                 });
 
                 it.each([
-                    {ruleIndex: 0, defect: 'invalid severity level'}
+                    {ruleIndex: 0, defect: 'invalid name'}
                 ])('Throws coherent error for malformed FlowTest rule descriptors. Case: $defect', async ({
                                                                                                               ruleIndex,
                                                                                                               defect
@@ -152,7 +138,7 @@ describe('Tests for the FlowTestEngine', () => {
 
                     const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
 
-                    expect(ruleDescriptors).toHaveLength(4);
+                    expect(ruleDescriptors).toHaveLength(2);
                 });
 
                 it('When workspace contains no flow files, no rules are returned', async () => {
@@ -171,7 +157,8 @@ describe('Tests for the FlowTestEngine', () => {
 
             const PATH_TO_SUBFLOW_TEST1: string = path.join(PATH_TO_WORKSPACE, 'subflow_test1.flow-meta.xml');
             const PATH_TO_INNER_SUBFLOW_EXAMPLE: string = path.join(PATH_TO_WORKSPACE, 'inner_subflow_example.flow-meta.xml');
-            const PATH_TO_EXAMPLE: string = path.join(PATH_TO_WORKSPACE, 'example.flow-meta.xml');
+            const PATH_TO_EXAMPLE1: string = path.join(PATH_TO_WORKSPACE, 'example1.flow-meta.xml');
+            const PATH_TO_EXAMPLE2: string = path.join(PATH_TO_WORKSPACE, 'example2.flow-meta.xml');
 
             afterEach(() => {
                 jest.restoreAllMocks();
@@ -181,7 +168,8 @@ describe('Tests for the FlowTestEngine', () => {
                 const inputFileContents: string = (await fs.readFile(inputFile, {encoding: 'utf-8'}))
                     .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(PATH_TO_SUBFLOW_TEST1))
                     .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(PATH_TO_INNER_SUBFLOW_EXAMPLE))
-                    .replaceAll('"__PATH_TO_EXAMPLE__"', JSON.stringify(PATH_TO_EXAMPLE));
+                    .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(PATH_TO_EXAMPLE1))
+                    .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(PATH_TO_EXAMPLE2));
 
                 return JSON.parse(inputFileContents) as FlowTestExecutionResult;
             }
@@ -190,7 +178,8 @@ describe('Tests for the FlowTestEngine', () => {
                 const goldfileContents: string = (await fs.readFile(goldfile, {encoding: 'utf-8'}))
                     .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(PATH_TO_SUBFLOW_TEST1))
                     .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(PATH_TO_INNER_SUBFLOW_EXAMPLE))
-                    .replaceAll('"__PATH_TO_EXAMPLE__"', JSON.stringify(PATH_TO_EXAMPLE));
+                    .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(PATH_TO_EXAMPLE1))
+                    .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(PATH_TO_EXAMPLE2));
 
                 return JSON.parse(goldfileContents) as EngineRunResults;
             }
@@ -212,19 +201,11 @@ describe('Tests for the FlowTestEngine', () => {
                 // ==== TESTED BEHAVIOR ====
                 // Specify every rule
                 const desiredRuleNames: string[] = [
-                    'systemmodewithsharing-recordcreates-data',
-                    'systemmodewithsharing-recorddeletes-selector',
-                    'systemmodewithsharing-recordlookups-selector',
-                    'systemmodewithsharing-recordupdates-data',
-                    'systemmodewithsharing-recordupdates-selector',
-                    'systemmodewithoutsharing-recordcreates-data',
-                    'systemmodewithoutsharing-recorddeletes-selector',
-                    'systemmodewithoutsharing-recordlookups-selector',
-                    'systemmodewithoutsharing-recordupdates-data',
-                    'systemmodewithoutsharing-recordupdates-selector'
+                    'PreventPassingUserDataIntoElementWithSharing',
+                    'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
                 // Specify every file in the workspace
-                const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE];
+                const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2];
                 const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
                     workspace: new Workspace(workspaceFiles)
                 });
@@ -247,11 +228,12 @@ describe('Tests for the FlowTestEngine', () => {
                 // ==== TESTED BEHAVIOR ====
                 // Specify a rule. It doesn't matter which one.
                 const desiredRuleNames: string[] = ['fakerule-thisshouldnotmatter'];
-                const workspaceFiles: string[] = [PATH_TO_EXAMPLE];
+                // Specify files. It doesn't matter which.
+                const workspaceFiles: string[] = [PATH_TO_EXAMPLE1];
                 await expect(engine.runRules(desiredRuleNames, {
                     workspace: new Workspace(workspaceFiles)
                 }))
-                    // Expect the errro message to mention the lack of a root directory
+                    // Expect the error message to mention the lack of a root directory
                     .rejects.toThrow('has no identifiable root directory');
             });
 
@@ -265,9 +247,9 @@ describe('Tests for the FlowTestEngine', () => {
                 // ==== TESTED BEHAVIOR ====
                 // Specify only one of the rules, creating a scenario where the FlowTest result includes violations of rules
                 // that weren't requested.
-                const desiredRuleNames: string[] = ['systemmodewithoutsharing-recordlookups-selector'];
+                const desiredRuleNames: string[] = ['PreventPassingUserDataIntoElementWithoutSharing'];
                 // Specify every file in the workspace
-                const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE];
+                const workspaceFiles = [PATH_TO_SUBFLOW_TEST1, PATH_TO_INNER_SUBFLOW_EXAMPLE, PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2];
                 const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
                     workspace: new Workspace(workspaceFiles)
                 });
@@ -287,20 +269,12 @@ describe('Tests for the FlowTestEngine', () => {
                 // ==== TESTED BEHAVIOR ====
                 // Specify all rules
                 const desiredRuleNames: string[] = [
-                    'systemmodewithsharing-recordcreates-data',
-                    'systemmodewithsharing-recorddeletes-selector',
-                    'systemmodewithsharing-recordlookups-selector',
-                    'systemmodewithsharing-recordupdates-data',
-                    'systemmodewithsharing-recordupdates-selector',
-                    'systemmodewithoutsharing-recordcreates-data',
-                    'systemmodewithoutsharing-recorddeletes-selector',
-                    'systemmodewithoutsharing-recordlookups-selector',
-                    'systemmodewithoutsharing-recordupdates-data',
-                    'systemmodewithoutsharing-recordupdates-selector'
+                    'PreventPassingUserDataIntoElementWithSharing',
+                    'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
                 // Specify only one of the files in the workspace, creating a scenario where the FlowTest result includes
                 // violations from files that weren't requested
-                const workspaceFiles = [PATH_TO_EXAMPLE];
+                const workspaceFiles = [PATH_TO_EXAMPLE2];
                 const engineResults: EngineRunResults = await engine.runRules(desiredRuleNames, {
                     workspace: new Workspace(workspaceFiles)
                 });

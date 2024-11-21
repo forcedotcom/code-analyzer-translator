@@ -1,14 +1,14 @@
 {
   "violations": [{
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
+    "ruleName": "PreventPassingUserDataIntoElementWithoutSharing",
     "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
     "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
+      "file": "__PATH_TO_EXAMPLE2__",
       "startLine": 369,
       "startColumn": 1,
       "comment": "Company.Company: Initialization"
     }, {
-      "file": "__PATH_TO_EXAMPLE__",
+      "file": "__PATH_TO_EXAMPLE2__",
       "startLine": 192,
       "startColumn": 1,
       "comment": "Company.Company influences Create_Lead.Company: flow into recordCreates via influence over Company in run mode SystemModeWithoutSharing"
@@ -16,169 +16,15 @@
     "primaryLocationIndex": 1,
     "resourceUrls": []
   }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 355,
-      "startColumn": 1,
-      "comment": "First_Name.First_Name: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 192,
-      "startColumn": 1,
-      "comment": "First_Name.First_Name influences Create_Lead.FirstName: flow into recordCreates via influence over FirstName in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 362,
-      "startColumn": 1,
-      "comment": "Last_Name.Last_Name: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 192,
-      "startColumn": 1,
-      "comment": "Last_Name.Last_Name influences Create_Lead.LastName: flow into recordCreates via influence over LastName in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 376,
-      "startColumn": 1,
-      "comment": "Phone.Phone: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 192,
-      "startColumn": 1,
-      "comment": "Phone.Phone influences Create_Lead.Phone: flow into recordCreates via influence over Phone in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 509,
-      "startColumn": 1,
-      "comment": "title.title: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 192,
-      "startColumn": 1,
-      "comment": "title.title influences Create_Lead.Title: flow into recordCreates via influence over Title in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 369,
-      "startColumn": 1,
-      "comment": "Company.Company: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 138,
-      "startColumn": 1,
-      "comment": "Company.Company influences Copy_1_of_Create_Lead.Company: flow into recordCreates via influence over Company in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 355,
-      "startColumn": 1,
-      "comment": "First_Name.First_Name: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 138,
-      "startColumn": 1,
-      "comment": "First_Name.First_Name influences Copy_1_of_Create_Lead.FirstName: flow into recordCreates via influence over FirstName in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 362,
-      "startColumn": 1,
-      "comment": "Last_Name.Last_Name: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 89,
-      "startColumn": 1,
-      "comment": "Last_Name.Last_Name influences random_last_name.random_last_name: Parsed from formulas"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 44,
-      "startColumn": 1,
-      "comment": "random_last_name.random_last_name influences randomize_last_name_and_phone.fixed_last_name: Variable Assignment"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 138,
-      "startColumn": 1,
-      "comment": "randomize_last_name_and_phone.fixed_last_name influences Copy_1_of_Create_Lead.LastName: flow into recordCreates via influence over LastName in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 3,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 502,
-      "startColumn": 1,
-      "comment": "street.street: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 138,
-      "startColumn": 1,
-      "comment": "street.street influences Copy_1_of_Create_Lead.Street: flow into recordCreates via influence over Street in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordcreates-data",
-    "message": "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
-    "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 509,
-      "startColumn": 1,
-      "comment": "title.title: Initialization"
-    }, {
-      "file": "__PATH_TO_EXAMPLE__",
-      "startLine": 138,
-      "startColumn": 1,
-      "comment": "title.title influences Copy_1_of_Create_Lead.Title: flow into recordCreates via influence over Title in run mode SystemModeWithoutSharing"
-    }],
-    "primaryLocationIndex": 1,
-    "resourceUrls": []
-  }, {
-    "ruleName": "systemmodewithoutsharing-recordupdates-data",
+    "ruleName": "PreventPassingUserDataIntoElementWithoutSharing",
     "message": "User controlled data flows into recordUpdates element data in run mode: SystemModeWithoutSharing",
     "codeLocations": [{
-      "file": "__PATH_TO_EXAMPLE__",
+      "file": "__PATH_TO_EXAMPLE2__",
       "startLine": 442,
       "startColumn": 1,
       "comment": "description.description: Initialization"
     }, {
-      "file": "__PATH_TO_EXAMPLE__",
+      "file": "__PATH_TO_EXAMPLE2__",
       "startLine": 266,
       "startColumn": 1,
       "comment": "description.description influences update_lead.Description: flow into recordUpdates via influence over Description in run mode SystemModeWithoutSharing"
