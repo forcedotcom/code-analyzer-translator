@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {FlowTestExecutionResult, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
 import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
+import * as fg from 'fast-glob';
 
 const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
@@ -20,6 +21,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 };
 
                 beforeAll(async () => {
+                    console.log(process.cwd());
                     results = await wrapper.runFlowTestRules(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows'), statusProcessorFunction);
                     // The `counter` property is irrelevant to us, and causes problems across platforms. So delete it.
                     for (const queryName of Object.keys(results.results)) {
@@ -54,6 +56,11 @@ describe('FlowTestCommandWrapper implementations', () => {
 
                 it('Correctly parses status updates from stdout', () => {
                     expect(completionPercentages).toEqual([0, 25, 50, 75]);
+                });
+
+                it('Generates no log file', async () => {
+                    const flowLogFiles = await fg.glob('./**/.flowtest_log_*.log');
+                    expect(flowLogFiles).toHaveLength(0);
                 });
             });
 
