@@ -118,7 +118,7 @@ function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
         severityLevel: toSeverityLevel(pmdRuleInfo.priority),
         tags: ['Recommended', pmdRuleInfo.ruleSet.replaceAll(' ', ''), languageId + 'Language'],
         description: pmdRuleInfo.description,
-        resourceUrls: [pmdRuleInfo.externalInfoUrl] // TODO: Eventually we'll want to add in well architected links
+        resourceUrls: pmdRuleInfo.externalInfoUrl ? [pmdRuleInfo.externalInfoUrl] : [] // TODO: Eventually we'll want to add in well architected links
     };
 }
 
