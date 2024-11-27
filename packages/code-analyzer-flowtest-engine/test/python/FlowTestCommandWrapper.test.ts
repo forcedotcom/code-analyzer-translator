@@ -55,6 +55,12 @@ describe('FlowTestCommandWrapper implementations', () => {
                 it('Correctly parses status updates from stdout', () => {
                     expect(completionPercentages).toEqual([0, 25, 50, 75]);
                 });
+
+                it('Generates no log file', async () => {
+                    const logFileMatcher = /\.flowtest_log_.+\.log/;
+                    const logFiles = (await fs.readdir('.')).filter(f => f.match(logFileMatcher));
+                    expect(logFiles).toHaveLength(0);
+                });
             });
 
             describe('Failure Modes', () => {

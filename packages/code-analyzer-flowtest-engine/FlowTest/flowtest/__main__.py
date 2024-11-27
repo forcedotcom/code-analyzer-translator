@@ -176,6 +176,8 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
                         type=check_not_exist)
 
     parser.add_argument("--debug", action='store_true', help="whether to set logging level to debug")
+    parser.add_argument("--no_log", action='store_true', help="disables logging")
+
 
     """
         Options for crawl-spec generation
@@ -248,12 +250,16 @@ def main(argv: list[str] = None) -> str | None:
         return
 
     # logging
-    if args.debug is True:
-        log_level = logging.DEBUG
+    if args.no_log is True:
+        logging.getLogger().setLevel(logging.CRITICAL + 1)
     else:
-        log_level = logging.WARNING
+        if args.debug is True:
+            log_level = logging.DEBUG
 
-    setup_logger(level=log_level, log_file=args.log_file)
+        else:
+            log_level = logging.WARNING
+
+        setup_logger(level=log_level, log_file=args.log_file)
 
     if args.query_path is not None and args.query_class is None:
         raise argparse.ArgumentTypeError("A query_class must be provided if a query_path is set")

@@ -48,6 +48,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         const pythonArgs: string[] = [
             '-m',
             'flowtest',
+            '--no_log',
             '-j',
             tmpFile,
             '-d',
