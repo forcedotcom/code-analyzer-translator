@@ -15,8 +15,7 @@
 		  message="Avoid using with - it's bad news"
 		  language="ecmascript"
 		  since="5.0.1"
-		  class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
-		  externalInfoUrl="${pmd.website.baseurl}/pmd_rules_ecmascript_bestpractices.html#avoidwithstatement">
+		  class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"> <!-- Removed the externalInfoUrl attribute so that we can test what happens when this is missing -->
 		<description>Avoid using with - it's bad news</description>
 		<priority>1</priority>
 		<properties>

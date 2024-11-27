@@ -152,6 +152,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const fakeRule10Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule10'); // From somecat4.xml
         expect(fakeRule10Description.severityLevel).toEqual(SeverityLevel.High);
         expect(fakeRule10Description.tags).toEqual(['Recommended', 'SomeCat4', 'javascriptLanguage']);
+        expect(fakeRule10Description.resourceUrls).toHaveLength(0); // This particular rule purposely has no externalInfoUrl defined, so we confirm that it gives no resourceUrls.
         expectContainsRuleWithName(ruleDescriptions, 'fakerule11'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule12'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule13'); // From somecat4.xml
