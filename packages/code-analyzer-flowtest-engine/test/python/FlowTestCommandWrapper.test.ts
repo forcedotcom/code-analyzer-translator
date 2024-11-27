@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {FlowTestExecutionResult, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
 import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
-import * as fg from 'fast-glob';
 
 const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
@@ -59,8 +58,9 @@ describe('FlowTestCommandWrapper implementations', () => {
                 });
 
                 it('Generates no log file', async () => {
-                    const flowLogFiles = await fg.glob('./**/.flowtest_log_*.log');
-                    expect(flowLogFiles).toHaveLength(0);
+                    const logFileMatcher = /\.flowtest_log_.+\.log/;
+                    const logFiles = (await fs.readdir('.')).filter(f => f.match(logFileMatcher));
+                    expect(logFiles).toHaveLength(0);
                 });
             });
 
