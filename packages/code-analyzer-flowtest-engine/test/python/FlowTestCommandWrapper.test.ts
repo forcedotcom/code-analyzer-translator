@@ -20,7 +20,6 @@ describe('FlowTestCommandWrapper implementations', () => {
                 };
 
                 beforeAll(async () => {
-                    console.log(process.cwd());
                     results = await wrapper.runFlowTestRules(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows'), statusProcessorFunction);
                     // The `counter` property is irrelevant to us, and causes problems across platforms. So delete it.
                     for (const queryName of Object.keys(results.results)) {
