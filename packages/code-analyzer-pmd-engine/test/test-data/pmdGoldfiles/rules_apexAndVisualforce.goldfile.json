@@ -728,6 +728,19 @@
     ]
   },
   {
+    "name": "QueueableWithoutFinalizer",
+    "severityLevel": 4,
+    "tags": [
+      "Recommended",
+      "BestPractices",
+      "apexLanguage"
+    ],
+    "description": "Detects when the Queueable interface is used but a Finalizer is not attached. It is best practice to call the `System.attachFinalizer(Finalizer f)` method within the `execute` method of a class which implements the `Queueable` interface. Without attaching a Finalizer, there is no way of designing error recovery actions should the Queueable action fail.",
+    "resourceUrls": [
+      "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#queueablewithoutfinalizer"
+    ]
+  },
+  {
     "name": "StdCyclomaticComplexity",
     "severityLevel": 3,
     "tags": [
@@ -787,7 +800,7 @@
       "Design",
       "apexLanguage"
     ],
-    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well. ApexLink is used to make this possible and this needs additional configuration. The environment variable `PMD_APEX_ROOT_DIRECTORY` needs to be set prior to executing PMD. With this variable the root directory of the Salesforce metadata,... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
+    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well, as long as the class itself is not entirely unused. A class is considered used, if it contains at least one other method/variable declaration that is used, as shown in the test project file Foo.cls. ApexLink is used to make this possible and... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
     ]
