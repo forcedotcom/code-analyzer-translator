@@ -133,18 +133,6 @@
     ]
   },
   {
-    "name": "@typescript-eslint/ban-types",
-    "severityLevel": 3,
-    "tags": [
-      "Recommended",
-      "suggestion"
-    ],
-    "description": "Disallow certain types",
-    "resourceUrls": [
-      "https://typescript-eslint.io/rules/ban-types"
-    ]
-  },
-  {
     "name": "@typescript-eslint/class-literal-property-style",
     "severityLevel": 2,
     "tags": [
@@ -382,7 +370,7 @@
     "tags": [
       "suggestion"
     ],
-    "description": "Require `.toString()` to only be called on objects which provide useful information when stringified",
+    "description": "Require `.toString()` and `.toLocaleString()` to only be called on objects which provide useful information when stringified",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/no-base-to-string"
     ]
@@ -407,6 +395,17 @@
     "description": "Require expressions of type void to appear in statement position",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/no-confusing-void-expression"
+    ]
+  },
+  {
+    "name": "@typescript-eslint/no-deprecated",
+    "severityLevel": 2,
+    "tags": [
+      "problem"
+    ],
+    "description": "Disallow using code marked as `@deprecated`",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-deprecated"
     ]
   },
   {
@@ -466,14 +465,15 @@
     ]
   },
   {
-    "name": "@typescript-eslint/no-empty-interface",
+    "name": "@typescript-eslint/no-empty-object-type",
     "severityLevel": 3,
     "tags": [
+      "Recommended",
       "suggestion"
     ],
-    "description": "Disallow the declaration of empty interfaces",
+    "description": "Disallow accidentally using the \"empty object\" type",
     "resourceUrls": [
-      "https://typescript-eslint.io/rules/no-empty-interface"
+      "https://typescript-eslint.io/rules/no-empty-object-type"
     ]
   },
   {
@@ -597,18 +597,6 @@
     "description": "Disallow function declarations that contain unsafe references inside loop statements",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/no-loop-func"
-    ]
-  },
-  {
-    "name": "@typescript-eslint/no-loss-of-precision",
-    "severityLevel": 2,
-    "tags": [
-      "Recommended",
-      "problem"
-    ],
-    "description": "Disallow literal numbers that lose precision",
-    "resourceUrls": [
-      "https://typescript-eslint.io/rules/no-loss-of-precision"
     ]
   },
   {
@@ -739,6 +727,7 @@
     "name": "@typescript-eslint/no-require-imports",
     "severityLevel": 2,
     "tags": [
+      "Recommended",
       "problem"
     ],
     "description": "Disallow invocation of `require()`",
@@ -755,6 +744,17 @@
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/no-restricted-imports"
+    ]
+  },
+  {
+    "name": "@typescript-eslint/no-restricted-types",
+    "severityLevel": 3,
+    "tags": [
+      "suggestion"
+    ],
+    "description": "Disallow certain types",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-restricted-types"
     ]
   },
   {
@@ -800,6 +800,17 @@
     "description": "Disallow conditionals where the type is always truthy or always falsy",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/no-unnecessary-condition"
+    ]
+  },
+  {
+    "name": "@typescript-eslint/no-unnecessary-parameter-property-assignment",
+    "severityLevel": 3,
+    "tags": [
+      "suggestion"
+    ],
+    "description": "Disallow unnecessary assignment of constructor property parameter",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-unnecessary-parameter-property-assignment"
     ]
   },
   {
@@ -859,6 +870,17 @@
     ]
   },
   {
+    "name": "@typescript-eslint/no-unnecessary-type-parameters",
+    "severityLevel": 2,
+    "tags": [
+      "problem"
+    ],
+    "description": "Disallow type parameters that aren't used multiple times",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-unnecessary-type-parameters"
+    ]
+  },
+  {
     "name": "@typescript-eslint/no-unsafe-argument",
     "severityLevel": 2,
     "tags": [
@@ -915,6 +937,18 @@
     ]
   },
   {
+    "name": "@typescript-eslint/no-unsafe-function-type",
+    "severityLevel": 2,
+    "tags": [
+      "Recommended",
+      "problem"
+    ],
+    "description": "Disallow using the unsafe built-in Function type",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-unsafe-function-type"
+    ]
+  },
+  {
     "name": "@typescript-eslint/no-unsafe-member-access",
     "severityLevel": 2,
     "tags": [
@@ -937,6 +971,17 @@
     ]
   },
   {
+    "name": "@typescript-eslint/no-unsafe-type-assertion",
+    "severityLevel": 2,
+    "tags": [
+      "problem"
+    ],
+    "description": "Disallow type assertions that narrow a type",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/no-unsafe-type-assertion"
+    ]
+  },
+  {
     "name": "@typescript-eslint/no-unsafe-unary-minus",
     "severityLevel": 2,
     "tags": [
@@ -951,6 +996,7 @@
     "name": "@typescript-eslint/no-unused-expressions",
     "severityLevel": 3,
     "tags": [
+      "Recommended",
       "suggestion"
     ],
     "description": "Disallow unused expressions",
@@ -1004,15 +1050,15 @@
     ]
   },
   {
-    "name": "@typescript-eslint/no-var-requires",
+    "name": "@typescript-eslint/no-wrapper-object-types",
     "severityLevel": 2,
     "tags": [
       "Recommended",
       "problem"
     ],
-    "description": "Disallow `require` statements except in import statements",
+    "description": "Disallow using confusing built-in primitive class wrappers",
     "resourceUrls": [
-      "https://typescript-eslint.io/rules/no-var-requires"
+      "https://typescript-eslint.io/rules/no-wrapper-object-types"
     ]
   },
   {
@@ -1141,6 +1187,7 @@
     "name": "@typescript-eslint/prefer-namespace-keyword",
     "severityLevel": 3,
     "tags": [
+      "Recommended",
       "suggestion"
     ],
     "description": "Require using `namespace` keyword over `module` keyword to declare custom TypeScript modules",
@@ -1256,6 +1303,17 @@
     "description": "Require any function or method that returns a Promise to be marked async",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/promise-function-async"
+    ]
+  },
+  {
+    "name": "@typescript-eslint/related-getter-setter-pairs",
+    "severityLevel": 2,
+    "tags": [
+      "problem"
+    ],
+    "description": "Enforce that `get()` types should be assignable to their equivalent `set()` type",
+    "resourceUrls": [
+      "https://typescript-eslint.io/rules/related-getter-setter-pairs"
     ]
   },
   {
@@ -1386,7 +1444,7 @@
     "tags": [
       "suggestion"
     ],
-    "description": "Enforce typing arguments in `.catch()` callbacks as `unknown`",
+    "description": "Enforce typing arguments in Promise rejection callbacks as `unknown`",
     "resourceUrls": [
       "https://typescript-eslint.io/rules/use-unknown-in-catch-callback-variable"
     ]
@@ -1799,18 +1857,6 @@
     "description": "Disallow lexical declarations in case clauses",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-case-declarations"
-    ]
-  },
-  {
-    "name": "no-class-assign",
-    "severityLevel": 2,
-    "tags": [
-      "Recommended",
-      "problem"
-    ],
-    "description": "Disallow reassigning class members",
-    "resourceUrls": [
-      "https://eslint.org/docs/latest/rules/no-class-assign"
     ]
   },
   {
@@ -2258,6 +2304,18 @@
     "description": "Disallow `if` statements as the only statement in `else` blocks",
     "resourceUrls": [
       "https://eslint.org/docs/latest/rules/no-lonely-if"
+    ]
+  },
+  {
+    "name": "no-loss-of-precision",
+    "severityLevel": 2,
+    "tags": [
+      "Recommended",
+      "problem"
+    ],
+    "description": "Disallow literal numbers that lose precision",
+    "resourceUrls": [
+      "https://eslint.org/docs/latest/rules/no-loss-of-precision"
     ]
   },
   {

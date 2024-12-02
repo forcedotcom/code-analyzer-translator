@@ -403,7 +403,7 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
         "primaryLocationIndex": 0,
         "ruleName": "no-invalid-regexp"
     };
-    const expectedTsViolation_banTypes: Violation = {
+    const expectedTsViolation_noWrapperObjectTypes: Violation = {
         "codeLocations": [{
             "endColumn": 20,
             "endLine": 2,
@@ -411,20 +411,20 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
             "startColumn": 14,
             "startLine": 2
         }],
-        "message": "Don't use `String` as a type. Use string instead",
+        "message": "Prefer using the primitive `string` as a type name, rather than the upper-cased `String`.",
         "primaryLocationIndex": 0,
-        "ruleName": "@typescript-eslint/ban-types"
+        "ruleName": "@typescript-eslint/no-wrapper-object-types"
     };
 
     it('When running with defaults and no customizations, then violations for javascript and typescript are found correctly', async () => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const runOptions: RunOptions = {workspace: new Workspace([workspaceWithNoCustomConfig])};
-        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/no-wrapper-object-types'], runOptions);
 
         expect(results.violations).toHaveLength(3);
         expect(results.violations).toContainEqual(expectedJsViolation_noInvalidRegexp);
         expect(results.violations).toContainEqual(expectedTsViolation_noInvalidRegexp);
-        expect(results.violations).toContainEqual(expectedTsViolation_banTypes);
+        expect(results.violations).toContainEqual(expectedTsViolation_noWrapperObjectTypes);
     });
 
     it('When workspace only contains javascript files, then only javascript violations are returned', async () => {
@@ -510,7 +510,7 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
             auto_discover_eslint_config: true
         });
         const runOptions: RunOptions = {workspace: new Workspace([workspaceThatIgnoresFilesByConfig])};
-        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/no-wrapper-object-types'], runOptions);
         expect(results.violations).toHaveLength(2); // Should not contain js violations but should contain ts violations
         expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');
         expect(path.extname(results.violations[1].codeLocations[0].file)).toEqual('.ts');
@@ -521,7 +521,7 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
             eslint_ignore_file: path.join(workspaceThatHasEslintIgnoreFile, '.eslintignore')
         });
         const runOptions: RunOptions = {workspace: new Workspace([workspaceThatHasEslintIgnoreFile])};
-        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/ban-types'], runOptions);
+        const results: EngineRunResults = await engine.runRules(['no-invalid-regexp', '@typescript-eslint/no-wrapper-object-types'], runOptions);
         expect(results.violations).toHaveLength(2); // Should not contain js violations but should contain ts violations
         expect(path.extname(results.violations[0].codeLocations[0].file)).toEqual('.ts');
         expect(path.extname(results.violations[1].codeLocations[0].file)).toEqual('.ts');

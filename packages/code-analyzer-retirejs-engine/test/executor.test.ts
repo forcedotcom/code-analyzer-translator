@@ -201,6 +201,10 @@ function getExpectedJQueryResults(detection: string): Component[] {
                 {
                     atOrAbove: "1.1.4",
                     below: "3.4.0",
+                    cwe: [
+                        "CWE-1321",
+                        "CWE-79",
+                    ],
                     identifiers: {
                         CVE: [
                             "CVE-2019-11358"
@@ -219,6 +223,9 @@ function getExpectedJQueryResults(detection: string): Component[] {
                 {
                     atOrAbove: "1.0.3",
                     below: "3.5.0",
+                    cwe: [
+                        "CWE-79",
+                    ],
                     identifiers: {
                         CVE: [
                             "CVE-2020-11023"
@@ -235,6 +242,9 @@ function getExpectedJQueryResults(detection: string): Component[] {
                 {
                     atOrAbove: "1.2.0",
                     below: "3.5.0",
+                    cwe: [
+                        "CWE-79",
+                    ],
                     identifiers: {
                         CVE: [
                             "CVE-2020-11022"
