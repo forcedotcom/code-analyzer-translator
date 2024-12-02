@@ -12,6 +12,7 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
 import path from "node:path";
+import * as fs from 'node:fs/promises';
 import {extensionToLanguageId, LanguageId, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
@@ -37,6 +38,12 @@ export class PmdEngine extends Engine {
 
     getName(): string {
         return PMD_ENGINE_NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fs.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {

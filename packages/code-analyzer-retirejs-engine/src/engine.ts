@@ -23,6 +23,7 @@ import {
 import {Finding, Vulnerability} from "retire/lib/types";
 import {getMessage} from "./messages";
 import path from "node:path";
+import * as fs from 'node:fs/promises';
 
 // To speed up execution, we will only target files with extension among EXTENSIONS_TO_TARGET
 // that don't live under one of the FOLDERS_TO_SKIP
@@ -70,6 +71,12 @@ export class RetireJsEngine extends Engine {
 
     getName(): string {
         return RetireJsEngine.NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fs.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {

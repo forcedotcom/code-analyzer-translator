@@ -314,3 +314,12 @@ describe('Tests for the runRules method of CpdEngine', () => {
         expect(results.violations).toHaveLength(0); // Should not pick up the someReplicatedFileWithOver100Tokens.html files
     });
 });
+
+describe('Tests for the getEngineVersion method of CpdEngine', () => {
+    it('Outputs something resembling a Semantic Version', async () => {
+        const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
+        const version: string = await engine.getEngineVersion();
+
+        expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+    });
+});

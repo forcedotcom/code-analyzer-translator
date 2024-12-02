@@ -116,6 +116,12 @@ describe('Tests for the RetireJsEngine', () => {
         expect(engine.getName()).toEqual('retire-js');
     });
 
+    it('When getEngineVersion is called, it returns something resembling a Semantic Version', async () => {
+        const version: string = await engine.getEngineVersion();
+
+        expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+    });
+
     it('When describeRules is called, then the expected rules are returned', async () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(DUMMY_DESCRIBE_OPTIONS);
         expect(ruleDescriptions).toHaveLength(4);
