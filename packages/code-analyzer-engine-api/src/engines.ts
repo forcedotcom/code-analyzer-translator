@@ -29,6 +29,8 @@ export abstract class Engine {
 
     abstract runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults>
 
+    abstract getEngineVersion(): Promise<string>;
+
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
         this.eventEmitter.on(eventType, callback);
     }

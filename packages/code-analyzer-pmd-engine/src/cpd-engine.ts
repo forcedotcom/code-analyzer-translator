@@ -23,6 +23,8 @@ import {
     CpdRunResults,
     CpdWrapperInvoker
 } from "./cpd-wrapper";
+import path from "node:path";
+import fs from "node:fs/promises";
 
 const RULE_NAME_PREFIX: string = 'DetectCopyPasteFor';
 
@@ -42,6 +44,12 @@ export class CpdEngine extends Engine {
 
     getName(): string {
         return CPD_ENGINE_NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fs.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {

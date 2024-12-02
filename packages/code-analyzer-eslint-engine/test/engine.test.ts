@@ -544,6 +544,15 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
     });
 });
 
+describe('Tests for the getEngineVersion method of ESLint Engine', () => {
+    it('getEngineVersion() outputs something resembling a Semantic Version', async () => {
+        const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
+        const version: string = await engine.getEngineVersion();
+
+        expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+    });
+});
+
 describe('Tests for emitting events', () => {
     let engine: ESLintEngine;
     let logEvents: LogEvent[];

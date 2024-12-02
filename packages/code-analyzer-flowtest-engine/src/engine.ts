@@ -1,3 +1,5 @@
+import path from 'node:path';
+import * as fs from 'node:fs/promises';
 import {
     CodeLocation,
     DescribeOptions,
@@ -37,6 +39,12 @@ export class FlowTestEngine extends Engine {
 
     public getName(): string {
         return FlowTestEngine.NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fs.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     public async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {

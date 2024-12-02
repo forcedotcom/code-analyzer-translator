@@ -492,6 +492,15 @@ describe('Tests for the runRules method of PmdEngine', () => {
     });
 });
 
+describe('Tests for the getEngineVersion method of PmdEngine', () => {
+    it('Outputs something resembling a Semantic Version', async () => {
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
+        const version: string = await engine.getEngineVersion();
+
+        expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+    });
+});
+
 
 function expectNoDashesAppearOutsideOfOurLanguageSpecificRules(ruleDescriptions: RuleDescription[]): void {
     for (const ruleDescription of ruleDescriptions) {

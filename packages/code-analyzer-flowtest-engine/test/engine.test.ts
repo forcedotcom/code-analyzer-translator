@@ -227,6 +227,15 @@ describe('Tests for the FlowTestEngine', () => {
                 expect(engineResults).toEqual(expectedResults);
             });
         });
+
+        describe('#getEngineVersion', () => {
+            it('Returns something resembling a Semantic Version', async () => {
+                const engine: FlowTestEngine = new FlowTestEngine(new StubCommandWrapper());
+                const version: string = await engine.getEngineVersion();
+
+                expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+            });
+        });
     });
 });
 

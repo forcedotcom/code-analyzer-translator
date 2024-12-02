@@ -764,3 +764,11 @@ describe('Tests for runRules', () => {
         }
     });
 });
+
+describe('Tests for getEngineVersion', () => {
+    it('Outputs something resembling a Semantic Version', async () => {
+        const version: string = await engine.getEngineVersion();
+
+        expect(version).toMatch(/\d+\.\d+\.\d+.*/);
+    });
+});

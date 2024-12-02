@@ -1,3 +1,5 @@
+import * as fs from 'node:fs/promises';
+import path from 'node:path';
 import {
     DescribeOptions,
     Engine,
@@ -28,6 +30,12 @@ export class ESLintEngine extends Engine {
 
     getName(): string {
         return ESLintEngine.NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fs.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {

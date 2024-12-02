@@ -10,6 +10,7 @@ import {
 } from "@salesforce/code-analyzer-engine-api";
 import path from "node:path";
 import fs from "node:fs";
+import * as fsp from 'node:fs/promises';
 import os from "node:os";
 import {RegexRule, RegexRules} from "./config";
 import {isBinaryFile} from "isbinaryfile";
@@ -37,6 +38,12 @@ export class RegexEngine extends Engine {
 
     getName(): string {
         return RegexEngine.NAME;
+    }
+
+    public async getEngineVersion(): Promise<string> {
+        const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+        const packageJson: {version: string} = JSON.parse(await fsp.readFile(pathToPackageJson, 'utf-8'));
+        return packageJson.version;
     }
 
     // For testing purposes only

@@ -110,6 +110,10 @@ class DummyEngineV1 extends Engine {
         return "dummy"
     }
 
+    public getEngineVersion(): Promise<string> {
+        return Promise.resolve('0.0.1');
+    }
+
     async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitRunRulesProgressEvent(5.0);
         this.emitLogEvent(LogLevel.Fine, "runRules called");
