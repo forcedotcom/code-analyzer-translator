@@ -1,5 +1,5 @@
 // !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
-export const PMD_VERSION: string = '7.7.0';
+export const PMD_VERSION: string = '7.8.0';
 
 export const PMD_ENGINE_NAME: string = "pmd";
 export const CPD_ENGINE_NAME: string = "cpd";
