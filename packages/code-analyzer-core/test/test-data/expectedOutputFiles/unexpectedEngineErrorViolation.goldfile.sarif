@@ -30,16 +30,14 @@
           "locations": [
             {
               "physicalLocation": {
-                "artifactLocation": {},
-                "region": {}
+                "artifactLocation": {}
               }
             }
           ],
           "relatedLocations": [
             {
               "physicalLocation": {
-                "artifactLocation": {},
-                "region": {}
+                "artifactLocation": {}
               }
             }
           ]

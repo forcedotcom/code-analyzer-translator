@@ -1,3 +1,4 @@
+import path from 'node:path';
 import {CodeLocation, EngineRunResults, RunResults, Violation} from "../results";
 import * as sarif from "sarif";
 import {Rule, SeverityLevel} from "../rules";
@@ -38,7 +39,7 @@ function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.R
                 rules: rules.map(toSarifReportingDescriptor),
             }
         },
-        results: violations.map(v => toSarifResult(v, ruleNames.indexOf(v.getRule().getName()))),
+        results: violations.map(v => toSarifResult(v, runDir, ruleNames.indexOf(v.getRule().getName()))),
         invocations: [
             {
                 executionSuccessful: true,
@@ -50,7 +51,7 @@ function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.R
     };
 }
 
-function toSarifResult(violation: Violation, ruleIndex: number) : sarif.Result {
+function toSarifResult(violation: Violation, runDir: string, ruleIndex: number) : sarif.Result {
     const primaryCodeLocation = violation.getCodeLocations()[violation.getPrimaryLocationIndex()];
     return {
         ruleId: violation.getRule().getName(),
@@ -60,26 +61,35 @@ function toSarifResult(violation: Violation, ruleIndex: number) : sarif.Result {
 
         // Note that sarif format has a limit of 10 elements in the locations array, so we only store
         // the primary location (which is what most utilities expect) here
-        locations: [toSarifLocation(primaryCodeLocation)],
+        locations: [toSarifLocation(primaryCodeLocation, runDir)],
 
         // And then we store the full locations array in the relatedLocations field if users want to see all of them
-        relatedLocations: violation.getCodeLocations().map(toSarifLocation)
+        relatedLocations: violation.getCodeLocations().map(codeLoc => toSarifLocation(codeLoc, runDir))
     };
 }
 
-function toSarifLocation(codeLocation: CodeLocation): sarif.Location {
-    return {
-        physicalLocation: {
-            artifactLocation: {
-                uri: codeLocation.getFile(),
-            },
-            region: {
-                startLine: codeLocation.getStartLine(),
-                startColumn: codeLocation.getStartColumn(),
-                endLine: codeLocation.getEndLine(),
-                endColumn: codeLocation.getEndColumn()
-            } as sarif.Region
+function toSarifLocation(codeLocation: CodeLocation, runDir: string): sarif.Location {
+    if (codeLocation.getFile()) {
+        return {
+            physicalLocation: {
+                artifactLocation: {
+                    uri: path.relative(runDir, codeLocation.getFile()!),
+                    uriBaseId: runDir
+                },
+                region: {
+                    startLine: codeLocation.getStartLine(),
+                    startColumn: codeLocation.getStartColumn(),
+                    endLine: codeLocation.getEndLine(),
+                    endColumn: codeLocation.getEndColumn()
+                } as sarif.Region
+            }
         }
+    } else {
+        return {
+            physicalLocation: {
+                artifactLocation: {}
+            }
+        };
     }
 }
 
