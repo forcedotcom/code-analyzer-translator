@@ -45,7 +45,7 @@ describe('End to end test', () => {
         const violationsFromTsFile: Violation[] = engineRunResults.violations.filter(v => path.extname(v.codeLocations[0].file) === '.ts');
         expect(violationsFromTsFile).toHaveLength(6);
         expect(new Set(violationsFromTsFile.map(v => v.ruleName))).toEqual(new Set([
-            '@typescript-eslint/ban-types',
+            '@typescript-eslint/no-wrapper-object-types',
             '@typescript-eslint/no-unused-vars', // there are 4 of these
             'no-invalid-regexp'
         ]));
