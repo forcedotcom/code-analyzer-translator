@@ -1,5 +1,6 @@
 export {
     ConfigDescription,
+    ConfigFieldDescription,
     ConfigObject,
     ConfigValue,
     ConfigValueExtractor,

@@ -12,26 +12,6 @@ export const CPD_AVAILABLE_LANGUAGES: string[] = Object.values(LanguageId);
 
 const DEFAULT_JAVA_COMMAND: string = 'java';
 
-export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
-    overview: getMessage('PmdConfigOverview'),
-    fieldDescriptions: {
-        java_command: getMessage('SharedConfigFieldDescription_java_command', PMD_ENGINE_NAME),
-        rule_languages: getMessage('PmdConfigFieldDescription_rule_languages', toAvailableLanguagesText(PMD_AVAILABLE_LANGUAGES)),
-        java_classpath_entries: getMessage('PmdConfigFieldDescription_java_classpath_entries'),
-        custom_rulesets: getMessage('PmdConfigFieldDescription_custom_rulesets')
-    }
-}
-
-export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
-    overview: getMessage('CpdConfigOverview'),
-    fieldDescriptions: {
-        java_command: getMessage('SharedConfigFieldDescription_java_command', CPD_ENGINE_NAME),
-        rule_languages: getMessage('CpdConfigFieldDescription_rule_languages', toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)),
-        minimum_tokens: getMessage('CpdConfigFieldDescription_minimum_tokens'),
-        skip_duplicate_files: getMessage('CpdConfigFieldDescription_skip_duplicate_files')
-    }
-}
-
 export type PmdEngineConfig = {
     // Indicates the specific "java" command to use for the 'pmd' engine.
     // May be provided as the name of a command that exists on the path, or an absolute file path location.
@@ -67,6 +47,33 @@ export const DEFAULT_PMD_ENGINE_CONFIG: PmdEngineConfig = {
     custom_rulesets: []
 }
 
+export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('PmdConfigOverview'),
+    fieldDescriptions: {
+        java_command: {
+            descriptionText: getMessage('SharedConfigFieldDescription_java_command', PMD_ENGINE_NAME),
+            valueType: "string",
+            defaultValue: null // Using null for doc and since it indicates that the value is calculated based on the environment
+        },
+        rule_languages: {
+            descriptionText: getMessage('PmdConfigFieldDescription_rule_languages', toAvailableLanguagesText(PMD_AVAILABLE_LANGUAGES)),
+            valueType: "array",
+            defaultValue: DEFAULT_PMD_ENGINE_CONFIG.rule_languages,
+        },
+        java_classpath_entries: {
+            descriptionText: getMessage('PmdConfigFieldDescription_java_classpath_entries'),
+            valueType: "array",
+            defaultValue: DEFAULT_PMD_ENGINE_CONFIG.java_classpath_entries
+        },
+        custom_rulesets: {
+            descriptionText: getMessage('PmdConfigFieldDescription_custom_rulesets'),
+            valueType: "array",
+            defaultValue: DEFAULT_PMD_ENGINE_CONFIG.custom_rulesets
+        }
+    }
+}
+
+
 export type CpdEngineConfig = {
     // Indicates the specific "java" command to use for the 'cpd' engine.
     // May be provided as the name of a command that exists on the path, or an absolute file path location.
@@ -94,6 +101,33 @@ export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     minimum_tokens: 100,
     skip_duplicate_files: false
 }
+
+export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('CpdConfigOverview'),
+    fieldDescriptions: {
+        java_command: {
+            descriptionText: getMessage('SharedConfigFieldDescription_java_command', CPD_ENGINE_NAME),
+            valueType: "string",
+            defaultValue: null // Using null for doc and since it indicates that the value is calculated based on the environment
+        },
+        rule_languages: {
+            descriptionText: getMessage('CpdConfigFieldDescription_rule_languages', toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)),
+            valueType: "array",
+            defaultValue: DEFAULT_CPD_ENGINE_CONFIG.rule_languages
+        },
+        minimum_tokens: {
+            descriptionText: getMessage('CpdConfigFieldDescription_minimum_tokens'),
+            valueType: "number",
+            defaultValue: DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens,
+        },
+        skip_duplicate_files: {
+            descriptionText: getMessage('CpdConfigFieldDescription_skip_duplicate_files'),
+            valueType: "boolean",
+            defaultValue: DEFAULT_CPD_ENGINE_CONFIG.skip_duplicate_files,
+        }
+    }
+}
+
 
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<PmdEngineConfig> {

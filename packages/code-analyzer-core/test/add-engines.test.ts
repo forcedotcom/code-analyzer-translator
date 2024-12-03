@@ -185,16 +185,31 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(engineConfigDescription1).toEqual({
             overview: "OverviewForStub1",
             fieldDescriptions: {
-                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
-                miscSetting1: "someDescriptionFor_miscSetting1"
+                disable_engine: {
+                    descriptionText: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
+                    valueType: "boolean",
+                    defaultValue: false,
+                    wasSuppliedByUser: false
+                },
+                misc_value: {
+                    descriptionText: "someDescriptionFor_misc_value",
+                    valueType: "number",
+                    defaultValue: 1987,
+                    wasSuppliedByUser: false
+                }
             }
         });
         const engineConfigDescription2: ConfigDescription = codeAnalyzer.getEngineConfigDescription('stubEngine2');
         expect(engineConfigDescription2).toEqual({
             overview: getMessage('GenericEngineConfigOverview', 'STUBENGINE2'),
             fieldDescriptions: {
-                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine2')
-            }
+                disable_engine: {
+                    descriptionText: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine2'),
+                    valueType: "boolean",
+                    defaultValue: false,
+                    wasSuppliedByUser: false
+                }
+            },
         });
     });
 
@@ -220,8 +235,18 @@ describe("Tests for adding engines to Code Analyzer", () => {
         expect(codeAnalyzer.getEngineConfigDescription('stubEngine1')).toEqual({
             overview: "OverviewForStub1",
             fieldDescriptions: {
-                disable_engine: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
-                miscSetting1: "someDescriptionFor_miscSetting1"
+                disable_engine: {
+                    descriptionText: getMessage('EngineConfigFieldDescription_disable_engine', 'stubEngine1'),
+                    valueType: "boolean",
+                    defaultValue: false,
+                    wasSuppliedByUser: true
+                },
+                misc_value: {
+                    descriptionText: "someDescriptionFor_misc_value",
+                    valueType: "number",
+                    defaultValue: 1987,
+                    wasSuppliedByUser: true
+                }
             }
         });
     });

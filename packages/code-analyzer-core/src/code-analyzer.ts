@@ -238,15 +238,16 @@ export class CodeAnalyzer {
             return;
         }
 
+        const engineOverrides: EngineOverrides = this.config.getEngineOverridesFor(engineName);
+
         try {
             const engineConfigDescription: engApi.ConfigDescription = enginePluginV1.describeEngineConfig(engineName);
-            normalizeEngineConfigDescription(engineConfigDescription, engineName);
-            this.engineConfigDescriptions.set(engineName, engineConfigDescription);
+            const configDescription: ConfigDescription = normalizeEngineConfigDescription(engineConfigDescription, engineName, engineOverrides);
+            this.engineConfigDescriptions.set(engineName, configDescription);
         } catch (err) {
             throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
         }
 
-        const engineOverrides: EngineOverrides = this.config.getEngineOverridesFor(engineName);
         if (engineOverrides[FIELDS.DISABLE_ENGINE]) {
             this.emitLogEvent(LogLevel.Debug, getMessage('EngineDisabled', engineName,
                 `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`))
@@ -524,15 +525,28 @@ function isIntegerBetween(value: number, leftBound: number, rightBound: number):
     return value >= leftBound && value <= rightBound && Number.isInteger(value);
 }
 
-function normalizeEngineConfigDescription(engineConfigDescription: ConfigDescription, engineName: string): void {
-    // Every engine config should have an overview, so if missing, then we add in a generic one
-    if (!engineConfigDescription.overview) {
-        engineConfigDescription.overview = getMessage('GenericEngineConfigOverview', engineName.toUpperCase());
-    }
+function normalizeEngineConfigDescription(engineConfigDescription: engApi.ConfigDescription, engineName: string,
+                                          engineOverrides: EngineOverrides): ConfigDescription {
+    const configDescription: ConfigDescription = {
+        // Every engine config should have an overview, so if missing, then we add in a generic one
+        overview: engineConfigDescription.overview ? engineConfigDescription.overview :
+            getMessage('GenericEngineConfigOverview', engineName.toUpperCase()),
 
-    // Every engine config should have a disable_engine field which we prefer to be first in the object for display purposes
-    engineConfigDescription.fieldDescriptions = {
-        [FIELDS.DISABLE_ENGINE]: getMessage('EngineConfigFieldDescription_disable_engine', engineName),
-        ... engineConfigDescription.fieldDescriptions
+        fieldDescriptions: {
+            // Every engine config should have a disable_engine field which we prefer to be first in the object for display purposes
+            [FIELDS.DISABLE_ENGINE]: {
+                descriptionText: getMessage('EngineConfigFieldDescription_disable_engine', engineName),
+                valueType: "boolean",
+                defaultValue: false,
+                wasSuppliedByUser: FIELDS.DISABLE_ENGINE in engineOverrides
+            }
+        }
     }
+    for (const fieldName in engineConfigDescription.fieldDescriptions) {
+        configDescription.fieldDescriptions[fieldName] = {
+            ... engineConfigDescription.fieldDescriptions[fieldName],
+            wasSuppliedByUser: fieldName in engineOverrides
+        };
+    }
+    return configDescription;
 }

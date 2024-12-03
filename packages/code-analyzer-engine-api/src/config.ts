@@ -18,8 +18,26 @@ export type ConfigDescription = {
     // A brief overview of the configuration. It is recommended to include a link to documentation when possible.
     overview?: string
 
-    // Description messages of the top-level fields in the configuration
-    fieldDescriptions?: Record<string, string>
+    // Description objects for the primary fields in the configuration
+    fieldDescriptions?: Record<string, ConfigFieldDescription>
+}
+
+export type ConfigFieldDescription = {
+    // Text that describes the field to be documented
+    descriptionText: string
+
+    // The type for the value associated with this field (as a string).
+    //   Note that this as a string instead of an enum in order to give flexibility to describe the type of the field as
+    //   we want it to show up in our public docs, but it is recommended to return one of the following when possible:
+    //     'string', 'number', 'boolean', 'object', 'array'
+    valueType: string
+
+    // The default value that is to be documented. Use null if you do not have a fixed default value.
+    //   Note that this value may not necessarily be the same that could be auto calculated if the user doesn't provide
+    //   the value in their configuration file. For example, we may want to report null as the default value for a
+    //   java_command field whenever the user doesn't explicitly provide one even though it might automatically
+    //   get calculated at runtime to be some java command found in their environment.
+    defaultValue: ConfigValue
 }
 
 export class ConfigValueExtractor {

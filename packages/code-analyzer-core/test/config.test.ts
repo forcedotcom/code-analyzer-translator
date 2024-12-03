@@ -1,10 +1,10 @@
 import {CodeAnalyzerConfig, SeverityLevel} from "../src";
 import * as os from "node:os";
 import * as path from "node:path";
-import {ConfigDescription, getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
+import {getMessageFromCatalog, SHARED_MESSAGE_CATALOG} from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
-import {TOP_LEVEL_CONFIG_DESCRIPTION, DEFAULT_CONFIG} from "../src/config";
+import {ConfigDescription, DEFAULT_CONFIG} from "../src/config";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -273,8 +273,45 @@ describe("Tests for creating and accessing configuration values", () => {
                 'engines.stubEngine1.disable_engine', 'boolean', 'number'));
     });
 
-    it("When getConfigDescription is called, then it returns our expected description object", () => {
-        const configDescription: ConfigDescription = CodeAnalyzerConfig.getConfigDescription();
-        expect(configDescription).toEqual(TOP_LEVEL_CONFIG_DESCRIPTION);
+    it("When getConfigDescription is called from default config, then it returns our expected description object", () => {
+        const configDescription: ConfigDescription = CodeAnalyzerConfig.withDefaults().getConfigDescription();
+        expect(configDescription.overview).toEqual(getMessage('ConfigOverview'));
+        expect(configDescription.fieldDescriptions).toEqual({
+            config_root: {
+                descriptionText: getMessage('ConfigFieldDescription_config_root'),
+                valueType: 'string',
+                defaultValue: null,
+                wasSuppliedByUser: false
+            },
+            log_folder: {
+                descriptionText: getMessage('ConfigFieldDescription_log_folder'),
+                valueType: 'string',
+                defaultValue: null,
+                wasSuppliedByUser: false
+            },
+            rules: {
+                descriptionText: getMessage('ConfigFieldDescription_rules'),
+                valueType: 'object',
+                defaultValue: {},
+                wasSuppliedByUser: false
+            },
+            engines: {
+                descriptionText: getMessage('ConfigFieldDescription_engines'),
+                valueType: 'object',
+                defaultValue: {},
+                wasSuppliedByUser: false
+            }
+        });
+    });
+
+    it("When getConfigDescription is called from modified config, then it correctly sets wasSuppliedByUser fields", () => {
+        const configDescription: ConfigDescription = CodeAnalyzerConfig.fromObject(
+            {config_root: __dirname, rules: {"someEngine": {"abc": {severity: SeverityLevel.High}}}}
+        ).getConfigDescription();
+        expect(configDescription.overview).toEqual(getMessage('ConfigOverview'));
+        expect(configDescription.fieldDescriptions.config_root.wasSuppliedByUser).toEqual(true);
+        expect(configDescription.fieldDescriptions.log_folder.wasSuppliedByUser).toEqual(false);
+        expect(configDescription.fieldDescriptions.rules.wasSuppliedByUser).toEqual(true);
+        expect(configDescription.fieldDescriptions.engines.wasSuppliedByUser).toEqual(false);
     });
 });

@@ -7,15 +7,19 @@ import {
 import {getMessage} from "./messages";
 import {convertToRegex} from "./utils";
 
+export type RegexEngineConfig = {
+    custom_rules: RegexRules
+}
+
 export const REGEX_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
     overview: getMessage('ConfigOverview'),
     fieldDescriptions: {
-        custom_rules: getMessage('ConfigFieldDescription_custom_rules')
+        custom_rules: {
+            descriptionText: getMessage('ConfigFieldDescription_custom_rules'),
+            valueType: "object",
+            defaultValue: {}
+        }
     }
-}
-
-export type RegexEngineConfig = {
-    custom_rules: RegexRules
 }
 
 export type RegexRules = {

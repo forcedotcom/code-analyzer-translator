@@ -40,7 +40,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(plugin.describeEngineConfig('pmd')).toEqual(PMD_ENGINE_CONFIG_DESCRIPTION);
 
         // Sanity check that we list the correct available languages:
-        expect(PMD_ENGINE_CONFIG_DESCRIPTION.fieldDescriptions!['rule_languages']).toEqual(
+        expect(PMD_ENGINE_CONFIG_DESCRIPTION.fieldDescriptions!['rule_languages'].descriptionText).toEqual(
             getMessage('PmdConfigFieldDescription_rule_languages',
                 `'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
