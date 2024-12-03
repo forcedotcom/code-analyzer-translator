@@ -1,6 +1,7 @@
 export {
     CodeAnalyzerConfig,
     ConfigDescription,
+    ConfigFieldDescription,
     EngineOverrides,
     RuleOverrides,
     RuleOverride

@@ -6,7 +6,6 @@ import * as yaml from 'js-yaml';
 import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
-import {getMessageFromCatalog, SHARED_MESSAGE_CATALOG, ValueValidator} from "@salesforce/code-analyzer-engine-api";
 
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
@@ -27,15 +26,6 @@ export type RuleOverride = {
     severity?: SeverityLevel
     tags?: string[]
 }
-export const TOP_LEVEL_CONFIG_DESCRIPTION: ConfigDescription = {
-    overview: getMessage('ConfigOverview'),
-    fieldDescriptions: {
-        config_root: getMessage('ConfigFieldDescription_config_root'),
-        log_folder: getMessage('ConfigFieldDescription_log_folder'),
-        rules: getMessage('ConfigFieldDescription_rules'),
-        engines: getMessage('ConfigFieldDescription_engines'),
-    }
-}
 
 type TopLevelConfig = {
     config_root: string
@@ -53,7 +43,20 @@ export const DEFAULT_CONFIG: TopLevelConfig = {
     custom_engine_plugin_modules: [], // INTERNAL USE ONLY
 };
 
-export type ConfigDescription = engApi.ConfigDescription;
+export type ConfigDescription = {
+    // A brief overview of this specific configuration object. It is recommended to include a link to documentation when possible.
+    overview: string
+
+    // Description objects for the primary fields in the configuration
+    fieldDescriptions: Record<string, ConfigFieldDescription>
+}
+
+export type ConfigFieldDescription = engApi.ConfigFieldDescription & {
+    // Whether or not the user has supplied a value for the field in their configuration file
+    //   Note: Unlike the Engine API's ConfigFieldDescription, core has the ability to determine if the user supplied
+    //   the field value (as we create a CodeAnalyzerConfig object), which is why "wasSuppliedByUser" is here only.
+    wasSuppliedByUser: boolean
+}
 
 export class CodeAnalyzerConfig {
     private readonly config: TopLevelConfig;
@@ -99,7 +102,7 @@ export class CodeAnalyzerConfig {
             config_root: configRoot,
             log_folder: configExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
             custom_engine_plugin_modules: configExtractor.extractArray(FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES,
-                ValueValidator.validateString,
+                engApi.ValueValidator.validateString,
                 DEFAULT_CONFIG.custom_engine_plugin_modules)!,
             rules: extractRulesValue(configExtractor),
             engines: extractEnginesValue(configExtractor)
@@ -107,8 +110,36 @@ export class CodeAnalyzerConfig {
         return new CodeAnalyzerConfig(config);
     }
 
-    public static getConfigDescription(): ConfigDescription {
-        return TOP_LEVEL_CONFIG_DESCRIPTION;
+    public getConfigDescription(): ConfigDescription {
+        return {
+            overview: getMessage('ConfigOverview'),
+            fieldDescriptions: {
+                config_root: {
+                    descriptionText: getMessage('ConfigFieldDescription_config_root'),
+                    valueType: 'string',
+                    defaultValue: null, // Using null for doc and since it indicates that the value is calculated based on the environment
+                    wasSuppliedByUser: this.config.config_root !== DEFAULT_CONFIG.config_root
+                },
+                log_folder: {
+                    descriptionText: getMessage('ConfigFieldDescription_log_folder'),
+                    valueType: 'string',
+                    defaultValue: null, // Using null for doc and since it indicates that the value is calculated based on the environment
+                    wasSuppliedByUser: this.config.log_folder !== DEFAULT_CONFIG.log_folder
+                },
+                rules: {
+                    descriptionText: getMessage('ConfigFieldDescription_rules'),
+                    valueType: 'object',
+                    defaultValue: {},
+                    wasSuppliedByUser: this.config.rules !== DEFAULT_CONFIG.rules
+                },
+                engines: {
+                    descriptionText: getMessage('ConfigFieldDescription_engines'),
+                    valueType: 'object',
+                    defaultValue: {},
+                    wasSuppliedByUser: this.config.engines !== DEFAULT_CONFIG.engines
+                }
+            }
+        };
     }
 
     private constructor(config: TopLevelConfig) {
@@ -160,7 +191,7 @@ function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigVal
 function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtractor): RuleOverride {
     const engSeverity: engApi.SeverityLevel | undefined = ruleOverrideExtractor.extractSeverityLevel(FIELDS.SEVERITY);
     return {
-        tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, ValueValidator.validateString),
+        tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, engApi.ValueValidator.validateString),
         severity: engSeverity === undefined ? undefined : engSeverity as SeverityLevel
     }
 }
@@ -194,17 +225,19 @@ function parseAndValidate(parseFcn: () => unknown): object {
 function validateAbsoluteFolder(value: unknown, fieldPath: string): string {
     const folderValue: string = validateAbsolutePath(value, fieldPath);
     if (!fs.statSync(folderValue).isDirectory()) {
-        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
+        throw new Error(engApi.getMessageFromCatalog(engApi.SHARED_MESSAGE_CATALOG,
+            'ConfigFolderValueMustNotBeFile', fieldPath, folderValue));
     }
     return folderValue;
 }
 
 function validateAbsolutePath(value: unknown, fieldPath: string): string {
-    const pathValue: string = ValueValidator.validateString(value, fieldPath);
+    const pathValue: string = engApi.ValueValidator.validateString(value, fieldPath);
     if (pathValue !== toAbsolutePath(pathValue)) {
         throw new Error(getMessage('ConfigPathValueMustBeAbsolute', fieldPath, pathValue, toAbsolutePath(pathValue)));
     } else if (!fs.existsSync(pathValue)) {
-        throw new Error(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigPathValueDoesNotExist', fieldPath, pathValue));
+        throw new Error(engApi.getMessageFromCatalog(engApi.SHARED_MESSAGE_CATALOG,
+            'ConfigPathValueDoesNotExist', fieldPath, pathValue));
     }
     return pathValue;
 }

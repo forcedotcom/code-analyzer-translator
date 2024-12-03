@@ -7,19 +7,23 @@ import {SemVer} from "semver";
 const MINIMUM_PYTHON_VERSION = '3.10.0';
 export const PYTHON_COMMAND = 'python_command';
 
-export const FLOWTEST_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
-    overview: getMessage('ConfigOverview'),
-    fieldDescriptions: {
-        python_command: getMessage('ConfigFieldDescription_python_command')
-    }
-}
-
 export type FlowTestConfig = {
     // Indicates the specific Python command to use for the 'flowtest' engine.
     // May be provided as the name of a command that exists on the path, or an absolute file path location.
     //   Example: '/Library/Frameworks/Python.framework/Versions/3.12/bin/python3'
     // If not defined, or equal to null, then an attempt will be made to automatically discover a Python command from your environment.
     python_command: string;
+}
+
+export const FLOWTEST_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        python_command: {
+            descriptionText: getMessage('ConfigFieldDescription_python_command'),
+            valueType: "string",
+            defaultValue: null // Using null for doc and since it indicates that the value is calculated based on the environment
+        }
+    }
 }
 
 export async function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor,

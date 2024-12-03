@@ -26,7 +26,11 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
             return {
                 overview: 'OverviewForStub1',
                 fieldDescriptions: {
-                    miscSetting1: "someDescriptionFor_miscSetting1"
+                    misc_value: {
+                        descriptionText: "someDescriptionFor_misc_value",
+                        valueType: "number",
+                        defaultValue: 1987
+                    }
                 }
             }
         }

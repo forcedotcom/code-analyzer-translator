@@ -3,20 +3,6 @@ import {getMessage} from "./messages";
 import path from "node:path";
 import {makeUnique} from "./utils";
 
-export const ESLINT_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
-    overview: getMessage('ConfigOverview'),
-    fieldDescriptions: {
-        eslint_config_file: getMessage('ConfigFieldDescription_eslint_config_file'),
-        eslint_ignore_file: getMessage('ConfigFieldDescription_eslint_ignore_file'),
-        auto_discover_eslint_config: getMessage('ConfigFieldDescription_auto_discover_eslint_config'),
-        disable_javascript_base_config: getMessage('ConfigFieldDescription_disable_javascript_base_config'),
-        disable_lwc_base_config: getMessage('ConfigFieldDescription_disable_lwc_base_config'),
-        disable_typescript_base_config: getMessage('ConfigFieldDescription_disable_typescript_base_config'),
-        javascript_file_extensions: getMessage('ConfigFieldDescription_javascript_file_extensions'),
-        typescript_file_extensions: getMessage('ConfigFieldDescription_typescript_file_extensions')
-    }
-}
-
 export type ESLintEngineConfig = {
     // Your project's main ESLint configuration file. May be provided as a path relative to the config_root.
     // If not supplied, and auto_discover_eslint_config=true, then Code Analyzer will attempt to find and apply it automatically.
@@ -65,6 +51,52 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     javascript_file_extensions:  ['.js', '.cjs', '.mjs'],
     typescript_file_extensions: ['.ts'],
     config_root: process.cwd() // INTERNAL USE ONLY
+}
+
+export const ESLINT_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
+    overview: getMessage('ConfigOverview'),
+    fieldDescriptions: {
+        eslint_config_file: {
+            descriptionText: getMessage('ConfigFieldDescription_eslint_config_file'),
+            valueType: "string",
+            defaultValue: null
+        },
+        eslint_ignore_file: {
+            descriptionText: getMessage('ConfigFieldDescription_eslint_ignore_file'),
+            valueType: "string",
+            defaultValue: null
+        },
+        auto_discover_eslint_config: {
+            descriptionText: getMessage('ConfigFieldDescription_auto_discover_eslint_config'),
+            valueType: "boolean",
+            defaultValue: DEFAULT_CONFIG.auto_discover_eslint_config
+        },
+        disable_javascript_base_config: {
+            descriptionText: getMessage('ConfigFieldDescription_disable_javascript_base_config'),
+            valueType: "boolean",
+            defaultValue: DEFAULT_CONFIG.disable_javascript_base_config
+        },
+        disable_lwc_base_config: {
+            descriptionText: getMessage('ConfigFieldDescription_disable_lwc_base_config'),
+            valueType: "boolean",
+            defaultValue: DEFAULT_CONFIG.disable_lwc_base_config
+        },
+        disable_typescript_base_config: {
+            descriptionText: getMessage('ConfigFieldDescription_disable_typescript_base_config'),
+            valueType: "boolean",
+            defaultValue: DEFAULT_CONFIG.disable_typescript_base_config
+        },
+        javascript_file_extensions: {
+            descriptionText: getMessage('ConfigFieldDescription_javascript_file_extensions'),
+            valueType: "array",
+            defaultValue: DEFAULT_CONFIG.javascript_file_extensions
+        },
+        typescript_file_extensions: {
+            descriptionText: getMessage('ConfigFieldDescription_typescript_file_extensions'),
+            valueType: "array",
+            defaultValue: DEFAULT_CONFIG.typescript_file_extensions
+        }
+    }
 }
 
 // See https://eslint.org/docs/v8.x/use/configure/configuration-files#configuration-file-formats
