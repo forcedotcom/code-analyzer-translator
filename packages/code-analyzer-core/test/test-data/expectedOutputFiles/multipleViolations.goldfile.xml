@@ -9,6 +9,11 @@
     <sev4>1</sev4>
     <sev5>0</sev5>
   </violationCounts>
+  <versions>
+    <stubEngine1>0.0.1</stubEngine1>
+    <stubEngine2>0.1.0</stubEngine2>
+    <stubEngine3>1.0.0</stubEngine3>
+  </versions>
   <violations>
     <violation>
       <rule>stub1RuleA</rule>

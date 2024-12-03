@@ -203,11 +203,11 @@ export class CodeAnalyzer {
         try {
             apiEngineRunResults = await engine.runRules(rulesToRun, engineRunOptions);
         } catch (error) {
-            return new UnexpectedErrorEngineRunResults(engineName, error as Error);
+            return new UnexpectedErrorEngineRunResults(engineName, await engine.getEngineVersion(), error as Error);
         }
 
         validateEngineRunResults(engineName, apiEngineRunResults, ruleSelection);
-        const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, apiEngineRunResults, ruleSelection);
+        const engineRunResults: EngineRunResults = new EngineRunResultsImpl(engineName, await engine.getEngineVersion(), apiEngineRunResults, ruleSelection);
 
         this.emitEvent<EngineRunProgressEvent>({
             type: EventType.EngineRunProgressEvent, timestamp: this.clock.now(), engineName: engineName, percentComplete: 100

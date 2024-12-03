@@ -6,6 +6,7 @@
       "tool": {
         "driver": {
           "name": "throwingEngine",
+          "semanticVersion": "3.0.0",
           "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
           "rules": [
             {

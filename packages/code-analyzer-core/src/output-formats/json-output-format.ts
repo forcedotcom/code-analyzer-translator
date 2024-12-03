@@ -12,7 +12,12 @@ export type JsonResultsOutput = {
         sev4: number
         sev5: number
     }
+    versions: JsonVersionOutput
     violations: JsonViolationOutput[]
+}
+
+export type JsonVersionOutput = {
+    [engine: string]: string
 }
 
 export type JsonViolationOutput = {
@@ -53,8 +58,18 @@ export function toJsonResultsOutput(results: RunResults, sanitizeFcn: (text: str
             sev4: results.getViolationCountOfSeverity(SeverityLevel.Low),
             sev5: results.getViolationCountOfSeverity(SeverityLevel.Info),
         },
+        versions: toJsonVersionObject(results),
         violations: toJsonViolationOutputArray(results.getViolations(), results.getRunDirectory(), sanitizeFcn)
     };
+}
+
+function toJsonVersionObject(results: RunResults): JsonVersionOutput {
+    const versions: JsonVersionOutput = {};
+    const engineNames: string[] = results.getEngineNames();
+    for (const engineName of engineNames) {
+        versions[engineName] = results.getEngineRunResults(engineName).getEngineVersion();
+    }
+    return versions;
 }
 
 export function toJsonViolationOutputArray(violations: Violation[], runDir: string, sanitizeFcn: (text: string) => string): JsonViolationOutput[] {
