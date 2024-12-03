@@ -261,6 +261,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
         const stubEngine1Results = overallResults.getEngineRunResults('stubEngine1');
         expect(stubEngine1Results.getEngineName()).toEqual('stubEngine1');
+        expect(stubEngine1Results.getEngineVersion()).toEqual('0.0.1');
         expect(stubEngine1Results.getViolationCount()).toEqual(0);
         for (const severityLevel of getAllSeverityLevels()) {
             expect(stubEngine1Results.getViolationCountOfSeverity(severityLevel)).toEqual(0);
@@ -269,6 +270,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
         const stubEngine2Results = overallResults.getEngineRunResults('stubEngine2');
         expect(stubEngine2Results.getEngineName()).toEqual('stubEngine2');
+        expect(stubEngine2Results.getEngineVersion()).toEqual('0.1.0');
         expect(stubEngine2Results.getViolationCount()).toEqual(0);
         for (const severityLevel of getAllSeverityLevels()) {
             expect(stubEngine2Results.getViolationCountOfSeverity(severityLevel)).toEqual(0);
@@ -277,6 +279,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
         const stubEngine3Results = overallResults.getEngineRunResults('stubEngine3');
         expect(stubEngine3Results.getEngineName()).toEqual('stubEngine3');
+        expect(stubEngine3Results.getEngineVersion()).toEqual('1.0.0');
         expect(stubEngine3Results.getViolationCount()).toEqual(0);
         for (const severityLevel of getAllSeverityLevels()) {
             expect(stubEngine3Results.getViolationCountOfSeverity(severityLevel)).toEqual(0);
@@ -303,6 +306,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
         const engine1Results = overallResults.getEngineRunResults('stubEngine1');
         expect(engine1Results.getEngineName()).toEqual('stubEngine1');
+        expect(engine1Results.getEngineVersion()).toEqual('0.0.1');
         expect(engine1Results.getViolationCount()).toEqual(2);
         expect(engine1Results.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(0);
         expect(engine1Results.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(0);
@@ -332,6 +336,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
 
         const engine2Results = overallResults.getEngineRunResults('stubEngine2');
         expect(engine2Results.getEngineName()).toEqual('stubEngine2');
+        expect(engine2Results.getEngineVersion()).toEqual('0.1.0');
         expect(engine2Results.getViolationCount()).toEqual(1);
         expect(engine2Results.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(0);
         expect(engine2Results.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(1);
@@ -495,6 +500,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const violations: Violation[] = overallResults.getViolations();
         expect(violations).toHaveLength(1);
         const engineRunResults: EngineRunResults = overallResults.getEngineRunResults('throwingEngine');
+        expect(engineRunResults.getEngineVersion()).toEqual('3.0.0');
         expect(engineRunResults.getViolations()).toEqual(violations);
         expect(violations[0].getRule()).toEqual(new UnexpectedEngineErrorRule('throwingEngine'));
         expect(violations[0].getRule().getDescription()).toEqual(getMessage('UnexpectedEngineErrorRuleDescription', 'throwingEngine'));

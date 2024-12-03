@@ -33,6 +33,7 @@ function toSarifRun(engineRunResults: EngineRunResults, runDir: string): sarif.R
         tool: {
             driver: {
                 name: engineRunResults.getEngineName(),
+                semanticVersion: engineRunResults.getEngineVersion(),
                 informationUri: "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
                 rules: rules.map(toSarifReportingDescriptor),
             }

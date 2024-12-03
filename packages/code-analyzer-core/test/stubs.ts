@@ -80,6 +80,10 @@ export class StubEngine1 extends engApi.Engine {
         return "stubEngine1";
     }
 
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('0.0.1');
+    }
+
     async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
         this.emitDescribeRulesProgressEvent(20);
@@ -157,6 +161,10 @@ export class StubEngine2 extends engApi.Engine {
         return "stubEngine2";
     }
 
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('0.1.0');
+    }
+
     async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
         this.emitDescribeRulesProgressEvent(30);
@@ -209,6 +217,10 @@ export class StubEngine3 extends engApi.Engine {
 
     getName(): string {
         return 'stubEngine3';
+    }
+
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('1.0.0');
     }
 
     async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
@@ -376,6 +388,10 @@ class FutureEngine extends engApi.Engine {
         return "future";
     }
 
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('2.0.0');
+    }
+
     async describeRules(_describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
         return [];
     }
@@ -483,6 +499,10 @@ class ThrowingEngine extends StubEngine1 {
         return "throwingEngine";
     }
 
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('3.0.0');
+    }
+
     async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         throw new Error('SomeErrorMessageFromThrowingEngine');
     }
@@ -507,6 +527,10 @@ export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
 class RepeatedRuleNameEngine extends engApi.Engine {
     getName(): string {
         return 'repeatedRuleNameEngine';
+    }
+
+    getEngineVersion(): Promise<string> {
+        return Promise.resolve('4.0.0');
     }
 
     async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {

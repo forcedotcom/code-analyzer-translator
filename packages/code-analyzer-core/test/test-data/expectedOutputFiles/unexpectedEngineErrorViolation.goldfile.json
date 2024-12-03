@@ -8,6 +8,9 @@
     "sev4": 0,
     "sev5": 0
   },
+  "versions": {
+    "throwingEngine": "3.0.0"
+  },
   "violations": [
     {
       "rule": "UnexpectedEngineError",

@@ -24,6 +24,7 @@ export interface Violation {
 
 export interface EngineRunResults {
     getEngineName(): string
+    getEngineVersion(): string
     getViolationCount(): number
     getViolationCountOfSeverity(severity: SeverityLevel): number
     getViolations(): Violation[]
@@ -169,17 +170,23 @@ export class UnexpectedEngineErrorViolation implements Violation {
 
 export class EngineRunResultsImpl implements EngineRunResults {
     private readonly engineName: string;
+    private readonly engineVersion: string;
     private readonly apiEngineRunResults: engApi.EngineRunResults;
     private readonly ruleSelection: RuleSelection;
 
-    constructor(engineName: string, apiEngineRunResults: engApi.EngineRunResults, ruleSelection: RuleSelection) {
+    constructor(engineName: string, engineVersion: string, apiEngineRunResults: engApi.EngineRunResults, ruleSelection: RuleSelection) {
         this.engineName = engineName;
+        this.engineVersion = engineVersion;
         this.apiEngineRunResults = apiEngineRunResults;
         this.ruleSelection = ruleSelection;
     }
 
     getEngineName(): string {
         return this.engineName;
+    }
+
+    getEngineVersion(): string {
+        return this.engineVersion;
     }
 
     getViolationCount(): number {
@@ -198,15 +205,21 @@ export class EngineRunResultsImpl implements EngineRunResults {
 
 export class UnexpectedErrorEngineRunResults implements EngineRunResults {
     private readonly engineName: string;
+    private readonly engineVersion: string;
     private readonly violation: Violation;
 
-    constructor(engineName: string, error: Error) {
+    constructor(engineName: string, engineVersion: string,  error: Error) {
         this.engineName = engineName;
+        this.engineVersion = engineVersion;
         this.violation = new UnexpectedEngineErrorViolation(engineName, error);
     }
 
     getEngineName(): string {
         return this.engineName;
+    }
+
+    getEngineVersion(): string {
+        return this.engineVersion;
     }
 
     getViolationCount(): number {

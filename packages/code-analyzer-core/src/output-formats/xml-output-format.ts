@@ -18,6 +18,12 @@ export class XmlOutputFormatter implements OutputFormatter {
         violationCountsNode.node('sev4').text(`${resultsOutput.violationCounts.sev4}`);
         violationCountsNode.node('sev5').text(`${resultsOutput.violationCounts.sev5}`);
 
+        const versionsNode: xmlbuilder.XMLElement = resultsNode.node('versions');
+        const engineNames: string[] = results.getEngineNames();
+        for (const engineName of engineNames) {
+            versionsNode.node(engineName).text(results.getEngineRunResults(engineName).getEngineVersion());
+        }
+
         const violationsNode: xmlbuilder.XMLElement = resultsNode.node('violations');
         for (const violationOutput of resultsOutput.violations) {
             const violationNode: xmlbuilder.XMLElement = violationsNode.node('violation');
