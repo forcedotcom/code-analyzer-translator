@@ -57,7 +57,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}config.test.ts"
+                  "uri": "test{{PATHSEP}}config.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 3,
@@ -72,7 +73,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}config.test.ts"
+                  "uri": "test{{PATHSEP}}config.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 3,
@@ -95,7 +97,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 21,
@@ -110,7 +113,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 21,
@@ -133,7 +137,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 56,
@@ -146,7 +151,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}run.test.ts"
+                  "uri": "test{{PATHSEP}}run.test.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 56,
@@ -198,7 +204,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 76,
@@ -211,7 +218,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 4,
@@ -222,7 +230,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}test-helpers.ts"
+                  "uri": "test{{PATHSEP}}test-helpers.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 9,
@@ -233,7 +242,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 76,
@@ -285,7 +295,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 90,
@@ -300,7 +311,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 20,
@@ -313,7 +325,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}test-helpers.ts"
+                  "uri": "test{{PATHSEP}}test-helpers.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 5,
@@ -324,7 +337,8 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "{{RUNDIR}}test{{PATHSEP}}stubs.ts"
+                  "uri": "test{{PATHSEP}}stubs.ts",
+                  "uriBaseId": "{{RUNDIR}}"
                 },
                 "region": {
                   "startLine": 90,
