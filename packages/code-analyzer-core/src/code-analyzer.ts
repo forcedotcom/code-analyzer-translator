@@ -242,7 +242,7 @@ export class CodeAnalyzer {
 
         try {
             const engineConfigDescription: engApi.ConfigDescription = enginePluginV1.describeEngineConfig(engineName);
-            const configDescription: ConfigDescription = normalizeEngineConfigDescription(engineConfigDescription, engineName, engineOverrides);
+            const configDescription: ConfigDescription = toConfigDescription(engineConfigDescription, engineName, engineOverrides);
             this.engineConfigDescriptions.set(engineName, configDescription);
         } catch (err) {
             throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
@@ -525,8 +525,11 @@ function isIntegerBetween(value: number, leftBound: number, rightBound: number):
     return value >= leftBound && value <= rightBound && Number.isInteger(value);
 }
 
-function normalizeEngineConfigDescription(engineConfigDescription: engApi.ConfigDescription, engineName: string,
-                                          engineOverrides: EngineOverrides): ConfigDescription {
+/**
+ * Converts an engApi.ConfigDescription into a normalized ConfigDescription
+ */
+function toConfigDescription(engineConfigDescription: engApi.ConfigDescription, engineName: string,
+                             engineOverrides: EngineOverrides): ConfigDescription {
     const configDescription: ConfigDescription = {
         // Every engine config should have an overview, so if missing, then we add in a generic one
         overview: engineConfigDescription.overview ? engineConfigDescription.overview :
