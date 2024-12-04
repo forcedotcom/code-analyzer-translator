@@ -144,14 +144,14 @@ describe('Tests for the describeRules method of PmdEngine', () => {
 
         const fakeRule7Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule7'); // From somecat3.xml
         expect(fakeRule7Description.severityLevel).toEqual(SeverityLevel.Low);
-        expect(fakeRule7Description.tags).toEqual(['Recommended', 'SomeCat3', 'Apex']);
+        expect(fakeRule7Description.tags).toEqual(['Recommended', 'SomeCat3', 'Apex', 'Custom']);
         expect(fakeRule7Description.resourceUrls).toEqual(['https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_apex_performance.html#avoiddebugstatements']);
         expect(fakeRule7Description.description).toContain('Debug statements contribute');
         expectContainsRuleWithName(ruleDescriptions, 'fakerule8'); // From somecat3.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule9'); // From somecat3.xml
         const fakeRule10Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule10'); // From somecat4.xml
         expect(fakeRule10Description.severityLevel).toEqual(SeverityLevel.High);
-        expect(fakeRule10Description.tags).toEqual(['Recommended', 'SomeCat4', 'Javascript']);
+        expect(fakeRule10Description.tags).toEqual(['Recommended', 'SomeCat4', 'Javascript', 'Custom']);
         expect(fakeRule10Description.resourceUrls).toHaveLength(0); // This particular rule purposely has no externalInfoUrl defined, so we confirm that it gives no resourceUrls.
         expectContainsRuleWithName(ruleDescriptions, 'fakerule11'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule12'); // From somecat4.xml
@@ -175,12 +175,12 @@ describe('Tests for the describeRules method of PmdEngine', () => {
 
         const fakeRule1Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule1'); // From rulesets_apex_rules1.jar
         expect(fakeRule1Description.severityLevel).toEqual(SeverityLevel.Moderate);
-        expect(fakeRule1Description.tags).toEqual(['Recommended', 'Categories1', 'Apex']);
+        expect(fakeRule1Description.tags).toEqual(['Recommended', 'Categories1', 'Apex', 'Custom']);
         expectContainsRuleWithName(ruleDescriptions, 'fakerule2'); // From rulesets_apex_rules1.jar
         expectContainsRuleWithName(ruleDescriptions, 'fakerule3'); // From rulesets_apex_rules1.jar
         const fakeRule4Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule4'); // From category_joshapex_somecat2.jar
         expect(fakeRule4Description.severityLevel).toEqual(SeverityLevel.Moderate);
-        expect(fakeRule4Description.tags).toEqual(['Recommended', 'SomeCat2', 'Apex']);
+        expect(fakeRule4Description.tags).toEqual(['Recommended', 'SomeCat2', 'Apex', 'Custom']);
         expectContainsRuleWithName(ruleDescriptions, 'fakerule5'); // From category_joshapex_somecat2.jar
         expectContainsRuleWithName(ruleDescriptions, 'fakerule6'); // From category_joshapex_somecat2.jar
     });

@@ -3,7 +3,6 @@
     "name": "ApexAssertionsShouldIncludeMessage",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
       "BestPractices",
       "Apex"
     ],
@@ -14,7 +13,7 @@
   },
   {
     "name": "ApexBadCrypto",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -27,7 +26,7 @@
   },
   {
     "name": "ApexCRUDViolation",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -40,10 +39,10 @@
   },
   {
     "name": "ApexCSRF",
-    "severityLevel": 3,
+    "severityLevel": 1,
     "tags": [
       "Recommended",
-      "ErrorProne",
+      "Security",
       "Apex"
     ],
     "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and raises a runtime... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
@@ -66,7 +65,7 @@
   },
   {
     "name": "ApexDoc",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Documentation",
@@ -79,7 +78,7 @@
   },
   {
     "name": "ApexInsecureEndpoint",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -92,7 +91,7 @@
   },
   {
     "name": "ApexOpenRedirect",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -118,7 +117,7 @@
   },
   {
     "name": "ApexSOQLInjection",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -131,7 +130,7 @@
   },
   {
     "name": "ApexSuggestUsingNamedCred",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -157,7 +156,7 @@
   },
   {
     "name": "ApexUnitTestClassShouldHaveRunAs",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "BestPractices",
@@ -170,7 +169,7 @@
   },
   {
     "name": "ApexUnitTestMethodShouldHaveIsTestAnnotation",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "BestPractices",
@@ -183,7 +182,7 @@
   },
   {
     "name": "ApexUnitTestShouldNotUseSeeAllDataTrue",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "BestPractices",
@@ -196,7 +195,7 @@
   },
   {
     "name": "ApexXSSFromEscapeFalse",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -209,7 +208,7 @@
   },
   {
     "name": "ApexXSSFromURLParam",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -222,7 +221,7 @@
   },
   {
     "name": "AvoidDebugStatements",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Performance",
@@ -300,7 +299,7 @@
   },
   {
     "name": "AvoidNonExistentAnnotations",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -313,7 +312,7 @@
   },
   {
     "name": "AvoidNonRestrictiveQueries",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Performance",
@@ -326,7 +325,7 @@
   },
   {
     "name": "ClassNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -365,7 +364,7 @@
   },
   {
     "name": "DebugsShouldUseLoggingLevel",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "BestPractices",
@@ -378,7 +377,7 @@
   },
   {
     "name": "EagerlyLoadedDescribeSObjectResult",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Performance",
@@ -391,7 +390,7 @@
   },
   {
     "name": "EmptyCatchBlock",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -508,7 +507,7 @@
   },
   {
     "name": "FieldNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -534,7 +533,7 @@
   },
   {
     "name": "FormalParameterNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -586,7 +585,7 @@
   },
   {
     "name": "LocalVariableNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -599,7 +598,7 @@
   },
   {
     "name": "MethodNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -625,7 +624,7 @@
   },
   {
     "name": "NcssConstructorCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Design",
@@ -638,7 +637,7 @@
   },
   {
     "name": "NcssMethodCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Design",
@@ -651,9 +650,8 @@
   },
   {
     "name": "NcssTypeCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
-      "Recommended",
       "Design",
       "Apex"
     ],
@@ -664,7 +662,7 @@
   },
   {
     "name": "OneDeclarationPerLine",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -703,7 +701,7 @@
   },
   {
     "name": "OverrideBothEqualsAndHashcode",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "ErrorProne",
@@ -716,7 +714,7 @@
   },
   {
     "name": "PropertyNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
@@ -744,7 +742,6 @@
     "name": "StdCyclomaticComplexity",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
       "Design",
       "Apex"
     ],
@@ -781,7 +778,7 @@
   },
   {
     "name": "UnusedLocalVariable",
-    "severityLevel": 4,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "BestPractices",
@@ -807,7 +804,7 @@
   },
   {
     "name": "VfCsrf",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -820,7 +817,7 @@
   },
   {
     "name": "VfHtmlStyleTagXss",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
@@ -833,7 +830,7 @@
   },
   {
     "name": "VfUnescapeEl",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",

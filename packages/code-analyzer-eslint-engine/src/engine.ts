@@ -169,6 +169,8 @@ function toTags(metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefine
     // Unfortunately eslint 8.57.x doesn't provide any insights into what rules are associated with specific languages
     // or file extensions. Even the base rules are re-used with typescript, so we can't just look to see if the rule
     // name has "@typescript" or not. So right now, I don't think we can add in language based tags to eslint rules.
+    // TODO: Soon we will introduce a RULE_MAPPINGS (sort of like how we do with PMD) so we can set all the rule
+    //       rule language tags and also add in "Custom" tags where necessary.
     return tags;
 }
 
