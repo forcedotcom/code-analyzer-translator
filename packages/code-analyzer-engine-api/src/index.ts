@@ -42,6 +42,7 @@ export {
 } from "./results"
 
 export {
+    COMMON_TAGS,
     RuleDescription,
     SeverityLevel
 } from "./rules"

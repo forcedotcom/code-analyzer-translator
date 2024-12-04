@@ -1,4 +1,5 @@
 import {
+    COMMON_TAGS,
     ConfigDescription,
     ConfigObject,
     ConfigValueExtractor,
@@ -72,18 +73,18 @@ export function createBaseRegexRules(now: Date): RegexRules {
     return {
         NoTrailingWhitespace: {
             regex: (/(?<target>[ \t]+)((\r?\n)|$)/g).toString(),
-            file_extensions: ['.cls', '.trigger'],
+            file_extensions: ['.cls', '.trigger'], // Currently restricted to apex files only... but we might want to extend where this rule applies in the future
             description: getMessage('TrailingWhitespaceRuleDescription'),
             violation_message: getMessage('TrailingWhitespaceRuleMessage'),
             severity: SeverityLevel.Info,
-            tags: ['Recommended', 'CodeStyle']
+            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.CODE_STYLE]
         },
         AvoidTermsWithImplicitBias: { // file_extensions not listed so that it can run on all text files
             regex: (/\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi).toString(),
             description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
             violation_message: getMessage('AvoidTermsWithImplicitBiasRuleMessage', JSON.stringify(TERMS_WITH_IMPLICIT_BIAS)),
             severity: SeverityLevel.Info,
-            tags: ['Recommended']
+            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.BEST_PRACTICES]
         },
         AvoidOldSalesforceApiVersions: createAvoidOldSalesforceApiVersionsRule(now),
         AvoidGetHeapSizeInLoop: {
@@ -92,7 +93,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
             description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
             violation_message: getMessage('AvoidGetHeapSizeInLoopRuleMessage'),
             severity: SeverityLevel.High,
-            tags: ['Recommended', 'Performance']
+            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.PERFORMANCE, COMMON_TAGS.LANGUAGES.APEX]
         },
         MinVersionForAbstractVirtualClassesWithPrivateMethod: {
             // Part to match (using look behind) that we are in an abstract/virtual class (using look behind):
@@ -106,7 +107,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
             description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
             violation_message: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleMessage'),
             severity: SeverityLevel.High,
-            tags: ['Recommended'],
+            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.APEX],
             include_metadata: true
         }
     }
@@ -119,7 +120,7 @@ function createAvoidOldSalesforceApiVersionsRule(now: Date): RegexRule {
         file_extensions: ['.xml'],
         description: getMessage('AvoidOldSalesforceApiVersionsRuleDescription'),
         violation_message: getMessage('AvoidOldSalesforceApiVersionsRuleMessage', apiVersionFromThreeYearsAgo),
-        tags: ["Recommended", "Security"],
+        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML],
         severity: SeverityLevel.High
     };
 }

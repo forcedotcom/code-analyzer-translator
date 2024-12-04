@@ -1,5 +1,5 @@
 import {
-    CodeLocation,
+    CodeLocation, COMMON_TAGS,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -119,11 +119,13 @@ export class PmdEngine extends Engine {
 }
 
 function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
+    const categoryTag: string = pmdRuleInfo.ruleSet.replaceAll(' ', '');
     const languageId: LanguageId = toLanguageId(pmdRuleInfo.language);
+    const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
     return {
         name: toUniqueRuleName(pmdRuleInfo.name, languageId),
         severityLevel: toSeverityLevel(pmdRuleInfo.priority),
-        tags: ['Recommended', pmdRuleInfo.ruleSet.replaceAll(' ', ''), languageId + 'Language'],
+        tags: [COMMON_TAGS.RECOMMENDED, categoryTag, languageTag],
         description: pmdRuleInfo.description,
         resourceUrls: pmdRuleInfo.externalInfoUrl ? [pmdRuleInfo.externalInfoUrl] : [] // TODO: Eventually we'll want to add in well architected links
     };

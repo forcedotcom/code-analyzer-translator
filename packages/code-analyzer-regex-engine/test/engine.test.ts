@@ -65,7 +65,7 @@ const EXPECTED_AvoidTermsWithImplicitBias_RULE_DESCRIPTION: RuleDescription = {
     name: "AvoidTermsWithImplicitBias",
     description: getMessage('AvoidTermsWithImplicitBiasRuleDescription'),
     severityLevel: SeverityLevel.Info,
-    tags: ['Recommended'],
+    tags: ['Recommended', 'BestPractices'],
     resourceUrls: ['https://www.salesforce.com/news/stories/salesforce-updates-technical-language-in-ongoing-effort-to-address-implicit-bias/'],
 }
 
@@ -73,7 +73,7 @@ const EXPECTED_AvoidOldSalesforceApiVersions_RULE_DESCRIPTION: RuleDescription =
     name: "AvoidOldSalesforceApiVersions",
     description: getMessage('AvoidOldSalesforceApiVersionsRuleDescription'),
     severityLevel: SeverityLevel.High,
-    tags: ['Recommended', 'Security'],
+    tags: ['Recommended', 'Security', 'Xml'],
     resourceUrls: []
 }
 
@@ -81,7 +81,7 @@ const EXPECTED_NoGetHeapSizeInLoop_RULE_DESCRIPTION: RuleDescription = {
     name: "AvoidGetHeapSizeInLoop",
     description: getMessage('AvoidGetHeapSizeInLoopRuleDescription'),
     severityLevel: SeverityLevel.High,
-    tags: ['Recommended', 'Performance'],
+    tags: ['Recommended', 'Performance', 'Apex'],
     resourceUrls: []
 }
 
@@ -89,7 +89,7 @@ const EXPECTED_MinVersionForAbstractVirtualClassesWithPrivateMethod_RULE_DESCRIP
     name: "MinVersionForAbstractVirtualClassesWithPrivateMethod",
     description: getMessage('MinVersionForAbstractVirtualClassesWithPrivateMethodRuleDescription'),
     severityLevel: SeverityLevel.High,
-    tags: ['Recommended'],
+    tags: ['Recommended', 'BestPractices', 'Apex'],
     resourceUrls: []
 }
 

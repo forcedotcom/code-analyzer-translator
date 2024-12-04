@@ -80,7 +80,7 @@
     "name": "@typescript-eslint/adjacent-overload-signatures",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require that function overload signatures be consecutive",
     "resourceUrls": [
@@ -91,7 +91,7 @@
     "name": "@typescript-eslint/array-type",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require consistently using either `T[]` or `Array<T>` for arrays",
     "resourceUrls": [
@@ -102,7 +102,7 @@
     "name": "@typescript-eslint/await-thenable",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow awaiting a value that is not a Thenable",
     "resourceUrls": [
@@ -114,7 +114,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `@ts-<directive>` comments or require descriptions after directives",
     "resourceUrls": [
@@ -125,7 +125,7 @@
     "name": "@typescript-eslint/ban-tslint-comment",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `// tslint:<rule-flag>` comments",
     "resourceUrls": [
@@ -136,7 +136,7 @@
     "name": "@typescript-eslint/class-literal-property-style",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce that literals on classes are exposed in a consistent style",
     "resourceUrls": [
@@ -147,7 +147,7 @@
     "name": "@typescript-eslint/class-methods-use-this",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce that class methods utilize `this`",
     "resourceUrls": [
@@ -158,7 +158,7 @@
     "name": "@typescript-eslint/consistent-generic-constructors",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce specifying generic type arguments on type annotation or constructor name of a constructor call",
     "resourceUrls": [
@@ -169,7 +169,7 @@
     "name": "@typescript-eslint/consistent-indexed-object-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow the `Record` type",
     "resourceUrls": [
@@ -180,7 +180,7 @@
     "name": "@typescript-eslint/consistent-return",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `return` statements to either always or never specify values",
     "resourceUrls": [
@@ -191,7 +191,7 @@
     "name": "@typescript-eslint/consistent-type-assertions",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce consistent usage of type assertions",
     "resourceUrls": [
@@ -202,7 +202,7 @@
     "name": "@typescript-eslint/consistent-type-definitions",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce type definitions to consistently use either `interface` or `type`",
     "resourceUrls": [
@@ -213,7 +213,7 @@
     "name": "@typescript-eslint/consistent-type-exports",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce consistent usage of type exports",
     "resourceUrls": [
@@ -224,7 +224,7 @@
     "name": "@typescript-eslint/consistent-type-imports",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce consistent usage of type imports",
     "resourceUrls": [
@@ -235,7 +235,7 @@
     "name": "@typescript-eslint/default-param-last",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce default parameters to be last",
     "resourceUrls": [
@@ -246,7 +246,7 @@
     "name": "@typescript-eslint/dot-notation",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce dot notation whenever possible",
     "resourceUrls": [
@@ -257,7 +257,7 @@
     "name": "@typescript-eslint/explicit-function-return-type",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require explicit return types on functions and class methods",
     "resourceUrls": [
@@ -268,7 +268,7 @@
     "name": "@typescript-eslint/explicit-member-accessibility",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require explicit accessibility modifiers on class properties and methods",
     "resourceUrls": [
@@ -279,7 +279,7 @@
     "name": "@typescript-eslint/explicit-module-boundary-types",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require explicit return and argument types on exported functions' and classes' public class methods",
     "resourceUrls": [
@@ -290,7 +290,7 @@
     "name": "@typescript-eslint/init-declarations",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow initialization in variable declarations",
     "resourceUrls": [
@@ -301,7 +301,7 @@
     "name": "@typescript-eslint/max-params",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of parameters in function definitions",
     "resourceUrls": [
@@ -312,7 +312,7 @@
     "name": "@typescript-eslint/member-ordering",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require a consistent member declaration order",
     "resourceUrls": [
@@ -323,7 +323,7 @@
     "name": "@typescript-eslint/method-signature-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using a particular method signature syntax",
     "resourceUrls": [
@@ -334,7 +334,7 @@
     "name": "@typescript-eslint/naming-convention",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce naming conventions for everything across a codebase",
     "resourceUrls": [
@@ -346,7 +346,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow generic `Array` constructors",
     "resourceUrls": [
@@ -357,7 +357,7 @@
     "name": "@typescript-eslint/no-array-delete",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using the `delete` operator on array values",
     "resourceUrls": [
@@ -368,7 +368,7 @@
     "name": "@typescript-eslint/no-base-to-string",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `.toString()` and `.toLocaleString()` to only be called on objects which provide useful information when stringified",
     "resourceUrls": [
@@ -379,7 +379,7 @@
     "name": "@typescript-eslint/no-confusing-non-null-assertion",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow non-null assertion in locations that may be confusing",
     "resourceUrls": [
@@ -390,7 +390,7 @@
     "name": "@typescript-eslint/no-confusing-void-expression",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require expressions of type void to appear in statement position",
     "resourceUrls": [
@@ -401,7 +401,7 @@
     "name": "@typescript-eslint/no-deprecated",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using code marked as `@deprecated`",
     "resourceUrls": [
@@ -412,7 +412,7 @@
     "name": "@typescript-eslint/no-dupe-class-members",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate class members",
     "resourceUrls": [
@@ -424,7 +424,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate enum member values",
     "resourceUrls": [
@@ -435,7 +435,7 @@
     "name": "@typescript-eslint/no-duplicate-type-constituents",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow duplicate constituents of union or intersection types",
     "resourceUrls": [
@@ -446,7 +446,7 @@
     "name": "@typescript-eslint/no-dynamic-delete",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow using the `delete` operator on computed key expressions",
     "resourceUrls": [
@@ -457,7 +457,7 @@
     "name": "@typescript-eslint/no-empty-function",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty functions",
     "resourceUrls": [
@@ -469,7 +469,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow accidentally using the \"empty object\" type",
     "resourceUrls": [
@@ -481,7 +481,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the `any` type",
     "resourceUrls": [
@@ -493,7 +493,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow extra non-null assertions",
     "resourceUrls": [
@@ -504,7 +504,7 @@
     "name": "@typescript-eslint/no-extraneous-class",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow classes used as namespaces",
     "resourceUrls": [
@@ -515,7 +515,7 @@
     "name": "@typescript-eslint/no-floating-promises",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require Promise-like statements to be handled appropriately",
     "resourceUrls": [
@@ -526,7 +526,7 @@
     "name": "@typescript-eslint/no-for-in-array",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow iterating over an array with a for-in loop",
     "resourceUrls": [
@@ -537,7 +537,7 @@
     "name": "@typescript-eslint/no-implied-eval",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `eval()`-like methods",
     "resourceUrls": [
@@ -548,7 +548,7 @@
     "name": "@typescript-eslint/no-import-type-side-effects",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce the use of top-level import type qualifier when an import only has specifiers with inline type qualifiers",
     "resourceUrls": [
@@ -559,7 +559,7 @@
     "name": "@typescript-eslint/no-inferrable-types",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow explicit type declarations for variables or parameters initialized to a number, string, or boolean",
     "resourceUrls": [
@@ -570,7 +570,7 @@
     "name": "@typescript-eslint/no-invalid-this",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `this` keywords outside of classes or class-like objects",
     "resourceUrls": [
@@ -581,7 +581,7 @@
     "name": "@typescript-eslint/no-invalid-void-type",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `void` type outside of generic or return types",
     "resourceUrls": [
@@ -592,7 +592,7 @@
     "name": "@typescript-eslint/no-loop-func",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow function declarations that contain unsafe references inside loop statements",
     "resourceUrls": [
@@ -603,7 +603,7 @@
     "name": "@typescript-eslint/no-magic-numbers",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow magic numbers",
     "resourceUrls": [
@@ -614,7 +614,7 @@
     "name": "@typescript-eslint/no-meaningless-void-operator",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the `void` operator except when used to discard a value",
     "resourceUrls": [
@@ -626,7 +626,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce valid definition of `new` and `constructor`",
     "resourceUrls": [
@@ -637,7 +637,7 @@
     "name": "@typescript-eslint/no-misused-promises",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow Promises in places not designed to handle them",
     "resourceUrls": [
@@ -648,7 +648,7 @@
     "name": "@typescript-eslint/no-mixed-enums",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow enums from having both number and string members",
     "resourceUrls": [
@@ -660,7 +660,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow TypeScript namespaces",
     "resourceUrls": [
@@ -671,7 +671,7 @@
     "name": "@typescript-eslint/no-non-null-asserted-nullish-coalescing",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow non-null assertions in the left operand of a nullish coalescing operator",
     "resourceUrls": [
@@ -683,7 +683,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow non-null assertions after an optional chain expression",
     "resourceUrls": [
@@ -694,7 +694,7 @@
     "name": "@typescript-eslint/no-non-null-assertion",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow non-null assertions using the `!` postfix operator",
     "resourceUrls": [
@@ -705,7 +705,7 @@
     "name": "@typescript-eslint/no-redeclare",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow variable redeclaration",
     "resourceUrls": [
@@ -716,7 +716,7 @@
     "name": "@typescript-eslint/no-redundant-type-constituents",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow members of unions and intersections that do nothing or override type information",
     "resourceUrls": [
@@ -728,7 +728,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow invocation of `require()`",
     "resourceUrls": [
@@ -739,7 +739,7 @@
     "name": "@typescript-eslint/no-restricted-imports",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [
@@ -750,7 +750,7 @@
     "name": "@typescript-eslint/no-restricted-types",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow certain types",
     "resourceUrls": [
@@ -761,7 +761,7 @@
     "name": "@typescript-eslint/no-shadow",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow variable declarations from shadowing variables declared in the outer scope",
     "resourceUrls": [
@@ -773,7 +773,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow aliasing `this`",
     "resourceUrls": [
@@ -784,7 +784,7 @@
     "name": "@typescript-eslint/no-unnecessary-boolean-literal-compare",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary equality comparisons against boolean literals",
     "resourceUrls": [
@@ -795,7 +795,7 @@
     "name": "@typescript-eslint/no-unnecessary-condition",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow conditionals where the type is always truthy or always falsy",
     "resourceUrls": [
@@ -806,7 +806,7 @@
     "name": "@typescript-eslint/no-unnecessary-parameter-property-assignment",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary assignment of constructor property parameter",
     "resourceUrls": [
@@ -817,7 +817,7 @@
     "name": "@typescript-eslint/no-unnecessary-qualifier",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary namespace qualifiers",
     "resourceUrls": [
@@ -828,7 +828,7 @@
     "name": "@typescript-eslint/no-unnecessary-template-expression",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary template expressions",
     "resourceUrls": [
@@ -839,7 +839,7 @@
     "name": "@typescript-eslint/no-unnecessary-type-arguments",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow type arguments that are equal to the default",
     "resourceUrls": [
@@ -850,7 +850,7 @@
     "name": "@typescript-eslint/no-unnecessary-type-assertion",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow type assertions that do not change the type of an expression",
     "resourceUrls": [
@@ -862,7 +862,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary constraints on generic types",
     "resourceUrls": [
@@ -873,7 +873,7 @@
     "name": "@typescript-eslint/no-unnecessary-type-parameters",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow type parameters that aren't used multiple times",
     "resourceUrls": [
@@ -884,7 +884,7 @@
     "name": "@typescript-eslint/no-unsafe-argument",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling a function with a value with type `any`",
     "resourceUrls": [
@@ -895,7 +895,7 @@
     "name": "@typescript-eslint/no-unsafe-assignment",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assigning a value with type `any` to variables and properties",
     "resourceUrls": [
@@ -906,7 +906,7 @@
     "name": "@typescript-eslint/no-unsafe-call",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling a value with type `any`",
     "resourceUrls": [
@@ -918,7 +918,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unsafe declaration merging",
     "resourceUrls": [
@@ -929,7 +929,7 @@
     "name": "@typescript-eslint/no-unsafe-enum-comparison",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow comparing an enum value with a non-enum value",
     "resourceUrls": [
@@ -941,7 +941,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using the unsafe built-in Function type",
     "resourceUrls": [
@@ -952,7 +952,7 @@
     "name": "@typescript-eslint/no-unsafe-member-access",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow member access on a value with type `any`",
     "resourceUrls": [
@@ -963,7 +963,7 @@
     "name": "@typescript-eslint/no-unsafe-return",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow returning a value with type `any` from a function",
     "resourceUrls": [
@@ -974,7 +974,7 @@
     "name": "@typescript-eslint/no-unsafe-type-assertion",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow type assertions that narrow a type",
     "resourceUrls": [
@@ -985,7 +985,7 @@
     "name": "@typescript-eslint/no-unsafe-unary-minus",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require unary negation to take a number",
     "resourceUrls": [
@@ -997,7 +997,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unused expressions",
     "resourceUrls": [
@@ -1009,7 +1009,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unused variables",
     "resourceUrls": [
@@ -1020,7 +1020,7 @@
     "name": "@typescript-eslint/no-use-before-define",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of variables before they are defined",
     "resourceUrls": [
@@ -1031,7 +1031,7 @@
     "name": "@typescript-eslint/no-useless-constructor",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unnecessary constructors",
     "resourceUrls": [
@@ -1042,7 +1042,7 @@
     "name": "@typescript-eslint/no-useless-empty-export",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty exports that don't change anything in a module file",
     "resourceUrls": [
@@ -1054,7 +1054,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using confusing built-in primitive class wrappers",
     "resourceUrls": [
@@ -1065,7 +1065,7 @@
     "name": "@typescript-eslint/non-nullable-type-assertion-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce non-null assertions over explicit type casts",
     "resourceUrls": [
@@ -1076,7 +1076,7 @@
     "name": "@typescript-eslint/only-throw-error",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow throwing non-`Error` values as exceptions",
     "resourceUrls": [
@@ -1087,7 +1087,7 @@
     "name": "@typescript-eslint/parameter-properties",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require or disallow parameter properties in class constructors",
     "resourceUrls": [
@@ -1099,7 +1099,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the use of `as const` over literal type",
     "resourceUrls": [
@@ -1110,7 +1110,7 @@
     "name": "@typescript-eslint/prefer-destructuring",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require destructuring from arrays and/or objects",
     "resourceUrls": [
@@ -1121,7 +1121,7 @@
     "name": "@typescript-eslint/prefer-enum-initializers",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require each enum member value to be explicitly initialized",
     "resourceUrls": [
@@ -1132,7 +1132,7 @@
     "name": "@typescript-eslint/prefer-find",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the use of Array.prototype.find() over Array.prototype.filter() followed by [0] when looking for a single result",
     "resourceUrls": [
@@ -1143,7 +1143,7 @@
     "name": "@typescript-eslint/prefer-for-of",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the use of `for-of` loop over the standard `for` loop where possible",
     "resourceUrls": [
@@ -1154,7 +1154,7 @@
     "name": "@typescript-eslint/prefer-function-type",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using function types instead of interfaces with call signatures",
     "resourceUrls": [
@@ -1165,7 +1165,7 @@
     "name": "@typescript-eslint/prefer-includes",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce `includes` method over `indexOf` method",
     "resourceUrls": [
@@ -1176,7 +1176,7 @@
     "name": "@typescript-eslint/prefer-literal-enum-member",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require all enum members to be literal values",
     "resourceUrls": [
@@ -1188,7 +1188,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require using `namespace` keyword over `module` keyword to declare custom TypeScript modules",
     "resourceUrls": [
@@ -1199,7 +1199,7 @@
     "name": "@typescript-eslint/prefer-nullish-coalescing",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using the nullish coalescing operator instead of logical assignments or chaining",
     "resourceUrls": [
@@ -1210,7 +1210,7 @@
     "name": "@typescript-eslint/prefer-optional-chain",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using concise optional chain expressions instead of chained logical ands, negated logical ors, or empty objects",
     "resourceUrls": [
@@ -1221,7 +1221,7 @@
     "name": "@typescript-eslint/prefer-promise-reject-errors",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require using Error objects as Promise rejection reasons",
     "resourceUrls": [
@@ -1232,7 +1232,7 @@
     "name": "@typescript-eslint/prefer-readonly",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require private members to be marked as `readonly` if they're never modified outside of the constructor",
     "resourceUrls": [
@@ -1243,7 +1243,7 @@
     "name": "@typescript-eslint/prefer-readonly-parameter-types",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require function parameters to be typed as `readonly` to prevent accidental mutation of inputs",
     "resourceUrls": [
@@ -1254,7 +1254,7 @@
     "name": "@typescript-eslint/prefer-reduce-type-parameter",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce using type parameter when calling `Array#reduce` instead of casting",
     "resourceUrls": [
@@ -1265,7 +1265,7 @@
     "name": "@typescript-eslint/prefer-regexp-exec",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce `RegExp#exec` over `String#match` if no global flag is provided",
     "resourceUrls": [
@@ -1276,7 +1276,7 @@
     "name": "@typescript-eslint/prefer-return-this-type",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce that `this` is used when only `this` type is returned",
     "resourceUrls": [
@@ -1287,7 +1287,7 @@
     "name": "@typescript-eslint/prefer-string-starts-ends-with",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using `String#startsWith` and `String#endsWith` over other equivalent methods of checking substrings",
     "resourceUrls": [
@@ -1298,7 +1298,7 @@
     "name": "@typescript-eslint/promise-function-async",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require any function or method that returns a Promise to be marked async",
     "resourceUrls": [
@@ -1309,7 +1309,7 @@
     "name": "@typescript-eslint/related-getter-setter-pairs",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce that `get()` types should be assignable to their equivalent `set()` type",
     "resourceUrls": [
@@ -1320,7 +1320,7 @@
     "name": "@typescript-eslint/require-array-sort-compare",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require `Array#sort` and `Array#toSorted` calls to always provide a `compareFunction`",
     "resourceUrls": [
@@ -1331,7 +1331,7 @@
     "name": "@typescript-eslint/require-await",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow async functions which do not return promises and have no `await` expression",
     "resourceUrls": [
@@ -1342,7 +1342,7 @@
     "name": "@typescript-eslint/restrict-plus-operands",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require both operands of addition to be the same type and be `bigint`, `number`, or `string`",
     "resourceUrls": [
@@ -1353,7 +1353,7 @@
     "name": "@typescript-eslint/restrict-template-expressions",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce template literal expressions to be of `string` type",
     "resourceUrls": [
@@ -1364,7 +1364,7 @@
     "name": "@typescript-eslint/return-await",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce consistent awaiting of returned promises",
     "resourceUrls": [
@@ -1375,7 +1375,7 @@
     "name": "@typescript-eslint/strict-boolean-expressions",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow certain types in boolean expressions",
     "resourceUrls": [
@@ -1386,7 +1386,7 @@
     "name": "@typescript-eslint/switch-exhaustiveness-check",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require switch-case statements to be exhaustive",
     "resourceUrls": [
@@ -1398,7 +1398,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow certain triple slash directives in favor of ES6-style import declarations",
     "resourceUrls": [
@@ -1409,7 +1409,7 @@
     "name": "@typescript-eslint/typedef",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require type annotations in certain places",
     "resourceUrls": [
@@ -1420,7 +1420,7 @@
     "name": "@typescript-eslint/unbound-method",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce unbound methods are called with their expected scope",
     "resourceUrls": [
@@ -1431,7 +1431,7 @@
     "name": "@typescript-eslint/unified-signatures",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow two overloads that could be unified into one with a union or an optional/rest parameter",
     "resourceUrls": [
@@ -1442,7 +1442,7 @@
     "name": "@typescript-eslint/use-unknown-in-catch-callback-variable",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce typing arguments in Promise rejection callbacks as `unknown`",
     "resourceUrls": [
@@ -1453,7 +1453,7 @@
     "name": "accessor-pairs",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce getter and setter pairs in objects and classes",
     "resourceUrls": [
@@ -1465,7 +1465,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce `return` statements in callbacks of array methods",
     "resourceUrls": [
@@ -1476,7 +1476,7 @@
     "name": "arrow-body-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require braces around arrow function bodies",
     "resourceUrls": [
@@ -1487,7 +1487,7 @@
     "name": "block-scoped-var",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the use of variables within the scope they are defined",
     "resourceUrls": [
@@ -1498,7 +1498,7 @@
     "name": "camelcase",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce camelcase naming convention",
     "resourceUrls": [
@@ -1509,7 +1509,7 @@
     "name": "capitalized-comments",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce or disallow capitalization of the first letter of a comment",
     "resourceUrls": [
@@ -1520,7 +1520,7 @@
     "name": "class-methods-use-this",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce that class methods utilize `this`",
     "resourceUrls": [
@@ -1531,7 +1531,7 @@
     "name": "complexity",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum cyclomatic complexity allowed in a program",
     "resourceUrls": [
@@ -1542,7 +1542,7 @@
     "name": "consistent-return",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `return` statements to either always or never specify values",
     "resourceUrls": [
@@ -1553,7 +1553,7 @@
     "name": "consistent-this",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce consistent naming when capturing the current execution context",
     "resourceUrls": [
@@ -1565,7 +1565,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require `super()` calls in constructors",
     "resourceUrls": [
@@ -1576,7 +1576,7 @@
     "name": "curly",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce consistent brace style for all control statements",
     "resourceUrls": [
@@ -1587,7 +1587,7 @@
     "name": "default-case",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `default` cases in `switch` statements",
     "resourceUrls": [
@@ -1598,7 +1598,7 @@
     "name": "default-case-last",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce default clauses in switch statements to be last",
     "resourceUrls": [
@@ -1609,7 +1609,7 @@
     "name": "default-param-last",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce default parameters to be last",
     "resourceUrls": [
@@ -1620,7 +1620,7 @@
     "name": "dot-notation",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce dot notation whenever possible",
     "resourceUrls": [
@@ -1631,7 +1631,7 @@
     "name": "eqeqeq",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require the use of `===` and `!==`",
     "resourceUrls": [
@@ -1643,7 +1643,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce \"for\" loop update clause moving the counter in the right direction",
     "resourceUrls": [
@@ -1654,7 +1654,7 @@
     "name": "func-name-matching",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require function names to match the name of the variable or property to which they are assigned",
     "resourceUrls": [
@@ -1665,7 +1665,7 @@
     "name": "func-names",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow named `function` expressions",
     "resourceUrls": [
@@ -1676,7 +1676,7 @@
     "name": "func-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the consistent use of either `function` declarations or expressions",
     "resourceUrls": [
@@ -1688,7 +1688,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce `return` statements in getters",
     "resourceUrls": [
@@ -1699,7 +1699,7 @@
     "name": "grouped-accessor-pairs",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require grouped accessor pairs in object literals and classes",
     "resourceUrls": [
@@ -1710,7 +1710,7 @@
     "name": "guard-for-in",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `for-in` loops to include an `if` statement",
     "resourceUrls": [
@@ -1721,7 +1721,7 @@
     "name": "id-denylist",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified identifiers",
     "resourceUrls": [
@@ -1732,7 +1732,7 @@
     "name": "id-length",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce minimum and maximum identifier lengths",
     "resourceUrls": [
@@ -1743,7 +1743,7 @@
     "name": "id-match",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require identifiers to match a specified regular expression",
     "resourceUrls": [
@@ -1754,7 +1754,7 @@
     "name": "init-declarations",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow initialization in variable declarations",
     "resourceUrls": [
@@ -1765,7 +1765,7 @@
     "name": "line-comment-position",
     "severityLevel": 4,
     "tags": [
-      "layout"
+      "CodeStyle"
     ],
     "description": "Enforce position of line comments",
     "resourceUrls": [
@@ -1776,7 +1776,7 @@
     "name": "logical-assignment-operators",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow logical assignment operator shorthand",
     "resourceUrls": [
@@ -1787,7 +1787,7 @@
     "name": "max-classes-per-file",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of classes per file",
     "resourceUrls": [
@@ -1798,7 +1798,7 @@
     "name": "max-depth",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum depth that blocks can be nested",
     "resourceUrls": [
@@ -1809,7 +1809,7 @@
     "name": "max-lines",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of lines per file",
     "resourceUrls": [
@@ -1820,7 +1820,7 @@
     "name": "max-lines-per-function",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of lines of code in a function",
     "resourceUrls": [
@@ -1831,7 +1831,7 @@
     "name": "max-nested-callbacks",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum depth that callbacks can be nested",
     "resourceUrls": [
@@ -1842,7 +1842,7 @@
     "name": "max-params",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of parameters in function definitions",
     "resourceUrls": [
@@ -1853,7 +1853,7 @@
     "name": "max-statements",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a maximum number of statements allowed in function blocks",
     "resourceUrls": [
@@ -1864,7 +1864,7 @@
     "name": "multiline-comment-style",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce a particular style for multiline comments",
     "resourceUrls": [
@@ -1875,7 +1875,7 @@
     "name": "new-cap",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require constructor names to begin with a capital letter",
     "resourceUrls": [
@@ -1886,7 +1886,7 @@
     "name": "no-alert",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `alert`, `confirm`, and `prompt`",
     "resourceUrls": [
@@ -1897,7 +1897,7 @@
     "name": "no-array-constructor",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `Array` constructors",
     "resourceUrls": [
@@ -1909,7 +1909,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using an async function as a Promise executor",
     "resourceUrls": [
@@ -1920,7 +1920,7 @@
     "name": "no-await-in-loop",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `await` inside of loops",
     "resourceUrls": [
@@ -1931,7 +1931,7 @@
     "name": "no-bitwise",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow bitwise operators",
     "resourceUrls": [
@@ -1942,7 +1942,7 @@
     "name": "no-caller",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `arguments.caller` or `arguments.callee`",
     "resourceUrls": [
@@ -1954,7 +1954,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow lexical declarations in case clauses",
     "resourceUrls": [
@@ -1966,7 +1966,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning class members",
     "resourceUrls": [
@@ -1978,7 +1978,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow comparing against -0",
     "resourceUrls": [
@@ -1990,7 +1990,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assignment operators in conditional expressions",
     "resourceUrls": [
@@ -2001,7 +2001,7 @@
     "name": "no-console",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `console`",
     "resourceUrls": [
@@ -2013,7 +2013,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning `const` variables",
     "resourceUrls": [
@@ -2024,7 +2024,7 @@
     "name": "no-constant-binary-expression",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow expressions where the operation doesn't affect the value",
     "resourceUrls": [
@@ -2036,7 +2036,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow constant expressions in conditions",
     "resourceUrls": [
@@ -2047,7 +2047,7 @@
     "name": "no-constructor-return",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow returning value from constructor",
     "resourceUrls": [
@@ -2058,7 +2058,7 @@
     "name": "no-continue",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `continue` statements",
     "resourceUrls": [
@@ -2070,7 +2070,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow control characters in regular expressions",
     "resourceUrls": [
@@ -2082,7 +2082,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of `debugger`",
     "resourceUrls": [
@@ -2094,7 +2094,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow deleting variables",
     "resourceUrls": [
@@ -2105,7 +2105,7 @@
     "name": "no-div-regex",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow equal signs explicitly at the beginning of regular expressions",
     "resourceUrls": [
@@ -2117,7 +2117,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate arguments in `function` definitions",
     "resourceUrls": [
@@ -2129,7 +2129,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate class members",
     "resourceUrls": [
@@ -2141,7 +2141,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate conditions in if-else-if chains",
     "resourceUrls": [
@@ -2153,7 +2153,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate keys in object literals",
     "resourceUrls": [
@@ -2165,7 +2165,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate case labels",
     "resourceUrls": [
@@ -2176,7 +2176,7 @@
     "name": "no-duplicate-imports",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate module imports",
     "resourceUrls": [
@@ -2187,7 +2187,7 @@
     "name": "no-else-return",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `else` blocks after `return` statements in `if` statements",
     "resourceUrls": [
@@ -2199,7 +2199,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty block statements",
     "resourceUrls": [
@@ -2211,7 +2211,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow empty character classes in regular expressions",
     "resourceUrls": [
@@ -2222,7 +2222,7 @@
     "name": "no-empty-function",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty functions",
     "resourceUrls": [
@@ -2234,7 +2234,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow empty destructuring patterns",
     "resourceUrls": [
@@ -2245,7 +2245,7 @@
     "name": "no-empty-static-block",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty static blocks",
     "resourceUrls": [
@@ -2256,7 +2256,7 @@
     "name": "no-eq-null",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `null` comparisons without type-checking operators",
     "resourceUrls": [
@@ -2267,7 +2267,7 @@
     "name": "no-eval",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `eval()`",
     "resourceUrls": [
@@ -2279,7 +2279,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning exceptions in `catch` clauses",
     "resourceUrls": [
@@ -2290,7 +2290,7 @@
     "name": "no-extend-native",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow extending native types",
     "resourceUrls": [
@@ -2301,7 +2301,7 @@
     "name": "no-extra-bind",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary calls to `.bind()`",
     "resourceUrls": [
@@ -2313,7 +2313,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary boolean casts",
     "resourceUrls": [
@@ -2324,7 +2324,7 @@
     "name": "no-extra-label",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary labels",
     "resourceUrls": [
@@ -2336,7 +2336,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow fallthrough of `case` statements",
     "resourceUrls": [
@@ -2348,7 +2348,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning `function` declarations",
     "resourceUrls": [
@@ -2360,7 +2360,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow assignments to native objects or read-only global variables",
     "resourceUrls": [
@@ -2371,7 +2371,7 @@
     "name": "no-implicit-coercion",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow shorthand type conversions",
     "resourceUrls": [
@@ -2382,7 +2382,7 @@
     "name": "no-implicit-globals",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow declarations in the global scope",
     "resourceUrls": [
@@ -2393,7 +2393,7 @@
     "name": "no-implied-eval",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `eval()`-like methods",
     "resourceUrls": [
@@ -2405,7 +2405,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assigning to imported bindings",
     "resourceUrls": [
@@ -2416,7 +2416,7 @@
     "name": "no-inline-comments",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow inline comments after code",
     "resourceUrls": [
@@ -2428,7 +2428,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow variable or `function` declarations in nested blocks",
     "resourceUrls": [
@@ -2440,7 +2440,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow invalid regular expression strings in `RegExp` constructors",
     "resourceUrls": [
@@ -2451,7 +2451,7 @@
     "name": "no-invalid-this",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow use of `this` in contexts where the value of `this` is `undefined`",
     "resourceUrls": [
@@ -2463,7 +2463,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow irregular whitespace",
     "resourceUrls": [
@@ -2474,7 +2474,7 @@
     "name": "no-iterator",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of the `__iterator__` property",
     "resourceUrls": [
@@ -2485,7 +2485,7 @@
     "name": "no-label-var",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow labels that share a name with a variable",
     "resourceUrls": [
@@ -2496,7 +2496,7 @@
     "name": "no-labels",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow labeled statements",
     "resourceUrls": [
@@ -2507,7 +2507,7 @@
     "name": "no-lone-blocks",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary nested blocks",
     "resourceUrls": [
@@ -2518,7 +2518,7 @@
     "name": "no-lonely-if",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `if` statements as the only statement in `else` blocks",
     "resourceUrls": [
@@ -2529,7 +2529,7 @@
     "name": "no-loop-func",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow function declarations that contain unsafe references inside loop statements",
     "resourceUrls": [
@@ -2541,7 +2541,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow literal numbers that lose precision",
     "resourceUrls": [
@@ -2552,7 +2552,7 @@
     "name": "no-magic-numbers",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow magic numbers",
     "resourceUrls": [
@@ -2564,7 +2564,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow characters which are made with multiple code points in character class syntax",
     "resourceUrls": [
@@ -2575,7 +2575,7 @@
     "name": "no-multi-assign",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow use of chained assignment expressions",
     "resourceUrls": [
@@ -2586,7 +2586,7 @@
     "name": "no-multi-str",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow multiline strings",
     "resourceUrls": [
@@ -2597,7 +2597,7 @@
     "name": "no-negated-condition",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow negated conditions",
     "resourceUrls": [
@@ -2608,7 +2608,7 @@
     "name": "no-nested-ternary",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow nested ternary expressions",
     "resourceUrls": [
@@ -2619,7 +2619,7 @@
     "name": "no-new",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `new` operators outside of assignments or comparisons",
     "resourceUrls": [
@@ -2630,7 +2630,7 @@
     "name": "no-new-func",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `new` operators with the `Function` object",
     "resourceUrls": [
@@ -2641,7 +2641,7 @@
     "name": "no-new-native-nonconstructor",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `new` operators with global non-constructor functions",
     "resourceUrls": [
@@ -2653,7 +2653,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `new` operators with the `Symbol` object",
     "resourceUrls": [
@@ -2664,7 +2664,7 @@
     "name": "no-new-wrappers",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `new` operators with the `String`, `Number`, and `Boolean` objects",
     "resourceUrls": [
@@ -2676,7 +2676,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `\\8` and `\\9` escape sequences in string literals",
     "resourceUrls": [
@@ -2688,7 +2688,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling global object properties as functions",
     "resourceUrls": [
@@ -2699,7 +2699,7 @@
     "name": "no-object-constructor",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow calls to the `Object` constructor without an argument",
     "resourceUrls": [
@@ -2711,7 +2711,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow octal literals",
     "resourceUrls": [
@@ -2722,7 +2722,7 @@
     "name": "no-octal-escape",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow octal escape sequences in string literals",
     "resourceUrls": [
@@ -2733,7 +2733,7 @@
     "name": "no-param-reassign",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow reassigning `function` parameters",
     "resourceUrls": [
@@ -2744,7 +2744,7 @@
     "name": "no-plusplus",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the unary operators `++` and `--`",
     "resourceUrls": [
@@ -2755,7 +2755,7 @@
     "name": "no-promise-executor-return",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow returning values from Promise executor functions",
     "resourceUrls": [
@@ -2766,7 +2766,7 @@
     "name": "no-proto",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of the `__proto__` property",
     "resourceUrls": [
@@ -2778,7 +2778,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling some `Object.prototype` methods directly on objects",
     "resourceUrls": [
@@ -2790,7 +2790,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow variable redeclaration",
     "resourceUrls": [
@@ -2802,7 +2802,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow multiple spaces in regular expressions",
     "resourceUrls": [
@@ -2813,7 +2813,7 @@
     "name": "no-restricted-exports",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified names in exports",
     "resourceUrls": [
@@ -2824,7 +2824,7 @@
     "name": "no-restricted-globals",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified global variables",
     "resourceUrls": [
@@ -2836,7 +2836,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [
@@ -2847,7 +2847,7 @@
     "name": "no-restricted-properties",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow certain properties on certain objects",
     "resourceUrls": [
@@ -2858,7 +2858,7 @@
     "name": "no-restricted-syntax",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified syntax",
     "resourceUrls": [
@@ -2869,7 +2869,7 @@
     "name": "no-return-assign",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow assignment operators in `return` statements",
     "resourceUrls": [
@@ -2880,7 +2880,7 @@
     "name": "no-script-url",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `javascript:` urls",
     "resourceUrls": [
@@ -2892,7 +2892,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assignments where both sides are exactly the same",
     "resourceUrls": [
@@ -2903,7 +2903,7 @@
     "name": "no-self-compare",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow comparisons where both sides are exactly the same",
     "resourceUrls": [
@@ -2914,7 +2914,7 @@
     "name": "no-sequences",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow comma operators",
     "resourceUrls": [
@@ -2926,7 +2926,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow returning values from setters",
     "resourceUrls": [
@@ -2937,7 +2937,7 @@
     "name": "no-shadow",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow variable declarations from shadowing variables declared in the outer scope",
     "resourceUrls": [
@@ -2949,7 +2949,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow identifiers from shadowing restricted names",
     "resourceUrls": [
@@ -2961,7 +2961,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow sparse arrays",
     "resourceUrls": [
@@ -2972,7 +2972,7 @@
     "name": "no-template-curly-in-string",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow template literal placeholder syntax in regular strings",
     "resourceUrls": [
@@ -2983,7 +2983,7 @@
     "name": "no-ternary",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow ternary operators",
     "resourceUrls": [
@@ -2995,7 +2995,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `this`/`super` before calling `super()` in constructors",
     "resourceUrls": [
@@ -3006,7 +3006,7 @@
     "name": "no-throw-literal",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow throwing literals as exceptions",
     "resourceUrls": [
@@ -3018,7 +3018,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of undeclared variables unless mentioned in `/*global */` comments",
     "resourceUrls": [
@@ -3029,7 +3029,7 @@
     "name": "no-undef-init",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow initializing variables to `undefined`",
     "resourceUrls": [
@@ -3040,7 +3040,7 @@
     "name": "no-undefined",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `undefined` as an identifier",
     "resourceUrls": [
@@ -3051,7 +3051,7 @@
     "name": "no-underscore-dangle",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow dangling underscores in identifiers",
     "resourceUrls": [
@@ -3063,7 +3063,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow confusing multiline expressions",
     "resourceUrls": [
@@ -3074,7 +3074,7 @@
     "name": "no-unmodified-loop-condition",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unmodified loop conditions",
     "resourceUrls": [
@@ -3085,7 +3085,7 @@
     "name": "no-unneeded-ternary",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow ternary operators when simpler alternatives exist",
     "resourceUrls": [
@@ -3097,7 +3097,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unreachable code after `return`, `throw`, `continue`, and `break` statements",
     "resourceUrls": [
@@ -3108,7 +3108,7 @@
     "name": "no-unreachable-loop",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow loops with a body that allows only one iteration",
     "resourceUrls": [
@@ -3120,7 +3120,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow control flow statements in `finally` blocks",
     "resourceUrls": [
@@ -3132,7 +3132,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow negating the left operand of relational operators",
     "resourceUrls": [
@@ -3144,7 +3144,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow use of optional chaining in contexts where the `undefined` value is not allowed",
     "resourceUrls": [
@@ -3155,7 +3155,7 @@
     "name": "no-unused-expressions",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unused expressions",
     "resourceUrls": [
@@ -3167,7 +3167,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unused labels",
     "resourceUrls": [
@@ -3178,7 +3178,7 @@
     "name": "no-unused-private-class-members",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unused private class members",
     "resourceUrls": [
@@ -3190,7 +3190,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unused variables",
     "resourceUrls": [
@@ -3201,7 +3201,7 @@
     "name": "no-use-before-define",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of variables before they are defined",
     "resourceUrls": [
@@ -3213,7 +3213,7 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow useless backreferences in regular expressions",
     "resourceUrls": [
@@ -3224,7 +3224,7 @@
     "name": "no-useless-call",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary calls to `.call()` and `.apply()`",
     "resourceUrls": [
@@ -3236,7 +3236,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary `catch` clauses",
     "resourceUrls": [
@@ -3247,7 +3247,7 @@
     "name": "no-useless-computed-key",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary computed property keys in objects and classes",
     "resourceUrls": [
@@ -3258,7 +3258,7 @@
     "name": "no-useless-concat",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary concatenation of literals or template literals",
     "resourceUrls": [
@@ -3269,7 +3269,7 @@
     "name": "no-useless-constructor",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary constructors",
     "resourceUrls": [
@@ -3280,7 +3280,7 @@
     "name": "no-useless-escape",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary escape characters",
     "resourceUrls": [
@@ -3291,7 +3291,7 @@
     "name": "no-useless-rename",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow renaming import, export, and destructured assignments to the same name",
     "resourceUrls": [
@@ -3302,7 +3302,7 @@
     "name": "no-useless-return",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow redundant return statements",
     "resourceUrls": [
@@ -3314,7 +3314,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `let` or `const` instead of `var`",
     "resourceUrls": [
@@ -3325,7 +3325,7 @@
     "name": "no-void",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `void` operators",
     "resourceUrls": [
@@ -3336,7 +3336,7 @@
     "name": "no-warning-comments",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified warning terms in comments",
     "resourceUrls": [
@@ -3348,7 +3348,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `with` statements",
     "resourceUrls": [
@@ -3359,7 +3359,7 @@
     "name": "object-shorthand",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow method and property shorthand syntax for object literals",
     "resourceUrls": [
@@ -3370,7 +3370,7 @@
     "name": "one-var",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce variables to be declared either together or separately in functions",
     "resourceUrls": [
@@ -3381,7 +3381,7 @@
     "name": "operator-assignment",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow assignment operator shorthand where possible",
     "resourceUrls": [
@@ -3392,7 +3392,7 @@
     "name": "prefer-arrow-callback",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require using arrow functions for callbacks",
     "resourceUrls": [
@@ -3404,7 +3404,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `const` declarations for variables that are never reassigned after declared",
     "resourceUrls": [
@@ -3415,7 +3415,7 @@
     "name": "prefer-destructuring",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require destructuring from arrays and/or objects",
     "resourceUrls": [
@@ -3426,7 +3426,7 @@
     "name": "prefer-exponentiation-operator",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow the use of `Math.pow` in favor of the `**` operator",
     "resourceUrls": [
@@ -3437,7 +3437,7 @@
     "name": "prefer-named-capture-group",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce using named capture group in regular expression",
     "resourceUrls": [
@@ -3448,7 +3448,7 @@
     "name": "prefer-numeric-literals",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `parseInt()` and `Number.parseInt()` in favor of binary, octal, and hexadecimal literals",
     "resourceUrls": [
@@ -3459,7 +3459,7 @@
     "name": "prefer-object-has-own",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow use of `Object.prototype.hasOwnProperty.call()` and prefer use of `Object.hasOwn()`",
     "resourceUrls": [
@@ -3470,7 +3470,7 @@
     "name": "prefer-object-spread",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead",
     "resourceUrls": [
@@ -3481,7 +3481,7 @@
     "name": "prefer-promise-reject-errors",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require using Error objects as Promise rejection reasons",
     "resourceUrls": [
@@ -3492,7 +3492,7 @@
     "name": "prefer-regex-literals",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow use of the `RegExp` constructor in favor of regular expression literals",
     "resourceUrls": [
@@ -3504,7 +3504,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require rest parameters instead of `arguments`",
     "resourceUrls": [
@@ -3516,7 +3516,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require spread operators instead of `.apply()`",
     "resourceUrls": [
@@ -3527,7 +3527,7 @@
     "name": "prefer-template",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require template literals instead of string concatenation",
     "resourceUrls": [
@@ -3538,7 +3538,7 @@
     "name": "radix",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the consistent use of the radix argument when using `parseInt()`",
     "resourceUrls": [
@@ -3549,7 +3549,7 @@
     "name": "require-atomic-updates",
     "severityLevel": 2,
     "tags": [
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assignments that can lead to race conditions due to usage of `await` or `yield`",
     "resourceUrls": [
@@ -3560,7 +3560,7 @@
     "name": "require-await",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow async functions which have no `await` expression",
     "resourceUrls": [
@@ -3571,7 +3571,7 @@
     "name": "require-unicode-regexp",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce the use of `u` or `v` flag on RegExp",
     "resourceUrls": [
@@ -3583,7 +3583,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require generator functions to contain `yield`",
     "resourceUrls": [
@@ -3594,7 +3594,7 @@
     "name": "sort-imports",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Enforce sorted import declarations within modules",
     "resourceUrls": [
@@ -3605,7 +3605,7 @@
     "name": "sort-keys",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require object keys to be sorted",
     "resourceUrls": [
@@ -3616,7 +3616,7 @@
     "name": "sort-vars",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require variables within the same declaration block to be sorted",
     "resourceUrls": [
@@ -3627,7 +3627,7 @@
     "name": "strict",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow strict mode directives",
     "resourceUrls": [
@@ -3638,7 +3638,7 @@
     "name": "symbol-description",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require symbol descriptions",
     "resourceUrls": [
@@ -3649,7 +3649,7 @@
     "name": "unicode-bom",
     "severityLevel": 4,
     "tags": [
-      "layout"
+      "CodeStyle"
     ],
     "description": "Require or disallow Unicode byte order mark (BOM)",
     "resourceUrls": [
@@ -3661,7 +3661,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require calls to `isNaN()` when checking for `NaN`",
     "resourceUrls": [
@@ -3673,7 +3673,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce comparing `typeof` expressions against valid strings",
     "resourceUrls": [
@@ -3684,7 +3684,7 @@
     "name": "vars-on-top",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require `var` declarations be placed at the top of their containing scope",
     "resourceUrls": [
@@ -3695,7 +3695,7 @@
     "name": "yoda",
     "severityLevel": 3,
     "tags": [
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require or disallow \"Yoda\" conditions",
     "resourceUrls": [

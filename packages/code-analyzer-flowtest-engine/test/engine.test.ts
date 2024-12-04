@@ -50,14 +50,14 @@ describe('Tests for the FlowTestEngine', () => {
                     expect(ruleDescriptors[0]).toEqual({
                         name: 'PreventPassingUserDataIntoElementWithoutSharing',
                         severityLevel: SeverityLevel.High,
-                        tags: ['Recommended', 'Security'],
+                        tags: ['Recommended', 'Security', 'Xml'],
                         description: 'Avoid passing user data into flow elements in run mode: Without Sharing',
                         resourceUrls: []
                     });
                     expect(ruleDescriptors[1]).toEqual({
                         name: 'PreventPassingUserDataIntoElementWithSharing',
                         severityLevel: SeverityLevel.Low,
-                        tags: ['Recommended', 'Security'],
+                        tags: ['Recommended', 'Security', 'Xml'],
                         description: 'Avoid passing user data into flow elements in run mode: With Sharing',
                         resourceUrls: []
                     });

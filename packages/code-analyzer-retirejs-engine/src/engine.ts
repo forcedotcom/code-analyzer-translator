@@ -1,4 +1,5 @@
 import {
+    COMMON_TAGS,
     ConfigObject,
     DescribeOptions,
     Engine,
@@ -109,7 +110,7 @@ function createRuleDescription(rjsSeverity: RetireJsSeverity): RuleDescription {
     return {
         name: toRuleName(rjsSeverity),
         severityLevel: toSeverityLevel(rjsSeverity),
-        tags: ['Recommended'],
+        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.JAVASCRIPT],
         description: getMessage('RetireJsRuleDescription', `${rjsSeverity}`),
         resourceUrls: ['https://retirejs.github.io/retire.js/']
     }

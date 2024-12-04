@@ -128,28 +128,28 @@ describe('Tests for the RetireJsEngine', () => {
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownCriticalSeverityVulnerability',
             severityLevel: SeverityLevel.Critical,
-            tags: ['Recommended'],
+            tags: ['Recommended', 'Security', 'Javascript'],
             description: getMessage('RetireJsRuleDescription', 'critical'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownHighSeverityVulnerability',
             severityLevel: SeverityLevel.High,
-            tags: ['Recommended'],
+            tags: ['Recommended', 'Security', 'Javascript'],
             description: getMessage('RetireJsRuleDescription', 'high'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownMediumSeverityVulnerability',
             severityLevel: SeverityLevel.Moderate,
-            tags: ['Recommended'],
+            tags: ['Recommended', 'Security', 'Javascript'],
             description: getMessage('RetireJsRuleDescription', 'medium'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
         expect(ruleDescriptions).toContainEqual({
             name: 'LibraryWithKnownLowSeverityVulnerability',
             severityLevel: SeverityLevel.Low,
-            tags: ['Recommended'],
+            tags: ['Recommended', 'Security', 'Javascript'],
             description: getMessage('RetireJsRuleDescription', 'low'),
             resourceUrls: ['https://retirejs.github.io/retire.js/']
         });
