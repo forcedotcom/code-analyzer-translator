@@ -4,11 +4,11 @@ import {RunResults} from "../results";
 import fs from "fs";
 import {OutputFormatter} from "../output-format";
 import {
-    JsonViolationOutput,
-    toJsonViolationOutputArray
+    JsonResultsOutput,
+    toJsonResultsOutput
 } from "./json-output-format";
 
-const HTML_TEMPLATE_VERSION: string = '0.0.2';
+const HTML_TEMPLATE_VERSION: string = '0.0.9';
 const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
 export class HtmlOutputFormatter implements OutputFormatter {
     private static readonly TIMESTAMP_HOLE: string = '{{###TIMESTAMP###}}';
@@ -22,9 +22,9 @@ export class HtmlOutputFormatter implements OutputFormatter {
 
     format(results: RunResults): string {
         const runDir = results.getRunDirectory();
-        // It is easiest to put the violations in json format (while escaping html characters) since it is easily
+        // It is easiest to put the results in json format (while escaping html characters) since it is easily
         // consumed by our html template.
-        const jsonViolations: JsonViolationOutput[] = toJsonViolationOutputArray(results.getViolations(), runDir,escapeHtml);
+        const jsonOutput: JsonResultsOutput = toJsonResultsOutput(results, escapeHtml);
         const htmlTemplate: string = fs.readFileSync(HTML_TEMPLATE_FILE, 'utf-8');
         const timestampString: string = this.clock.now().toLocaleString('en-us', {year: "numeric", month: "short",
             day: "numeric", hour: "numeric", minute: "numeric", hour12: true});
@@ -34,7 +34,7 @@ export class HtmlOutputFormatter implements OutputFormatter {
         return htmlTemplate
             .replace(HtmlOutputFormatter.TIMESTAMP_HOLE, (_m) => timestampString)
             .replace(HtmlOutputFormatter.RUNDIR_HOLE, (_m) => runDir)
-            .replace(HtmlOutputFormatter.VIOLATIONS_HOLE, (_m) => JSON.stringify(jsonViolations));
+            .replace(HtmlOutputFormatter.VIOLATIONS_HOLE, (_m) => JSON.stringify(jsonOutput));
     }
 }
 
