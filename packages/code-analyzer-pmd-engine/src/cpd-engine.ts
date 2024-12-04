@@ -1,5 +1,5 @@
 import {
-    CodeLocation,
+    CodeLocation, COMMON_TAGS,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -124,10 +124,11 @@ export class CpdEngine extends Engine {
 }
 
 function createRuleForLanguage(languageId: LanguageId): RuleDescription {
+    const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
     return {
         name: getRuleNameFromLanguage(languageId),
         severityLevel: SeverityLevel.Info,
-        tags: ['Recommended', `${languageId}Language`],
+        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.DESIGN, languageTag],
         description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']
     }
