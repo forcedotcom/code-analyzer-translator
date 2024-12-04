@@ -12,7 +12,6 @@ import {
 import {getMessage} from "../src/messages";
 import {
     RegexRules,
-    DEFAULT_TAGS,
     DEFAULT_SEVERITY_LEVEL
 } from "../src/config";
 import {createBaseRegexRules, RULE_RESOURCE_URLS, TERMS_WITH_IMPLICIT_BIAS} from "../src/plugin";
@@ -26,14 +25,14 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
         file_extensions: [".js", ".cls"],
         violation_message: "sample violation message",
         severity: DEFAULT_SEVERITY_LEVEL,
-        tags: DEFAULT_TAGS
+        tags: ["Recommended"],
     },
     NoHellos: {
         regex: '/hello/gi',
         description: "Detects hellos in project.",
         violation_message: "sample violation message",
         severity: DEFAULT_SEVERITY_LEVEL,
-        tags: DEFAULT_TAGS
+        tags: ["Recommended", "Dummy"]
     }
 };
 
@@ -48,7 +47,7 @@ const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
 const EXPECTED_NoTodos_RULE_DESCRIPTION: RuleDescription = {
     name: "NoTodos",
     severityLevel: DEFAULT_SEVERITY_LEVEL,
-    tags: DEFAULT_TAGS,
+    tags: ["Recommended"],
     description: "Detects TODO comments in code base.",
     resourceUrls: []
 };
@@ -56,7 +55,7 @@ const EXPECTED_NoTodos_RULE_DESCRIPTION: RuleDescription = {
 const EXPECTED_NoHellos_RULE_DESCRIPTION = {
     name: "NoHellos",
     severityLevel: DEFAULT_SEVERITY_LEVEL,
-    tags: DEFAULT_TAGS,
+    tags: ["Recommended", "Dummy"],
     description: "Detects hellos in project.",
     resourceUrls: []
 };
