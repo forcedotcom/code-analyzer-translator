@@ -4,7 +4,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce `return` statements in callbacks of array methods",
     "resourceUrls": [
@@ -16,7 +16,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require `super()` calls in constructors",
     "resourceUrls": [
@@ -28,7 +28,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce \"for\" loop update clause moving the counter in the right direction",
     "resourceUrls": [
@@ -40,7 +40,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce `return` statements in getters",
     "resourceUrls": [
@@ -52,7 +52,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow using an async function as a Promise executor",
     "resourceUrls": [
@@ -64,7 +64,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow lexical declarations in case clauses",
     "resourceUrls": [
@@ -76,7 +76,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning class members",
     "resourceUrls": [
@@ -88,7 +88,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow comparing against -0",
     "resourceUrls": [
@@ -100,7 +100,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assignment operators in conditional expressions",
     "resourceUrls": [
@@ -112,7 +112,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning `const` variables",
     "resourceUrls": [
@@ -124,7 +124,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow constant expressions in conditions",
     "resourceUrls": [
@@ -136,7 +136,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow control characters in regular expressions",
     "resourceUrls": [
@@ -148,7 +148,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of `debugger`",
     "resourceUrls": [
@@ -160,7 +160,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow deleting variables",
     "resourceUrls": [
@@ -172,7 +172,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate arguments in `function` definitions",
     "resourceUrls": [
@@ -184,7 +184,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate class members",
     "resourceUrls": [
@@ -196,7 +196,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate conditions in if-else-if chains",
     "resourceUrls": [
@@ -208,7 +208,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate keys in object literals",
     "resourceUrls": [
@@ -220,7 +220,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow duplicate case labels",
     "resourceUrls": [
@@ -232,7 +232,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow empty block statements",
     "resourceUrls": [
@@ -244,7 +244,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow empty character classes in regular expressions",
     "resourceUrls": [
@@ -256,7 +256,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow empty destructuring patterns",
     "resourceUrls": [
@@ -268,7 +268,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning exceptions in `catch` clauses",
     "resourceUrls": [
@@ -280,7 +280,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary boolean casts",
     "resourceUrls": [
@@ -292,7 +292,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow fallthrough of `case` statements",
     "resourceUrls": [
@@ -304,7 +304,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow reassigning `function` declarations",
     "resourceUrls": [
@@ -316,7 +316,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow assignments to native objects or read-only global variables",
     "resourceUrls": [
@@ -328,7 +328,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assigning to imported bindings",
     "resourceUrls": [
@@ -340,7 +340,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow variable or `function` declarations in nested blocks",
     "resourceUrls": [
@@ -352,7 +352,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow invalid regular expression strings in `RegExp` constructors",
     "resourceUrls": [
@@ -364,7 +364,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow irregular whitespace",
     "resourceUrls": [
@@ -376,7 +376,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow literal numbers that lose precision",
     "resourceUrls": [
@@ -388,7 +388,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow characters which are made with multiple code points in character class syntax",
     "resourceUrls": [
@@ -400,7 +400,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `new` operators with the `Symbol` object",
     "resourceUrls": [
@@ -412,7 +412,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `\\8` and `\\9` escape sequences in string literals",
     "resourceUrls": [
@@ -424,7 +424,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling global object properties as functions",
     "resourceUrls": [
@@ -436,7 +436,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow octal literals",
     "resourceUrls": [
@@ -448,7 +448,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow calling some `Object.prototype` methods directly on objects",
     "resourceUrls": [
@@ -460,7 +460,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow variable redeclaration",
     "resourceUrls": [
@@ -472,7 +472,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow multiple spaces in regular expressions",
     "resourceUrls": [
@@ -484,7 +484,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow assignments where both sides are exactly the same",
     "resourceUrls": [
@@ -496,7 +496,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow returning values from setters",
     "resourceUrls": [
@@ -508,7 +508,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow identifiers from shadowing restricted names",
     "resourceUrls": [
@@ -520,7 +520,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow sparse arrays",
     "resourceUrls": [
@@ -532,7 +532,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow `this`/`super` before calling `super()` in constructors",
     "resourceUrls": [
@@ -544,7 +544,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow the use of undeclared variables unless mentioned in `/*global */` comments",
     "resourceUrls": [
@@ -556,7 +556,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow confusing multiline expressions",
     "resourceUrls": [
@@ -568,7 +568,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unreachable code after `return`, `throw`, `continue`, and `break` statements",
     "resourceUrls": [
@@ -580,7 +580,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow control flow statements in `finally` blocks",
     "resourceUrls": [
@@ -592,7 +592,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow negating the left operand of relational operators",
     "resourceUrls": [
@@ -604,7 +604,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow use of optional chaining in contexts where the `undefined` value is not allowed",
     "resourceUrls": [
@@ -616,7 +616,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unused labels",
     "resourceUrls": [
@@ -628,7 +628,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow unused variables",
     "resourceUrls": [
@@ -640,7 +640,7 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Disallow useless backreferences in regular expressions",
     "resourceUrls": [
@@ -652,7 +652,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow unnecessary `catch` clauses",
     "resourceUrls": [
@@ -664,7 +664,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow `with` statements",
     "resourceUrls": [
@@ -676,7 +676,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Require generator functions to contain `yield`",
     "resourceUrls": [
@@ -688,7 +688,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Require calls to `isNaN()` when checking for `NaN`",
     "resourceUrls": [
@@ -700,7 +700,7 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "Enforce comparing `typeof` expressions against valid strings",
     "resourceUrls": [

@@ -4,7 +4,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "My description of my-rule-1",
     "resourceUrls": [
@@ -16,7 +16,7 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "problem"
+      "ErrorProne"
     ],
     "description": "",
     "resourceUrls": [
@@ -28,7 +28,7 @@
     "severityLevel": 4,
     "tags": [
       "Recommended",
-      "layout"
+      "CodeStyle"
     ],
     "description": "My description of my-rule-3",
     "resourceUrls": []

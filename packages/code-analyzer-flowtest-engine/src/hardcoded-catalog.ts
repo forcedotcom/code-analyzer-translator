@@ -1,4 +1,4 @@
-import {RuleDescription, SeverityLevel} from '@salesforce/code-analyzer-engine-api';
+import {COMMON_TAGS, RuleDescription, SeverityLevel} from '@salesforce/code-analyzer-engine-api';
 import {getMessage} from './messages';
 
 const PREVENT_PASSING_USER_DATA_WITHOUT_SHARING = 'PreventPassingUserDataIntoElementWithoutSharing';
@@ -22,14 +22,14 @@ const CONSOLIDATED_RULE_DESCRIPTIONS_BY_NAME: Map<string, RuleDescription> = new
         name: PREVENT_PASSING_USER_DATA_WITHOUT_SHARING,
         description: getMessage('ConsolidatedRuleDescription', 'Without Sharing'),
         severityLevel: SeverityLevel.High,
-        tags: ['Recommended', 'Security'],
+        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML],
         resourceUrls: []
     }],
     [PREVENT_PASSING_USER_DATA_WITH_SHARING, {
         name: PREVENT_PASSING_USER_DATA_WITH_SHARING,
         description: getMessage('ConsolidatedRuleDescription', 'With Sharing'),
         severityLevel: SeverityLevel.Low,
-        tags: ['Recommended', 'Security'],
+        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML],
         resourceUrls: []
     }]
 ]);

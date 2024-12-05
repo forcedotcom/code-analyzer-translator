@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import {
+    COMMON_TAGS,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -155,11 +156,21 @@ function toTags(metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefine
     if (status === ESLintRuleStatus.ERROR || status === ESLintRuleStatus.WARN) {
         // Any rule that base config or the user's config has turned on, should be marked as 'Recommended'
         // so that code analyzer will run these rules by default just as eslint runs these rules.
-        tags.push('Recommended');
+        tags.push(COMMON_TAGS.RECOMMENDED);
     }
-    if (metadata.type) {
-        tags.push(metadata.type);
+    if (metadata.type ==  ESLintRuleType.LAYOUT) {
+        tags.push(COMMON_TAGS.CATEGORIES.CODE_STYLE);
+    } else if (metadata.type == ESLintRuleType.PROBLEM) {
+        tags.push(COMMON_TAGS.CATEGORIES.ERROR_PRONE);
+    } else if (metadata.type == ESLintRuleType.SUGGESTION) {
+        tags.push(COMMON_TAGS.CATEGORIES.BEST_PRACTICES);
     }
+
+    // Unfortunately eslint 8.57.x doesn't provide any insights into what rules are associated with specific languages
+    // or file extensions. Even the base rules are re-used with typescript, so we can't just look to see if the rule
+    // name has "@typescript" or not.
+    // TODO: Soon we will introduce a RULE_MAPPINGS (sort of like how we do with PMD) so we can set all the rule
+    //       language tags and also add in "Custom" tags where necessary.
     return tags;
 }
 

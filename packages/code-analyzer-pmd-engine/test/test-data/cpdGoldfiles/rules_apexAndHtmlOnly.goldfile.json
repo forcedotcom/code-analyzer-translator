@@ -4,7 +4,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "apexLanguage"
+      "Design",
+      "Apex"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'apex' language.",
     "resourceUrls": [
@@ -16,7 +17,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "htmlLanguage"
+      "Design",
+      "Html"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'html' language.",
     "resourceUrls": [

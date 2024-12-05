@@ -1,11 +1,11 @@
 [
   {
     "name": "VfCsrf",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Avoid calling VF action upon page load as the action becomes vulnerable to CSRF.",
     "resourceUrls": [
@@ -14,11 +14,11 @@
   },
   {
     "name": "VfHtmlStyleTagXss",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Checks for the correct encoding in `<style/>` tags in Visualforce pages. The rule is based on Salesforce Security's recommendation to prevent XSS in Visualforce as mentioned on Secure Coding Cross Site Scripting. In order to avoid cross site scripting, the relevant encoding must be used in HTML tags. The rule expects `URLENCODING` or `JSINHTMLENCODING` for URL-based style values and any... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss",
     "resourceUrls": [
@@ -27,11 +27,11 @@
   },
   {
     "name": "VfUnescapeEl",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Avoid unescaped user controlled content in EL as it results in XSS.",
     "resourceUrls": [

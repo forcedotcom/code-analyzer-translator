@@ -121,7 +121,7 @@ export class CodeAnalyzer {
 
         this.emitEvent({type: EventType.RuleSelectionProgressEvent, timestamp: this.clock.now(), percentComplete: 0});
 
-        selectors = selectors.length > 0 ? selectors : ['Recommended'];
+        selectors = selectors.length > 0 ? selectors : [engApi.COMMON_TAGS.RECOMMENDED];
         const allRules: RuleImpl[] = await this.getAllRules(selectOptions?.workspace);
 
         const ruleSelection: RuleSelectionImpl = new RuleSelectionImpl();

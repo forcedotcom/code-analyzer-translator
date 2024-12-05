@@ -4,7 +4,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "apexLanguage"
+      "Design",
+      "Apex"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'apex' language.",
     "resourceUrls": [
@@ -16,7 +17,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "htmlLanguage"
+      "Design",
+      "Html"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'html' language.",
     "resourceUrls": [
@@ -28,7 +30,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "javascriptLanguage"
+      "Design",
+      "Javascript"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'javascript' language.",
     "resourceUrls": [
@@ -40,7 +43,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "typescriptLanguage"
+      "Design",
+      "Typescript"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'typescript' language.",
     "resourceUrls": [
@@ -52,7 +56,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "visualforceLanguage"
+      "Design",
+      "Visualforce"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'visualforce' language.",
     "resourceUrls": [
@@ -64,7 +69,8 @@
     "severityLevel": 5,
     "tags": [
       "Recommended",
-      "xmlLanguage"
+      "Design",
+      "Xml"
     ],
     "description": "Identify duplicate code blocks within your workspace files associated with the 'xml' language.",
     "resourceUrls": [
