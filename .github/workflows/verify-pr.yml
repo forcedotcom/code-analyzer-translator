@@ -21,6 +21,16 @@ jobs:
               echo "::error::Invalid PR title: '$title'. Please following the format: FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
               exit 1
           fi
+  validate_package_versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List changed files
+        run: |
+          BASE_SHA=${{ github.event.pull_request.head.sha }}
+          HEAD_SHA=${{ github.sha }}
+          echo $BASE_SHA
+          echo $HEAD_SHA
   run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
