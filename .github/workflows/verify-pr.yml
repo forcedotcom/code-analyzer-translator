@@ -21,20 +21,28 @@ jobs:
               echo "::error::Invalid PR title: '$title'. Please following the format: FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
               exit 1
           fi
-  validate_package_versioning:
+  validate_packages:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-      - name: List changed files
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Validate that changed packages are versioned as snapshots
         run: |
           BASE_SHA=${{ github.event.pull_request.base.sha }}
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
-          echo $BASE_SHA
-          echo $HEAD_SHA
-          git diff --name-only $HEAD_SHA $BASE_SHA
+          CHANGED_FILES=`git diff --name-only $HEAD_SHA $BASE_SHA`
+          node ./tooling/validate-changed-package-versions.js $CHANGED_FILES
+      - name: Validate that packages properly depend on each other
+        run: |
+          cd packages
+          PACKAGE_NAMES=`ls`
+          cd ..
+          node ./tooling/validate-package-interdependencies.js $PACKAGE_NAMES
   run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
