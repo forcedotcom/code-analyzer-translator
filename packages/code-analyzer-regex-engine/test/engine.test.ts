@@ -39,7 +39,7 @@ const SAMPLE_CUSTOM_RULES: RegexRules = {
 const EXPECTED_NoTrailingWhitespace_RULE_DESCRIPTION: RuleDescription = {
     name: "NoTrailingWhitespace",
     severityLevel: SeverityLevel.Info,
-    tags: ["Recommended", "CodeStyle"],
+    tags: ["Recommended", "CodeStyle", "Apex"],
     description: getMessage('TrailingWhitespaceRuleDescription'),
     resourceUrls: []
 };

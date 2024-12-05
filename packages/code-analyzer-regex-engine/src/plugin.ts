@@ -77,7 +77,7 @@ export function createBaseRegexRules(now: Date): RegexRules {
             description: getMessage('TrailingWhitespaceRuleDescription'),
             violation_message: getMessage('TrailingWhitespaceRuleMessage'),
             severity: SeverityLevel.Info,
-            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.CODE_STYLE]
+            tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.CODE_STYLE, COMMON_TAGS.LANGUAGES.APEX]
         },
         AvoidTermsWithImplicitBias: { // file_extensions not listed so that it can run on all text files
             regex: (/\b(((black|white)\s*list\w*)|((black|brown)\s*out\w*)|(slaves?\b))/gi).toString(),
