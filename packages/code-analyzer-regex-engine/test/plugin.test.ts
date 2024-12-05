@@ -29,6 +29,7 @@ const SAMPLE_RAW_CUSTOM_RULE_DEFINITION = {
 const SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION = {
     regex: String.raw`/hello/gi`,
     description: "Detects hellos in project",
+    tags: ["dummy"]
 }
 
 const SAMPLE_DATE: Date = new Date(Date.UTC(2024, 8, 1, 0, 0, 0));
@@ -126,14 +127,14 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
                 file_extensions: SAMPLE_RAW_CUSTOM_RULE_DEFINITION.file_extensions,
                 violation_message: getMessage('RuleViolationMessage', customNoTodoRuleRegex.toString(), 'NoTodos', 'Detects TODO comments in code base.'),
                 severity: SeverityLevel.Moderate,
-                tags: ['Recommended']
+                tags: ['Recommended', 'Custom']
             },
             NoHellos: {
                 regex: customNoHelloRuleRegex.toString(),
                 description: SAMPLE_RAW_CUSTOM_RULE_NO_FILE_EXTS_DEFINITION.description,
                 violation_message: getMessage('RuleViolationMessage', customNoHelloRuleRegex.toString(), 'NoHellos', 'Detects hellos in project'),
                 severity: SeverityLevel.Moderate,
-                tags: ['Recommended']
+                tags: ['dummy']
             }
         };
         expect(engine._getRegexRules()).toEqual(expRegexRules);

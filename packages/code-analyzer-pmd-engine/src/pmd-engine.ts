@@ -1,5 +1,6 @@
 import {
     CodeLocation,
+    COMMON_TAGS,
     DescribeOptions,
     Engine,
     EngineRunResults,
@@ -17,6 +18,7 @@ import {extensionToLanguageId, LanguageId, PMD_ENGINE_NAME, SHARED_RULE_NAMES} f
 import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
 import {getMessage} from "./messages";
 import {PmdEngineConfig} from "./config";
+import {RULE_MAPPINGS} from "./pmd-rule-mappings";
 
 export class PmdEngine extends Engine {
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
@@ -120,10 +122,25 @@ export class PmdEngine extends Engine {
 
 function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
     const languageId: LanguageId = toLanguageId(pmdRuleInfo.language);
+    const uniqueRuleName: string = toUniqueRuleName(pmdRuleInfo.name, languageId);
+
+    let severityLevel: SeverityLevel;
+    let tags: string[];
+
+    if (uniqueRuleName in RULE_MAPPINGS) {
+        severityLevel = RULE_MAPPINGS[uniqueRuleName].severity;
+        tags = RULE_MAPPINGS[uniqueRuleName].tags;
+    } else { // Any rule we don't know about from our RULE_MAPPINGS must be a custom rule. Unit tests prevent otherwise.
+        severityLevel = toSeverityLevel(pmdRuleInfo.priority);
+        const categoryTag: string = pmdRuleInfo.ruleSet.replaceAll(' ', '');
+        const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
+        tags = [COMMON_TAGS.RECOMMENDED, categoryTag, languageTag, COMMON_TAGS.CUSTOM];
+    }
+
     return {
-        name: toUniqueRuleName(pmdRuleInfo.name, languageId),
-        severityLevel: toSeverityLevel(pmdRuleInfo.priority),
-        tags: ['Recommended', pmdRuleInfo.ruleSet.replaceAll(' ', ''), languageId + 'Language'],
+        name: uniqueRuleName,
+        severityLevel: severityLevel,
+        tags: tags,
         description: pmdRuleInfo.description,
         resourceUrls: pmdRuleInfo.externalInfoUrl ? [pmdRuleInfo.externalInfoUrl] : [] // TODO: Eventually we'll want to add in well architected links
     };

@@ -1,4 +1,5 @@
 import {
+    COMMON_TAGS,
     ConfigDescription,
     ConfigValueExtractor,
     SeverityLevel,
@@ -59,7 +60,6 @@ export const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
 export const RULE_NAME_PATTERN: RegExp = /^[A-Za-z@][A-Za-z_0-9@\-/]*$/;
 export const REGEX_STRING_PATTERN: RegExp = /^\/(.*)\/(.*)$/;
 
-export const DEFAULT_TAGS: string[] = ['Recommended'];
 export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate;
 
 export function validateAndNormalizeConfig(valueExtractor: ConfigValueExtractor): RegexEngineConfig {
@@ -82,7 +82,7 @@ export function validateAndNormalizeConfig(valueExtractor: ConfigValueExtractor)
             violation_message: ruleExtractor.extractString('violation_message',
                 getDefaultRuleViolationMessage(regexString, ruleName, description))!,
             severity: ruleExtractor.extractSeverityLevel('severity', DEFAULT_SEVERITY_LEVEL)!,
-            tags: ruleExtractor.extractArray('tags', ValueValidator.validateString, DEFAULT_TAGS)!,
+            tags: ruleExtractor.extractArray('tags', ValueValidator.validateString, [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CUSTOM])!,
             ...(rawFileExtensions ? { file_extensions: normalizeFileExtensions(rawFileExtensions) } : {}),
         }
     }

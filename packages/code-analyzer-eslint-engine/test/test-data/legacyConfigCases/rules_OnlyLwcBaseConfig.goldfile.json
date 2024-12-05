@@ -81,7 +81,7 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "suggestion"
+      "BestPractices"
     ],
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [

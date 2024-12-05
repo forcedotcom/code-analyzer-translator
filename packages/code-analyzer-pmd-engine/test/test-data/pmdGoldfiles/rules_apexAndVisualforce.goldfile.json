@@ -3,9 +3,8 @@
     "name": "ApexAssertionsShouldIncludeMessage",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "The second parameter of System.assert/third parameter of System.assertEquals/System.assertNotEquals is a message. Having a second/third parameter provides more information and makes it easier to debug the test failure and improves the readability of test output.",
     "resourceUrls": [
@@ -14,11 +13,11 @@
   },
   {
     "name": "ApexBadCrypto",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "The rule makes sure you are using randomly generated IVs and keys for `Crypto` calls. Hard-wiring these values greatly compromises the security of encrypted data.",
     "resourceUrls": [
@@ -27,11 +26,11 @@
   },
   {
     "name": "ApexCRUDViolation",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation. Since Apex runs by default in system mode not having proper permissions checks results in escalation of privilege and may produce runtime errors. This check forces you to handle such scenarios. Since Winter '23 (API Version 56) you can enforce user mode for database operations by using `WITH USER_MODE`... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexcrudviolation",
     "resourceUrls": [
@@ -40,11 +39,11 @@
   },
   {
     "name": "ApexCSRF",
-    "severityLevel": 3,
+    "severityLevel": 1,
     "tags": [
       "Recommended",
-      "ErrorProne",
-      "apexLanguage"
+      "Security",
+      "Apex"
     ],
     "description": "Having DML operations in Apex class constructor or initializers can have unexpected side effects: By just accessing a page, the DML statements would be executed and the database would be modified. Just querying the database is permitted. In addition to constructors and initializers, any method called `init` is checked as well. Salesforce Apex already protects against this scenario and raises a runtime... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_errorprone.html#apexcsrf",
     "resourceUrls": [
@@ -57,7 +56,7 @@
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Checks against calling dangerous methods. For the time being, it reports: * Against `FinancialForce`'s `Configuration.disableTriggerCRUDSecurity()`. Disabling CRUD security opens the door to several attacks and requires manual validation, which is unreliable. * Calling `System.debug` passing sensitive data as parameter, which could lead to exposure of private data.",
     "resourceUrls": [
@@ -66,11 +65,11 @@
   },
   {
     "name": "ApexDoc",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Documentation",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule validates that: * ApexDoc comments are present for classes, methods, and properties that are public or global, excluding overrides and test classes (as well as the contents of test classes). * ApexDoc comments are present for classes, methods, and properties that are protected or private, depending on the properties `reportPrivate` and `reportProtected`. * ApexDoc comments should contain... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_documentation.html#apexdoc",
     "resourceUrls": [
@@ -79,11 +78,11 @@
   },
   {
     "name": "ApexInsecureEndpoint",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Checks against accessing endpoints under plain **http**. You should always use **https** for security.",
     "resourceUrls": [
@@ -92,11 +91,11 @@
   },
   {
     "name": "ApexOpenRedirect",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Checks against redirects to user-controlled locations. This prevents attackers from redirecting users to phishing sites.",
     "resourceUrls": [
@@ -109,7 +108,7 @@
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Detect classes declared without explicit sharing mode if DML methods are used. This forces the developer to take access restrictions into account before modifying objects.",
     "resourceUrls": [
@@ -118,11 +117,11 @@
   },
   {
     "name": "ApexSOQLInjection",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Detects the usage of untrusted / unescaped variables in DML queries.",
     "resourceUrls": [
@@ -131,11 +130,11 @@
   },
   {
     "name": "ApexSuggestUsingNamedCred",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Detects hardcoded credentials used in requests to an endpoint. You should refrain from hardcoding credentials: * They are hard to mantain by being mixed in application code * Particularly hard to update them when used from different classes * Granting a developer access to the codebase means granting knowledge of credentials, keeping a two-level access is not possible. * Using different... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_security.html#apexsuggestusingnamedcred",
     "resourceUrls": [
@@ -148,7 +147,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex unit tests should include at least one assertion. This makes the tests more robust, and using assert with messages provide the developer a clearer idea of what the test does. Custom assert method invocation patterns can be specified using the 'additionalAssertMethodPattern' property if required.",
     "resourceUrls": [
@@ -157,11 +156,11 @@
   },
   {
     "name": "ApexUnitTestClassShouldHaveRunAs",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex unit tests should include at least one runAs method. This makes the tests more robust, and independent from the user running it.",
     "resourceUrls": [
@@ -170,11 +169,11 @@
   },
   {
     "name": "ApexUnitTestMethodShouldHaveIsTestAnnotation",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex test methods should have `@isTest` annotation instead of the `testMethod` keyword, as `testMethod` is deprecated. Salesforce advices to use @isTest annotation for test classes and methods.",
     "resourceUrls": [
@@ -183,11 +182,11 @@
   },
   {
     "name": "ApexUnitTestShouldNotUseSeeAllDataTrue",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex unit tests should not use @isTest(seeAllData=true) because it opens up the existing database data for unexpected modification by tests.",
     "resourceUrls": [
@@ -196,11 +195,11 @@
   },
   {
     "name": "ApexXSSFromEscapeFalse",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Reports on calls to `addError` with disabled escaping. The message passed to `addError` will be displayed directly to the user in the UI, making it prime ground for XSS attacks if unescaped.",
     "resourceUrls": [
@@ -209,11 +208,11 @@
   },
   {
     "name": "ApexXSSFromURLParam",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Makes sure that all values obtained from URL parameters are properly escaped / sanitized to avoid XSS attacks.",
     "resourceUrls": [
@@ -222,11 +221,11 @@
   },
   {
     "name": "AvoidDebugStatements",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Performance",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Debug statements contribute to longer transactions and consume Apex CPU time even when debug logs are not being captured. When possible make use of other debugging techniques such as the Apex Replay Debugger and Checkpoints that could cover *most* use cases. For other valid use cases that the statement is in fact valid make use of the `@SuppressWarnings` annotation or the `//NOPMD` comment.",
     "resourceUrls": [
@@ -239,7 +238,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid creating deeply nested if-then statements since they are harder to read and error-prone to maintain.",
     "resourceUrls": [
@@ -252,7 +251,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid directly accessing Trigger.old and Trigger.new as it can lead to a bug. Triggers should be bulkified and iterate through the map to handle the actions for each item separately.",
     "resourceUrls": [
@@ -265,7 +264,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Global classes should be avoided (especially in managed packages) as they can never be deleted or changed in signature. Always check twice if something needs to be global. Many interfaces (e.g. Batch) required global modifiers in the past but don't require this anymore. Don't lock yourself in.",
     "resourceUrls": [
@@ -278,7 +277,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "When deploying Apex code between sandbox and production environments, or installing Force.com AppExchange packages, it is essential to avoid hardcoding IDs in the Apex code. By doing so, if the record IDs change between environments, the logic can dynamically identify the proper data to operate against and not fail.",
     "resourceUrls": [
@@ -291,7 +290,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "As triggers do not allow methods like regular classes they are less flexible and suited to apply good encapsulation style. Therefore delegate the triggers work to a regular class (often called Trigger handler class). See more here: <https://developer.salesforce.com/page/Trigger_Frameworks_and_Apex_Trigger_Best_Practices>",
     "resourceUrls": [
@@ -300,11 +299,11 @@
   },
   {
     "name": "AvoidNonExistentAnnotations",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex supported non existent annotations for legacy reasons. In the future, use of such non-existent annotations could result in broken apex code that will not compile. This will prevent users of garbage annotations from being able to use legitimate annotations added to Apex in the future. A full list of supported annotations can be found at https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm",
     "resourceUrls": [
@@ -313,11 +312,11 @@
   },
   {
     "name": "AvoidNonRestrictiveQueries",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Performance",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "When working with very large amounts of data, unfiltered SOQL or SOSL queries can quickly cause governor limit exceptions.",
     "resourceUrls": [
@@ -326,11 +325,11 @@
   },
   {
     "name": "ClassNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for type declarations. This rule reports type declarations which do not match the regex that applies to their specific kind (e.g. enum or interface). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Pascal case).",
     "resourceUrls": [
@@ -343,7 +342,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Methods that are highly complex are difficult to read and more costly to maintain. If you include too much decisional logic within a single method, you make its behavior hard to understand and more difficult to modify. Cognitive complexity is a measure of how difficult it is for humans to read and understand a method. Code that contains a break in the control flow is more complex, whereas the... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cognitivecomplexity",
     "resourceUrls": [
@@ -356,7 +355,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "The complexity of methods directly affects maintenance costs and readability. Concentrating too much decisional logic in a single method makes its behaviour hard to read and change. Cyclomatic complexity assesses the complexity of a method by counting the number of decision points in a method, plus one for the method entry. Decision points are places where the control flow jumps to another... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#cyclomaticcomplexity",
     "resourceUrls": [
@@ -365,11 +364,11 @@
   },
   {
     "name": "DebugsShouldUseLoggingLevel",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "The first parameter of System.debug, when using the signature with two parameters, is a LoggingLevel enum. Having the Logging Level specified provides a cleaner log, and improves readability of it.",
     "resourceUrls": [
@@ -378,11 +377,11 @@
   },
   {
     "name": "EagerlyLoadedDescribeSObjectResult",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Performance",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informatio... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
     "resourceUrls": [
@@ -391,11 +390,11 @@
   },
   {
     "name": "EmptyCatchBlock",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Empty Catch Block finds instances where an exception is caught, but nothing is done. In most circumstances, this swallows an exception which should either be acted on or reported.",
     "resourceUrls": [
@@ -408,7 +407,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Empty If Statement finds instances where a condition is checked but nothing is done about it.",
     "resourceUrls": [
@@ -421,7 +420,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Empty block statements serve no purpose and should be removed.",
     "resourceUrls": [
@@ -434,7 +433,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid empty try or finally blocks - what's the point?",
     "resourceUrls": [
@@ -447,7 +446,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Empty While Statement finds all instances where a while statement does nothing. If it is a timing loop, then you should use Thread.sleep() for it; if it is a while loop that does a lot in the exit expression, rewrite it to make it clearer.",
     "resourceUrls": [
@@ -460,7 +459,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Excessive class file lengths are usually indications that the class may be burdened with excessive responsibilities that could be provided by external classes or functions. In breaking these methods apart the code becomes more managable and ripe for reuse.",
     "resourceUrls": [
@@ -473,7 +472,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Methods with numerous parameters are a challenge to maintain, especially if most of them share the same datatype. These situations usually denote the need for new objects to wrap the numerous parameters.",
     "resourceUrls": [
@@ -486,7 +485,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Classes with large numbers of public methods, attributes, and properties require disproportionate testing efforts since combinatorial side effects grow rapidly and increase risk. Refactoring these classes into smaller ones not only increases testability and reliability but also allows new variations to be developed easily.",
     "resourceUrls": [
@@ -499,7 +498,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Field declarations should appear before method declarations within a class.",
     "resourceUrls": [
@@ -508,11 +507,11 @@
   },
   {
     "name": "FieldNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for field declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind ---e.g. constants (static final), static field, final field. Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
@@ -525,7 +524,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid using 'for' statements without using surrounding braces. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
@@ -534,11 +533,11 @@
   },
   {
     "name": "FormalParameterNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for formal parameters of methods. This rule reports formal parameters which do not match the regex that applies to their specific kind (e.g. method parameter, or final method parameter). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
@@ -551,7 +550,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid using if..else statements without using surrounding braces. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
@@ -564,7 +563,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid using if statements without using braces to surround the code block. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
@@ -577,7 +576,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "In the Summer '21 release, a mandatory security update enforces access modifiers on Apex properties in Lightning component markup. The update prevents access to private or protected Apex getters from Aura and Lightning Web Components.",
     "resourceUrls": [
@@ -586,11 +585,11 @@
   },
   {
     "name": "LocalVariableNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for local variable declarations. This rule reports variable declarations which do not match the regex that applies to their specific kind (e.g. local variable, or final local variable). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
@@ -599,11 +598,11 @@
   },
   {
     "name": "MethodNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for method declarations. This rule reports method declarations which do not match the regex that applies to their specific kind (e.g. static method, or test method). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
@@ -616,7 +615,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Non-constructor methods should not have the same name as the enclosing class.",
     "resourceUrls": [
@@ -625,11 +624,11 @@
   },
   {
     "name": "NcssConstructorCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given constructor. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
@@ -638,11 +637,11 @@
   },
   {
     "name": "NcssMethodCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given method. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
@@ -651,11 +650,10 @@
   },
   {
     "name": "NcssTypeCount",
-    "severityLevel": 3,
+    "severityLevel": 4,
     "tags": [
-      "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule uses the NCSS (Non-Commenting Source Statements) algorithm to determine the number of lines of code for a given type. NCSS ignores comments, and counts actual statements. Using this algorithm, lines of code that are split are counted as one.",
     "resourceUrls": [
@@ -664,11 +662,11 @@
   },
   {
     "name": "OneDeclarationPerLine",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Apex allows the use of several variables declaration of the same type on one line. However, it can lead to quite messy code. This rule looks for several declarations on the same line.",
     "resourceUrls": [
@@ -681,7 +679,7 @@
     "tags": [
       "Recommended",
       "Performance",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "This rule finds method calls inside loops that are known to be likely a performance issue. These methods should be called only once before the loop. Schema class methods like Schema.getGlobalDescribe() and Schema.describeSObjects() might be slow depending on the size of your organization. Calling these methods repeatedly inside a loop creates a potential performance issue.",
     "resourceUrls": [
@@ -694,7 +692,7 @@
     "tags": [
       "Recommended",
       "Performance",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop.",
     "resourceUrls": [
@@ -703,11 +701,11 @@
   },
   {
     "name": "OverrideBothEqualsAndHashcode",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Override both `public Boolean equals(Object obj)`, and `public Integer hashCode()`, or override neither. Even if you are inheriting a hashCode() from a parent class, consider implementing hashCode and explicitly delegating to your superclass. This is especially important when Using Custom Types in Map Keys and Sets.",
     "resourceUrls": [
@@ -716,11 +714,11 @@
   },
   {
     "name": "PropertyNamingConventions",
-    "severityLevel": 2,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Configurable naming conventions for property declarations. This rule reports property declarations which do not match the regex that applies to their specific kind (e.g. static property, or instance property). Each regex can be configured through properties. By default this rule uses the standard Apex naming convention (Camel case).",
     "resourceUrls": [
@@ -733,7 +731,7 @@
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Detects when the Queueable interface is used but a Finalizer is not attached. It is best practice to call the `System.attachFinalizer(Finalizer f)` method within the `execute` method of a class which implements the `Queueable` interface. Without attaching a Finalizer, there is no way of designing error recovery actions should the Queueable action fail.",
     "resourceUrls": [
@@ -744,9 +742,8 @@
     "name": "StdCyclomaticComplexity",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Complexity directly affects maintenance costs is determined by the number of decision points in a method plus one for the method entry. The decision points include 'if', 'while', 'for', and 'case labels' calls. Generally, numbers ranging from 1-4 denote low complexity, 5-7 denote moderate complexity, 8-10 denote high complexity, and 11+ is very high complexity.",
     "resourceUrls": [
@@ -759,7 +756,7 @@
     "tags": [
       "Recommended",
       "ErrorProne",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Test methods marked as a testMethod or annotated with @IsTest, but not residing in a test class should be moved to a proper class or have the @IsTest annotation added to the class. Support for tests inside functional classes was removed in Spring-13 (API Version 27.0), making classes that violate this rule fail compile-time. This rule is mostly usable when dealing with legacy code.",
     "resourceUrls": [
@@ -772,7 +769,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Classes that have too many fields can become unwieldy and could be redesigned to have fewer fields, possibly through grouping related fields in new objects. For example, a class with individual city/state/zip fields could park them within a single Address field.",
     "resourceUrls": [
@@ -781,11 +778,11 @@
   },
   {
     "name": "UnusedLocalVariable",
-    "severityLevel": 4,
+    "severityLevel": 3,
     "tags": [
       "Recommended",
       "BestPractices",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Detects when a local variable is declared and/or assigned but not used.",
     "resourceUrls": [
@@ -798,7 +795,7 @@
     "tags": [
       "Recommended",
       "Design",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well, as long as the class itself is not entirely unused. A class is considered used, if it contains at least one other method/variable declaration that is used, as shown in the test project file Foo.cls. ApexLink is used to make this possible and... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
@@ -807,11 +804,11 @@
   },
   {
     "name": "VfCsrf",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Avoid calling VF action upon page load as the action becomes vulnerable to CSRF.",
     "resourceUrls": [
@@ -820,11 +817,11 @@
   },
   {
     "name": "VfHtmlStyleTagXss",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Checks for the correct encoding in `<style/>` tags in Visualforce pages. The rule is based on Salesforce Security's recommendation to prevent XSS in Visualforce as mentioned on Secure Coding Cross Site Scripting. In order to avoid cross site scripting, the relevant encoding must be used in HTML tags. The rule expects `URLENCODING` or `JSINHTMLENCODING` for URL-based style values and any... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_visualforce_security.html#vfhtmlstyletagxss",
     "resourceUrls": [
@@ -833,11 +830,11 @@
   },
   {
     "name": "VfUnescapeEl",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
       "Security",
-      "visualforceLanguage"
+      "Visualforce"
     ],
     "description": "Avoid unescaped user controlled content in EL as it results in XSS.",
     "resourceUrls": [
@@ -850,7 +847,7 @@
     "tags": [
       "Recommended",
       "CodeStyle",
-      "apexLanguage"
+      "Apex"
     ],
     "description": "Avoid using 'while' statements without using braces to surround the code block. If the code formatting or indentation is lost then it becomes difficult to separate the code being controlled from the rest.",
     "resourceUrls": [
