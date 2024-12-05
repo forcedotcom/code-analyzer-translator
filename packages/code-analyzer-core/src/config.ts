@@ -7,6 +7,14 @@ import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
 
+
+
+
+
+
+
+
+
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
     LOG_FOLDER: 'log_folder',
