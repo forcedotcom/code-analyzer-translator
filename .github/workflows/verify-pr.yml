@@ -31,6 +31,7 @@ jobs:
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
           echo $BASE_SHA
           echo $HEAD_SHA
+          git diff --name-only $HEAD_SHA $BASE_SHA
   run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
