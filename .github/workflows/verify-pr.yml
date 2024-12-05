@@ -34,7 +34,7 @@ jobs:
       - name: Validate that changed packages are versioned as snapshots
         run: |
           BASE_SHA=${{ github.event.pull_request.base.sha }}
-          HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          HEAD_SHA=${{ github.sha }}
           CHANGED_FILES=`git diff --name-only $HEAD_SHA $BASE_SHA`
           node ./tooling/validate-changed-package-versions.js $CHANGED_FILES
       - name: Validate that packages properly depend on each other
