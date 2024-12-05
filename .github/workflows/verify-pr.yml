@@ -22,7 +22,7 @@ jobs:
               exit 1
           fi
   validate_package_versioning:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: List changed files
