@@ -43,7 +43,7 @@ jobs:
           cd packages
           PACKAGE_NAMES=`ls`
           cd ..
-          node ./tooling/validate-package-interdependencies.js $PACKAGE_NAMES
+          node ./tooling/validate-package-interdependencies.js "$PACKAGE_NAMES"
   run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
