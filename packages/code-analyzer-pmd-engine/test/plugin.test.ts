@@ -38,11 +38,6 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
 
     it(`When describeEngineConfig is passed 'pmd' then the correct config description is returned`, async () => {
         expect(plugin.describeEngineConfig('pmd')).toEqual(PMD_ENGINE_CONFIG_DESCRIPTION);
-
-        // Sanity check that we list the correct available languages:
-        expect(PMD_ENGINE_CONFIG_DESCRIPTION.fieldDescriptions!['rule_languages'].descriptionText).toEqual(
-            getMessage('PmdConfigFieldDescription_rule_languages',
-                `'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'`));
     });
 
     it('When describeEngineConfig is passed an unsupported engine name, then an error is thrown', async () => {
@@ -71,7 +66,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig.java_command.endsWith('java')).toEqual(true);
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
-            rule_languages: ['apex', 'visualforce'],
+            rule_languages: ['apex', 'html', 'javascript', 'visualforce', 'xml'],
             java_classpath_entries: [],
             custom_rulesets: []
         });

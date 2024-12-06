@@ -33,7 +33,7 @@ describe('Tests for the getName method of PmdEngine', () => {
 
 
 describe('Tests for the describeRules method of PmdEngine', () => {
-    it('When using defaults without workspace, then apex and visualforce rules are returned', async () => {
+    it('When using defaults without workspace, then all language rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const logEvents: LogEvent[] = [];
         engine.onEvent(EventType.LogEvent, (e: LogEvent) => logEvents.push(e));
@@ -41,7 +41,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndVisualforce.goldfile.json');
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
 
         // Also check that we have fine logs with the argument list and the duration in milliseconds
         const fineLogEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Fine);
@@ -66,11 +66,21 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
 
-    it('When using defaults with workspace containing only apex and xml code, then only apex rules are returned', async () => {
+    it('When using defaults with workspace containing only apex and visualforce code, then only apex and visualforce rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.trigger'),
-            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.page')
+        ]);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndVisualforce.goldfile.json');
+    });
+
+    it('When using defaults with workspace containing only apex and text files, then only apex rules are returned', async () => {
+        const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
+        const workspace: Workspace = new Workspace([
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.trigger'),
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')
         ]);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
@@ -393,7 +403,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));
 
-        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')]);
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 

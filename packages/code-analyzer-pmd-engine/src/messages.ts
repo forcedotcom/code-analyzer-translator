@@ -10,11 +10,6 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `May be provided as the name of a command that exists on the path, or an absolute file path location.\n` +
         `If unspecified, or specified as null, then an attempt will be made to automatically discover a 'java' command from your environment.`,
 
-    PmdConfigFieldDescription_rule_languages:
-        `List of languages associated with the PMD rules to be made available for 'pmd' engine rule selection.\n` +
-        `The languages that you may choose from are: %s.\n` +
-        `See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.`,
-
     PmdConfigFieldDescription_java_classpath_entries:
         `List of jar files and/or folders to add the Java classpath when running PMD.\n` +
         `Each entry may be given as an absolute path or a relative path to 'config_root'.\n` +
@@ -33,10 +28,6 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     CpdConfigOverview:
         `CPD ENGINE CONFIGURATION\n` +
         `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
-
-    CpdConfigFieldDescription_rule_languages:
-        `List of languages associated with CPD to be made available for 'cpd' engine rule selection.\n` +
-        `The languages that you may choose from are: %s.`,
 
     CpdConfigFieldDescription_minimum_tokens:
         `The minimum number of tokens required to be in a duplicate block of code in order to be reported as a violation.\n` +

@@ -16,7 +16,6 @@
     "name": "DetectCopyPasteForHtml",
     "severityLevel": 5,
     "tags": [
-      "Recommended",
       "Design",
       "Html"
     ],

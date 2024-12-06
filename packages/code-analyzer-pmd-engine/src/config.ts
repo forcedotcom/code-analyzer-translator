@@ -19,6 +19,7 @@ export type PmdEngineConfig = {
     // If not defined, or equal to null, then an attempt will be made to automatically discover a 'java' command from your environment.
     java_command: string
 
+    // !! NOTE !! - HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
     // List of languages associated with the PMD rules to be made available for 'pmd' engine rule selection.
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.
@@ -42,7 +43,7 @@ export type PmdEngineConfig = {
 
 export const DEFAULT_PMD_ENGINE_CONFIG: PmdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
-    rule_languages: ['apex', 'visualforce'],
+    rule_languages: PMD_AVAILABLE_LANGUAGES, // hidden
     java_classpath_entries: [],
     custom_rulesets: []
 }
@@ -55,11 +56,10 @@ export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
             valueType: "string",
             defaultValue: null // Using null for doc and since it indicates that the value is calculated based on the environment
         },
-        rule_languages: {
-            descriptionText: getMessage('PmdConfigFieldDescription_rule_languages', toAvailableLanguagesText(PMD_AVAILABLE_LANGUAGES)),
-            valueType: "array",
-            defaultValue: DEFAULT_PMD_ENGINE_CONFIG.rule_languages,
-        },
+
+        // rule_languages - is excluded here so that it can remain hidden
+        // rule_languages WILL REMAIN HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
+
         java_classpath_entries: {
             descriptionText: getMessage('PmdConfigFieldDescription_java_classpath_entries'),
             valueType: "array",
@@ -81,6 +81,7 @@ export type CpdEngineConfig = {
     // If not defined, or equal to null, then an attempt will be made to automatically discover a 'java' command from your environment.
     java_command: string
 
+    // !! NOTE !! - HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
     // List of languages associated with CPD to be made available for 'cpd' engine rule selection.
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
     rule_languages: string[]
@@ -97,7 +98,7 @@ export type CpdEngineConfig = {
 
 export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
-    rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml'],
+    rule_languages: CPD_AVAILABLE_LANGUAGES, // hidden
     minimum_tokens: 100,
     skip_duplicate_files: false
 }
@@ -110,11 +111,10 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
             valueType: "string",
             defaultValue: null // Using null for doc and since it indicates that the value is calculated based on the environment
         },
-        rule_languages: {
-            descriptionText: getMessage('CpdConfigFieldDescription_rule_languages', toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)),
-            valueType: "array",
-            defaultValue: DEFAULT_CPD_ENGINE_CONFIG.rule_languages
-        },
+
+        // rule_languages - is excluded here so that it can remain hidden
+        // rule_languages WILL REMAIN HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
+
         minimum_tokens: {
             descriptionText: getMessage('CpdConfigFieldDescription_minimum_tokens'),
             valueType: "number",
