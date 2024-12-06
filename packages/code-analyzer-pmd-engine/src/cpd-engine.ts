@@ -126,10 +126,18 @@ export class CpdEngine extends Engine {
 
 function createRuleForLanguage(languageId: LanguageId): RuleDescription {
     const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
+
+    // We agreed that html and xml can be noisy and are less important for users to be made aware of duplicate code
+    // so we will be just adding Recommended tag to programming languages: apex, javascript, typescript, and visualforce
+    const recommendedLanguages: Set<LanguageId> = new Set([LanguageId.APEX, LanguageId.JAVASCRIPT, LanguageId.TYPESCRIPT, LanguageId.VISUALFORCE]);
+
     return {
         name: getRuleNameFromLanguage(languageId),
         severityLevel: SeverityLevel.Info,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.CATEGORIES.DESIGN, languageTag],
+        tags: [
+            ... (recommendedLanguages.has(languageId) ? [COMMON_TAGS.RECOMMENDED] : []),
+            COMMON_TAGS.CATEGORIES.DESIGN,
+            languageTag],
         description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']
     }

@@ -79,6 +79,11 @@ export class PmdEngine extends Engine {
             .map(ruleName => fetchRuleInfoByRuleName(ruleInfoList, ruleName))
             .filter(ruleInfo => ruleInfo !== null);
 
+        if (selectedRuleInfoList.length === 0) {
+            this.emitRunRulesProgressEvent(100);
+            return {violations: []};
+        }
+
         const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan,
             (innerPerc: number) => this.emitRunRulesProgressEvent(10 + 88*(innerPerc/100))); // 10 to 98%
 
