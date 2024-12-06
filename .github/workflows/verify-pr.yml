@@ -15,14 +15,31 @@ jobs:
         if: github.base_ref == 'dev'
         run: |
           title="${{ github.event.pull_request.title }}"
-          if [[ "$title" =~ ^(FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
+          if [[ "$title" =~ ^(PRERELEASE|FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
               echo "Valid PR title: '$title'"
           else
-              echo "::error::Invalid PR title: '$title'. Please following the format: FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
+              echo "::error::Invalid PR title: '$title'. Please following the format: PRERELEASE|FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
               exit 1
+          fi
+  check_for_prerelease_keyword:
+    runs-on: macos-latest
+    outputs:
+      is-prerelease: ${{ steps.main.outputs.is_prerelease }}
+    steps:
+      - name: Check for "Prerelease" keyword in PR title.
+        id: main
+        if: github.base_ref == 'dev'
+        run: |
+          title="${{ github.event.pull_request-title }}"
+          if [[ "$title" =~ ^PRERELEASE ]]; then
+            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
           fi
   validate_packages:
     runs-on: macos-latest
+    needs: check_for_prerelease_keyword
+    if: ${{ needs.check_for_prerelease_keyword.outputs.is-prerelease == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
