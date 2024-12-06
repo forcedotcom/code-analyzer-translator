@@ -15,31 +15,31 @@ jobs:
         if: github.base_ref == 'dev'
         run: |
           title="${{ github.event.pull_request.title }}"
-          if [[ "$title" =~ ^(PRERELEASE|FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
+          if [[ "$title" =~ ^(POSTRELEASE|FIX|CHANGE|NEW)([[:space:]]*\([^()]+\))?[[:space:]]*:?[[:space:]]*@W-[[:digit:]]{8,9}@[[:space:]]*.+ ]]; then
               echo "Valid PR title: '$title'"
           else
-              echo "::error::Invalid PR title: '$title'. Please following the format: PRERELEASE|FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
+              echo "::error::Invalid PR title: '$title'. Please following the format: POSTRELEASE|FIX|CHANGE|NEW (__) @W-XXXXXXXX@ Summary"
               exit 1
           fi
-  check_for_prerelease_keyword:
+  check_for_postrelease_keyword:
     runs-on: macos-latest
     outputs:
-      is-prerelease: ${{ steps.main.outputs.is_prerelease }}
+      is-postrelease: ${{ steps.main.outputs.is_postrelease }}
     steps:
-      - name: Check for "Prerelease" keyword in PR title.
+      - name: Check for "Postrelease" keyword in PR title.
         id: main
         if: github.base_ref == 'dev'
         run: |
           title="${{ github.event.pull_request-title }}"
-          if [[ "$title" =~ ^PRERELEASE ]]; then
-            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          if [[ "$title" =~ ^POSTRELEASE ]]; then
+            echo "is_postrelease=true" >> "$GITHUB_OUTPUT"
           else
-            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "is_postrelease=false" >> "$GITHUB_OUTPUT"
           fi
   validate_packages:
     runs-on: macos-latest
-    needs: check_for_prerelease_keyword
-    if: ${{ needs.check_for_prerelease_keyword.outputs.is-prerelease == 'false' }}
+    needs: check_for_postrelease_keyword
+    if: ${{ needs.check_for_postrelease_keyword.outputs.is-postrelease == 'false' }}
     steps:
       - uses: actions/checkout@v4
         with:
