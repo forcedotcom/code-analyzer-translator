@@ -39,7 +39,6 @@ jobs:
   validate_packages:
     runs-on: macos-latest
     needs: check_for_postrelease_keyword
-    if: ${{ needs.check_for_postrelease_keyword.outputs.is-postrelease == 'false' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,12 +48,14 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Validate that changed packages are versioned as snapshots
+        if: ${{ needs.check_for_postrelease_keyword.outputs.is-postrelease == 'false' }}
         run: |
           BASE_SHA=${{ github.event.pull_request.base.sha }}
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
           CHANGED_FILES=`git diff --name-only $HEAD_SHA $BASE_SHA`
           node ./.github/workflows/verify-pr/validate-changed-package-versions.js "$CHANGED_FILES"
       - name: Validate that packages properly depend on each other
+        if: ${{ needs.check_for_postrelease_keyword.outputs.is-postrelease == 'false' }}
         run: |
           cd packages
           PACKAGE_NAMES=`ls`
