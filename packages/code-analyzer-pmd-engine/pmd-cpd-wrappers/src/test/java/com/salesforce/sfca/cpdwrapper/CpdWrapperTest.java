@@ -99,9 +99,8 @@ class CpdWrapperTest {
     }
 
     @Test
-    void whenCallingRunWithMissingField_filesToScanPerLanguage_thenError(@TempDir Path tempDir) throws Exception {
+    void whenCallingRunWithMissingField_runDataPerLanguage_thenError(@TempDir Path tempDir) throws Exception {
         String inputFileContents = "{" +
-                "  \"minimumTokens\": 100, " +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -109,15 +108,51 @@ class CpdWrapperTest {
         String[] args = {"run", inputFile, "/does/not/matter"};
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
         assertThat(thrown.getMessage(), is(
-                "Error while attempting to invoke CpdRunner.run: The \"filesToScanPerLanguage\" field was not set."));
+                "Error while attempting to invoke CpdRunner.run: The \"runDataPerLanguage\" field was not set."));
+    }
+
+    @Test
+    void whenCallingRunWithMissingField_filesToScan_thenError(@TempDir Path tempDir) throws Exception {
+        String inputFileContents = "{" +
+                "  \"runDataPerLanguage\": {" +
+                "    \"apex\": {" +
+                "      \"minimumTokens\": 100 " +
+                "    }" +
+                "  }," +
+                "  \"skipDuplicateFiles\": false " +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke CpdRunner.run: The \"filesToScan\" field was missing or empty for language: apex"));
+    }
+
+    @Test
+    void whenCallingRunWithEmptyArrayFor_filesToScan_thenError(@TempDir Path tempDir) throws Exception {
+        String inputFileContents = "{" +
+                "  \"runDataPerLanguage\": {" +
+                "    \"apex\": {" +
+                "      \"filesToScan\": []," +
+                "      \"minimumTokens\": 100 " +
+                "    }" +
+                "  }," +
+                "  \"skipDuplicateFiles\": false " +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke CpdRunner.run: The \"filesToScan\" field was missing or empty for language: apex"));
     }
 
     @Test
     void whenCallingRunWithZeroLanguages_thenError(@TempDir Path tempDir) throws Exception {
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
+                "  \"runDataPerLanguage\": {" +
                 "  }," +
-                "  \"minimumTokens\": 120," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -125,17 +160,19 @@ class CpdWrapperTest {
         String[] args = {"run", inputFile, "/does/not/matter"};
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
         assertThat(thrown.getMessage(), is(
-                "Error while attempting to invoke CpdRunner.run: The \"filesToScanPerLanguage\" field was found to be empty."));
+                "Error while attempting to invoke CpdRunner.run: The \"runDataPerLanguage\" field didn't have any languages listed."));
     }
 
     @Test
     void whenCallingRunWithInvalidLanguage_thenError(@TempDir Path tempDir) throws Exception {
         String dummyFile = createTempFile(tempDir, "dummy", "");
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"unknownLanguage\": [\"" + makePathJsonSafe(dummyFile) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"unknownLanguage\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(dummyFile) + "\"]," +
+                "       \"minimumTokens\": 120" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 120," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -150,8 +187,10 @@ class CpdWrapperTest {
     void whenCallingRunWithMissingField_minimumTokens_thenError(@TempDir Path tempDir) throws Exception {
         String dummyApexFile = createTempFile(tempDir, "dummy.cls", "");
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(dummyApexFile) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(dummyApexFile) + "\"]" +
+                "    }" +
                 "  }," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
@@ -160,17 +199,19 @@ class CpdWrapperTest {
         String[] args = {"run", inputFile, "/does/not/matter"};
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
         assertThat(thrown.getMessage(), is(
-                "Error while attempting to invoke CpdRunner.run: The \"minimumTokens\" field was not set to a positive number."));
+                "Error while attempting to invoke CpdRunner.run: The \"minimumTokens\" field was not set to a positive number for language: apex"));
     }
 
     @Test
     void whenCallingRunWithNegativeMinimumTokensValue_thenError(@TempDir Path tempDir) throws Exception {
         String dummyApexFile = createTempFile(tempDir, "dummy.cls", "");
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(dummyApexFile) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(dummyApexFile) + "\"]," +
+                "       \"minimumTokens\": -1" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": -1," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -178,17 +219,19 @@ class CpdWrapperTest {
         String[] args = {"run", inputFile, "/does/not/matter"};
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> callCpdWrapper(args));
         assertThat(thrown.getMessage(), is(
-                "Error while attempting to invoke CpdRunner.run: The \"minimumTokens\" field was not set to a positive number."));
+                "Error while attempting to invoke CpdRunner.run: The \"minimumTokens\" field was not set to a positive number for language: apex"));
     }
 
     @Test
     void whenCallingRunWithFileToScanThatDoesNotExist_thenExceptionIsForwardedAsProcessingErrorWithTerminatingExceptionMarker(@TempDir Path tempDir) throws Exception {
         String doesNotExist = tempDir.resolve("doesNotExist.cls").toAbsolutePath().toString();
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(doesNotExist) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(doesNotExist) + "\"]," +
+                "       \"minimumTokens\": 100" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 100," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -212,11 +255,16 @@ class CpdWrapperTest {
         String jsFile2 = createTempFile(tempDir, "jsFile2.js", SAMPLE_JS_2);
 
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(apexFile1) + "\", \"" + makePathJsonSafe(apexFile2) + "\"]," +
-                "       \"ecmascript\": [\"" + makePathJsonSafe(jsFile1) + "\", \"" + makePathJsonSafe(jsFile2) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(apexFile1) + "\", \"" + makePathJsonSafe(apexFile2) + "\"]," +
+                "       \"minimumTokens\": 5" +
+                "    }," +
+                "     \"ecmascript\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(jsFile1) + "\", \"" + makePathJsonSafe(jsFile2) + "\"]," +
+                "       \"minimumTokens\": 13" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 5," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -344,10 +392,12 @@ class CpdWrapperTest {
         String apexFile2 = createTempFile(tempDir, "ApexClass2.cls", SAMPLE_APEX_2);
 
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(apexFile1) + "\", \"" + makePathJsonSafe(apexFile2) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(apexFile1) + "\", \"" + makePathJsonSafe(apexFile2) + "\"]," +
+                "       \"minimumTokens\": 500" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 500," + // This is why there are no dups found
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -370,11 +420,12 @@ class CpdWrapperTest {
         String apexFileInSubFolder = createTempFile(subFolder, "ApexClass1.cls", SAMPLE_APEX_1);
 
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(apexFileInParentFolder) + "\", \"" + makePathJsonSafe(apexFileInSubFolder) + "\"]," +
-                "       \"xml\": []" + // Edge case - checking also that this doesn't blow up anything
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(apexFileInParentFolder) + "\", \"" + makePathJsonSafe(apexFileInSubFolder) + "\"]," +
+                "       \"minimumTokens\": 15" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 15," +
                 "  \"skipDuplicateFiles\": false " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
@@ -434,10 +485,12 @@ class CpdWrapperTest {
         String apexFileInSubFolder = createTempFile(subFolder, "ApexClass1.cls", SAMPLE_APEX_1);
 
         String inputFileContents = "{" +
-                "  \"filesToScanPerLanguage\": {" +
-                "       \"apex\": [\"" + makePathJsonSafe(apexFileInParentFolder) + "\", \"" + makePathJsonSafe(apexFileInSubFolder) + "\"]" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(apexFileInParentFolder) + "\", \"" + makePathJsonSafe(apexFileInSubFolder) + "\"]," +
+                "       \"minimumTokens\": 15" +
+                "    }" +
                 "  }," +
-                "  \"minimumTokens\": 15," +
                 "  \"skipDuplicateFiles\": true " +
                 "}";
         String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);

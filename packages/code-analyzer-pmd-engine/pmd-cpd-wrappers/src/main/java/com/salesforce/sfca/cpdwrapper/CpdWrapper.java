@@ -17,12 +17,17 @@ import com.google.gson.Gson;
  *         - {argsInputFile} is a JSON file containing the input arguments for the run command.
  *              Example:
  *                  {
- *                      "filesToScanPerLanguage": {
- *                          "apex": ["/full/path/to/apex_file1.cls", "/full/path/to/apex_file2.trigger", ...],
+ *                      "runDataPerLanguage": {
+ *                          "apex": {
+ *                              "filesToScan":  ["/full/path/to/apex_file1.cls", "/full/path/to/apex_file2.trigger", ...],
+ *                              "minimumTokens": 100
+ *                          },
  *                          ...,
- *                          "xml": ["full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...]
+ *                          "xml": {
+ *                              "filesToScan": ["full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...],
+ *                              "minimumTokens": 150
+ *                          }
  *                      },
- *                      "minimumTokens": 100,
  *                      "skipDuplicateFiles": false
  *                  }
  *         - {resultsOutputFile} is a JSON file to write CPD results to.

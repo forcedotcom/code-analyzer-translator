@@ -53,7 +53,14 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
             rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml'],
-            minimum_tokens: 100,
+            minimum_tokens: {
+                "apex": 100,
+                "html": 100,
+                "javascript": 100,
+                "typescript": 100,
+                "visualforce": 100,
+                "xml": 100
+            },
             skip_duplicate_files: false
         });
     });
@@ -291,25 +298,47 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         ]);
     });
 
-    it(`When createEngineConfig for 'cpd' is given a minimum_tokens value that is not a number, then error`, async () => {
+    it(`When createEngineConfig for 'cpd' is given a minimum_tokens value that is not an object, then error`, async () => {
         const rawConfig: ConfigObject = {minimum_tokens: 'oops'};
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.minimum_tokens', 'number', 'string'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.minimum_tokens', 'object', 'string'));
     });
 
-    it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens number %s that is not a positive integer, then error`, async (invalidValue) => {
-        const rawConfig: ConfigObject = {minimum_tokens: invalidValue};
+    it(`When createEngineConfig for 'cpd' is given a minimum_tokens.apex value that is not a number, then error`, async () => {
+        const rawConfig: ConfigObject = {minimum_tokens: {apex: 'oops'}};
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
-            getMessage('InvalidPositiveInteger', 'engines.cpd.minimum_tokens'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.cpd.minimum_tokens.apex', 'number', 'string'));
+    });
+
+    it(`When createEngineConfig for 'cpd' is given a minimum_tokens with an invalid language, then error`, async () => {
+        const rawConfig: ConfigObject = {minimum_tokens: {apex: 100, oops: 100}};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessage('InvalidFieldKeyForObject', 'engines.cpd.minimum_tokens', 'oops',
+                "'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'"));
+    });
+
+    it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens.xml number %s that is not a positive integer, then error`, async (invalidValue) => {
+        const rawConfig: ConfigObject = {minimum_tokens: {apex: 10, xml: invalidValue}};
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessage('InvalidPositiveInteger', 'engines.cpd.minimum_tokens.xml'));
     });
 
     it(`When createEngineConfig for 'cpd' is given a valid minimum_tokens value, then it is used`, async() => {
-        const rawConfig: ConfigObject = {minimum_tokens: 18};
+        const rawConfig: ConfigObject = {minimum_tokens: {apex: 18, xml: 30, ecmascript: 25}}; // Also test that ecmascript can be used as an alias of javascript
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         const resolvedConfig: ConfigObject = await plugin.createEngineConfig('cpd', configValueExtractor);
-        expect(resolvedConfig['minimum_tokens']).toEqual(18);
+        expect(resolvedConfig['minimum_tokens']).toEqual({
+            apex: 18,
+            html: 100,
+            javascript: 25,
+            typescript: 100,
+            visualforce: 100,
+            xml: 30
+        });
     });
 
     it(`When createEngineConfig for 'cpd' is given a skip_duplicate_files value that is not a boolean, then error`, async () => {

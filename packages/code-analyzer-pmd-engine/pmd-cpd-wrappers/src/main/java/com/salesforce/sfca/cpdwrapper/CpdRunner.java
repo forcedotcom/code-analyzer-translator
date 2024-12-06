@@ -18,10 +18,7 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,18 +30,15 @@ class CpdRunner {
     public Map<String, CpdLanguageRunResults> run(CpdRunInputData runInputData) throws IOException {
         validateRunInputData(runInputData);
 
-        List<String> languagesToProcess = runInputData.filesToScanPerLanguage.entrySet().stream()
-                .filter(entry -> !entry.getValue().isEmpty())  // Keep only non-empty lists
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
+        List<String> languagesToProcess = new ArrayList<>(runInputData.runDataPerLanguage.keySet());
         progressReporter.initialize(languagesToProcess);
 
         Map<String, CpdLanguageRunResults> results = new HashMap<>();
         for (String language : languagesToProcess) {
-            List<String> filesToScan = runInputData.filesToScanPerLanguage.get(language);
-            List<Path> pathsToScan = filesToScan.stream().map(Paths::get).collect(Collectors.toList());
-            CpdLanguageRunResults languageRunResults = runLanguage(language, pathsToScan, runInputData.minimumTokens, runInputData.skipDuplicateFiles);
+            LanguageSpecificRunData languageSpecificRunData = runInputData.runDataPerLanguage.get(language);
+            List<Path> pathsToScan = languageSpecificRunData.filesToScan.stream().map(Paths::get).collect(Collectors.toList());
+            CpdLanguageRunResults languageRunResults = runLanguage(
+                    language, pathsToScan, languageSpecificRunData.minimumTokens, runInputData.skipDuplicateFiles);
             if (!languageRunResults.matches.isEmpty() || !languageRunResults.processingErrors.isEmpty()) {
                 results.put(language, languageRunResults);
             }
@@ -126,12 +120,24 @@ class CpdRunner {
     }
 
     private void validateRunInputData(CpdRunInputData runInputData) {
-        if (runInputData.filesToScanPerLanguage == null) {
-            throw new RuntimeException("The \"filesToScanPerLanguage\" field was not set.");
-        } else if (runInputData.filesToScanPerLanguage.isEmpty()) {
-            throw new RuntimeException(("The \"filesToScanPerLanguage\" field was found to be empty."));
-        } else if (runInputData.minimumTokens <= 0) {
-            throw new RuntimeException("The \"minimumTokens\" field was not set to a positive number.");
+        if (runInputData.runDataPerLanguage == null) {
+            throw new RuntimeException("The \"runDataPerLanguage\" field was not set.");
+        }
+
+        Set<Map.Entry<String, LanguageSpecificRunData>> entries = runInputData.runDataPerLanguage.entrySet();
+        if (entries.isEmpty()) {
+            throw new RuntimeException("The \"runDataPerLanguage\" field didn't have any languages listed.");
+        }
+
+        for (Map.Entry<String, LanguageSpecificRunData> entry: entries) {
+            String language = entry.getKey();
+            LanguageSpecificRunData languageSpecificRunData = entry.getValue();
+
+            if (languageSpecificRunData.filesToScan == null || languageSpecificRunData.filesToScan.isEmpty()) {
+                throw new RuntimeException(("The \"filesToScan\" field was missing or empty for language: " + language));
+            } else if (languageSpecificRunData.minimumTokens <= 0) {
+                throw new RuntimeException("The \"minimumTokens\" field was not set to a positive number for language: " + language);
+            }
         }
     }
 

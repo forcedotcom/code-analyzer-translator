@@ -10,12 +10,12 @@ const CPD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pm
 const STDOUT_PROGRESS_MARKER = '[Progress]';
 
 export type CpdRunInputData = {
-    filesToScanPerLanguage: CpdLanguageToFilesMap,
-    minimumTokens: number,
+    runDataPerLanguage: Record<string, LanguageSpecificCpdRunData>,
     skipDuplicateFiles: boolean
 }
-export type CpdLanguageToFilesMap = { // JSON.stringify doesn't support maps, so we can't just use Map<string, string[]>
-    [language: string]: string[]
+export type LanguageSpecificCpdRunData = {
+    filesToScan: string[],
+    minimumTokens: number
 }
 
 export type CpdRunResults = {
