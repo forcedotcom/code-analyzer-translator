@@ -37,13 +37,13 @@ jobs:
           HEAD_SHA=${{ github.event.pull_request.head.sha }}
           CHANGED_FILES=`git diff --name-only $HEAD_SHA $BASE_SHA`
           echo CHANGED FILES ARE $CHANGED_FILES
-          node ./tooling/validate-changed-package-versions.js "$CHANGED_FILES"
+          node ./.github/workflows/verify-pr/validate-changed-package-versions.js "$CHANGED_FILES"
       - name: Validate that packages properly depend on each other
         run: |
           cd packages
           PACKAGE_NAMES=`ls`
           cd ..
-          node ./tooling/validate-package-interdependencies.js "$PACKAGE_NAMES"
+          node ./.github/workflows/verify-pr/validate-package-interdependencies.js "$PACKAGE_NAMES"
   run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
