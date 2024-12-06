@@ -39,7 +39,7 @@ jobs:
   validate_packages:
     runs-on: macos-latest
     needs: check_for_prerelease_keyword
-    if: ${{ needs.check_for_prerelease_keyword.outputs.is-prerelease == 'true' }}
+    if: ${{ needs.check_for_prerelease_keyword.outputs.is-prerelease == 'false' }}
     steps:
       - uses: actions/checkout@v4
         with:
