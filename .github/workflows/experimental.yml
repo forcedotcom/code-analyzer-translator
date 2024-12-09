@@ -53,7 +53,7 @@ jobs:
             echo "we have name ${name}"
           done
           echo $PACKAGES_TO_CHECK
-          echo "packages_to_release=$PACKAGES_TO_CHECK" >> "$GITHUB_OUTPUT"
+          echo "packages_to_release=${PACKAGES_TO_CHECK}" >> "$GITHUB_OUTPUT"
   run-second-experiment:
     runs-on: macos-latest
     needs: run-experiment
@@ -66,7 +66,7 @@ jobs:
         id: experiment-with-loops
         run: |
           PACKAGE_NAMES=${{ needs.run-experiment.outputs.packages-to-release }}
-          for name in "$PACKAGE_NAMES[@]"
+          for name in "${PACKAGE_NAMES[@]}"
           do
             echo "package name is ${name}"
           done
