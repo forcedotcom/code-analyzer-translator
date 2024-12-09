@@ -71,6 +71,6 @@ jobs:
           do
             echo "package name is ${name}"
             cd ./packages/${name}
-            jq -r ".version" package.json"
+            jq -r ".version" package.json
             cd ../..
           done
