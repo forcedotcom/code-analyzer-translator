@@ -268,7 +268,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyCustomConfigModifyingExistingRules.goldfile.json');
     });
 
-    it('When javascript_file_extensions is empty, then javascript rules do not get picked up', async () => {
+    it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             file_extensions: {
                 ... DEFAULT_CONFIG.file_extensions,
@@ -279,7 +279,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
     });
 
-    it('When javascript_file_extensions is empty, then javascript rules do not get picked up', async () => {
+    it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             file_extensions: {
                 ... DEFAULT_CONFIG.file_extensions,
@@ -290,7 +290,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoTypescriptFilesInWorkspace.goldfile.json');
     });
 
-    it('When javascript_file_extensions and typescript_file_extensions are both empty, then no rules are returned', async () => {
+    it('When file_extensions.javascript and file_extensions.typescript are both empty, then no rules are returned', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             file_extensions: {
                 javascript: [],
