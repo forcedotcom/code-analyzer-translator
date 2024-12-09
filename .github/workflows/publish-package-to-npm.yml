@@ -218,18 +218,18 @@ jobs:
           ref: ${{ needs.prepare-release-branch.outputs.branch-name }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
-      - name: Build and test
-        run: |
-          npm install
-          npm run build
-          npm run test # Test here, since we didn't do it elsewhere
-      - name: Publish Packages
+          node-version: 20
+      - name: Build and test and publish packages
         run: |
           PACKAGES_TO_PUBLISH=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
           for PACKAGE_NAME in "${PACKAGES_TO_PUBLISH[@]}"
           do
             cd ./packages/${PACKAGE_NAME}
+            # Build and test each package individually instead of at the mono-repo level, to validate shared dependencies.
+            npm install
+            npm run build
+            npm run test
+            # We need the NPM token to publish.
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
             PUBLISHED_VERSION=$(jq -r ".version" package.json)
             if [ "${{ inputs.dryrun }}" == "true" ]]; then
