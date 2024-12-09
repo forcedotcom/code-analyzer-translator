@@ -66,7 +66,7 @@ jobs:
       - name: experiment with loops
         id: experiment-with-loops
         run: |
-          PACKAGE_NAMES=${{ needs.run-experiment.outputs.packages-to-release }}
+          PACKAGE_NAMES=(${{ needs.run-experiment.outputs.packages-to-release }})
           for name in "${PACKAGE_NAMES[@]}"
           do
             echo "package name is ${name}"
