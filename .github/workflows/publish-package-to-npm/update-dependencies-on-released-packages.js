@@ -22,7 +22,7 @@ function displayMapOfLists(header, mapOfLists) {
     for (const [key, innerList] of mapOfLists.entries()) {
         console.log(`IN ${key}:`);
         for (const innerListItem of innerList) {
-            console.log(`- ${innerListItem}`);
+            console.log(`* ${innerListItem}`);
         }
         console.log('');
     }

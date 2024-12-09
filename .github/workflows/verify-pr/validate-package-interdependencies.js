@@ -20,7 +20,7 @@ function main() {
 function displayList(header, list) {
     console.log(header);
     for (const listItem of list) {
-        console.log(`- ${listItem}`);
+        console.log(`* ${listItem}`);
     }
     console.log('');
 }
