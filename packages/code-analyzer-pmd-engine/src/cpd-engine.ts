@@ -18,7 +18,6 @@ import {CPD_AVAILABLE_LANGUAGES, CpdEngineConfig} from "./config";
 import {
     CpdBlockLocation,
     CpdLanguageRunResults,
-    CpdLanguageToFilesMap,
     CpdMatch,
     CpdRunInputData,
     CpdRunResults,
@@ -67,24 +66,27 @@ export class CpdEngine extends Engine {
         const relevantLanguageToFilesMap: Map<LanguageId, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
         this.emitRunRulesProgressEvent(2);
 
-        const filesToScanPerLanguage: CpdLanguageToFilesMap = {};
-        for (const languageId of ruleNames.map(getLanguageFromRuleName)) {
-            if (relevantLanguageToFilesMap.has(languageId)) {
-                // Calling toCpdLanguage is needed to convert the LanguageId to the identifier that CPD recognizes
-                filesToScanPerLanguage[toCpdLanguage(languageId)] = relevantLanguageToFilesMap.get(languageId)!;
+        const inputData: CpdRunInputData = {
+            runDataPerLanguage: {},
+            skipDuplicateFiles: this.config.skip_duplicate_files
+        }
+
+        const relevantLanguages: Set<LanguageId> = new Set(ruleNames.map(getLanguageFromRuleName));
+        for (const languageId of relevantLanguages) {
+            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(languageId) || [];
+            if (filesToScanForLanguage.length > 0) {
+                inputData.runDataPerLanguage[toCpdLanguage(languageId)] = {
+                    filesToScan: filesToScanForLanguage,
+                    minimumTokens: this.config.minimum_tokens[languageId]
+                }
             }
         }
 
-        if (Object.keys(filesToScanPerLanguage).length == 0) {
+        if (Object.keys(inputData.runDataPerLanguage).length === 0) {
             this.emitRunRulesProgressEvent(100);
             return { violations: [] };
         }
 
-        const inputData: CpdRunInputData = {
-            filesToScanPerLanguage: filesToScanPerLanguage,
-            minimumTokens: this.config.minimum_tokens,
-            skipDuplicateFiles: this.config.skip_duplicate_files
-        }
         this.emitRunRulesProgressEvent(5);
 
         const cpdRunResults: CpdRunResults = await this.cpdWrapperInvoker.invokeRunCommand(inputData,

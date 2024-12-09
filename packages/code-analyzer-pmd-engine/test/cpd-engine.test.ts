@@ -225,7 +225,9 @@ describe('Tests for the runRules method of CpdEngine', () => {
     it('When specifying a minimum_tokens length that is small enough to pick up smaller code blocks, then violations are returned', async () => {
         const engine: CpdEngine = new CpdEngine({
             ...DEFAULT_CPD_ENGINE_CONFIG,
-            minimum_tokens: 10
+            minimum_tokens: {
+                javascript: 10
+            }
         });
         const progressEvents: RunRulesProgressEvent[] = [];
         engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => progressEvents.push(e));

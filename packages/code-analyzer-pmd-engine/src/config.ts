@@ -86,20 +86,27 @@ export type CpdEngineConfig = {
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
     rule_languages: string[]
 
-    // The minimum number of tokens required to be in a duplicate block of code in order to be reported as a violation.
-    // The concept of a token may be defined differently per language, but in general it a distinct basic element of source code.
-    // For example, this could be language specific keywords, identifiers, operators, literals, and more.
-    // See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.
-    minimum_tokens: number
+    // Specifies the minimum tokens threshold for each rule language.
+    // The minimum tokens threshold is the number of tokens required to be in a duplicate block of code in order to be
+    // reported as a violation. The concept of a token may be defined differently per language, but in general it is a
+    // distinct basic element of source code. For example, this could be language specific keywords, identifiers,
+    // operators, literals, and more. See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.
+    // If a value for a language is unspecified, then the default value of 100 will be used for that language.
+    minimum_tokens: Record<string, number>
 
     // Indicates whether to ignore multiple copies of files of the same name and length.
     skip_duplicate_files: boolean
 }
 
+const DEFAULT_MINIMUM_TOKENS: number = 100;
+
 export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
     rule_languages: CPD_AVAILABLE_LANGUAGES, // hidden
-    minimum_tokens: 100,
+    minimum_tokens: CPD_AVAILABLE_LANGUAGES.reduce((obj, lang: string) => {
+        obj[lang] = DEFAULT_MINIMUM_TOKENS;
+        return obj;
+    }, {} as Record<string, number>),
     skip_duplicate_files: false
 }
 
@@ -117,7 +124,7 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 
         minimum_tokens: {
             descriptionText: getMessage('CpdConfigFieldDescription_minimum_tokens'),
-            valueType: "number",
+            valueType: "object",
             defaultValue: DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens,
         },
         skip_duplicate_files: {
@@ -328,12 +335,34 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
         return DEFAULT_CPD_ENGINE_CONFIG.rule_languages;
     }
 
-    extractMinimumTokens(): number {
-        const minimumTokens: number = this.configValueExtractor.extractNumber('minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens)!;
-        if (minimumTokens <= 0 || Math.floor(minimumTokens) != minimumTokens) {
-            throw new Error(getMessage('InvalidPositiveInteger', this.configValueExtractor.getFieldPath('minimum_tokens')));
+    extractMinimumTokens(): Record<string, number> {
+        const minimumTokensExtractor: ConfigValueExtractor = this.configValueExtractor.extractObjectAsExtractor(
+            'minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens);
+
+        // Start with a copy will all the default values
+        const minimumTokensMap: Record<string, number> = {...DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens};
+
+        // And override the default values with user provided values for each language found
+        for (const key of minimumTokensExtractor.getKeys()) {
+            let language: string = key.toLowerCase();
+            if (language === 'ecmascript') {
+                // Provide support for 'ecmascript' which is a supported alias of 'javascript'
+                language = 'javascript';
+            }
+
+            if (!CPD_AVAILABLE_LANGUAGES.includes(language)) {
+                throw new Error(getMessage('InvalidFieldKeyForObject',
+                    this.configValueExtractor.getFieldPath('minimum_tokens'), key, toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)));
+            }
+
+            const minimumTokensValue: number = minimumTokensExtractor.extractRequiredNumber(key);
+            if (minimumTokensValue <= 0 || Math.floor(minimumTokensValue) != minimumTokensValue) {
+                throw new Error(getMessage('InvalidPositiveInteger', minimumTokensExtractor.getFieldPath(key)));
+            }
+            minimumTokensMap[language] = minimumTokensValue;
         }
-        return minimumTokens;
+
+        return minimumTokensMap;
     }
 
     extractSkipDuplicateFiles(): boolean {

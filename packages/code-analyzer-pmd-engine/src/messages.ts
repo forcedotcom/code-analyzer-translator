@@ -30,10 +30,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
 
     CpdConfigFieldDescription_minimum_tokens:
-        `The minimum number of tokens required to be in a duplicate block of code in order to be reported as a violation.\n` +
-        `The concept of a token may be defined differently per language, but in general it a distinct basic element of source code.\n` +
-        `For example, this could be language specific keywords, identifiers, operators, literals, and more.\n` +
-        `See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.`,
+        `Specifies the minimum tokens threshold for each rule language.\n` +
+        `The minimum tokens threshold is the number of tokens required to be in a duplicate block of code in order to be\n` +
+        `reported as a violation. The concept of a token may be defined differently per language, but in general it is a\n` +
+        `distinct basic element of source code. For example, this could be language specific keywords, identifiers,\n` +
+        `operators, literals, and more. See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.\n` +
+        `If a value for a language is unspecified, then the default value of 100 will be used for that language.`,
 
     CpdConfigFieldDescription_skip_duplicate_files:
         `Indicates whether to ignore multiple copies of files of the same name and length.`,
@@ -88,6 +90,9 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     InvalidPositiveInteger:
         `The '%s' configuration value is invalid. The value must be a positive integer.`,
+
+    InvalidFieldKeyForObject:
+        `The '%s' configure value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`
 }
 
 /**
