@@ -38,6 +38,9 @@ jobs:
           if [ "${{ inputs.code-analyzer-engine-api }}" == "true"]; then
             PACKAGES_TO_CHECK+=('code-analyzer-engine-api')
           fi
+          if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true"]; then
+            PACKAGES_TO_CHECK+=('code-analyzer-eslint-engine')
+          fi
           echo "packages_to_release=$PACKAGES_TO_CHECK" >> "$GITHUB_OUTPUT"
   run-second-experiment:
     runs-on: macos-latest
