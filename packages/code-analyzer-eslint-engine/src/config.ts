@@ -1,4 +1,8 @@
-import {ConfigDescription, ConfigValueExtractor, ValueValidator} from '@salesforce/code-analyzer-engine-api';
+import {
+    ConfigDescription,
+    ConfigValueExtractor,
+    ValueValidator
+} from '@salesforce/code-analyzer-engine-api';
 import {getMessage} from "./messages";
 import path from "node:path";
 import {makeUnique} from "./utils";
@@ -29,17 +33,21 @@ export type ESLintEngineConfig = {
     // Default: false
     disable_typescript_base_config: boolean
 
-    // Extensions of the javascript files in your workspace that will be used to discover rules.
-    // Default: ['.js', '.cjs', '.mjs']
-    javascript_file_extensions: string[]
-
-    // Extensions of the typescript files in your workspace that will be used to discover rules.
-    // Default: ['.ts']
-    typescript_file_extensions: string[]
+    // Extensions of the files in your workspace that will be used to discover rules for javascript and typescript.
+    // Each file extension can only be associated to one language. If a specific language is not specified, then the
+    // following list of default file extensions will be used:
+    //   javascript: ['.js', '.cjs', '.mjs']
+    //   typescript: ['.ts']
+    file_extensions: FileExtensionsObject
 
     // (INTERNAL USE ONLY) Copy of the code analyzer config root.
     config_root: string
 }
+
+type FileExtensionsObject = {
+    javascript: string[],
+    typescript: string[]
+};
 
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
     eslint_config_file: undefined,
@@ -48,8 +56,10 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     disable_javascript_base_config: false,
     disable_lwc_base_config: false,
     disable_typescript_base_config: false,
-    javascript_file_extensions:  ['.js', '.cjs', '.mjs'],
-    typescript_file_extensions: ['.ts'],
+    file_extensions: {
+        javascript: ['.js', '.cjs', '.mjs'],
+        typescript: ['.ts']
+    },
     config_root: process.cwd() // INTERNAL USE ONLY
 }
 
@@ -86,15 +96,10 @@ export const ESLINT_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
             valueType: "boolean",
             defaultValue: DEFAULT_CONFIG.disable_typescript_base_config
         },
-        javascript_file_extensions: {
-            descriptionText: getMessage('ConfigFieldDescription_javascript_file_extensions'),
-            valueType: "array",
-            defaultValue: DEFAULT_CONFIG.javascript_file_extensions
-        },
-        typescript_file_extensions: {
-            descriptionText: getMessage('ConfigFieldDescription_typescript_file_extensions'),
-            valueType: "array",
-            defaultValue: DEFAULT_CONFIG.typescript_file_extensions
+        file_extensions: {
+            descriptionText: getMessage('ConfigFieldDescription_file_extensions'),
+            valueType: "object",
+            defaultValue: DEFAULT_CONFIG.file_extensions
         }
     }
 }
@@ -108,7 +113,6 @@ export const LEGACY_ESLINT_IGNORE_FILE: string = '.eslintignore';
 
 export function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor): ESLintEngineConfig {
     const eslintConfigValueExtractor: ESLintEngineConfigValueExtractor = new ESLintEngineConfigValueExtractor(configValueExtractor);
-    const [jsExts, tsExts] = eslintConfigValueExtractor.extractFileExtensionsValues();
     return {
         config_root: configValueExtractor.getConfigRoot(), // INTERNAL USE ONLY
         eslint_config_file: eslintConfigValueExtractor.extractESLintConfigFileValue(),
@@ -117,8 +121,7 @@ export function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtr
         disable_javascript_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_javascript_base_config'),
         disable_lwc_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_lwc_base_config'),
         disable_typescript_base_config: eslintConfigValueExtractor.extractBooleanValue('disable_typescript_base_config'),
-        javascript_file_extensions:  jsExts,
-        typescript_file_extensions: tsExts
+        file_extensions:  eslintConfigValueExtractor.extractFileExtensionsValue(),
     };
 }
 
@@ -150,27 +153,45 @@ class ESLintEngineConfigValueExtractor {
         return eslintIgnoreFile;
     }
 
-    extractFileExtensionsValues(): string[][] {
-        const jsExtsField: string = 'javascript_file_extensions';
-        const tsExtsField: string = 'typescript_file_extensions';
-        const jsExts: string[] = makeUnique(this.extractExtensionsValue(jsExtsField, DEFAULT_CONFIG.javascript_file_extensions)!);
-        const tsExts: string[] = makeUnique(this.extractExtensionsValue(tsExtsField, DEFAULT_CONFIG.typescript_file_extensions)!);
+    extractFileExtensionsValue(): FileExtensionsObject {
+        if (!this.delegateExtractor.hasValueDefinedFor('file_extensions')) {
+            return DEFAULT_CONFIG.file_extensions;
+        }
 
-        const allExts: string[] = jsExts.concat(tsExts);
+        const fileExtsObjExtractor: ConfigValueExtractor = this.delegateExtractor.extractObjectAsExtractor('file_extensions');
+
+        // Validate languages
+        const validLanguages: string[] = Object.keys(DEFAULT_CONFIG.file_extensions);
+        for (const key of fileExtsObjExtractor.getKeys()) {
+            // Note: In the future we may want to make the languages case-insensitive. Right now it is a little tricky
+            //       because the extract* methods (like extractArray) look for the exact key name.
+            if (!(validLanguages.includes(key))) {
+                throw new Error(getMessage('InvalidFieldKeyForObject', fileExtsObjExtractor.getFieldPath(), key, validLanguages.join(', ')))
+            }
+        }
+
+        // Validate file extension patterns
+        const extractExtensionsValue = function (fieldName: string, defaultValue: string[]): string[] {
+            const fileExts: string[] = fileExtsObjExtractor.extractArray(fieldName, ValueValidator.validateString, defaultValue)!;
+            fileExts.map((fileExt, i) => validateStringMatches(
+                ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${fileExtsObjExtractor.getFieldPath(fieldName)}[${i}]`));
+            return makeUnique(fileExts);
+        }
+        const fileExtsObj: FileExtensionsObject = {
+            javascript: extractExtensionsValue('javascript', DEFAULT_CONFIG.file_extensions.javascript),
+            typescript: extractExtensionsValue('typescript', DEFAULT_CONFIG.file_extensions.typescript)
+        }
+
+        // Validate that there is no file extension listed with multiple languages
+        const allExts: string[] = fileExtsObj.javascript.concat(fileExtsObj.typescript);
         if (allExts.length != (new Set(allExts)).size) {
             const currentValuesString: string =
-                `  ${this.delegateExtractor.getFieldPath(jsExtsField)}: ${JSON.stringify(jsExts)}\n` +
-                `  ${this.delegateExtractor.getFieldPath(tsExtsField)}: ${JSON.stringify(tsExts)}`;
+                `  ${fileExtsObjExtractor.getFieldPath('javascript')}: ${JSON.stringify(fileExtsObj.javascript)}\n` +
+                `  ${fileExtsObjExtractor.getFieldPath('typescript')}: ${JSON.stringify(fileExtsObj.typescript)}`;
             throw new Error(getMessage('ConfigStringArrayValuesMustNotShareElements', currentValuesString));
         }
 
-        return [jsExts, tsExts];
-    }
-
-    extractExtensionsValue(fieldName: string, defaultValue: string[]): string[] {
-        const fileExts: string[] = this.delegateExtractor.extractArray(fieldName, ValueValidator.validateString, defaultValue)!;
-        return fileExts.map((fileExt, i) => validateStringMatches(
-            ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN, fileExt, `${this.delegateExtractor.getFieldPath(fieldName)}[${i}]`));
+        return fileExtsObj;
     }
 
     extractBooleanValue(field_name: string): boolean {

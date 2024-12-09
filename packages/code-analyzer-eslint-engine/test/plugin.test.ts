@@ -172,48 +172,73 @@ describe('Tests for the ESLintEnginePlugin', () => {
                 'engines.eslint.disable_typescript_base_config', 'boolean', 'string'));
     });
 
-    it('When a valid javascript_file_extensions value is passed to createEngineConfig, then it is set on the config', async () => {
+    it('When an file_extensions value contains an invalid language, then createEngineConfig errors', async () => {
         const userProvidedOverrides: ConfigObject = {
-            javascript_file_extensions: ['.js', '.jsx', '.js']
+            file_extensions: {
+                oops: ['.js', '.jsx', '.js']
+            }
         };
-        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
-        expect(resolvedConfig['javascript_file_extensions']).toEqual(['.js', '.jsx']); // Also checks that duplicates are removed
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
+            getMessage('InvalidFieldKeyForObject', 'engines.eslint.file_extensions', 'oops', 'javascript, typescript'));
     });
 
-    it('When javascript_file_extensions is invalid, then createEngineConfig errors', async () => {
+    it('When a valid file_extensions.javascript value is passed to createEngineConfig, then it is set on the config', async () => {
         const userProvidedOverrides: ConfigObject = {
-            javascript_file_extensions: [3, '.js']
+            file_extensions: {
+                javascript: ['.js', '.jsx', '.js']
+            }
+        };
+        const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
+        expect(resolvedConfig['file_extensions']).toEqual({
+            ...DEFAULT_CONFIG.file_extensions,
+            javascript: ['.js', '.jsx']}); // Also checks that duplicates are removed
+    });
+
+    it('When file_extensions.javascript is invalid, then createEngineConfig errors', async () => {
+        const userProvidedOverrides: ConfigObject = {
+            file_extensions: {
+                javascript: [3, '.js']
+            }
         };
         await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
-                'engines.eslint.javascript_file_extensions[0]', 'string', 'number'));
+                'engines.eslint.file_extensions.javascript[0]', 'string', 'number'));
     });
 
-    it('When a valid typescript_file_extensions value is passed to createEngineConfig, then it is set on the config', async () => {
+    it('When a valid file_extensions.typescript value is passed to createEngineConfig, then it is set on the config', async () => {
         const userProvidedOverrides: ConfigObject = {
-            typescript_file_extensions: ['.ts', '.tsx']
+            file_extensions: {
+                typescript: ['.ts', '.tsx']
+            }
         };
         const resolvedConfig: ConfigObject = await callCreateEngineConfig(plugin, userProvidedOverrides);
-        expect(resolvedConfig['typescript_file_extensions']).toEqual(['.ts', '.tsx']);
+        expect(resolvedConfig['file_extensions']).toEqual({
+            ... DEFAULT_CONFIG.file_extensions,
+            typescript: ['.ts', '.tsx']
+        });
     });
 
-    it('When typescript_file_extensions is invalid, then createEngineConfig errors', async () => {
+    it('When file_extensions.typescript is invalid, then createEngineConfig errors', async () => {
         const userProvidedOverrides: ConfigObject = {
-            typescript_file_extensions: ['.ts', 'missingDot']
+            file_extensions: {
+                typescript: ['.ts', 'missingDot']
+            }
         };
         await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessage('ConfigStringValueMustMatchPattern',
-                'engines.eslint.typescript_file_extensions[1]', 'missingDot', '^[.][a-zA-Z0-9]+$'));
+                'engines.eslint.file_extensions.typescript[1]', 'missingDot', '^[.][a-zA-Z0-9]+$'));
     });
 
     it('When an extension is listed in more than one *_file_extensions field, then createEngineConfig errors', async () => {
         const userProvidedOverrides: ConfigObject = {
-            typescript_file_extensions: ['.ts', '.js']
+            file_extensions: {
+                typescript: ['.ts', '.js']
+            }
         };
         await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessage('ConfigStringArrayValuesMustNotShareElements',
-                `  engines.eslint.javascript_file_extensions: [".js",".cjs",".mjs"]\n` +
-                `  engines.eslint.typescript_file_extensions: [".ts",".js"]`));
+                `  engines.eslint.file_extensions.javascript: [".js",".cjs",".mjs"]\n` +
+                `  engines.eslint.file_extensions.typescript: [".ts",".js"]`));
     });
 
     it('When createEngine is passed an invalid engine name, then an error is thrown', async () => {

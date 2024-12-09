@@ -28,11 +28,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     ConfigFieldDescription_disable_typescript_base_config:
         `Whether to turn off the default base configuration that supplies the standard rules for typescript files.`,
 
-    ConfigFieldDescription_javascript_file_extensions:
-        `Extensions of the javascript files in your workspace that will be associated with javascript and LWC rules.`,
-
-    ConfigFieldDescription_typescript_file_extensions:
-        `Extensions of the typescript files in your workspace that will be associated with typescript rules.`,
+    ConfigFieldDescription_file_extensions:
+        `Extensions of the files in your workspace that will be used to discover rules for javascript and typescript.\n` +
+        `Each file extension can only be associated to one language. If a specific language is not specified, then the\n` +
+        `following list of default file extensions will be used:\n` +
+        `  javascript: ['.js', '.cjs', '.mjs']\n` +
+        `  typescript: ['.ts']`,
 
     UnsupportedEngineName:
         `The ESLintEnginePlugin does not support an engine with name '%s'.`,
@@ -42,6 +43,9 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     InvalidLegacyIgnoreFileName:
         `The '%s' configuration value is invalid. Expected the file name '%s' to be equal to '%s'.`,
+
+    InvalidFieldKeyForObject:
+        `The '%s' configuration value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`,
 
     ConfigStringValueMustMatchPattern:
         `The '%s' configuration value '%s' must match the pattern: /%s/`,
