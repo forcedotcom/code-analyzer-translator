@@ -35,25 +35,26 @@ jobs:
       - name: experiment with inputs
         id: experiment-with-inputs
         run: |
-          PACKAGES_TO_CHECK=()
+          PACKAGES_TO_CHECK_ARR=()
           if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
             echo "Adding core"
-            PACKAGES_TO_CHECK+=('code-analyzer-core')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-core')
           fi
           if [ "${{ inputs.code-analyzer-engine-api }}" == "true" ]; then
             echo "Adding API"
-            PACKAGES_TO_CHECK+=('code-analyzer-engine-api')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-engine-api')
           fi
           if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true" ]; then
             echo "Adding ESLint"
-            PACKAGES_TO_CHECK+=('code-analyzer-eslint-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-eslint-engine')
           fi
-          for name in "${PACKAGES_TO_CHECK[@]}"
+          for name in "${PACKAGES_TO_CHECK_ARR[@]}"
           do
             echo "we have name ${name}"
           done
-          echo $PACKAGES_TO_CHECK
-          echo "packages_to_release=${PACKAGES_TO_CHECK}" >> "$GITHUB_OUTPUT"
+          PACKAGES_TO_CHECK_STR=$(IFS=' '; echo "$PACKAGES_TO_CHECK_ARR[*]}")
+          echo ${PACKAGES_TO_CHECK_STR}
+          echo "packages_to_release=${PACKAGES_TO_CHECK_STR}" >> "$GITHUB_OUTPUT"
   run-second-experiment:
     runs-on: macos-latest
     needs: run-experiment
