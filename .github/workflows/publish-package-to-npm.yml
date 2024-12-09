@@ -60,31 +60,32 @@ jobs:
       - name: Verify to-be-released packages are SNAPSHOT-versioned
         id: main
         run: |
-          PACKAGES_TO_CHECK=()
-          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-core')
-          fi
+          PACKAGES_TO_CHECK_ARR=()
+          # ENGINE API GETS CHECKED FIRST, BECAUSE IT MUST PUBLISH FIRST
           if [ "${{ inputs.code-analyzer-engine-api }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-engine-api')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-engine-api')
+          fi
+          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-core')
           fi
           if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-eslint-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-eslint-engine')
           fi
           if [ "${{ inputs.code-analyzer-flowtest-engine }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-flowtest-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-flowtest-engine')
           fi
           if [ "${{ inputs.code-analyzer-pmd-engine }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-pmd-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-pmd-engine')
           fi
           if [ "${{ inputs.code-analyzer-regex-engine }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-regex-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-regex-engine')
           fi
           if [ "${{ inputs.code-analyzer-retirejs-engine }}" == "true" ]; then
-            PACKAGES_TO_CHECK+=('code-analyzer-retirejs-engine')
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-retirejs-engine')
           fi
-          node ./.github/workflows/publish-package-to-npm/validate-packages-as-releasable.js "$PACKAGES_TO_CHECK"
-          # Having all of the packages that are going to be released as a single string is helpful later.
-          echo "packages_to_release=$PACKAGES_TO_CHECK" >> "$GITHUB_OUTPUT
+          PACKAGES_TO_CHECK_STR=$(IFS=' '; echo "${PACKAGES_TO_CHECK_ARR[*]}")
+          node ./.github/workflows/publish-package-to-npm/validate-packages-as-releasable.js "$PACKAGES_TO_CHECK_STR"
+          echo "packages_to_release=$PACKAGES_TO_CHECK_STR" >> "$GITHUB_OUTPUT
   prepare-release-branch:
     runs-on: macos-latest
     env:
@@ -110,41 +111,13 @@ jobs:
           echo "branch_name=release/$NOW_TIMESTAMP" >> "$GITHUB_OUTPUT"
       - name: Strip '-SNAPSHOT' from to-be-released package versions
         run: |
-          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
-            cd ./packages/code-analyzer-core
+          PACKAGE_LIST=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
+          for PACKAGE_NAME in "${PACKAGE_LIST[@]}"
+          do
+            cd ./packages/${PACKAGE_NAME}
             npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
             cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-engine-api }}" == "true" ]; then
-            cd ./packages/code-analyzer-engine-api
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true" ]; then
-            cd ./packages/code-analyzer-eslint-engine
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-flowtest-engine }}" == "true" ]; then
-            cd ./packages/code-analyzer-flowtest-engine
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-pmd-engine }}" == "true" ]; then
-            cd ./packages/code-analyzer-pmd-engine
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-regex-engine }}" == "true" ]; then
-            cd ./packages/code-analyzer-regex-engine
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
-          if [ "${{ inputs.code-analyzer-retirejs-engine }}" == "true" ]; then
-            cd ./packages/code-analyzer-retirejs-engine
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          fi
+          done
       - name: Update inter-package dependencies
         run: |
           RELEASABLE_PACKAGES=${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}
@@ -238,7 +211,7 @@ jobs:
             }'
   build-and-test-and-publish:
     runs-on: ubuntu-latest
-    needs: prepare-release-branch
+    needs: [validate-packages-as-releasable, prepare-release-branch]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -251,83 +224,23 @@ jobs:
           npm install
           npm run build
           npm run test # Test here, since we didn't do it elsewhere
-      - name: Publish Engine API
-        if: ${{ inputs.code-analyzer-engine-api == 'true' }}
+      - name: Publish Packages
         run: |
-          cd ./packages/code-analyzer-engine-api
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish Core
-        if: ${{ inputs.code-analyzer-core == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-core
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish ESLint Engine
-        if: ${{ inputs.code-analyzer-eslint-engine == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-eslint-engine
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish FlowTest Engine
-        if: ${{ inputs.code-analyzer-flowtest-engine == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-flowtest-engine
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish PMD Engine
-        if: ${{ inputs.code-analyzer-pmd-engine == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-pmd-engine
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish Regex Engine
-        if: ${{ inputs.code-analyzer-regex-engine == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-regex-engine
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
-      - name: Publish RetireJS Engine
-        if: ${{ inputs.code-analyzer-retirejs-engine == 'true' }}
-        run: |
-          cd ./packages/code-analyzer-retirejs-engine
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{ inputs.dryrun }}" == "true" ]]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
-          cd ../..
+          PACKAGES_TO_PUBLISH=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
+          for PACKAGE_NAME in "${PACKAGES_TO_PUBLISH[@]}"
+          do
+            cd ./packages/${PACKAGE_NAME}
+            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+            PUBLISHED_VERSION=$(jq -r ".version" package.json)
+            if [ "${{ inputs.dryrun }}" == "true" ]]; then
+              npm publish --tag latest-alpha --access public --verbose --dry-run
+              echo "Fake-published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
+            else
+              npm publish --tag latest-alpha --access public --verbose
+              echo "Published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
+            fi
+            cd ../..
+          done
   create-postrelease-pull-request:
     runs-on: macos-latest
     needs: [prepare-release-branch, build-and-test-and-publish]
