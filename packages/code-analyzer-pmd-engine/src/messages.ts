@@ -92,7 +92,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `The '%s' configuration value is invalid. The value must be a positive integer.`,
 
     InvalidFieldKeyForObject:
-        `The '%s' configure value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`
+        `The '%s' configuration value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`
 }
 
 /**

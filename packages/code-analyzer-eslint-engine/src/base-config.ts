@@ -41,27 +41,27 @@ export class LegacyBaseConfigFactory {
     }
 
     private useJsConfig(): boolean {
-        return !this.config.disable_javascript_base_config && this.config.javascript_file_extensions.length > 0;
+        return !this.config.disable_javascript_base_config && this.config.file_extensions.javascript.length > 0;
     }
 
     private useLwcConfig(): boolean {
-        return !this.config.disable_lwc_base_config && this.config.javascript_file_extensions.length > 0;
+        return !this.config.disable_lwc_base_config && this.config.file_extensions.javascript.length > 0;
     }
 
     private useTsConfig(): boolean {
-        return !this.config.disable_typescript_base_config && this.config.typescript_file_extensions.length > 0;
+        return !this.config.disable_typescript_base_config && this.config.file_extensions.typescript.length > 0;
     }
 
     private createJavascriptConfig(baseRuleset: BaseRuleset): Linter.ConfigOverride {
         return {
-            files: this.config.javascript_file_extensions.map(ext => `*${ext}`),
+            files: this.config.file_extensions.javascript.map(ext => `*${ext}`),
             extends: [`eslint:${baseRuleset}`]
         }
     }
 
     private createLwcConfig(): Linter.ConfigOverride {
         return {
-            files: this.config.javascript_file_extensions.map(ext => `*${ext}`),
+            files: this.config.file_extensions.javascript.map(ext => `*${ext}`),
             extends: [
                 "@salesforce/eslint-config-lwc/base" // Always using base for now. all and recommended both require additional plugins
             ],
@@ -93,7 +93,7 @@ export class LegacyBaseConfigFactory {
 
     private createTypescriptConfig(baseRuleset: BaseRuleset): Linter.ConfigOverride {
         return {
-            files: this.config.typescript_file_extensions.map(ext => `*${ext}`),
+            files: this.config.file_extensions.typescript.map(ext => `*${ext}`),
             extends: [
                 `eslint:${baseRuleset}`, // The typescript plugin applies the base rules to the typescript files, so we want this
                 `plugin:@typescript-eslint/${baseRuleset}`, // May override some rules from eslint:<all|recommended> as needed

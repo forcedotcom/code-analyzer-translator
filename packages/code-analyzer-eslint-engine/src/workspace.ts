@@ -67,8 +67,8 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
 
     async getCandidateFilesForBaseConfig(_filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         return createPlaceholderCandidateFiles([
-                ... this.config.javascript_file_extensions,
-                ... this.config.typescript_file_extensions],
+                ... this.config.file_extensions.javascript,
+                ... this.config.file_extensions.typescript],
             this.config.config_root
         )
     }
@@ -92,7 +92,6 @@ type FilesOfInterest = {
 export class PresentESLintWorkspace implements ESLintWorkspace {
     private readonly delegateWorkspace: Workspace;
     private readonly config: ESLintEngineConfig;
-    private workspaceRoot?: string;
     private filesOfInterest?: FilesOfInterest;
     private cachedUserConfigInfo?: UserConfigInfo;
 
@@ -114,11 +113,11 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest(filterFcn);
         let candidateFiles: string[] = [];
         if (filesOfInterest.javascriptFiles.length > 0) {
-            candidateFiles = createPlaceholderCandidateFiles(this.config.javascript_file_extensions, this.getWorkspaceRoot());
+            candidateFiles = createPlaceholderCandidateFiles(this.config.file_extensions.javascript, this.getWorkspaceRoot());
         }
         if (filesOfInterest.typescriptFiles.length > 0) {
             candidateFiles = candidateFiles.concat(
-                createPlaceholderCandidateFiles(this.config.typescript_file_extensions, this.getWorkspaceRoot()));
+                createPlaceholderCandidateFiles(this.config.file_extensions.typescript, this.getWorkspaceRoot()));
         }
         return candidateFiles;
     }
@@ -144,9 +143,9 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
         this.filesOfInterest = { javascriptFiles: [], typescriptFiles: [] };
         for (const file of await this.delegateWorkspace.getExpandedFiles()) {
             const fileExt = path.extname(file).toLowerCase();
-            if (this.config.javascript_file_extensions.includes(fileExt)) {
+            if (this.config.file_extensions.javascript.includes(fileExt)) {
                 this.filesOfInterest.javascriptFiles.push(file);
-            } else if (this.config.typescript_file_extensions.includes(fileExt)) {
+            } else if (this.config.file_extensions.typescript.includes(fileExt)) {
                 this.filesOfInterest.typescriptFiles.push(file);
             }
         }

@@ -268,26 +268,34 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyCustomConfigModifyingExistingRules.goldfile.json');
     });
 
-    it('When javascript_file_extensions is empty, then javascript rules do not get picked up', async () => {
+    it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-            javascript_file_extensions: []
+            file_extensions: {
+                ... DEFAULT_CONFIG.file_extensions,
+                javascript: []
+            }
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
     });
 
-    it('When javascript_file_extensions is empty, then javascript rules do not get picked up', async () => {
+    it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-            typescript_file_extensions: []
+            file_extensions: {
+                ... DEFAULT_CONFIG.file_extensions,
+                typescript: []
+            }
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoTypescriptFilesInWorkspace.goldfile.json');
     });
 
-    it('When javascript_file_extensions and typescript_file_extensions are both empty, then no rules are returned', async () => {
+    it('When file_extensions.javascript and file_extensions.typescript are both empty, then no rules are returned', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
-            javascript_file_extensions: [],
-            typescript_file_extensions: []
+            file_extensions: {
+                javascript: [],
+                typescript: []
+            }
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
         expect(ruleDescriptions).toHaveLength(0);
