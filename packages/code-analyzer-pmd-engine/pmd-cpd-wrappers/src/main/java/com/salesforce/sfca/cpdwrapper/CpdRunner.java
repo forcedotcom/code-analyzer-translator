@@ -1,5 +1,7 @@
 package com.salesforce.sfca.cpdwrapper;
 
+import com.salesforce.sfca.shared.CodeLocation;
+import com.salesforce.sfca.shared.ProcessingError;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.CPDListener;
 import net.sourceforge.pmd.cpd.CpdAnalysis;
@@ -76,11 +78,8 @@ class CpdRunner {
 
             cpd.performAnalysis(report -> {
                 for (Report.ProcessingError reportProcessingError : report.getProcessingErrors()) {
-                    CpdLanguageRunResults.ProcessingError processingErr = new CpdLanguageRunResults.ProcessingError();
-                    processingErr.file = reportProcessingError.getFileId().getAbsolutePath();
-                    processingErr.message = reportProcessingError.getMsg();
-                    processingErr.detail = reportProcessingError.getDetail();
-                    languageRunResults.processingErrors.add(processingErr);
+                    languageRunResults.processingErrors.add(
+                            ProcessingError.fromReportProcessingError(reportProcessingError));
                 }
 
                 for (Match match : report.getMatches()) {
@@ -90,15 +89,8 @@ class CpdRunner {
                     cpdMatch.numNonemptyLinesInBlock = match.getLineCount();
 
                     for (Mark mark : match.getMarkSet()) {
-                        CpdLanguageRunResults.Match.BlockLocation blockLocation = new CpdLanguageRunResults.Match.BlockLocation();
-                        FileLocation location = mark.getLocation();
-                        blockLocation.file = location.getFileId().getAbsolutePath();
-                        blockLocation.startLine = location.getStartLine();
-                        blockLocation.startCol = location.getStartColumn();
-                        blockLocation.endLine = location.getEndLine();
-                        blockLocation.endCol = location.getEndColumn();
-
-                        cpdMatch.blockLocations.add(blockLocation);
+                        cpdMatch.blockLocations.add(
+                                CodeLocation.fromFileLocation(mark.getLocation()));
                     }
 
                     languageRunResults.matches.add(cpdMatch);
@@ -108,7 +100,7 @@ class CpdRunner {
             // Instead of throwing exceptions and causing the entire run to fail, instead we report exceptions as
             // if they are processing errors so that they can better be handled on the typescript side
             for (Exception ex : errorListener.exceptionsCaught) {
-                CpdLanguageRunResults.ProcessingError processingErr = new CpdLanguageRunResults.ProcessingError();
+                ProcessingError processingErr = new ProcessingError();
                 processingErr.file = "unknown";
                 processingErr.message = getStackTraceAsString(ex);
                 processingErr.detail = "[TERMINATING_EXCEPTION]"; // Marker to help typescript side know this isn't just a normal processing error

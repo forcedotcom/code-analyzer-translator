@@ -24,10 +24,51 @@ import java.util.stream.Collectors;
  *     - Runs the rules provided by the input ruleset file on a set of files and writes results to a JSON file
  *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {ruleSetInputFile} {filesToScanInputFile} {resultsOutputFile}
  *         - {classPath} is the list of entries to add to the class path
- *         - {ruleSetInputFile} is a PMD ruleset file that contains the rules to run
- *         - {filesToScanInputFile} is a file containing a newline separated list of files to scan
+ *         - {argsInputFile} is a JSON file containing the input arguments for the run command.
+ *             Example:
+ *                  {
+ *                      "runDataPerLanguage": {
+ *                          "apex": {
+ *                              "ruleSetInputFile": "/some/rulesetFileForApexRules.xml",
+ *                              "filesToScan": ["/full/path/to/apex_file1.cls", "/full/path/to/apex_file2.trigger", ...]
+ *                          },
+ *                          ...,
+ *                          "xml": {
+ *                              "ruleSetInputFile": "/some/rulesetFileForXmlRules.xml",
+ *                              "filesToScan": ["/full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...]
+ *                          }
+ *                      }
+ *                  }
  *         - {resultsOutputFile} is a file to write the JSON formatted PMD results to
+ *             Example:
+ *                 {
+ *                     "files": [
+ *                         {
+ *                             "filename": "/full/path/to/apex_file1.cls",
+ *                             "violations": [
+ *                                 {
+ *                                     "beginline": 16,
+ *                                     "begincolumn": 14,
+ *                                     "endline": 79,
+ *                                     "endcolumn": 1,
+ *                                     "description": "Some Violation Message",
+ *                                     "rule": "ClassNamingConventions"
+ *                                 },
+ *                                 ...
+ *                             ]
+ *                         },
+ *                         ...
+ *                     ],
+ *                     "processingErrors": [
+ *                         {
+ *                             "filename": "/full/path/to/apex_file2.cls",
+ *                             "message": "SomeMessage",
+ *                             "details": "SomeDetails"
+ *                         }
+ *                     ]
+ *                 }
  */
+
 public class PmdWrapper {
     private PmdWrapper() {}
 
@@ -89,7 +130,20 @@ public class PmdWrapper {
         String filesToScanInputFile = args[1];
         String resultsOutputFile = args[2];
 
-        PmdRuleRunner ruleRunner = new PmdRuleRunner();
-        ruleRunner.runRules(ruleSetInputFile, filesToScanInputFile, resultsOutputFile);
+        Gson gson = new Gson();
+
+        PmdRunner pmdRunner = new PmdRunner();
+        PmdRunResults results;
+        try {
+            results = pmdRunner.runRules(ruleSetInputFile, filesToScanInputFile);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while attempting to invoke PmdRunner.run: " + e.getMessage(), e);
+        }
+
+        try (FileWriter fileWriter = new FileWriter(resultsOutputFile)) {
+            gson.toJson(results, fileWriter);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

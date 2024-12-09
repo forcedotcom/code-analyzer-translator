@@ -88,13 +88,11 @@ export class PmdEngine extends Engine {
             (innerPerc: number) => this.emitRunRulesProgressEvent(10 + 88*(innerPerc/100))); // 10 to 98%
 
         const violations: Violation[] = [];
-        for (const pmdFileResult of pmdResults.files) {
-            for (const pmdViolation of pmdFileResult.violations) {
-                violations.push(toViolation(pmdViolation, pmdFileResult.filename));
-            }
+        for (const pmdViolation of pmdResults.violations) {
+            violations.push(toViolation(pmdViolation));
         }
         for (const pmdProcessingError of pmdResults.processingErrors) {
-            this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'PMD', pmdProcessingError.filename,
+            this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'PMD', pmdProcessingError.file,
                 indent(pmdProcessingError.message)));
         }
 
@@ -177,18 +175,17 @@ function toSeverityLevel(pmdRulePriority: string): SeverityLevel {
     throw new Error("Unsupported priority: " + pmdRulePriority);
 }
 
-function toViolation(pmdViolation: PmdViolation, file: string): Violation {
-    const codeLocation: CodeLocation = {
-        file: file,
-        startLine: pmdViolation.beginline,
-        startColumn: pmdViolation.begincolumn,
-        endLine: pmdViolation.endline,
-        endColumn: pmdViolation.endcolumn
-    }
+function toViolation(pmdViolation: PmdViolation): Violation {
     return {
-        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToLanguageId[path.extname(file)]),
-        message: pmdViolation.description,
-        codeLocations: [codeLocation],
+        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToLanguageId[path.extname(pmdViolation.codeLocation.file)]),
+        message: pmdViolation.message,
+        codeLocations: [{
+            file: pmdViolation.codeLocation.file,
+            startLine: pmdViolation.codeLocation.startLine,
+            startColumn: pmdViolation.codeLocation.startCol,
+            endLine: pmdViolation.codeLocation.endLine,
+            endColumn: pmdViolation.codeLocation.endCol
+        }],
         primaryLocationIndex: 0
     }
 }

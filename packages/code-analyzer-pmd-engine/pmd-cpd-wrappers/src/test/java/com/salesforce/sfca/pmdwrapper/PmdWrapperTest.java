@@ -190,8 +190,8 @@ class PmdWrapperTest {
         JsonElement element = JsonParser.parseString(resultsJsonString); // Should not error
         assertThat(element.isJsonObject(), is(true));
         assertThat(resultsJsonString, allOf(
-                containsString("\"rule\": \"OperationWithLimitsInLoop\""),
-                containsString("\"rule\": \"VfUnescapeEl\"")
+                containsString("\"rule\":\"OperationWithLimitsInLoop\""),
+                containsString("\"rule\":\"VfUnescapeEl\"")
         ));
 
         // Assert stdOut contains arguments, progress information, and duration information (which help us with debugging)

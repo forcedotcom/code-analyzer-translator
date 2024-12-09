@@ -19,23 +19,23 @@ export type PmdRuleInfo = {
 }
 
 export type PmdResults = {
-    files: PmdFileResult[]
+    violations: PmdViolation[]
     processingErrors: PmdProcessingError[]
 }
-export type PmdFileResult = {
-    filename: string
-    violations: PmdViolation[]
-}
 export type PmdViolation = {
-    beginline: number
-    begincolumn: number
-    endline: number
-    endcolumn: number
-    description: string
     rule: string
+    message: string
+    codeLocation: PmdCodeLocation
+}
+export type PmdCodeLocation = {
+    file: string
+    startLine: number
+    startCol: number
+    endLine: number
+    endCol: number
 }
 export type PmdProcessingError = {
-    filename: string
+    file: string
     message: string
     detail: string
 }
