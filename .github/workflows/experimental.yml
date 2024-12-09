@@ -24,9 +24,9 @@ jobs:
       - name: experiment with inputs
         id: experiment-with-inputs
         run: |
-          if [ "${{ inputs[code-analyzer-core] }}" == "true" ]; then
+          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
             echo core
           fi
-          if [ "${{ inputs[code-analyzer-engine-api] }}" == "true"]; then
+          if [ "${{ inputs.code-analyzer-engine-api }}" == "true"]; then
             echo engine api
           fi
