@@ -52,7 +52,7 @@ jobs:
           do
             echo "we have name ${name}"
           done
-          PACKAGES_TO_CHECK_STR=$(IFS=' '; echo "$PACKAGES_TO_CHECK_ARR[*]}")
+          PACKAGES_TO_CHECK_STR=$(IFS=' '; echo "${PACKAGES_TO_CHECK_ARR[*]}")
           echo ${PACKAGES_TO_CHECK_STR}
           echo "packages_to_release=${PACKAGES_TO_CHECK_STR}" >> "$GITHUB_OUTPUT"
   run-second-experiment:
