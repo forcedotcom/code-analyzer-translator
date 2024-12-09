@@ -16,6 +16,8 @@ on:
 jobs:
   run-experiment:
     runs-on: macos-latest
+    outputs:
+      packages-to-release: ${{ steps.experiment-with-inputs.outputs.packages_to_release }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,9 +26,28 @@ jobs:
       - name: experiment with inputs
         id: experiment-with-inputs
         run: |
-          if [ "${{ inputs['code-analyzer-core'] }}" == "true" ]; then
-            echo core
+          PACKAGES_TO_CHECK=()
+          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
+            PACKAGES_TO_CHECK+=('code-analyzer-core')
           fi
           if [ "${{ inputs.code-analyzer-engine-api }}" == "true"]; then
-            echo engine api
+            PACKAGES_TO_CHECK+=('code-analyzer-engine-api')
           fi
+          echo "packages_to_release=$PACKAGES_TO_CHECK" >> "$GITHUB_OUTPUT"
+  run-second-experiment:
+    runs-on: macos-latest
+    needs: run-experiment
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: experiment with loops
+        id: experiment-with-loops
+        run: |
+          PACKAGE_NAMES=${{ needs.run-experiment.outputs.packages-to-release }}
+          for name in "$PACKAGE_NAMES[@]"
+          do
+            echo "package name is ${name}"
+          done
+          
