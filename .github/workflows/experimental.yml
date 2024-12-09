@@ -18,6 +18,10 @@ on:
         required: false
         default: false
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   run-experiment:
     runs-on: macos-latest
