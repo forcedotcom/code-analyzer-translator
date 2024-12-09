@@ -2,14 +2,41 @@ name: publish-package-to-npm
 on:
   workflow_dispatch:
     inputs:
-      package:
-        description: Package to be published
-        type: string
-        required: true
-      version:
-        description: Version to be published
-        type: string
-        required: true
+      code-analyzer-core:
+        description: Should the code-analyzer-core package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-engine-api:
+        description: Should the code-analyzer-engine-api package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-eslint-engine:
+        description: Should the code-analyzer-eslint-engine package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-flowtest-engine:
+        description: Should the code-analyzer-flowtest-engine package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-pmd-engine:
+        description: Should the code-analyzer-pmd-engine package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-regex-engine:
+        description: Should the code-analyzer-regex-engine package be released?
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-retirejs-engine:
+        description: Should the code-analyzer-retirejs-engine package be released?
+        type: boolean
+        required: false
+        default: false
       dryrun:
         description: Add --dry-run to npm publish step? (Uncheck to actually publish)
         type: boolean
@@ -21,33 +48,215 @@ defaults:
     shell: bash
 
 jobs:
-  verify-and-publish:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./packages/${{inputs.package}}
+  validate-packages-as-releasable:
+    runs-on: macos-latest
+    outputs:
+      packages-to-release: ${{ steps.main.outputs.packages_to_release }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Verify we are using the correct package.json file
+          node-version: 'lts/*'
+      - name: Verify to-be-released packages are SNAPSHOT-versioned
+        id: main
         run: |
-          [[ -f package.json ]] || (echo "::error:: ./packages/${{inputs.package}}/package.json does not exist." && exit 1)
-          PACKAGE_VERSION=`cat package.json | jq '.version' | xargs`
-          [[ ${{ inputs.version }} == ${PACKAGE_VERSION} ]] || (echo "::error:: Input version ${{ inputs.version }} does not match package.json version ${PACKAGE_VERSION}" && exit 1)
-          PACKAGE_NAME=`cat package.json | jq '.name' | xargs`
-          [[ "@salesforce/${{ inputs.package }}" == ${PACKAGE_NAME} ]] || (echo "::error:: Input package "@salesforce/${{ inputs.package }}" does not match package.json name ${PACKAGE_NAME}" && exit 1)
-      - name: Build and test
+          PACKAGES_TO_CHECK_ARR=()
+          # ENGINE API GETS CHECKED FIRST, BECAUSE IT MUST PUBLISH FIRST
+          if [ "${{ inputs.code-analyzer-engine-api }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-engine-api')
+          fi
+          if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-core')
+          fi
+          if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-eslint-engine')
+          fi
+          if [ "${{ inputs.code-analyzer-flowtest-engine }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-flowtest-engine')
+          fi
+          if [ "${{ inputs.code-analyzer-pmd-engine }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-pmd-engine')
+          fi
+          if [ "${{ inputs.code-analyzer-regex-engine }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-regex-engine')
+          fi
+          if [ "${{ inputs.code-analyzer-retirejs-engine }}" == "true" ]; then
+            PACKAGES_TO_CHECK_ARR+=('code-analyzer-retirejs-engine')
+          fi
+          PACKAGES_TO_CHECK_STR=$(IFS=' '; echo "${PACKAGES_TO_CHECK_ARR[*]}")
+          node ./.github/workflows/publish-package-to-npm/validate-packages-as-releasable.js "$PACKAGES_TO_CHECK_STR"
+          echo "packages_to_release=$PACKAGES_TO_CHECK_STR" >> "$GITHUB_OUTPUT"
+  prepare-release-branch:
+    runs-on: macos-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    permissions:
+      contents: write
+    needs: validate-packages-as-releasable
+    outputs:
+      branch-name: ${{ steps.create-release-branch.outputs.branch_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Create release branch
+        id: create-release-branch
+        run: |
+          NOW_TIMESTAMP=$(date +%s)
+          git checkout -b release/$NOW_TIMESTAMP
+          # Immediately push the branch with no changes, so GraphQL can push to it later.
+          git push --set-upstream origin release/$NOW_TIMESTAMP
+          # Output the branch name so that it can be used later.
+          echo "branch_name=release/$NOW_TIMESTAMP" >> "$GITHUB_OUTPUT"
+      - name: Strip '-SNAPSHOT' from to-be-released package versions
+        run: |
+          PACKAGE_LIST=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
+          for PACKAGE_NAME in "${PACKAGE_LIST[@]}"
+          do
+            cd ./packages/${PACKAGE_NAME}
+            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
+            cd ../..
+          done
+      - name: Update inter-package dependencies
+        run: |
+          RELEASABLE_PACKAGES=${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}
+          cd packages
+          ALL_PACKAGES=`ls`
+          cd ..
+          node ./.github/workflows/publish-package-to-npm/update-dependencies-on-released-pacakges.js "$RELEASABLE_PACKAGES" "$ALL_PACKAGES"
+      - name: Build
         run: |
           npm install
           npm run build
-          npm run test
-      - name: publish-to-npm
+          # No need to test; that comes later.
+      - name: Commit changes to release branch
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-          if [ "${{inputs.dryrun}}" == "true" ]; then
-            npm publish --tag latest-alpha --access public --verbose --dry-run
-          else
-            npm publish --tag latest-alpha --access public --verbose
-          fi
+          # GraphQL needs to know what branch to push to.
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          # GraphQL needs a message for the commit.
+          MESSAGE="Preparing Core Ecosystem for release"
+          # GraphQL needs the latest versions of all the package.json files, as Base64 encoded strings.
+          CORE_PACKAGE_JSON="$(cat packages/code-analyzer-core/package.json | base64)"
+          API_PACKAGE_JSON="$(cat packages/code-analyzer-engine-api/package.json | base64)"
+          ESLINT_PACKAGE_JSON="$(cat packages/code-analyzer-eslint-engine/package.json | base64)"
+          FLOWTEST_PACKAGE_JSON="$(cat packages/code-analyzer-flowtest-engine/package.json | base64)"
+          PMD_PACKAGE_JSON="$(cat packages/code-analyzer-pmd-engine/package.json | base64)"
+          REGEX_PACKAGE_JSON="$(cat packages/code-analyzer-regex-engine/package.json | base64)"
+          RETIREJS_PACKAGE_JSON="$(cat packages/code-analyzer-retirejs-engine/package.json | base64)"
+          TEMPLATE_PACKAGE_JSON="$(cat packages/T-E-M-P-L-A-T-E/package.json | base64)"
+          # GraphQL also needs the top-level package-lock.json
+          PACKAGE_LOCK_JSON="$(cat package-lock.json | base64)"
+          
+          gh api graphql -F message="$MESSAGE" -F oldOid=`git rev-parse HEAD` -F branch="$BRANCH" \
+          -F corePackage="$CORE_PACKAGE_JSON" \
+          -F apiPackage="$API_PACKAGE_JSON" \
+          -F eslintPackage="$ESLINT_PACKAGE_JSON" \
+          -F flowtestPackage="$FLOWTEST_PACKAGE_JSON" \
+          -F pmdPackage="$PMD_PACKAGE_JSON" \
+          -F regexPackage="$REGEX_PACKAGE_JSON" \
+          -F retirejsPackage="$RETIREJS_PACKAGE_JSON" \
+          -F templatePackage="$TEMPLATE_PACKAGE_JSON" \
+          -F packageLock="$PACKAGE_LOCK_JSON" \
+          -f query='
+            mutation ($message: String!, $oldOid: GitObjectID!, $branch: String!,
+                      $corePackage: Base64String!, $apiPackage: Base64String!, $eslintPackage: Base64String!,
+                      $flowtestPackage: Base64String!, $pmdPackage: Base64String!, $regexPackage: Base64String!,
+                      $retirejsPackage: Base64String!, $templatePackage: Base64String!, $packageLock: Base64String!) {
+              createCommitOnBranch(input: {
+                branch: {
+                  repositoryNameWithOwner: "forcedotcom/code-analyzer-core",
+                  branchName: $branch
+                },
+                message: {
+                  headline: $message
+                },
+                fileChanges: {
+                  additions: [
+                    {
+                      path: "packages/code-analyzer-core/package.json",
+                      contents: $corePackage
+                    }, {
+                      path: "packages/code-analyzer-engine-api/package.json",
+                      contents: $apiPackage
+                    }, {
+                      path: "packages/code-analyzer-eslint-engine/package.json",
+                      contents: $eslintPackage
+                    }, {
+                      path: "packages/code-analyzer-flowtest-engine/package.json",
+                      contents: $flowtestPackage
+                    }, {
+                      path: "packages/code-analyzer-pmd-engine/package.json",
+                      contents: $pmdPackage
+                    }, {
+                      path: "packages/code-analyzer-regex-engine/package.json",
+                      contents: $regexPackage
+                    }, {
+                      path: "packages/code-analyzer-retirejs-engine/package.json",
+                      contents: $retirejsPackage
+                    }, {
+                      path: "packages/T-E-M-P-L-A-T-E/package.json",
+                      contents: $templatePackage
+                    }, {
+                      path: "package-lock.json",
+                      contents: $packageLock
+                    }
+                },
+                expectedHeadOid: $oldOid
+              }) {
+                commit {
+                  id
+                }
+              }
+            }'
+  build-and-test-and-publish:
+    runs-on: ubuntu-latest
+    needs: [validate-packages-as-releasable, prepare-release-branch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release-branch.outputs.branch-name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build and test and publish packages
+        run: |
+          PACKAGES_TO_PUBLISH=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
+          for PACKAGE_NAME in "${PACKAGES_TO_PUBLISH[@]}"
+          do
+            cd ./packages/${PACKAGE_NAME}
+            # Build and test each package individually instead of at the mono-repo level, to validate shared dependencies.
+            npm install
+            npm run build
+            npm run test
+            # We need the NPM token to publish.
+            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+            PUBLISHED_VERSION=$(jq -r ".version" package.json)
+            if [ "${{ inputs.dryrun }}" == "true" ]]; then
+              npm publish --tag latest-alpha --access public --verbose --dry-run
+              echo "Fake-published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
+            else
+              npm publish --tag latest-alpha --access public --verbose
+              echo "Published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
+            fi
+            cd ../..
+          done
+  create-postrelease-pull-request:
+    runs-on: macos-latest
+    needs: [prepare-release-branch, build-and-test-and-publish]
+    if: ${{ inputs.dryrun == 'false' }} # A Dry Run doesn't release, so no PR should be made
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release-branch.outputs.branch-name }}
+      - run: |
+          echo -e "This branch and PR were automatically created as part of a Package Publish.\n\
+          The branch increments the .version property of published packages from X.Y.Z-SNAPSHOT to X.Y.Z, and updates any\
+          inter-package dependencies appropriately.\n\
+          The narrow scope of these changes makes a merge conflict unlikely, but if one does occur, you should consult\
+          with the author of the conflicting change and decide what to do next. Ultimately it may make sense to not merge\
+          this pull request at all. Use your judgment." > body.txt
+          gh pr create -B dev -H ${{ needs.prepare-release-branch.outputs.branch-name }} --title "POSTRELEASE @W-XXXXXXXX@ Merging after ecosystem release" -F body.txt
