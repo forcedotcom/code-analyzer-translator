@@ -35,10 +35,10 @@ jobs:
           if [ "${{ inputs.code-analyzer-core }}" == "true" ]; then
             PACKAGES_TO_CHECK+=('code-analyzer-core')
           fi
-          if [ "${{ inputs.code-analyzer-engine-api }}" == "true"]; then
+          if [ "${{ inputs.code-analyzer-engine-api }}" == "true" ]; then
             PACKAGES_TO_CHECK+=('code-analyzer-engine-api')
           fi
-          if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true"]; then
+          if [ "${{ inputs.code-analyzer-eslint-engine }}" == "true" ]; then
             PACKAGES_TO_CHECK+=('code-analyzer-eslint-engine')
           fi
           echo $PACKAGES_TO_CHECK
