@@ -8,6 +8,11 @@ defaults:
     shell: bash
 
 jobs:
+  run-experiment:
+    uses: ./.github/workflows/experimental.yml
+    with:
+      code-analyzer-core: true
+      code-analyzer-engine-api: false
   validate_pr_title:
     runs-on: ubuntu-latest
     steps:

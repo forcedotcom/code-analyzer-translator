@@ -1,0 +1,32 @@
+name: run experiment
+on:
+  workflow_call:
+    inputs:
+      code-analyzer-core:
+        description: Fake input for Core
+        type: boolean
+        required: false
+        default: false
+      code-analyzer-engine-api:
+        description: Fake input for API
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  run-experiment:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: experiment with inputs
+        id: experiment-with-inputs
+        run: |
+          if [ "${{ inputs[code-analyzer-core] }}" == "true" ]; then
+            echo core
+          fi
+          if [ "${{ inputs[code-analyzer-engine-api] }}" == "true"]; then
+            echo engine api
+          fi
