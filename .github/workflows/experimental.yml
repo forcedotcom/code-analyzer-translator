@@ -44,6 +44,10 @@ jobs:
             echo "Adding ESLint"
             PACKAGES_TO_CHECK+=('code-analyzer-eslint-engine')
           fi
+          for name in "$PACKAGES_TO_CHECK[@]"
+          do
+            echo "we have name ${name}"
+          done
           echo $PACKAGES_TO_CHECK
           echo "packages_to_release=$PACKAGES_TO_CHECK" >> "$GITHUB_OUTPUT"
   run-second-experiment:
