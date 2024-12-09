@@ -13,6 +13,7 @@ jobs:
     with:
       code-analyzer-core: true
       code-analyzer-engine-api: false
+      code-analyzer-eslint-engine: true
   validate_pr_title:
     runs-on: ubuntu-latest
     steps:

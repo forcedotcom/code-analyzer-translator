@@ -12,6 +12,11 @@ on:
         type: boolean
         required: false
         default: false
+      code-analyzer-eslint-engine:
+        description: Fake input for ESLint
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   run-experiment:
@@ -50,4 +55,3 @@ jobs:
           do
             echo "package name is ${name}"
           done
-          
