@@ -1,5 +1,4 @@
 import {
-    CodeLocation,
     COMMON_TAGS,
     DescribeOptions,
     Engine,
@@ -15,7 +14,13 @@ import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
 import path from "node:path";
 import * as fs from 'node:fs/promises';
 import {extensionToLanguageId, LanguageId, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
-import {PmdResults, PmdRuleInfo, PmdViolation, PmdWrapperInvoker} from "./pmd-wrapper";
+import {
+    LanguageSpecificPmdRunData,
+    PmdResults,
+    PmdRuleInfo,
+    PmdViolation,
+    PmdWrapperInvoker
+} from "./pmd-wrapper";
 import {getMessage} from "./messages";
 import {PmdEngineConfig} from "./config";
 import {RULE_MAPPINGS} from "./pmd-rule-mappings";
@@ -63,29 +68,35 @@ export class PmdEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(runOptions.workspace);
+        const relevantLanguageToFilesMap: Map<LanguageId, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
         this.emitRunRulesProgressEvent(2);
 
-        const filesToScan: string[] = await workspaceLiaison.getRelevantFiles();
-        if (ruleNames.length === 0 || filesToScan.length === 0) {
-            this.emitRunRulesProgressEvent(100);
-            return {violations: []};
-        }
-        this.emitRunRulesProgressEvent(4);
-
         const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
-            (innerPerc: number) => this.emitRunRulesProgressEvent(4 + 6*(innerPerc/100))); // 4 to 10%
+            (innerPerc: number) => this.emitRunRulesProgressEvent(2 + 3*(innerPerc/100))); // 2 to 5%
 
         const selectedRuleInfoList: PmdRuleInfo[] = ruleNames
             .map(ruleName => fetchRuleInfoByRuleName(ruleInfoList, ruleName))
             .filter(ruleInfo => ruleInfo !== null);
 
-        if (selectedRuleInfoList.length === 0) {
-            this.emitRunRulesProgressEvent(100);
-            return {violations: []};
+        const runDataPerLanguage: Record<string, LanguageSpecificPmdRunData> = {};
+        const relevantLanguages: Set<string> = new Set(selectedRuleInfoList.map(ruleInfo => ruleInfo.language));
+        for (const language of relevantLanguages) {
+            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(toLanguageId(language)) || /* istanbul ignore next */ [];
+            if (filesToScanForLanguage.length > 0) {
+                runDataPerLanguage[language] = {
+                    filesToScan: filesToScanForLanguage
+                }
+            }
         }
 
-        const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, filesToScan,
-            (innerPerc: number) => this.emitRunRulesProgressEvent(10 + 88*(innerPerc/100))); // 10 to 98%
+        if (Object.keys(runDataPerLanguage).length === 0) {
+            this.emitRunRulesProgressEvent(100);
+            return { violations: [] };
+        }
+
+
+        const pmdResults: PmdResults = await this.pmdWrapperInvoker.invokeRunCommand(selectedRuleInfoList, runDataPerLanguage,
+            (innerPerc: number) => this.emitRunRulesProgressEvent(5 + 93*(innerPerc/100))); // 5 to 98%
 
         const violations: Violation[] = [];
         for (const pmdViolation of pmdResults.violations) {

@@ -2,13 +2,13 @@ package com.salesforce.sfca.cpdwrapper;
 
 import com.salesforce.sfca.shared.CodeLocation;
 import com.salesforce.sfca.shared.ProcessingError;
+import com.salesforce.sfca.shared.ProgressReporter;
 import net.sourceforge.pmd.cpd.CPDConfiguration;
 import net.sourceforge.pmd.cpd.CPDListener;
 import net.sourceforge.pmd.cpd.CpdAnalysis;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 import net.sourceforge.pmd.lang.Language;
-import net.sourceforge.pmd.lang.document.FileLocation;
 import net.sourceforge.pmd.reporting.Report;
 import net.sourceforge.pmd.util.log.PmdReporter;
 import org.slf4j.event.Level;
@@ -37,7 +37,7 @@ class CpdRunner {
 
         Map<String, CpdLanguageRunResults> results = new HashMap<>();
         for (String language : languagesToProcess) {
-            LanguageSpecificRunData languageSpecificRunData = runInputData.runDataPerLanguage.get(language);
+            CpdRunInputData.LanguageSpecificRunData languageSpecificRunData = runInputData.runDataPerLanguage.get(language);
             List<Path> pathsToScan = languageSpecificRunData.filesToScan.stream().map(Paths::get).collect(Collectors.toList());
             CpdLanguageRunResults languageRunResults = runLanguage(
                     language, pathsToScan, languageSpecificRunData.minimumTokens, runInputData.skipDuplicateFiles);
@@ -116,14 +116,14 @@ class CpdRunner {
             throw new RuntimeException("The \"runDataPerLanguage\" field was not set.");
         }
 
-        Set<Map.Entry<String, LanguageSpecificRunData>> entries = runInputData.runDataPerLanguage.entrySet();
+        Set<Map.Entry<String, CpdRunInputData.LanguageSpecificRunData>> entries = runInputData.runDataPerLanguage.entrySet();
         if (entries.isEmpty()) {
             throw new RuntimeException("The \"runDataPerLanguage\" field didn't have any languages listed.");
         }
 
-        for (Map.Entry<String, LanguageSpecificRunData> entry: entries) {
+        for (Map.Entry<String, CpdRunInputData.LanguageSpecificRunData> entry: entries) {
             String language = entry.getKey();
-            LanguageSpecificRunData languageSpecificRunData = entry.getValue();
+            CpdRunInputData.LanguageSpecificRunData languageSpecificRunData = entry.getValue();
 
             if (languageSpecificRunData.filesToScan == null || languageSpecificRunData.filesToScan.isEmpty()) {
                 throw new RuntimeException(("The \"filesToScan\" field was missing or empty for language: " + language));
@@ -165,38 +165,6 @@ class CpdErrorListener implements PmdReporter {
     @Override
     public int numErrors() {
         return 0;
-    }
-}
-
-// This class helps us track the overall progress of all language runs
-class ProgressReporter {
-    private Map<String, Float> progressPerLanguage = new HashMap<>();
-    private float lastReportedProgress = 0.0f;
-
-    public void initialize(List<String> languages) {
-        progressPerLanguage = new HashMap<>();
-        languages.forEach(l -> this.updateProgressForLanguage(l, 0.0f));
-    }
-
-    public void updateProgressForLanguage(String language, float percComplete) {
-        progressPerLanguage.put(language, percComplete);
-    }
-
-    public void reportOverallProgress() {
-        float currentProgress = this.calculateOverallPercentage();
-        // The progress goes very fast, so we make sure to only report progress if there has been a significant enough increase (at least 1%)
-        if (currentProgress >= lastReportedProgress + 1) {
-            System.out.println("[Progress]" + currentProgress);
-            lastReportedProgress = currentProgress;
-        }
-    }
-
-    private float calculateOverallPercentage() {
-        float sum = 0.0f;
-        for (float progress : progressPerLanguage.values()) {
-            sum += progress;
-        }
-        return sum / progressPerLanguage.size();
     }
 }
 

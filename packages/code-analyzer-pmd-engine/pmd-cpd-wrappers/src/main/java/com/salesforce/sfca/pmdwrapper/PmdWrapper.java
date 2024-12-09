@@ -2,6 +2,7 @@ package com.salesforce.sfca.pmdwrapper;
 
 import com.google.gson.Gson;
 
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,19 +23,18 @@ import java.util.stream.Collectors;
  *         - {languages} is a comma separated list of languages associated with the rules to describe
  *   RUN:
  *     - Runs the rules provided by the input ruleset file on a set of files and writes results to a JSON file
- *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {ruleSetInputFile} {filesToScanInputFile} {resultsOutputFile}
+ *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {argsInputFile} {resultsOutputFile}
  *         - {classPath} is the list of entries to add to the class path
  *         - {argsInputFile} is a JSON file containing the input arguments for the run command.
  *             Example:
  *                  {
+ *                      "ruleSetInputFile": "/some/rulesetFileForRulesToRun.xml",
  *                      "runDataPerLanguage": {
  *                          "apex": {
- *                              "ruleSetInputFile": "/some/rulesetFileForApexRules.xml",
  *                              "filesToScan": ["/full/path/to/apex_file1.cls", "/full/path/to/apex_file2.trigger", ...]
  *                          },
  *                          ...,
  *                          "xml": {
- *                              "ruleSetInputFile": "/some/rulesetFileForXmlRules.xml",
  *                              "filesToScan": ["/full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...]
  *                          }
  *                      }
@@ -123,19 +123,25 @@ public class PmdWrapper {
     }
 
     private static void invokeRunCommand(String[] args) {
-        if (args.length != 3) {
-            throw new RuntimeException("Invalid number of arguments following the \"run\" command. Expected 3 but received: " + args.length);
+        if (args.length != 2) {
+            throw new RuntimeException("Invalid number of arguments following the \"run\" command. Expected 2 but received: " + args.length);
         }
-        String ruleSetInputFile = args[0];
-        String filesToScanInputFile = args[1];
-        String resultsOutputFile = args[2];
+        String argsInputFile = args[0];
+        String resultsOutputFile = args[1];
 
         Gson gson = new Gson();
+
+        PmdRunInputData inputData;
+        try (FileReader reader = new FileReader(argsInputFile)) {
+            inputData = gson.fromJson(reader, PmdRunInputData.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read contents from \"" + argsInputFile + "\"", e);
+        }
 
         PmdRunner pmdRunner = new PmdRunner();
         PmdRunResults results;
         try {
-            results = pmdRunner.runRules(ruleSetInputFile, filesToScanInputFile);
+            results = pmdRunner.run(inputData);
         } catch (Exception e) {
             throw new RuntimeException("Error while attempting to invoke PmdRunner.run: " + e.getMessage(), e);
         }

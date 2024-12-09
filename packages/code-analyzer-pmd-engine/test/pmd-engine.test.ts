@@ -448,7 +448,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
         // Also check that we have all the correct progress events
         expect(progressEvents.map(e => e.percentComplete)).toEqual(
-            [2, 4, 4.6, 8.8, 9.4, 10, 11.76, 15.28, 18.8, 30.53, 42.27, 54, 65.73, 77.47, 89.2, 93.6, 98, 100]);
+            [2, 2.3, 4.4, 4.7, 5, 6.86, 10.58, 14.3, 23.6, 32.9, 42.2, 51.5, 70.1, 88.7, 93.35, 98, 100]);
     });
 
     it('When a single rule is selected, then return only violations for that rule', async () => {

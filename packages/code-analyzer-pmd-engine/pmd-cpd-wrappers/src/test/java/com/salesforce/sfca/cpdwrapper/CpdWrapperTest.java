@@ -73,7 +73,7 @@ class CpdWrapperTest {
     }
 
     @Test
-    void whenCallingMainWithDescribeAndTooManyArgs_thenError() {
+    void whenCallingMainWithRunAndTooManyArgs_thenError() {
         String[] args = {"run", "too", "many", "args"};
         Exception thrown = assertThrows(Exception.class, () -> callCpdWrapper(args));
         assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"run\" command. Expected 2 but received: 3"));
