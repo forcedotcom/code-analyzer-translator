@@ -2,11 +2,11 @@
 <results>
   <runDir>{{RUNDIR}}</runDir>
   <violationCounts>
-    <total>5</total>
+    <total>6</total>
     <sev1>0</sev1>
     <sev2>1</sev2>
     <sev3>3</sev3>
-    <sev4>1</sev4>
+    <sev4>2</sev4>
     <sev5>0</sev5>
   </violationCounts>
   <versions>
@@ -31,6 +31,29 @@
           <startColumn>6</startColumn>
           <endLine>11</endLine>
           <endColumn>8</endColumn>
+        </location>
+      </locations>
+      <message>SomeViolationMessage1</message>
+      <resources>
+        <resource>https://example.com/stub1RuleA</resource>
+      </resources>
+    </violation>
+    <violation>
+      <rule>stub1RuleA</rule>
+      <engine>stubEngine1</engine>
+      <severity>4</severity>
+      <tags>
+        <tag>Recommended</tag>
+        <tag>CodeStyle</tag>
+      </tags>
+      <primaryLocationIndex>0</primaryLocationIndex>
+      <locations>
+        <location>
+          <file>test{{PATHSEP}}test-data{{PATHSEP}}sample-input-files{{PATHSEP}}subfolder with spaces{{PATHSEP}}some-target-file.ts</file>
+          <startLine>10</startLine>
+          <startColumn>4</startColumn>
+          <endLine>11</endLine>
+          <endColumn>2</endColumn>
         </location>
       </locations>
       <message>SomeViolationMessage1</message>

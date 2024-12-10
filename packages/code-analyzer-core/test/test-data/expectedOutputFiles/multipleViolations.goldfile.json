@@ -1,11 +1,11 @@
 {
   "runDir": "{{RUNDIR}}",
   "violationCounts": {
-    "total": 5,
+    "total": 6,
     "sev1": 0,
     "sev2": 1,
     "sev3": 3,
-    "sev4": 1,
+    "sev4": 2,
     "sev5": 0
   },
   "versions": {
@@ -30,6 +30,29 @@
           "startColumn": 6,
           "endLine": 11,
           "endColumn": 8
+        }
+      ],
+      "message": "SomeViolationMessage1",
+      "resources": [
+        "https://example.com/stub1RuleA"
+      ]
+    },
+    {
+      "rule": "stub1RuleA",
+      "engine": "stubEngine1",
+      "severity": 4,
+      "tags": [
+        "Recommended",
+        "CodeStyle"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "test{{PATHSEP}}test-data{{PATHSEP}}sample-input-files{{PATHSEP}}subfolder with spaces{{PATHSEP}}some-target-file.ts",
+          "startLine": 10,
+          "startColumn": 4,
+          "endLine": 11,
+          "endColumn": 2
         }
       ],
       "message": "SomeViolationMessage1",

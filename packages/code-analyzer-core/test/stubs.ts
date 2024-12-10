@@ -272,6 +272,26 @@ export function getSampleViolationForStub1RuleA(): engApi.Violation {
     };
 }
 
+export function getSampleViolationForStub1RuleAFromDirectoryWithSpaces(): engApi.Violation {
+    return {
+        ruleName: 'stub1RuleA',
+        message: 'SomeViolationMessage1',
+        codeLocations: [
+            {
+                file: 'test/test-data/sample-input-files/subfolder with spaces/some-target-file.ts',
+                startLine: 10,
+                startColumn: 4,
+                endLine: 11,
+                endColumn: 2
+            }
+        ],
+        primaryLocationIndex: 0,
+        resourceUrls: [
+            "https://example.com/stub1RuleA" // Same url as rule's url... to test that we don't duplicate it
+        ]
+    }
+}
+
 export function getSampleViolationForStub1RuleC(): engApi.Violation {
     return {
         ruleName: 'stub1RuleC',

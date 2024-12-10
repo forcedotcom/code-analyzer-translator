@@ -1,5 +1,6 @@
 "rule","engine","severity","tags","file","startLine","startColumn","endLine","endColumn","message","resources"
 "stub1RuleA","stubEngine1",4,"Recommended,CodeStyle","test{{PATHSEP}}config.test.ts",3,6,11,8,"SomeViolationMessage1","https://example.com/stub1RuleA"
+"stub1RuleA","stubEngine1",4,"Recommended,CodeStyle","test{{PATHSEP}}test-data{{PATHSEP}}sample-input-files{{PATHSEP}}subfolder with spaces{{PATHSEP}}some-target-file.ts",10,4,11,2,"SomeViolationMessage1","https://example.com/stub1RuleA"
 "stub1RuleC","stubEngine1",3,"Recommended,Performance,Custom","test{{PATHSEP}}run.test.ts",21,7,25,4,"SomeViolationMessage2","https://example.com/stub1RuleC,https://example.com/aViolationSpecificUrl1,https://example.com/violationSpecificUrl2"
 "stub1RuleE","stubEngine1",3,"Performance","test{{PATHSEP}}run.test.ts",56,4,,,"Some Violation that contains
 a new line in `it` and ""various"" 'quotes'. Also it has <brackets> that may need to be {escaped}.","https://example.com/stub1RuleE,https://example.com/stub1RuleE_2"
