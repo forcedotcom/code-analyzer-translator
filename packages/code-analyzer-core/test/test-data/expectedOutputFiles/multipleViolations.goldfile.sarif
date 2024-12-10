@@ -87,6 +87,46 @@
           ]
         },
         {
+          "ruleId": "stub1RuleA",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "SomeViolationMessage1"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test{{PATHSEP}}test-data{{PATHSEP}}sample-input-files{{PATHSEP}}subfolder%20with%20spaces{{PATHSEP}}some-target-file.ts",
+                  "uriBaseId": "{{RUNDIR}}"
+                },
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 4,
+                  "endLine": 11,
+                  "endColumn": 2
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test{{PATHSEP}}test-data{{PATHSEP}}sample-input-files{{PATHSEP}}subfolder%20with%20spaces{{PATHSEP}}some-target-file.ts",
+                  "uriBaseId": "{{RUNDIR}}"
+                },
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 4,
+                  "endLine": 11,
+                  "endColumn": 2
+                }
+              }
+            }
+          ]
+        },
+        {
           "ruleId": "stub1RuleC",
           "ruleIndex": 1,
           "level": "warning",

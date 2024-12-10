@@ -73,8 +73,8 @@ function toSarifLocation(codeLocation: CodeLocation, runDir: string): sarif.Loca
         return {
             physicalLocation: {
                 artifactLocation: {
-                    uri: path.relative(runDir, codeLocation.getFile()!),
-                    uriBaseId: runDir
+                    uri: encodeURI(path.relative(runDir, codeLocation.getFile()!)),
+                    uriBaseId: encodeURI(runDir)
                 },
                 region: {
                     startLine: codeLocation.getStartLine(),

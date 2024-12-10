@@ -17,7 +17,10 @@ beforeAll(async () => {
     const stubPlugin: stubs.StubEnginePlugin = new stubs.StubEnginePlugin();
     await codeAnalyzer.addEnginePlugin(stubPlugin);
     (stubPlugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1).resultsToReturn = {
-        violations: [stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleC(), stubs.getSampleViolationForStub1RuleE()]
+        violations: [
+            stubs.getSampleViolationForStub1RuleA(), stubs.getSampleViolationForStub1RuleAFromDirectoryWithSpaces(),
+            stubs.getSampleViolationForStub1RuleC(), stubs.getSampleViolationForStub1RuleE()
+        ]
     };
     (stubPlugin.getCreatedEngine('stubEngine2') as stubs.StubEngine2).resultsToReturn = {
         violations: [stubs.getSampleViolationForStub2RuleC()]
