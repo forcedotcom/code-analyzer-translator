@@ -173,7 +173,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const engine: PmdEngine = new PmdEngine({
             ... DEFAULT_PMD_ENGINE_CONFIG,
             custom_rulesets: [
-                path.join('sfca', 'rulesets', 'examples.xml'),
+                'sfca/rulesets/examples.xml',
             ]
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
