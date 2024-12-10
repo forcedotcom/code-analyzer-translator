@@ -24,11 +24,12 @@ public class PmdRunner {
     PmdRunResults run(PmdRunInputData inputData) {
         validateRunInputData(inputData);
 
-        List<String> languagesToProcess = new ArrayList<>(inputData.runDataPerLanguage.keySet());
-        progressReporter.initialize(languagesToProcess);
+        Map<String, Integer> languageFileCounts = inputData.runDataPerLanguage.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().filesToScan.size()));
+        progressReporter.initialize(languageFileCounts);
 
         PmdRunResults runResults = new PmdRunResults();
-        for (String language: languagesToProcess) {
+        for (String language: inputData.runDataPerLanguage.keySet()) {
             runLanguage(language, inputData, runResults);
         }
         return runResults;
@@ -36,6 +37,8 @@ public class PmdRunner {
 
     private void runLanguage(String language, PmdRunInputData inputData, PmdRunResults runResults) {
         PmdRunInputData.LanguageSpecificRunData languageSpecificRunData = inputData.runDataPerLanguage.get(language);
+
+        System.out.println("Running PMD rules for language '" + language + "' with " + languageSpecificRunData.filesToScan.size() + " file(s) to scan.");
 
         PMDConfiguration config = new PMDConfiguration();
         config.addRuleSet(inputData.ruleSetInputFile);

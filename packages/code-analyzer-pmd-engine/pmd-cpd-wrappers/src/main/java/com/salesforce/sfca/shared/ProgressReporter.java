@@ -6,12 +6,21 @@ import java.util.Map;
 
 // This class helps us track the overall progress of all language runs
 public class ProgressReporter {
+    private Map<String, Float> languageWeight = new HashMap<>();
     private Map<String, Float> progressPerLanguage = new HashMap<>();
     private float lastReportedProgress = 0.0f;
 
-    public void initialize(List<String> languages) {
+    public void initialize(Map<String, Integer> languageFileCounts) {
         progressPerLanguage = new HashMap<>();
-        languages.forEach(l -> this.updateProgressForLanguage(l, 0.0f));
+        languageWeight = new HashMap<>();
+        int totalNumFilesToScan = languageFileCounts.values().stream().mapToInt(Integer::intValue).sum();
+        for (Map.Entry<String,Integer> entry : languageFileCounts.entrySet()) {
+            String language = entry.getKey();
+            Integer numFiles = entry.getValue();
+            languageWeight.put(language, (float) numFiles / totalNumFilesToScan);
+            this.updateProgressForLanguage(language, 0.0f);
+
+        }
     }
 
     public void updateProgressForLanguage(String language, float percComplete) {
@@ -28,10 +37,10 @@ public class ProgressReporter {
     }
 
     private float calculateOverallPercentage() {
-        float sum = 0.0f;
-        for (float progress : progressPerLanguage.values()) {
-            sum += progress;
+        float overallPerc = 0.0f;
+        for (String language : progressPerLanguage.keySet()) {
+            overallPerc += (progressPerLanguage.get(language) * languageWeight.get(language));
         }
-        return sum / progressPerLanguage.size();
+        return overallPerc;
     }
 }

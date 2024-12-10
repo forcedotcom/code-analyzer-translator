@@ -188,7 +188,8 @@ function toSeverityLevel(pmdRulePriority: string): SeverityLevel {
 
 function toViolation(pmdViolation: PmdViolation): Violation {
     return {
-        ruleName: toUniqueRuleName(pmdViolation.rule, extensionToLanguageId[path.extname(pmdViolation.codeLocation.file)]),
+        ruleName: toUniqueRuleName(pmdViolation.rule,
+            extensionToLanguageId[path.extname(pmdViolation.codeLocation.file).toLowerCase()]),
         message: pmdViolation.message,
         codeLocations: [{
             file: pmdViolation.codeLocation.file,

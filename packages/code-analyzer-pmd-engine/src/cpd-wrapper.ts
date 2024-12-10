@@ -73,8 +73,9 @@ export class CpdWrapperInvoker {
             if (stdOutMsg.startsWith(STDOUT_PROGRESS_MARKER)) {
                 const cpdWrapperProgress: number = parseFloat(stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length));
                 emitProgress(10 + 80*(cpdWrapperProgress/100)); // 10 to 90%
+            } else {
+                this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`);
             }
-            this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`);
         });
 
         try {

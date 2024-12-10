@@ -32,11 +32,12 @@ class CpdRunner {
     public Map<String, CpdLanguageRunResults> run(CpdRunInputData runInputData) throws IOException {
         validateRunInputData(runInputData);
 
-        List<String> languagesToProcess = new ArrayList<>(runInputData.runDataPerLanguage.keySet());
-        progressReporter.initialize(languagesToProcess);
+        Map<String, Integer> languageFileCounts = runInputData.runDataPerLanguage.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().filesToScan.size()));
+        progressReporter.initialize(languageFileCounts);
 
         Map<String, CpdLanguageRunResults> results = new HashMap<>();
-        for (String language : languagesToProcess) {
+        for (String language : runInputData.runDataPerLanguage.keySet()) {
             CpdRunInputData.LanguageSpecificRunData languageSpecificRunData = runInputData.runDataPerLanguage.get(language);
             List<Path> pathsToScan = languageSpecificRunData.filesToScan.stream().map(Paths::get).collect(Collectors.toList());
             CpdLanguageRunResults languageRunResults = runLanguage(
@@ -49,6 +50,9 @@ class CpdRunner {
     }
 
     private CpdLanguageRunResults runLanguage(String language, List<Path> pathsToScan, int minimumTokens, boolean skipDuplicateFiles) throws IOException {
+        System.out.println("Running CPD for language '" + language + "' with " + pathsToScan.size() +
+                " file(s) to scan using minimumTokens=" + minimumTokens + " and skipDuplicateFiles=" + skipDuplicateFiles + ".");
+
         // Note that the name "minimumTokens" comes from the public facing documentation and the cli but
         // behind the scenes, it maps to MinimumTileSize. To learn more about the mappings to the config, see:
         // https://github.com/pmd/pmd/blob/main/pmd-cli/src/main/java/net/sourceforge/pmd/cli/commands/internal/CpdCommand.java

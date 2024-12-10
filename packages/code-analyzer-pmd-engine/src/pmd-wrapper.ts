@@ -126,7 +126,7 @@ export class PmdWrapperInvoker {
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg: string) => {
             if (stdOutMsg.startsWith(STDOUT_PROGRESS_MARKER)) {
                 const pmdWrapperProgress: number = parseFloat(stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length));
-                emitProgress(10 + (80 * pmdWrapperProgress / 100)); // 10 to 90%
+                emitProgress(10 + 80*(pmdWrapperProgress/100)); // 10 to 90%
             } else {
                 this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`);
             }
