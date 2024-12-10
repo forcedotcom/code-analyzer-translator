@@ -149,7 +149,7 @@ class CpdWrapperTest {
     }
 
     @Test
-    void whenCallingRunWithZeroLanguages_thenError(@TempDir Path tempDir) throws Exception {
+    void whenCallingRunWithRunDataPerLanguageHavingZeroFields_thenError(@TempDir Path tempDir) throws Exception {
         String inputFileContents = "{" +
                 "  \"runDataPerLanguage\": {" +
                 "  }," +

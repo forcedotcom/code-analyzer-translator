@@ -174,7 +174,7 @@ class PmdWrapperTest {
     }
 
     @Test
-    void whenCallingRunWithZeroLanguages_thenError(@TempDir Path tempDir) throws Exception {
+    void whenCallingRunWithRunDataPerLanguageHavingZeroFields_thenError(@TempDir Path tempDir) throws Exception {
         String ruleSetInputFile = createSampleRulesetFile(tempDir);
 
         String inputFileContents = "{\n" +
