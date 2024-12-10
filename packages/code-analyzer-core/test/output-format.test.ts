@@ -164,6 +164,7 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
     const contents: string = fs.readFileSync(path.resolve('test','test-data','expectedOutputFiles',expectedOutputFileName), 'utf-8');
     let pathSepVar: string = path.sep;
     let runDirVar: string = process.cwd() + path.sep;
+    const encodedRunDir: string = encodeURI(runDirVar);
     const escapedRunDir: string = runDirVar.replaceAll('\\', '\\\\');
     if (escapeBackslashesOnPaths) {
         pathSepVar = pathSepVar.replaceAll('\\','\\\\');
@@ -171,8 +172,12 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
     if (escapeBackslashesOnRunDir) {
         runDirVar = runDirVar.replaceAll('\\','\\\\');
     }
+    const encodedPathSepVar: string = encodeURI(path.sep);
+
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
+        .replaceAll(`{{ENCODEDPATHSEP}}`, encodedPathSepVar)
         .replaceAll('{{RUNDIR}}', runDirVar)
+        .replaceAll('{{ENCODEDRUNDIR}}', encodedRunDir)
         .replaceAll('{{ESCAPEDRUNDIR}}', escapedRunDir)
         .replaceAll('{{###RUNDIR###}}', runDirVar)
         .replaceAll('{{###TIMESTAMP###}}', fixedTime.toLocaleString('en-us', {year: "numeric", month: "short",
