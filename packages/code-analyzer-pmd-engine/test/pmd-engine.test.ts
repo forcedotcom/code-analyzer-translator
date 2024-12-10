@@ -169,6 +169,25 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         expectContainsRuleWithName(ruleDescriptions, 'fakerule14'); // From somecat4.xml
     });
 
+    it('When referencing our example custom ruleset that is prebundled in our sfca-pmd-rules jar file, then the custom rules are added to the rule descriptions', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            custom_rulesets: [
+                path.join('sfca', 'rulesets', 'examples.xml'),
+            ]
+        });
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+
+        const exampleRule1: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'ExampleJavaBasedRule');
+        expect(exampleRule1.description).toEqual('Example Java Based Rule - Detects when a variable is called "foo".');
+        expect(exampleRule1.severityLevel).toEqual(SeverityLevel.Moderate);
+        expect(exampleRule1.tags).toEqual(["Recommended", "ExampleRules", "Apex", "Custom"]);
+        const exampleRule2: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'ExampleXPathBasedRule');
+        expect(exampleRule2.description).toEqual('Example XPath Based Rule - Detects when a variable is called "bar".');
+        expect(exampleRule2.severityLevel).toEqual(SeverityLevel.Low);
+        expect(exampleRule2.tags).toEqual(["Recommended", "ExampleRules", "Apex", "Custom"]);
+    });
+
     it('When adding a jar files to the java classpath and adding custom rulesets, then the custom rules are added to the rule descriptions', async () => {
         const engine: PmdEngine = new PmdEngine({
             ...DEFAULT_PMD_ENGINE_CONFIG,

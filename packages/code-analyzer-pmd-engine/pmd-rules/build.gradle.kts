@@ -22,12 +22,11 @@ repositories {
 dependencies {
     // --- APPLICATION DEPENDENCIES ---------------------------------------------
     implementation(libs.bundles.pmd7)
-    implementation(libs.gson)
-    implementation(libs.slf4j.nop) // Note, dots map to dashes. So this maps to libraries > slf4j-nop
 
     // --- TEST ONLY DEPENDENCIES -----------------------------------------------
     testImplementation(libs.hamcrest)
     testImplementation(libs.junit.jupiter) // Maps to junit-jupiter
+    testImplementation(libs.pmd.test) // Maps to pmd-test
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -40,12 +39,11 @@ java {
 val javaLibDir: File = layout.projectDirectory.dir("../dist/java-lib").asFile;
 val reportsDir: String = layout.buildDirectory.dir("reports").get().asFile.path
 
-
 // ======== BUILD RELATED TASKS ========================================================================================
 
-// Task to build and copy jar file, giving it the name "sfca-pmd-cpd-wrappers-1.0.0.jar"
+// Task to build and copy jar file, giving it the name "sfca-pmd-rules-1.0.0.jar"
 tasks.jar {
-    archiveBaseName.set("sfca-pmd-cpd-wrappers")
+    archiveBaseName.set("sfca-pmd-rules")
     archiveVersion.set("1.0.0")
     destinationDirectory.set(javaLibDir) // Default location for JAR output
 }

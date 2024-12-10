@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests http://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+    
+    <test-code>
+        <description>Positive case - variable bar is used</description>
+        <expected-problems>1</expected-problems>
+        <expected-messages>
+            <message>A variable called "bar" was found.</message>
+        </expected-messages>
+        <code>
+<![CDATA[
+public class Example {
+    public void example() {
+        String bar = '<-- poor variable name';
+        System.debug(bar);
+    }
+}
+]]>
+        </code>
+    </test-code>
+
+    <test-code>
+        <description>Negative case - variable bar is not used</description>
+        <expected-problems>0</expected-problems>
+        <code>
+            <![CDATA[
+public class Example {
+    public void example() {
+        String goodName = '<-- good variable name';
+        System.debug(goodName);
+    }
+}
+]]>
+        </code>
+    </test-code>
+    
+</test-data>

@@ -20,6 +20,7 @@ pmd-apex = { module = "net.sourceforge.pmd:pmd-apex", version.ref = "pmd" }
 pmd-core = { module = "net.sourceforge.pmd:pmd-core", version.ref = "pmd" }
 pmd-html = { module = "net.sourceforge.pmd:pmd-html", version.ref = "pmd" }
 pmd-javascript = { module = "net.sourceforge.pmd:pmd-javascript", version.ref = "pmd" }
+pmd-test = { module = "net.sourceforge.pmd:pmd-test", version.ref = "pmd" }
 pmd-visualforce = { module = "net.sourceforge.pmd:pmd-visualforce", version.ref = "pmd" }
 pmd-xml = { module = "net.sourceforge.pmd:pmd-xml", version.ref = "pmd" }
 slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
