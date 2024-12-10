@@ -2,6 +2,7 @@ package com.salesforce.sfca.pmdwrapper;
 
 import com.google.gson.Gson;
 
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,12 +23,52 @@ import java.util.stream.Collectors;
  *         - {languages} is a comma separated list of languages associated with the rules to describe
  *   RUN:
  *     - Runs the rules provided by the input ruleset file on a set of files and writes results to a JSON file
- *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {ruleSetInputFile} {filesToScanInputFile} {resultsOutputFile}
+ *     - Invocation: java -cp {classPath} com.salesforce.sfca.pmdwrapper.PmdWrapper run {argsInputFile} {resultsOutputFile}
  *         - {classPath} is the list of entries to add to the class path
- *         - {ruleSetInputFile} is a PMD ruleset file that contains the rules to run
- *         - {filesToScanInputFile} is a file containing a newline separated list of files to scan
+ *         - {argsInputFile} is a JSON file containing the input arguments for the run command.
+ *             Example:
+ *                  {
+ *                      "ruleSetInputFile": "/some/rulesetFileForRulesToRun.xml",
+ *                      "runDataPerLanguage": {
+ *                          "apex": {
+ *                              "filesToScan": ["/full/path/to/apex_file1.cls", "/full/path/to/apex_file2.trigger", ...]
+ *                          },
+ *                          ...,
+ *                          "xml": {
+ *                              "filesToScan": ["/full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...]
+ *                          }
+ *                      }
+ *                  }
  *         - {resultsOutputFile} is a file to write the JSON formatted PMD results to
+ *             Example:
+ *                 {
+ *                     "files": [
+ *                         {
+ *                             "filename": "/full/path/to/apex_file1.cls",
+ *                             "violations": [
+ *                                 {
+ *                                     "beginline": 16,
+ *                                     "begincolumn": 14,
+ *                                     "endline": 79,
+ *                                     "endcolumn": 1,
+ *                                     "description": "Some Violation Message",
+ *                                     "rule": "ClassNamingConventions"
+ *                                 },
+ *                                 ...
+ *                             ]
+ *                         },
+ *                         ...
+ *                     ],
+ *                     "processingErrors": [
+ *                         {
+ *                             "filename": "/full/path/to/apex_file2.cls",
+ *                             "message": "SomeMessage",
+ *                             "details": "SomeDetails"
+ *                         }
+ *                     ]
+ *                 }
  */
+
 public class PmdWrapper {
     private PmdWrapper() {}
 
@@ -82,14 +123,33 @@ public class PmdWrapper {
     }
 
     private static void invokeRunCommand(String[] args) {
-        if (args.length != 3) {
-            throw new RuntimeException("Invalid number of arguments following the \"run\" command. Expected 3 but received: " + args.length);
+        if (args.length != 2) {
+            throw new RuntimeException("Invalid number of arguments following the \"run\" command. Expected 2 but received: " + args.length);
         }
-        String ruleSetInputFile = args[0];
-        String filesToScanInputFile = args[1];
-        String resultsOutputFile = args[2];
+        String argsInputFile = args[0];
+        String resultsOutputFile = args[1];
 
-        PmdRuleRunner ruleRunner = new PmdRuleRunner();
-        ruleRunner.runRules(ruleSetInputFile, filesToScanInputFile, resultsOutputFile);
+        Gson gson = new Gson();
+
+        PmdRunInputData inputData;
+        try (FileReader reader = new FileReader(argsInputFile)) {
+            inputData = gson.fromJson(reader, PmdRunInputData.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not read contents from \"" + argsInputFile + "\"", e);
+        }
+
+        PmdRunner pmdRunner = new PmdRunner();
+        PmdRunResults results;
+        try {
+            results = pmdRunner.run(inputData);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while attempting to invoke PmdRunner.run: " + e.getMessage(), e);
+        }
+
+        try (FileWriter fileWriter = new FileWriter(resultsOutputFile)) {
+            gson.toJson(results, fileWriter);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

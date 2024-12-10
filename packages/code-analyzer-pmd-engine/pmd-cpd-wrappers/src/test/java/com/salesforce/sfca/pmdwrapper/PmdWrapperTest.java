@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.salesforce.sfca.testtools.StdOutCaptor;
 import org.junit.jupiter.api.Test;
@@ -126,16 +127,143 @@ class PmdWrapperTest {
 
     @Test
     void whenCallingMainWithRunAndTwoFewArgs_thenError() {
-        String[] args = {"run", "not", "enough"};
+        String[] args = {"run", "notEnough"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
-        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"run\" command. Expected 3 but received: 2"));
+        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"run\" command. Expected 2 but received: 1"));
     }
 
     @Test
     void whenCallingMainWithRunAndTooManyArgs_thenError() {
-        String[] args = {"run", "too", "many", "args", "unfortunately"};
+        String[] args = {"run", "too", "many", "args"};
         Exception thrown = assertThrows(Exception.class, () -> callPmdWrapper(args));
-        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"run\" command. Expected 3 but received: 4"));
+        assertThat(thrown.getMessage(), is("Invalid number of arguments following the \"run\" command. Expected 2 but received: 3"));
+    }
+
+    @Test
+    void whenCallingMainWithRunAndInputFileThatDoesNotExist_thenError() {
+        String[] args = {"run", "/does/not/exist.json", "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), containsString("Could not read contents from \"/does/not/exist.json\""));
+        assertThat(thrown.getCause(), instanceOf(FileNotFoundException.class));
+    }
+
+    @Test
+    void whenCallingMainWithRunAndInputFileThatDoesNotContainValidJson_thenError(@TempDir Path tempDir) throws Exception {
+        String inputFileContents = "{\"oops"; // Not valid json
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), containsString("Could not read contents from \"" + inputFile + "\""));
+        assertThat(thrown.getCause(), instanceOf(JsonSyntaxException.class));
+    }
+
+    @Test
+    void whenCallingRunWithMissingField_runDataPerLanguage_thenError(@TempDir Path tempDir) throws Exception {
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\"\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The \"runDataPerLanguage\" field was not set."));
+    }
+
+    @Test
+    void whenCallingRunWithRunDataPerLanguageHavingZeroFields_thenError(@TempDir Path tempDir) throws Exception {
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\",\n" +
+                "  \"runDataPerLanguage\": {" +
+                "  }\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The \"runDataPerLanguage\" field didn't have any languages listed."));
+    }
+
+    @Test
+    void whenCallingRunWithMissingField_filesToScan_thenError(@TempDir Path tempDir) throws Exception {
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\",\n" +
+                "  \"runDataPerLanguage\": {" +
+                "    \"apex\": {}\n" +
+                "  }\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The \"filesToScan\" field was missing or empty for language: apex"));
+    }
+
+    @Test
+    void whenCallingRunWithEmptyArrayFor_filesToScan_thenError(@TempDir Path tempDir) throws Exception {
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\",\n" +
+                "  \"runDataPerLanguage\": {" +
+                "    \"apex\": {\n" +
+                "      \"filesToScan\": []\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The \"filesToScan\" field was missing or empty for language: apex"));
+    }
+
+    @Test
+    void whenCallingRunWithInvalidLanguage_thenError(@TempDir Path tempDir) throws Exception {
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\",\n" +
+                "  \"runDataPerLanguage\": {" +
+                "    \"unknownLanguage\": {\n" +
+                "      \"filesToScan\": [\"" + makePathJsonSafe(ruleSetInputFile) + "\"]\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The language \"unknownLanguage\" is not recognized by PMD."));
+    }
+
+    @Test
+    void whenCallingRunWithMissingField_ruleSetInputFile_thenError(@TempDir Path tempDir) throws Exception {
+        String dummyApexFile = createTempFile(tempDir, "dummy.cls", "");
+        String inputFileContents = "{" +
+                "  \"runDataPerLanguage\": {" +
+                "     \"apex\": {" +
+                "       \"filesToScan\": [\"" + makePathJsonSafe(dummyApexFile) + "\"]" +
+                "    }" +
+                "  }" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String[] args = {"run", inputFile, "/does/not/matter"};
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> callPmdWrapper(args));
+        assertThat(thrown.getMessage(), is(
+                "Error while attempting to invoke PmdRunner.run: The \"ruleSetInputFile\" field was missing."));
     }
 
     @Test
@@ -144,7 +272,64 @@ class PmdWrapperTest {
         // and then copy them to a temp directory (which is needed because the utility assumes absolute file paths).
         // But if this list grows, then we'll need to create a utility to make this easier.
 
-        Path ruleSetInputFilePath = tempDir.resolve("ruleSetInputFile.xml");
+        String ruleSetInputFile = createSampleRulesetFile(tempDir);
+
+        String apexViolationCode = "public class OperationWithLimitsInLoop {\n" +
+                "    public static void main() {\n" +
+                "        for (Integer i = 0; i < 10; i++) {\n" +
+                "            List<Account> accounts = [SELECT Id FROM Account];\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        String sampleApexFile = createTempFile(tempDir, "OperationWithLimitsInLoop.cls", apexViolationCode);
+
+        String vfViolationCode = "<apex:page controller=\"testSELECT\">\n" +
+                "    <script>\n" +
+                "      console.log({!Name});\n" +
+                "    </script>\n" +
+                "</apex:page>";
+        String sampleVfFile = createTempFile(tempDir, "VfUnescapeEl.page", vfViolationCode);
+
+        String inputFileContents = "{\n" +
+                "  \"ruleSetInputFile\":\"" + makePathJsonSafe(ruleSetInputFile) + "\",\n" +
+                "  \"runDataPerLanguage\": {\n" +
+                "    \"apex\": {\n" +
+                "      \"filesToScan\": [\n" +
+                "        \"" + makePathJsonSafe(sampleApexFile) + "\"" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"visualforce\": {\n" +
+                "      \"filesToScan\": [\n" +
+                "        \"" + makePathJsonSafe(sampleVfFile) + "\"" +
+                "      ]\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        String inputFile = createTempFile(tempDir, "inputFile.json", inputFileContents);
+
+        String resultsOutputFile = tempDir.resolve("results.json").toAbsolutePath().toString();
+
+        String[] args = {"run", inputFile, resultsOutputFile};
+        String stdOut = callPmdWrapper(args); // Should not error
+
+        // Assert results contain valid json and that the expected rule violations (note this is more thoroughly tested on the typescript side)
+        String resultsJsonString = new String(Files.readAllBytes(Paths.get(resultsOutputFile)));
+        JsonElement element = JsonParser.parseString(resultsJsonString); // Should not error
+        assertThat(element.isJsonObject(), is(true));
+        assertThat(resultsJsonString, allOf(
+                containsString("\"rule\":\"OperationWithLimitsInLoop\""),
+                containsString("\"rule\":\"VfUnescapeEl\"")
+        ));
+
+        // Assert stdOut contains arguments, progress information, and duration information (which help us with debugging)
+        assertThat(stdOut, allOf(
+                containsString("ARGUMENTS"),
+                containsString("[Progress]50.0"),
+                containsString("[Progress]100.0"),
+                containsString("milliseconds")));
+    }
+
+    private static String createSampleRulesetFile(Path tempDir) throws Exception {
         String ruleSetContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<ruleset name=\"Ruleset for Salesforce Code Analyzer\"\n" +
                 "    xmlns=\"http://pmd.sourceforge.net/ruleset/2.0.0\"\n" +
@@ -154,60 +339,25 @@ class PmdWrapperTest {
                 "    <rule ref=\"category/visualforce/security.xml/VfUnescapeEl\" />\n" +
                 "    <rule ref=\"category/apex/performance.xml/OperationWithLimitsInLoop\" />\n" +
                 "</ruleset>";
-        Files.write(ruleSetInputFilePath, ruleSetContents.getBytes());
-
-        Path sampleApexFile = tempDir.resolve("OperationWithLimitsInLoop.cls");
-        String apexViolationCode = "public class OperationWithLimitsInLoop {\n" +
-                "    public static void main() {\n" +
-                "        for (Integer i = 0; i < 10; i++) {\n" +
-                "            List<Account> accounts = [SELECT Id FROM Account];\n" +
-                "        }\n" +
-                "    }\n" +
-                "}";
-        Files.write(sampleApexFile, apexViolationCode.getBytes());
-
-        Path sampleVfFile = tempDir.resolve("VfUnescapeEl.page");
-        String vfViolationCode = "<apex:page controller=\"testSELECT\">\n" +
-                "    <script>\n" +
-                "      console.log({!Name});\n" +
-                "    </script>\n" +
-                "</apex:page>";
-        Files.write(sampleVfFile, vfViolationCode.getBytes());
-
-        Path filesToScanInputFilePath = tempDir.resolve("filesToScan.txt");
-        String filesToScanContents = sampleApexFile.toAbsolutePath() + "\n" + sampleVfFile.toAbsolutePath();
-        Files.write(filesToScanInputFilePath, filesToScanContents.getBytes());
-
-        String ruleSetInputFile = ruleSetInputFilePath.toAbsolutePath().toString();
-        String filesToScanInputFile = filesToScanInputFilePath.toAbsolutePath().toString();
-        String resultsOutputFile = tempDir.resolve("results.json").toAbsolutePath().toString();
-
-        String[] args = {"run", ruleSetInputFile, filesToScanInputFile, resultsOutputFile};
-        String stdOut = callPmdWrapper(args); // Should not error
-
-        // Assert results contain valid json and that the expected rule violations (note this is more thoroughly tested on the typescript side)
-        String resultsJsonString = new String(Files.readAllBytes(Paths.get(resultsOutputFile)));
-        JsonElement element = JsonParser.parseString(resultsJsonString); // Should not error
-        assertThat(element.isJsonObject(), is(true));
-        assertThat(resultsJsonString, allOf(
-                containsString("\"rule\": \"OperationWithLimitsInLoop\""),
-                containsString("\"rule\": \"VfUnescapeEl\"")
-        ));
-
-        // Assert stdOut contains arguments, progress information, and duration information (which help us with debugging)
-        assertThat(stdOut, allOf(
-                containsString("ARGUMENTS"),
-                containsString("[Progress]1::2"),
-                containsString("[Progress]2::2"),
-                containsString("milliseconds")));
+        return createTempFile(tempDir, "ruleSetInputFile.xml", ruleSetContents);
     }
 
+    private static String createTempFile(Path tempDir, String fileName, String fileContents) throws Exception {
+        Path inputFilePath = tempDir.resolve(fileName);
+        Files.write(inputFilePath, fileContents.getBytes());
+        return inputFilePath.toAbsolutePath().toString();
+    }
 
     private static String callPmdWrapper(String[] args) {
         try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
             PmdWrapper.main(args);
             return stdoutCaptor.getCapturedOutput();
         }
+    }
+
+    private static String makePathJsonSafe(String file) {
+        return file.replace("\\", "\\\\")   // Escape backslashes
+                .replace("\"", "\\\"");     // Escape double quotes
     }
 }
 

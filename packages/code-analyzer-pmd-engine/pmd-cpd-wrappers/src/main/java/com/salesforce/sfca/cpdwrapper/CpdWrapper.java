@@ -24,7 +24,7 @@ import com.google.gson.Gson;
  *                          },
  *                          ...,
  *                          "xml": {
- *                              "filesToScan": ["full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...],
+ *                              "filesToScan": ["/full/path/to/xml_file1.xml", "/full/path/to/xml_file2.xml", ...],
  *                              "minimumTokens": 150
  *                          }
  *                      },

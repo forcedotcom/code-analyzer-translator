@@ -77,10 +77,6 @@ export class WorkspaceLiaison {
         return this.workspace;
     }
 
-    async getRelevantFiles(): Promise<string[]> {
-        return [... (await this.getRelevantLanguageToFilesMap()).values()].flat();
-    }
-
     async getRelevantLanguages(): Promise<LanguageId[]> {
         return [...(await this.getRelevantLanguageToFilesMap()).keys()].sort();
     }

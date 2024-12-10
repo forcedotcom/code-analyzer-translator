@@ -1,5 +1,8 @@
 package com.salesforce.sfca.cpdwrapper;
 
+import com.salesforce.sfca.shared.CodeLocation;
+import com.salesforce.sfca.shared.ProcessingError;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,20 +18,6 @@ public class CpdLanguageRunResults {
         public int numTokensInBlock;
         public int numNonemptyLinesInBlock;
         public int numBlocks;
-        public List<BlockLocation> blockLocations = new ArrayList<>();
-
-        public static class BlockLocation {
-            public String file;
-            public int startLine;
-            public int startCol;
-            public int endLine;
-            public int endCol;
-        }
-    }
-
-    public static class ProcessingError {
-        public String file;
-        public String message;
-        public String detail;
+        public List<CodeLocation> blockLocations = new ArrayList<>();
     }
 }

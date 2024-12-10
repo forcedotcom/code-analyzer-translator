@@ -18,24 +18,32 @@ export type PmdRuleInfo = {
     class: string
 }
 
+export type PmdRunInputData = {
+    ruleSetInputFile: string,
+    runDataPerLanguage: Record<string, LanguageSpecificPmdRunData>
+}
+export type LanguageSpecificPmdRunData = {
+    filesToScan: string[]
+}
+
 export type PmdResults = {
-    files: PmdFileResult[]
+    violations: PmdViolation[]
     processingErrors: PmdProcessingError[]
 }
-export type PmdFileResult = {
-    filename: string
-    violations: PmdViolation[]
-}
 export type PmdViolation = {
-    beginline: number
-    begincolumn: number
-    endline: number
-    endcolumn: number
-    description: string
     rule: string
+    message: string
+    codeLocation: PmdCodeLocation
+}
+export type PmdCodeLocation = {
+    file: string
+    startLine: number
+    startCol: number
+    endLine: number
+    endCol: number
 }
 export type PmdProcessingError = {
-    filename: string
+    file: string
     message: string
     detail: string
 }
@@ -90,7 +98,7 @@ export class PmdWrapperInvoker {
         }
     }
 
-    async invokeRunCommand(pmdRuleInfoList: PmdRuleInfo[], filesToScan: string[], emitProgress: (percComplete: number) => void): Promise<PmdResults> {
+    async invokeRunCommand(pmdRuleInfoList: PmdRuleInfo[], runDataPerLanguage: Record<string, LanguageSpecificPmdRunData>, emitProgress: (percComplete: number) => void): Promise<PmdResults> {
         const tempDir: string = await this.getTemporaryWorkingDir();
         emitProgress(2);
 
@@ -99,12 +107,17 @@ export class PmdWrapperInvoker {
         await fs.promises.writeFile(ruleSetInputFile, ruleSetFileContents, 'utf-8');
         emitProgress(6);
 
-        const filesToScanInputFile: string = path.join(tempDir, 'filesToScanInputFile.txt');
-        await fs.promises.writeFile(filesToScanInputFile, filesToScan.join('\n'), 'utf-8');
+        const inputData: PmdRunInputData = {
+            ruleSetInputFile: ruleSetInputFile,
+            runDataPerLanguage: runDataPerLanguage
+        }
+
+        const inputFile: string = path.join(tempDir, 'pmdRunInput.json');
+        await fs.promises.writeFile(inputFile, JSON.stringify(inputData), 'utf-8');
         emitProgress(10);
 
         const resultsOutputFile: string = path.join(tempDir, 'resultsFile.json');
-        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'run', ruleSetInputFile, filesToScanInputFile, resultsOutputFile];
+        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'run', inputFile, resultsOutputFile];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
             ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)
@@ -112,10 +125,8 @@ export class PmdWrapperInvoker {
         this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg: string) => {
             if (stdOutMsg.startsWith(STDOUT_PROGRESS_MARKER)) {
-                const parts: string[] = stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length).split('::');
-                const numFilesProcessed: number = parseInt(parts[0]);
-                const totalNumFiles: number = parseInt(parts[1]);
-                emitProgress(10 + (80 * numFilesProcessed / totalNumFiles));
+                const pmdWrapperProgress: number = parseFloat(stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length));
+                emitProgress(10 + 80*(pmdWrapperProgress/100)); // 10 to 90%
             } else {
                 this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`);
             }

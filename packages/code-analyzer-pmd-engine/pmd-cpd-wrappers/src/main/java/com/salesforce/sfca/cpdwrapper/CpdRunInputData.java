@@ -9,9 +9,9 @@ import java.util.Map;
 class CpdRunInputData {
     public Map<String, LanguageSpecificRunData> runDataPerLanguage;
     public boolean skipDuplicateFiles;
-}
 
-class LanguageSpecificRunData {
-    public List<String> filesToScan;
-    public int minimumTokens;
+    static class LanguageSpecificRunData {
+        public List<String> filesToScan;
+        public int minimumTokens;
+    }
 }
