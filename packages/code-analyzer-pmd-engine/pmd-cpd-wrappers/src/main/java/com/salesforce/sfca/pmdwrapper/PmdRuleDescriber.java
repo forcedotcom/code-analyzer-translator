@@ -105,7 +105,7 @@ class PmdRuleDescriber {
                     // Add rule info
                     PmdRuleInfo pmdRuleInfo = new PmdRuleInfo();
                     pmdRuleInfo.name = rule.getName();
-                    pmdRuleInfo.language = language;
+                    pmdRuleInfo.languageId = language;
                     pmdRuleInfo.description = getLimitedDescription(rule);
                     pmdRuleInfo.externalInfoUrl = rule.getExternalInfoUrl();
                     pmdRuleInfo.ruleSet = rule.getRuleSetName();

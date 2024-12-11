@@ -59,7 +59,7 @@ public class PmdRuleDescriberTest {
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("apex"));
         assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            assertThat(ruleInfo.language, is("apex"));
+            assertThat(ruleInfo.languageId, is("apex"));
         }
 
         // Sanity check one of the rules:
@@ -76,7 +76,7 @@ public class PmdRuleDescriberTest {
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("ecmascript"));
         assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            assertThat(ruleInfo.language, is("ecmascript"));
+            assertThat(ruleInfo.languageId, is("ecmascript"));
         }
 
         // Sanity check one of the rules:
@@ -93,7 +93,7 @@ public class PmdRuleDescriberTest {
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("visualforce"));
         assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            assertThat(ruleInfo.language, is("visualforce"));
+            assertThat(ruleInfo.languageId, is("visualforce"));
         }
 
         // Sanity check one of the rules:
@@ -110,7 +110,7 @@ public class PmdRuleDescriberTest {
         List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(List.of(), Set.of("xml"));
         assertThat(ruleInfoList.size(), is(greaterThan(0))); // Leaving this flexible. The actual list of rules are tested by typescript tests.
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            assertThat(ruleInfo.language, is("xml"));
+            assertThat(ruleInfo.languageId, is("xml"));
         }
 
         // Sanity check one of the rules:
@@ -246,7 +246,7 @@ public class PmdRuleDescriberTest {
     static PmdRuleInfo assertContainsOneRuleWithNameAndLanguage(List<PmdRuleInfo> ruleInfoList, String ruleName, String language) {
         PmdRuleInfo ruleFound = null;
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            if (ruleInfo.name.equals(ruleName) && ruleInfo.language.equals(language)) {
+            if (ruleInfo.name.equals(ruleName) && ruleInfo.languageId.equals(language)) {
                 if(ruleFound != null) {
                     throw new RuntimeException("The ruleInfoList contained more than one rule with name \"" + ruleName + "\" and language \"" + language + "\"");
                 }
@@ -261,7 +261,7 @@ public class PmdRuleDescriberTest {
 
     static void assertContainsNoRuleWithNameAndLanguage(List<PmdRuleInfo> ruleInfoList, String ruleName, String language) {
         for (PmdRuleInfo ruleInfo : ruleInfoList) {
-            if (ruleInfo.name.equals(ruleName) && ruleInfo.language.equals(language)) {
+            if (ruleInfo.name.equals(ruleName) && ruleInfo.languageId.equals(language)) {
                 throw new RuntimeException("The ruleInfoList unexpectedly contained a rule with name \"" + ruleName + "\" and language \"" + language + "\"");
             }
         }

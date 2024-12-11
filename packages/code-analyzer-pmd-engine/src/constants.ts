@@ -4,8 +4,11 @@ export const PMD_VERSION: string = '7.8.0';
 export const PMD_ENGINE_NAME: string = "pmd";
 export const CPD_ENGINE_NAME: string = "cpd";
 
-// !!! IMPORTANT !!! KEEP THIS IN SYNC WITH gradle/libs.versions.toml
-export enum LanguageId {
+// The minimum required java version that users must have to run the 'pmd' engine
+export const MINIMUM_JAVA_VERSION = '11.0.0';
+
+// !!! IMPORTANT !!! KEEP THIS LIST OF LANGUAGES IN SYNC WITH gradle/libs.versions.toml
+export enum Language {
     APEX = 'apex', // [CPD+PMD]
     HTML = 'html', // [CPD+PMD]
     JAVASCRIPT = 'javascript', // [CPD+PMD] Note that this id gets converted to 'ecmascript' when communicating to PMD since it uses 'ecmascript' instead as the identifier
@@ -14,42 +17,58 @@ export enum LanguageId {
     XML = 'xml' // [CPD+PMD]
 }
 
-// The minimum required java version that users must have to run the 'pmd' engine
-export const MINIMUM_JAVA_VERSION = '11.0.0';
+// Default map from language to file extensions to be associated with that language
+//   Even though we force the file extensions per language to give us full control over the file extensions, minimally
+//   we should support the default file associations found in the language model definitions:
+//    * Apex ('apex') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-apex/src/main/java/net/sourceforge/pmd/lang/apex/ApexLanguageModule.java
+//    * HTML ('html') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-html/src/main/java/net/sourceforge/pmd/lang/html/HtmlLanguageModule.java
+//    * JavaScript ('ecmascript') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/ecmascript/EcmascriptLanguageModule.java
+//    * Typescript ('typescript') Language Module [CPD Only - No PMD Support]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/typescript/TsLanguageModule.java
+//    * Visualforce ('visualforce') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-visualforce/src/main/java/net/sourceforge/pmd/lang/visualforce/VfLanguageModule.java
+//    * XML ('xml') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-xml/src/main/java/net/sourceforge/pmd/lang/xml/XmlLanguageModule.java
+//   Additionally, we must support the file extensions that the AppExchange rules want to also process per language.
+export const DEFAULT_FILE_EXTENSIONS: Record<Language, string[]> = {
+    [Language.APEX]: [
+        // From PMD's ApexLanguageModule:
+        '.cls', '.trigger'
+    ],
 
-// Map from file extension to language for PMD or CPD.
-//   In the future we might consider getting this dynamically from our PmdWrapper (java side) instead of hard coding
-//   these, but hard coding actually makes things much faster so that we have one less round trip to java to perform.
-export const extensionToLanguageId: Record<string, LanguageId> = {
-    // (Apex - 'apex') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-apex/src/main/java/net/sourceforge/pmd/lang/apex/ApexLanguageModule.java
-    '.cls': LanguageId.APEX,
-    '.trigger': LanguageId.APEX,
+    [Language.HTML]: [
+        // From PMD's HtmlLanguageModule:
+        '.html', '.htm', '.xhtml', '.xht', '.shtml'
+    ],
 
-    // (JavaScript - 'ecmascript') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/ecmascript/EcmascriptLanguageModule.java
-    '.js': LanguageId.JAVASCRIPT,
+    [Language.JAVASCRIPT]: [
+        // From PMD's EcmascriptLanguageModule:
+        '.js',
 
-    // (HTML - 'html') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-html/src/main/java/net/sourceforge/pmd/lang/html/HtmlLanguageModule.java
-    '.html': LanguageId.HTML,
-    '.htm': LanguageId.HTML,
-    '.xhtml': LanguageId.HTML,
-    '.xht': LanguageId.HTML,
-    '.shtml': LanguageId.HTML,
+        // Other common JavasScript file extensions that we wish to include by default:
+        '.cjs', '.mjs'
+    ],
 
-    // (Salesforce Visualforce - 'visualforce') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-visualforce/src/main/java/net/sourceforge/pmd/lang/visualforce/VfLanguageModule.java
-    '.page': LanguageId.VISUALFORCE,
-    '.component': LanguageId.VISUALFORCE,
+    [Language.TYPESCRIPT]: [
+        // From PMD's TsLanguageModule:
+        '.ts'
+    ],
 
-    // (Typescript - 'typescript') Language Module [CPD Only - No PMD Support]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/typescript/TsLanguageModule.java
-    '.ts': LanguageId.TYPESCRIPT,
+    [Language.VISUALFORCE]: [
+        // FROM PMD's VfLanguageModule:
+        '.page', '.component'
+    ],
 
-    // (XML - 'xml') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-xml/src/main/java/net/sourceforge/pmd/lang/xml/XmlLanguageModule.java
-    '.xml': LanguageId.XML
-} as const;
+    [Language.XML]: [
+        // FROM PMD's XmlLanguageModule:
+        '.xml'
+
+        // Salesforce metadata file extensions to associate to XML language, specifically for the AppExchange rules:
+        // TODO: COMING SOON
+    ]
+}
 
 // This object lists all the PMD rule names that are shared across languages which helps us map back and forth to unique names
-export const SHARED_RULE_NAMES: Record<string, LanguageId[]> = {
-    ForLoopsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
-    IfElseStmtsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
-    IfStmtsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT],
-    WhileLoopsMustUseBraces: [LanguageId.APEX, LanguageId.JAVASCRIPT]
+export const SHARED_RULE_NAMES: Record<string, Language[]> = {
+    ForLoopsMustUseBraces: [Language.APEX, Language.JAVASCRIPT],
+    IfElseStmtsMustUseBraces: [Language.APEX, Language.JAVASCRIPT],
+    IfStmtsMustUseBraces: [Language.APEX, Language.JAVASCRIPT],
+    WhileLoopsMustUseBraces: [Language.APEX, Language.JAVASCRIPT]
 };

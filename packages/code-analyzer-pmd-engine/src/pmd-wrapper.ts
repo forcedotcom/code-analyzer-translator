@@ -9,7 +9,7 @@ const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'ja
 
 export type PmdRuleInfo = {
     name: string,
-    language: string,
+    languageId: string,
     description: string,
     externalInfoUrl: string,
     ruleSet: string,
@@ -63,14 +63,14 @@ export class PmdWrapperInvoker {
         this.emitLogEvent = emitLogEvent;
     }
 
-    async invokeDescribeCommand(customRulesets: string[], pmdRuleLanguages: string[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
+    async invokeDescribeCommand(customRulesets: string[], pmdRuleLanguageIds: string[], emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const tempDir: string = await this.getTemporaryWorkingDir();
         const pmdRulesOutputFile: string = path.join(tempDir, 'ruleInfo.json');
         const customRulesetsListFile: string = path.join(tempDir, 'customRulesetsList.txt');
         await fs.promises.writeFile(customRulesetsListFile, customRulesets.join('\n'), 'utf-8');
         emitProgress(10);
 
-        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, customRulesetsListFile, pmdRuleLanguages.join(',')];
+        const javaCmdArgs: string[] = [PMD_WRAPPER_JAVA_CLASS, 'describe', pmdRulesOutputFile, customRulesetsListFile, pmdRuleLanguageIds.join(',')];
         const javaClassPaths: string[] = [
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
             ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)

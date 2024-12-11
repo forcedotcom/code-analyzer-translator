@@ -10,10 +10,10 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
+import {indent, JavaCommandExecutor, toExtensionsToLanguageMap, WorkspaceLiaison} from "./utils";
 import path from "node:path";
 import * as fs from 'node:fs/promises';
-import {extensionToLanguageId, LanguageId, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
+import {DEFAULT_FILE_EXTENSIONS, Language, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
 import {
     LanguageSpecificPmdRunData,
     PmdResults,
@@ -27,8 +27,8 @@ import {RULE_MAPPINGS} from "./pmd-rule-mappings";
 
 export class PmdEngine extends Engine {
     private readonly pmdWrapperInvoker: PmdWrapperInvoker;
-    private readonly selectedLanguages: LanguageId[];
-    private readonly customRulesets: string[];
+    private readonly config: PmdEngineConfig;
+    private readonly extensionToLanguageMap: Map<string, Language>;
 
     private workspaceLiaisonCache: Map<string, WorkspaceLiaison> = new Map();
     private pmdRuleInfoListCache: Map<string, PmdRuleInfo[]> = new Map();
@@ -39,8 +39,8 @@ export class PmdEngine extends Engine {
         const userProvidedJavaClasspathEntries: string[] = config.java_classpath_entries;
         this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
-        this.selectedLanguages = config.rule_languages as LanguageId[];
-        this.customRulesets = config.custom_rulesets;
+        this.config = config;
+        this.extensionToLanguageMap = toExtensionsToLanguageMap(DEFAULT_FILE_EXTENSIONS); // TODO: Make this configurable
     }
 
     getName(): string {
@@ -68,7 +68,7 @@ export class PmdEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(runOptions.workspace);
-        const relevantLanguageToFilesMap: Map<LanguageId, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
+        const relevantLanguageToFilesMap: Map<Language, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
         this.emitRunRulesProgressEvent(2);
 
         const ruleInfoList: PmdRuleInfo[] = await this.getPmdRuleInfoList(workspaceLiaison,
@@ -79,11 +79,11 @@ export class PmdEngine extends Engine {
             .filter(ruleInfo => ruleInfo !== null);
 
         const runDataPerLanguage: Record<string, LanguageSpecificPmdRunData> = {};
-        const relevantLanguages: Set<string> = new Set(selectedRuleInfoList.map(ruleInfo => ruleInfo.language));
-        for (const language of relevantLanguages) {
-            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(toLanguageId(language)) || /* istanbul ignore next */ [];
+        const relevantLanguageIds: Set<string> = new Set(selectedRuleInfoList.map(ruleInfo => ruleInfo.languageId));
+        for (const languageId of relevantLanguageIds) {
+            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(toLanguageEnum(languageId)) || /* istanbul ignore next */ [];
             if (filesToScanForLanguage.length > 0) {
-                runDataPerLanguage[language] = {
+                runDataPerLanguage[languageId] = {
                     filesToScan: filesToScanForLanguage
                 }
             }
@@ -100,7 +100,7 @@ export class PmdEngine extends Engine {
 
         const violations: Violation[] = [];
         for (const pmdViolation of pmdResults.violations) {
-            violations.push(toViolation(pmdViolation));
+            violations.push(this.toViolation(pmdViolation));
         }
         for (const pmdProcessingError of pmdResults.processingErrors) {
             this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'PMD', pmdProcessingError.file,
@@ -116,10 +116,10 @@ export class PmdEngine extends Engine {
     private async getPmdRuleInfoList(workspaceLiaison: WorkspaceLiaison, emitProgress: (percComplete: number) => void): Promise<PmdRuleInfo[]> {
         const cacheKey: string = getCacheKey(workspaceLiaison.getWorkspace());
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
-            const relevantLanguages: LanguageId[] = await workspaceLiaison.getRelevantLanguages();
-            const pmdRuleLanguages: string[] = relevantLanguages.map(toPmdRuleLanguage);
+            const relevantLanguages: Language[] = await workspaceLiaison.getRelevantLanguages();
+            const pmdRuleLanguageIds: string[] = relevantLanguages.map(toPmdLanguageId);
             const ruleInfoList: PmdRuleInfo[] = relevantLanguages.length === 0 ? [] :
-                await this.pmdWrapperInvoker.invokeDescribeCommand(this.customRulesets, pmdRuleLanguages, emitProgress);
+                await this.pmdWrapperInvoker.invokeDescribeCommand(this.config.custom_rulesets, pmdRuleLanguageIds, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;
@@ -128,15 +128,33 @@ export class PmdEngine extends Engine {
     private getWorkspaceLiaison(workspace?: Workspace) : WorkspaceLiaison {
         const cacheKey: string = getCacheKey(workspace);
         if (!this.workspaceLiaisonCache.has(cacheKey)) {
-            this.workspaceLiaisonCache.set(cacheKey, new WorkspaceLiaison(workspace, this.selectedLanguages));
+            this.workspaceLiaisonCache.set(cacheKey,
+                new WorkspaceLiaison(workspace, this.config.rule_languages, this.extensionToLanguageMap));
         }
         return this.workspaceLiaisonCache.get(cacheKey)!
+    }
+
+    private toViolation(pmdViolation: PmdViolation): Violation {
+        const fileExt: string = path.extname(pmdViolation.codeLocation.file).toLowerCase();
+        const language: Language = this.extensionToLanguageMap.get(fileExt)!;
+        return {
+            ruleName: toUniqueRuleName(pmdViolation.rule, language),
+            message: pmdViolation.message,
+            codeLocations: [{
+                file: pmdViolation.codeLocation.file,
+                startLine: pmdViolation.codeLocation.startLine,
+                startColumn: pmdViolation.codeLocation.startCol,
+                endLine: pmdViolation.codeLocation.endLine,
+                endColumn: pmdViolation.codeLocation.endCol
+            }],
+            primaryLocationIndex: 0
+        }
     }
 }
 
 function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
-    const languageId: LanguageId = toLanguageId(pmdRuleInfo.language);
-    const uniqueRuleName: string = toUniqueRuleName(pmdRuleInfo.name, languageId);
+    const language: Language = toLanguageEnum(pmdRuleInfo.languageId);
+    const uniqueRuleName: string = toUniqueRuleName(pmdRuleInfo.name, language);
 
     let severityLevel: SeverityLevel;
     let tags: string[];
@@ -147,7 +165,7 @@ function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
     } else { // Any rule we don't know about from our RULE_MAPPINGS must be a custom rule. Unit tests prevent otherwise.
         severityLevel = toSeverityLevel(pmdRuleInfo.priority);
         const categoryTag: string = pmdRuleInfo.ruleSet.replaceAll(' ', '');
-        const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
+        const languageTag: string = language.charAt(0).toUpperCase() + language.slice(1);
         tags = [COMMON_TAGS.RECOMMENDED, categoryTag, languageTag, COMMON_TAGS.CUSTOM];
     }
 
@@ -160,8 +178,8 @@ function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
     };
 }
 
-function toUniqueRuleName(ruleName: string, ruleLanguage: LanguageId): string {
-    if (ruleName in SHARED_RULE_NAMES && ruleLanguage !== LanguageId.APEX) {
+function toUniqueRuleName(ruleName: string, ruleLanguage: Language): string {
+    if (ruleName in SHARED_RULE_NAMES && ruleLanguage !== Language.APEX) {
         return `${ruleName}-${ruleLanguage}`;
     }
     return ruleName;
@@ -186,22 +204,6 @@ function toSeverityLevel(pmdRulePriority: string): SeverityLevel {
     throw new Error("Unsupported priority: " + pmdRulePriority);
 }
 
-function toViolation(pmdViolation: PmdViolation): Violation {
-    return {
-        ruleName: toUniqueRuleName(pmdViolation.rule,
-            extensionToLanguageId[path.extname(pmdViolation.codeLocation.file).toLowerCase()]),
-        message: pmdViolation.message,
-        codeLocations: [{
-            file: pmdViolation.codeLocation.file,
-            startLine: pmdViolation.codeLocation.startLine,
-            startColumn: pmdViolation.codeLocation.startCol,
-            endLine: pmdViolation.codeLocation.endLine,
-            endColumn: pmdViolation.codeLocation.endCol
-        }],
-        primaryLocationIndex: 0
-    }
-}
-
 function getCacheKey(workspace?: Workspace) {
     return workspace? workspace.getWorkspaceId() : process.cwd();
 }
@@ -210,20 +212,20 @@ function fetchRuleInfoByRuleName(ruleInfoList: PmdRuleInfo[], uniqueRuleName: st
     // Note that some pmd rule names that were shared among languages were converted to contain a "-<language>" suffix.
     // So we need to map these names (like "TooManyFields-java") back into "TooManyFields" for the "java" language.
     const langSeparator: number = uniqueRuleName.indexOf('-');
-    const specificLanguageId: LanguageId|undefined = langSeparator > 0 ?
-        uniqueRuleName.substring(langSeparator+1) as LanguageId: undefined;
+    const specificLanguage: Language|undefined = langSeparator > 0 ?
+        uniqueRuleName.substring(langSeparator+1) as Language: undefined;
     const pmdRuleName: string = langSeparator > 0 ? uniqueRuleName.substring(0, langSeparator) : uniqueRuleName;
     return ruleInfoList.find(ruleInfo =>
-        ruleInfo.name === pmdRuleName && (specificLanguageId === undefined || toLanguageId(ruleInfo.language) === specificLanguageId)
+        ruleInfo.name === pmdRuleName && (specificLanguage === undefined || toLanguageEnum(ruleInfo.languageId) === specificLanguage)
     ) || null;
 }
 
-function toPmdRuleLanguage(languageId: LanguageId): string {
+function toPmdLanguageId(language: Language): string {
     // We must convert 'javascript' to 'ecmascript' since PMD actually uses 'ecmascript' as the identifier instead of 'javascript'
-    return languageId == LanguageId.JAVASCRIPT ? 'ecmascript' : languageId;
+    return language == Language.JAVASCRIPT ? 'ecmascript' : language;
 }
 
-function toLanguageId(pmdRuleLanguage: string): LanguageId {
+function toLanguageEnum(pmdRuleLanguage: string): Language {
     // We must convert 'ecmascript' back to 'javascrijpt'
-    return pmdRuleLanguage == 'ecmascript' ? LanguageId.JAVASCRIPT : pmdRuleLanguage as LanguageId;
+    return pmdRuleLanguage == 'ecmascript' ? Language.JAVASCRIPT : pmdRuleLanguage as Language;
 }
