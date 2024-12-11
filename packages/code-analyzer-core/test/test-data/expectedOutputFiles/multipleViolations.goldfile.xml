@@ -73,7 +73,7 @@
       <primaryLocationIndex>0</primaryLocationIndex>
       <locations>
         <location>
-          <file>test{{PATHSEP}}run.test.ts</file>
+          <file>test{{PATHSEP}}code-analyzer.test.ts</file>
           <startLine>21</startLine>
           <startColumn>7</startColumn>
           <endLine>25</endLine>
@@ -97,7 +97,7 @@
       <primaryLocationIndex>0</primaryLocationIndex>
       <locations>
         <location>
-          <file>test{{PATHSEP}}run.test.ts</file>
+          <file>test{{PATHSEP}}code-analyzer.test.ts</file>
           <startLine>56</startLine>
           <startColumn>4</startColumn>
         </location>

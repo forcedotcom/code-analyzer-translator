@@ -6,6 +6,7 @@ import {
     RunResultsImpl,
     UnexpectedErrorEngineRunResults
 } from "./results"
+import {SemVer} from 'semver';
 import {EngineLogEvent, EngineResultsEvent, EngineRunProgressEvent, Event, EventType, LogLevel} from "./events"
 import {getMessage} from "./messages";
 import * as engApi from "@salesforce/code-analyzer-engine-api"
@@ -37,6 +38,8 @@ export type RunOptions = {
 
 export type EngineConfig = engApi.ConfigObject;
 
+const MINIMUM_SUPPORTED_NODE = 20;
+
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
@@ -48,7 +51,11 @@ export class CodeAnalyzer {
     private readonly rulesCache: Map<string, RuleImpl[]> = new Map();
     private readonly engineRuleDiscoveryProgressAggregator: EngineProgressAggregator = new EngineProgressAggregator();
 
-    constructor(config: CodeAnalyzerConfig) {
+    constructor(config: CodeAnalyzerConfig, version: string = process.version) {
+        const semver: SemVer = new SemVer(version);
+        if (semver.major < MINIMUM_SUPPORTED_NODE) {
+            throw new Error(getMessage('UnsupportedNodeVersion', MINIMUM_SUPPORTED_NODE, version));
+        }
         this.config = config;
     }
 

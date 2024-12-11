@@ -39,6 +39,9 @@ const MESSAGE_CATALOG : MessageCatalog = {
     GenericEngineConfigOverview:
         `%s ENGINE CONFIGURATION`,
 
+    UnsupportedNodeVersion:
+        `Code Analyzer requires Node v%s or later. Current Node version: %s`,
+
     EngineConfigFieldDescription_disable_engine:
         `Whether to turn off the '%s' engine so that it is not included when running Code Analyzer commands.`,
 

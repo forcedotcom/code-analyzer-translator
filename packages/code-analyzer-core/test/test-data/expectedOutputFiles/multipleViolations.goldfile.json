@@ -72,7 +72,7 @@
       "primaryLocationIndex": 0,
       "locations": [
         {
-          "file": "test{{PATHSEP}}run.test.ts",
+          "file": "test{{PATHSEP}}code-analyzer.test.ts",
           "startLine": 21,
           "startColumn": 7,
           "endLine": 25,
@@ -96,7 +96,7 @@
       "primaryLocationIndex": 0,
       "locations": [
         {
-          "file": "test{{PATHSEP}}run.test.ts",
+          "file": "test{{PATHSEP}}code-analyzer.test.ts",
           "startLine": 56,
           "startColumn": 4
         }

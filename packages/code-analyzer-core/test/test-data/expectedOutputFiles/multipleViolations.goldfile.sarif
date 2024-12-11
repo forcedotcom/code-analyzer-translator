@@ -137,7 +137,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test{{ENCODEDPATHSEP}}run.test.ts",
+                  "uri": "test{{ENCODEDPATHSEP}}code-analyzer.test.ts",
                   "uriBaseId": "{{ENCODEDRUNDIR}}"
                 },
                 "region": {
@@ -153,7 +153,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test{{ENCODEDPATHSEP}}run.test.ts",
+                  "uri": "test{{ENCODEDPATHSEP}}code-analyzer.test.ts",
                   "uriBaseId": "{{ENCODEDRUNDIR}}"
                 },
                 "region": {
@@ -177,7 +177,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test{{ENCODEDPATHSEP}}run.test.ts",
+                  "uri": "test{{ENCODEDPATHSEP}}code-analyzer.test.ts",
                   "uriBaseId": "{{ENCODEDRUNDIR}}"
                 },
                 "region": {
@@ -191,7 +191,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test{{ENCODEDPATHSEP}}run.test.ts",
+                  "uri": "test{{ENCODEDPATHSEP}}code-analyzer.test.ts",
                   "uriBaseId": "{{ENCODEDRUNDIR}}"
                 },
                 "region": {

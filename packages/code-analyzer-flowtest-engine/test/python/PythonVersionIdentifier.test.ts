@@ -2,7 +2,7 @@ import {RuntimePythonVersionIdentifier} from "../../src/python/PythonVersionIden
 import {SemVer} from "semver";
 
 describe('PythonVersionIdentifier implementations', () => {
-    describe('PythonVersionIdentifierImpl', () => {
+    describe('RuntimePythonVersionIdentifier', () => {
 
         it('When command outputs parseable version, resolves to that version', async () => {
             const identifier = new RuntimePythonVersionIdentifier();
