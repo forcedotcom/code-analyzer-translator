@@ -5,7 +5,7 @@ import fs from "node:fs";
 import {getMessage} from "./messages";
 
 const CPD_WRAPPER_JAVA_CLASS: string = "com.salesforce.sfca.cpdwrapper.CpdWrapper";
-const CPD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pmd-cpd-wrappers', 'lib');
+const CPD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'java-lib');
 
 const STDOUT_PROGRESS_MARKER = '[Progress]';
 

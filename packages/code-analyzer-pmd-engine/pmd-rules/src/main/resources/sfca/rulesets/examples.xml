@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ruleset name="Example Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>Example rules used for internal testing purposes.</description>
+
+
+    <rule name="ExampleJavaBasedRule"
+          language="apex"
+          message="A variable called &quot;foo&quot; was found."
+          class="com.salesforce.sfca.pmdrules.examples.ExampleJavaBasedRule">
+        <description>
+            Example Java Based Rule - Detects when a variable is called "foo".
+        </description>
+        <priority>3</priority>
+        <example>
+<![CDATA[
+public class Example {
+    public void main() {
+        String foo = "<-- poor variable name";
+        System.debug(bar);
+    }
+}
+]]>
+        </example>
+    </rule>
+
+
+    <rule name="ExampleXPathBasedRule"
+          language="apex"
+          message="A variable called &quot;bar&quot; was found."
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
+            Example XPath Based Rule - Detects when a variable is called "bar".
+        </description>
+        <priority>5</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//VariableDeclaration[@Image="bar"]
+]]>
+                </value>
+            </property>
+        </properties>
+        <example>
+<![CDATA[
+public class Example {
+    public void main() {
+        String bar = "<-- poor variable name";
+        System.debug(bar);
+    }
+}
+]]>
+        </example>
+    </rule>
+</ruleset>

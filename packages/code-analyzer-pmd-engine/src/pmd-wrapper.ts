@@ -5,7 +5,7 @@ import {getMessage} from "./messages";
 import {LogLevel} from "@salesforce/code-analyzer-engine-api";
 
 const PMD_WRAPPER_JAVA_CLASS: string = "com.salesforce.sfca.pmdwrapper.PmdWrapper";
-const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'pmd-cpd-wrappers', 'lib');
+const PMD_WRAPPER_LIB_FOLDER: string = path.resolve(__dirname, '..', 'dist', 'java-lib');
 
 export type PmdRuleInfo = {
     name: string,
