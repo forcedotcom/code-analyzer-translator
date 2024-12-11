@@ -4,7 +4,7 @@ import {ChildProcessWithoutNullStreams, spawn} from "node:child_process";
 import {getMessage} from "./messages";
 import path from "node:path";
 import {Workspace} from "@salesforce/code-analyzer-engine-api";
-import {extensionToLanguageId, LanguageId} from "./constants";
+import {Language} from "./constants";
 
 tmp.setGracefulCleanup();
 const tmpDirAsync = promisify((options: tmp.DirOptions, cb: tmp.DirCallback) => tmp.dir(options, cb));
@@ -64,24 +64,26 @@ export class JavaCommandExecutor {
 // noinspection JSMismatchedCollectionQueryUpdate (IntelliJ is confused about how I am setting the private values, suppressing warnings)
 export class WorkspaceLiaison {
     private readonly workspace?: Workspace;
-    private readonly selectedLanguages: Set<LanguageId>;
+    private readonly selectedLanguages: Set<Language>;
+    private readonly extensionToLanguageMap: Map<string, Language>;
 
-    private relevantLanguageToFilesMap?: Map<LanguageId, string[]>;
+    private relevantLanguageToFilesMap?: Map<Language, string[]>;
 
-    constructor(workspace: Workspace | undefined, selectedLanguages: LanguageId[]) {
+    constructor(workspace: Workspace | undefined, selectedLanguages: Language[], extensionToLanguageMap: Map<string, Language>) {
         this.workspace = workspace;
         this.selectedLanguages = new Set(selectedLanguages);
+        this.extensionToLanguageMap = extensionToLanguageMap;
     }
 
     getWorkspace(): Workspace | undefined {
         return this.workspace;
     }
 
-    async getRelevantLanguages(): Promise<LanguageId[]> {
+    async getRelevantLanguages(): Promise<Language[]> {
         return [...(await this.getRelevantLanguageToFilesMap()).keys()].sort();
     }
 
-    async getRelevantLanguageToFilesMap(): Promise<Map<LanguageId, string[]>> {
+    async getRelevantLanguageToFilesMap(): Promise<Map<Language, string[]>> {
         if (this.relevantLanguageToFilesMap) {
             return this.relevantLanguageToFilesMap;
         }
@@ -91,11 +93,11 @@ export class WorkspaceLiaison {
         }
 
         const files: string[] = await this.workspace.getExpandedFiles();
-        this.relevantLanguageToFilesMap = new Map<LanguageId, string[]>();
+        this.relevantLanguageToFilesMap = new Map<Language, string[]>();
 
         for (const file of files) {
             const fileExt: string = path.extname(file).toLowerCase();
-            const lang: LanguageId | undefined = extensionToLanguageId[fileExt];
+            const lang: Language | undefined = this.extensionToLanguageMap.get(fileExt);
             if (!lang || !this.selectedLanguages.has(lang)) {
                 continue;
             }
@@ -110,4 +112,16 @@ export class WorkspaceLiaison {
 
 export function indent(value: string, indentation = '    '): string {
     return indentation + value.replaceAll('\n', `\n${indentation}`);
+}
+
+// Converts our file_extensions map which associates languages to file extensions to a map that associates
+// file extensions to languages. This will speed up processing later, which is why we do this conversion.
+export function toExtensionsToLanguageMap(langToFileExtsMap:  Record<Language, string[]>): Map<string, Language> {
+    const extensionsToLanguageMap: Map<string, Language> = new Map();
+    for (const language of Object.keys(langToFileExtsMap)) {
+        for (const fileExt of langToFileExtsMap[language as Language]) {
+            extensionsToLanguageMap.set(fileExt, language as Language);
+        }
+    }
+    return extensionsToLanguageMap;
 }

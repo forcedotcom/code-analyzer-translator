@@ -4,11 +4,11 @@ import {JavaVersionIdentifier} from "./JavaVersionIdentifier";
 import {SemVer} from "semver";
 import path from "node:path";
 import {indent} from "./utils";
-import {MINIMUM_JAVA_VERSION, LanguageId, CPD_ENGINE_NAME, PMD_ENGINE_NAME} from "./constants";
+import {MINIMUM_JAVA_VERSION, Language, CPD_ENGINE_NAME, PMD_ENGINE_NAME} from "./constants";
 import fs from "node:fs";
 
-export const PMD_AVAILABLE_LANGUAGES: string[] = Object.values(LanguageId).filter(l => l !== LanguageId.TYPESCRIPT); // Typescript is available in CPD but not PMD
-export const CPD_AVAILABLE_LANGUAGES: string[] = Object.values(LanguageId);
+export const PMD_AVAILABLE_LANGUAGES: Language[] = Object.values(Language).filter(l => l !== Language.TYPESCRIPT); // Typescript is available in CPD but not PMD
+export const CPD_AVAILABLE_LANGUAGES: Language[] = Object.values(Language);
 
 const DEFAULT_JAVA_COMMAND: string = 'java';
 
@@ -23,7 +23,7 @@ export type PmdEngineConfig = {
     // List of languages associated with the PMD rules to be made available for 'pmd' engine rule selection.
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.
-    rule_languages: string[]
+    rule_languages: Language[]
 
     // List of jar files and/or folders to add the Java classpath when running PMD.
     // Each entry may be given as an absolute path or a relative path to 'config_root'.
@@ -84,7 +84,7 @@ export type CpdEngineConfig = {
     // !! NOTE !! - HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
     // List of languages associated with CPD to be made available for 'cpd' engine rule selection.
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
-    rule_languages: string[]
+    rule_languages: Language[]
 
     // Specifies the minimum tokens threshold for each rule language.
     // The minimum tokens threshold is the number of tokens required to be in a duplicate block of code in order to be
@@ -92,7 +92,7 @@ export type CpdEngineConfig = {
     // distinct basic element of source code. For example, this could be language specific keywords, identifiers,
     // operators, literals, and more. See https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html to learn more.
     // If a value for a language is unspecified, then the default value of 100 will be used for that language.
-    minimum_tokens: Record<string, number>
+    minimum_tokens: Record<Language, number>
 
     // Indicates whether to ignore multiple copies of files of the same name and length.
     skip_duplicate_files: boolean
@@ -103,10 +103,10 @@ const DEFAULT_MINIMUM_TOKENS: number = 100;
 export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
     rule_languages: CPD_AVAILABLE_LANGUAGES, // hidden
-    minimum_tokens: CPD_AVAILABLE_LANGUAGES.reduce((obj, lang: string) => {
+    minimum_tokens: CPD_AVAILABLE_LANGUAGES.reduce((obj, lang: Language) => {
         obj[lang] = DEFAULT_MINIMUM_TOKENS;
         return obj;
-    }, {} as Record<string, number>),
+    }, {} as Record<Language, number>),
     skip_duplicate_files: false
 }
 
@@ -174,10 +174,10 @@ abstract class SharedConfigValueExtractor {
     }
 
     // The list of all possible languages that can be chosen within the rule_languages array
-    protected abstract getAllPossibleRuleLanguages(): string[];
+    protected abstract getAllPossibleRuleLanguages(): Language[];
 
     // The default return value for rule_languages
-    protected abstract getDefaultRuleLanguages(): string[];
+    protected abstract getDefaultRuleLanguages(): Language[];
 
     async extractJavaCommand(): Promise<string> {
         const javaCommand: string | undefined = this.configValueExtractor.extractString('java_command');
@@ -239,7 +239,7 @@ abstract class SharedConfigValueExtractor {
         }
     }
 
-    extractRuleLanguages(): string[] {
+    extractRuleLanguages(): Language[] {
         let ruleLanguages: string[] | undefined = this.configValueExtractor.extractArray('rule_languages',
             ValueValidator.validateString);
         if (ruleLanguages === undefined) {
@@ -258,14 +258,14 @@ abstract class SharedConfigValueExtractor {
         // Validate each language is supported
         ruleLanguages = [...ruleLanguagesSet];
         for (const ruleLanguage of ruleLanguages) {
-            if (!this.getAllPossibleRuleLanguages().includes(ruleLanguage)) {
+            if (!(this.getAllPossibleRuleLanguages() as string[]).includes(ruleLanguage)) {
                 throw new Error(getMessage('InvalidRuleLanguage',
                     this.configValueExtractor.getFieldPath('rule_languages'),
                     ruleLanguage,
                     toAvailableLanguagesText(this.getAllPossibleRuleLanguages())));
             }
         }
-        return ruleLanguages.sort();
+        return ruleLanguages.sort() as Language[];
     }
 }
 
@@ -313,11 +313,11 @@ class PmdConfigValueExtractor extends SharedConfigValueExtractor {
         return [... new Set(customRulesets)]; // Converting to set and back to array to remove duplicates
     }
 
-    protected getAllPossibleRuleLanguages(): string[] {
+    protected getAllPossibleRuleLanguages(): Language[] {
         return PMD_AVAILABLE_LANGUAGES;
     }
 
-    protected getDefaultRuleLanguages(): string[] {
+    protected getDefaultRuleLanguages(): Language[] {
         return DEFAULT_PMD_ENGINE_CONFIG.rule_languages;
     }
 }
@@ -327,20 +327,20 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
         super(configValueExtractor, javaVersionIdentifier);
     }
 
-    protected getAllPossibleRuleLanguages(): string[] {
+    protected getAllPossibleRuleLanguages(): Language[] {
         return CPD_AVAILABLE_LANGUAGES;
     }
 
-    protected getDefaultRuleLanguages(): string[] {
+    protected getDefaultRuleLanguages(): Language[] {
         return DEFAULT_CPD_ENGINE_CONFIG.rule_languages;
     }
 
-    extractMinimumTokens(): Record<string, number> {
+    extractMinimumTokens(): Record<Language, number> {
         const minimumTokensExtractor: ConfigValueExtractor = this.configValueExtractor.extractObjectAsExtractor(
             'minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens);
 
         // Start with a copy will all the default values
-        const minimumTokensMap: Record<string, number> = {...DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens};
+        const minimumTokensMap: Record<Language, number> = {...DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens};
 
         // And override the default values with user provided values for each language found
         for (const key of minimumTokensExtractor.getKeys()) {
@@ -350,7 +350,7 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
                 language = 'javascript';
             }
 
-            if (!CPD_AVAILABLE_LANGUAGES.includes(language)) {
+            if (!(CPD_AVAILABLE_LANGUAGES as string[]).includes(language)) {
                 throw new Error(getMessage('InvalidFieldKeyForObject',
                     this.configValueExtractor.getFieldPath('minimum_tokens'), key, toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)));
             }
@@ -359,7 +359,7 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
             if (minimumTokensValue <= 0 || Math.floor(minimumTokensValue) != minimumTokensValue) {
                 throw new Error(getMessage('InvalidPositiveInteger', minimumTokensExtractor.getFieldPath(key)));
             }
-            minimumTokensMap[language] = minimumTokensValue;
+            minimumTokensMap[language as Language] = minimumTokensValue;
         }
 
         return minimumTokensMap;

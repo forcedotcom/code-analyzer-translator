@@ -16,7 +16,7 @@ import {
 import {PmdEngine} from "../src/pmd-engine";
 import fs from "node:fs";
 import path from "node:path";
-import {PMD_VERSION, LanguageId} from "../src/constants";
+import {Language, PMD_VERSION} from "../src/constants";
 import {DEFAULT_PMD_ENGINE_CONFIG, PMD_AVAILABLE_LANGUAGES, PmdEngineConfig} from "../src/config";
 import {PmdCpdEnginesPlugin} from "../src";
 
@@ -132,7 +132,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When specifying multiple rule languages, but only js files are in the workspace, then only javascript rules are returned', async () => {
         const engine: PmdEngine = new PmdEngine({
             ... DEFAULT_PMD_ENGINE_CONFIG,
-            rule_languages: ['javascript', 'xml' /* not in workspace */]
+            rule_languages: [Language.JAVASCRIPT, Language.XML /* not in workspace */]
         });
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.js')
@@ -144,7 +144,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When adding a custom rulesets from disk, then the custom rules are added to the rule descriptions', async () => {
         const engine: PmdEngine = new PmdEngine({
             ... DEFAULT_PMD_ENGINE_CONFIG,
-            rule_languages: ['apex', 'javascript'],
+            rule_languages: [Language.APEX, Language.JAVASCRIPT],
             custom_rulesets: [
                 path.join(TEST_DATA_FOLDER, 'custom rules', 'somecat3.xml'),
                 path.join(TEST_DATA_FOLDER, 'custom rules', 'subfolder', 'somecat4.xml')
@@ -435,7 +435,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     it('When specified rules are not relevant to users workspace, then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine({
             ...DEFAULT_PMD_ENGINE_CONFIG,
-            rule_languages: ['xml']
+            rule_languages: [Language.XML]
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
@@ -490,7 +490,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     it('When specifying a non-default language and workspace contains violations for that language, then return correct violations', async () => {
         const engine: PmdEngine = new PmdEngine({
             ... DEFAULT_PMD_ENGINE_CONFIG,
-            rule_languages: ['javascript', 'xml' /* sanity check: not relevant to workspace */, 'apex']
+            rule_languages: [Language.JAVASCRIPT, Language.XML /* sanity check: not relevant to workspace */, Language.APEX]
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['ConsistentReturn', 'WhileLoopsMustUseBraces-javascript', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
@@ -535,8 +535,8 @@ function expectNoDashesAppearOutsideOfOurLanguageSpecificRules(ruleDescriptions:
     for (const ruleDescription of ruleDescriptions) {
         const dashIdx: number = ruleDescription.name.indexOf('-');
         if (dashIdx >= 0) {
-            const possibleLang: string = ruleDescription.name.substring(dashIdx+1) as LanguageId;
-            if (!(Object.values(LanguageId) as string[]).includes(possibleLang)) {
+            const possibleLang: string = ruleDescription.name.substring(dashIdx+1) as Language;
+            if (!(Object.values(Language) as string[]).includes(possibleLang)) {
                 throw new Error(`${ruleDescription.name} contains a '-' which is a reserved character for our PMD rules`)
             }
         }

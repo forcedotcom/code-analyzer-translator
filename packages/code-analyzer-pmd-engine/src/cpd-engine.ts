@@ -11,9 +11,9 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {CPD_ENGINE_NAME, LanguageId} from "./constants";
+import {CPD_ENGINE_NAME, DEFAULT_FILE_EXTENSIONS, Language} from "./constants";
 import {getMessage} from "./messages";
-import {indent, JavaCommandExecutor, WorkspaceLiaison} from "./utils";
+import {indent, JavaCommandExecutor, toExtensionsToLanguageMap, WorkspaceLiaison} from "./utils";
 import {CPD_AVAILABLE_LANGUAGES, CpdEngineConfig} from "./config";
 import {
     CpdBlockLocation,
@@ -31,6 +31,7 @@ const RULE_NAME_PREFIX: string = 'DetectCopyPasteFor';
 export class CpdEngine extends Engine {
     private readonly cpdWrapperInvoker: CpdWrapperInvoker;
     private readonly config: CpdEngineConfig;
+    private readonly extensionToLanguageMap: Map<string, Language>;
 
     private workspaceLiaisonCache: Map<string, WorkspaceLiaison> = new Map();
 
@@ -40,6 +41,7 @@ export class CpdEngine extends Engine {
         this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.config = config;
+        this.extensionToLanguageMap = toExtensionsToLanguageMap(DEFAULT_FILE_EXTENSIONS); // TODO: Make this configurable
     }
 
     getName(): string {
@@ -55,7 +57,7 @@ export class CpdEngine extends Engine {
     async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(describeOptions.workspace);
         this.emitDescribeRulesProgressEvent(33);
-        const relevantLanguages: LanguageId[] = await workspaceLiaison.getRelevantLanguages();
+        const relevantLanguages: Language[] = await workspaceLiaison.getRelevantLanguages();
         const ruleDescriptions: RuleDescription[] = relevantLanguages.map(createRuleForLanguage);
         this.emitDescribeRulesProgressEvent(100);
         return ruleDescriptions;
@@ -63,7 +65,7 @@ export class CpdEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const workspaceLiaison: WorkspaceLiaison = this.getWorkspaceLiaison(runOptions.workspace);
-        const relevantLanguageToFilesMap: Map<LanguageId, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
+        const relevantLanguageToFilesMap: Map<Language, string[]> = await workspaceLiaison.getRelevantLanguageToFilesMap();
         this.emitRunRulesProgressEvent(2);
 
         const inputData: CpdRunInputData = {
@@ -71,13 +73,13 @@ export class CpdEngine extends Engine {
             skipDuplicateFiles: this.config.skip_duplicate_files
         }
 
-        const relevantLanguages: Set<LanguageId> = new Set(ruleNames.map(getLanguageFromRuleName));
-        for (const languageId of relevantLanguages) {
-            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(languageId) || [];
+        const relevantLanguages: Set<Language> = new Set(ruleNames.map(getLanguageFromRuleName));
+        for (const language of relevantLanguages) {
+            const filesToScanForLanguage: string[] = relevantLanguageToFilesMap.get(language) || [];
             if (filesToScanForLanguage.length > 0) {
-                inputData.runDataPerLanguage[toCpdLanguage(languageId)] = {
+                inputData.runDataPerLanguage[toCpdLanguageId(language)] = {
                     filesToScan: filesToScanForLanguage,
-                    minimumTokens: this.config.minimum_tokens[languageId]
+                    minimumTokens: this.config.minimum_tokens[language]
                 }
             }
         }
@@ -93,16 +95,16 @@ export class CpdEngine extends Engine {
             (innerPerc: number) => this.emitRunRulesProgressEvent(5 + 93*(innerPerc/100))); // 5 to 98%
 
         const violations: Violation[] = [];
-        for (const cpdLanguage in cpdRunResults) {
-            const languageId: LanguageId = toLanguageId(cpdLanguage);
-            const cpdLanguageRunResults: CpdLanguageRunResults = cpdRunResults[cpdLanguage];
+        for (const cpdLanguageId in cpdRunResults) {
+            const language: Language = toLanguageEnum(cpdLanguageId);
+            const cpdLanguageRunResults: CpdLanguageRunResults = cpdRunResults[cpdLanguageId];
             for (const cpdMatch of cpdLanguageRunResults.matches) {
-                violations.push(toViolation(languageId, cpdMatch));
+                violations.push(toViolation(language, cpdMatch));
             }
             for (const cpdProcessingError of cpdLanguageRunResults.processingErrors) {
                 /* istanbul ignore next */
                 if (cpdProcessingError.detail == '[TERMINATING_EXCEPTION]') {
-                    this.emitLogEvent(LogLevel.Error, getMessage('CpdTerminatingExceptionThrown', languageId,
+                    this.emitLogEvent(LogLevel.Error, getMessage('CpdTerminatingExceptionThrown', language,
                         indent(cpdProcessingError.message)));
                 } else {
                     this.emitLogEvent(LogLevel.Error, getMessage('ProcessingErrorForFile', 'CPD', cpdProcessingError.file,
@@ -120,66 +122,67 @@ export class CpdEngine extends Engine {
     private getWorkspaceLiaison(workspace?: Workspace) : WorkspaceLiaison {
         const cacheKey: string = getCacheKey(workspace);
         if (!this.workspaceLiaisonCache.has(cacheKey)) {
-            this.workspaceLiaisonCache.set(cacheKey, new WorkspaceLiaison(workspace, this.config.rule_languages as LanguageId[]));
+            this.workspaceLiaisonCache.set(cacheKey,
+                new WorkspaceLiaison(workspace, this.config.rule_languages as Language[], this.extensionToLanguageMap));
         }
         return this.workspaceLiaisonCache.get(cacheKey)!
     }
 }
 
-function createRuleForLanguage(languageId: LanguageId): RuleDescription {
-    const languageTag: string = languageId.charAt(0).toUpperCase() + languageId.slice(1);
+function createRuleForLanguage(language: Language): RuleDescription {
+    const languageTag: string = language.charAt(0).toUpperCase() + language.slice(1);
 
     // We agreed that html and xml can be noisy and are less important for users to be made aware of duplicate code
     // so we will be just adding Recommended tag to programming languages: apex, javascript, typescript, and visualforce
-    const recommendedLanguages: Set<LanguageId> = new Set([LanguageId.APEX, LanguageId.JAVASCRIPT, LanguageId.TYPESCRIPT, LanguageId.VISUALFORCE]);
+    const recommendedLanguages: Set<Language> = new Set([Language.APEX, Language.JAVASCRIPT, Language.TYPESCRIPT, Language.VISUALFORCE]);
 
     return {
-        name: getRuleNameFromLanguage(languageId),
+        name: getRuleNameFromLanguage(language),
         severityLevel: SeverityLevel.Info,
         tags: [
-            ... (recommendedLanguages.has(languageId) ? [COMMON_TAGS.RECOMMENDED] : []),
+            ... (recommendedLanguages.has(language) ? [COMMON_TAGS.RECOMMENDED] : []),
             COMMON_TAGS.CATEGORIES.DESIGN,
             languageTag],
-        description: getMessage('DetectCopyPasteForLanguageRuleDescription', languageId),
+        description: getMessage('DetectCopyPasteForLanguageRuleDescription', language),
         resourceUrls: ['https://docs.pmd-code.org/latest/pmd_userdocs_cpd.html#refactoring-duplicates']
     }
 }
 
-function getRuleNameFromLanguage(languageId: LanguageId) {
-    return RULE_NAME_PREFIX + makeFirstCharUpperCase(languageId);
+function getRuleNameFromLanguage(language: Language) {
+    return RULE_NAME_PREFIX + makeFirstCharUpperCase(language);
 }
 
 function makeFirstCharUpperCase(text: string): string {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-function getLanguageFromRuleName(ruleName: string): LanguageId {
+function getLanguageFromRuleName(ruleName: string): Language {
     const language: string = ruleName.slice(RULE_NAME_PREFIX.length).toLowerCase();
-    if (!CPD_AVAILABLE_LANGUAGES.includes(language)) {
+    if (!(CPD_AVAILABLE_LANGUAGES as string[]).includes(language)) {
         throw new Error(`Unexpected error: The rule '${ruleName}' does not map to a supported CPD language: ${JSON.stringify(CPD_AVAILABLE_LANGUAGES)}`);
     }
-    return language as LanguageId;
+    return language as Language;
 }
 
 function getCacheKey(workspace?: Workspace) {
     return workspace? workspace.getWorkspaceId() : process.cwd();
 }
 
-function toCpdLanguage(languageId: LanguageId): string {
+function toCpdLanguageId(language: Language): string {
     // We must convert 'javascript' to 'ecmascript' since CPD actually uses 'ecmascript' as the identifier instead of 'javascript'
-    return languageId == LanguageId.JAVASCRIPT ? 'ecmascript' : languageId;
+    return language == Language.JAVASCRIPT ? 'ecmascript' : language;
 }
 
-function toLanguageId(cpdLanguage: string): LanguageId {
+function toLanguageEnum(cpdLanguageId: string): Language {
     // We must convert 'ecmascript' back to 'javascrijpt'
-    return cpdLanguage == 'ecmascript' ? LanguageId.JAVASCRIPT : cpdLanguage as LanguageId;
+    return cpdLanguageId == 'ecmascript' ? Language.JAVASCRIPT : cpdLanguageId as Language;
 }
 
-function toViolation(languageId: LanguageId, cpdMatch: CpdMatch): Violation {
+function toViolation(language: Language, cpdMatch: CpdMatch): Violation {
     return {
-        ruleName: getRuleNameFromLanguage(languageId),
+        ruleName: getRuleNameFromLanguage(language),
         message: getMessage('DetectCopyPasteForLanguageViolationMessage',
-            languageId, cpdMatch.numBlocks, cpdMatch.numTokensInBlock, cpdMatch.numNonemptyLinesInBlock),
+            language, cpdMatch.numBlocks, cpdMatch.numTokensInBlock, cpdMatch.numNonemptyLinesInBlock),
         primaryLocationIndex: 0,
         codeLocations: cpdMatch.blockLocations.map(toCodeLocation)
     }

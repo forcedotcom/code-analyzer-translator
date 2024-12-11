@@ -12,6 +12,7 @@ import {CpdEngine} from "../src/cpd-engine";
 import fs from "node:fs";
 import path from "node:path";
 import {DEFAULT_CPD_ENGINE_CONFIG} from "../src/config";
+import {Language} from "../src/constants";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -62,7 +63,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When selecting only the apex language and no workspace, only apex rule is returned', async () => {
         const engine: CpdEngine = new CpdEngine({
             ... DEFAULT_CPD_ENGINE_CONFIG,
-            rule_languages: ['apex']
+            rule_languages: [Language.APEX]
         });
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
@@ -73,7 +74,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
     it('When selecting three languages but workspace only contains files for two of the languages, then only those two rules are returned', async () => {
         const engine: CpdEngine = new CpdEngine({
             ... DEFAULT_CPD_ENGINE_CONFIG,
-            rule_languages: ['apex', 'html', 'xml']
+            rule_languages: [Language.APEX, Language.HTML, Language.XML]
         });
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls'),
@@ -226,7 +227,8 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const engine: CpdEngine = new CpdEngine({
             ...DEFAULT_CPD_ENGINE_CONFIG,
             minimum_tokens: {
-                javascript: 10
+                ... DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens,
+                [Language.JAVASCRIPT]: 10
             }
         });
         const progressEvents: RunRulesProgressEvent[] = [];
