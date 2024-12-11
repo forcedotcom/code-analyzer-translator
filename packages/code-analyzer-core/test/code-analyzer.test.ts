@@ -26,6 +26,24 @@ import {UndefinedCodeLocation} from "../src/results";
 
 changeWorkingDirectoryToPackageRoot();
 
+describe("Tests for CodeAnalyzer constructor", () => {
+    it.each([
+        {version: 'v18.0.0'},
+        {version: 'v4.0.0'} // 4 is less than 20, but 4 is greater than 2. This is a classic trap for SemVer comparisons.
+    ])("When supplied with a Node Version prior to v20, construction fails. Case: $version", ({version}) => {
+        // Expect the construction to fail with an error message that mentions v20, the minimum compatible version.
+        expect(() => new CodeAnalyzer(CodeAnalyzerConfig.withDefaults(), version)).toThrow('v20');
+    });
+
+    it.each([
+        {version: 'v20.0.0'},
+        {version: 'v21.0.0'},
+        {version: 'v100.0.0'} // 100 is greater than 20, but 1 is less than 2. This is a classic trap for SemVer comparisons.
+    ])('When supplied with a Node Version of v20 or later, construction succeeds. Case: $version"', ({version}) => {
+        expect(new CodeAnalyzer(CodeAnalyzerConfig.withDefaults(), version)).toBeInstanceOf(CodeAnalyzer);
+    });
+});
+
 describe("Tests for the run method of CodeAnalyzer", () => {
     let sampleRunOptions: RunOptions;
     let sampleTimestamp: Date;
@@ -62,7 +80,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const badPathStartPoint: string = path.resolve(__dirname, 'doesNotExist.xml#someMethod');
         const runOptions: RunOptions = {
             ... sampleRunOptions,
-            pathStartPoints: [path.resolve(__dirname, 'run.test.ts'), badPathStartPoint]
+            pathStartPoints: [path.resolve(__dirname, 'code-analyzer.test.ts'), badPathStartPoint]
         };
         await expect(codeAnalyzer.run(selection, runOptions)).rejects.toThrow(
             getMessage('PathStartPointFileDoesNotExist', badPathStartPoint, path.resolve(__dirname, 'doesNotExist.xml')));
@@ -137,14 +155,14 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When specifying path start points as files and subfolders, then they are passed to each engine successfully", async () => {
         await codeAnalyzer.run(selection, {
             workspace: await codeAnalyzer.createWorkspace(['test']),
-            pathStartPoints: ['test/test-data', 'test/run.test.ts']
+            pathStartPoints: ['test/test-data', 'test/code-analyzer.test.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
             workspace: new engApi.Workspace([path.resolve('test')], "FixedId"),
             pathStartPoints: [
                 { file: path.resolve("test", "test-data") },
-                { file: path.resolve("test", "run.test.ts")}
+                { file: path.resolve("test", "code-analyzer.test.ts")}
             ]
         };
         expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
@@ -158,7 +176,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     it("When specifying path start points individual methods, then they are passed to each engine successfully", async () => {
         await codeAnalyzer.run(selection, {
             workspace: await codeAnalyzer.createWorkspace(['test', 'src/utils.ts', 'src/index.ts']),
-            pathStartPoints: ['test/run.test.ts#someMethod','test/stubs.ts#method1;method2;method3','src/utils.ts']
+            pathStartPoints: ['test/code-analyzer.test.ts#someMethod','test/stubs.ts#method1;method2;method3','src/utils.ts']
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
@@ -170,7 +188,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
                 "FixedId"),
             pathStartPoints: [
                 {
-                    file: path.resolve("test", "run.test.ts"),
+                    file: path.resolve("test", "code-analyzer.test.ts"),
                     methodName: 'someMethod'
                 },
                 {
@@ -326,7 +344,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(engine1Violations[1].getMessage()).toEqual('SomeViolationMessage2');
         const engine1Violation2CodeLocations: CodeLocation[] = engine1Violations[1].getCodeLocations();
         expect(engine1Violation2CodeLocations).toHaveLength(1);
-        assertCodeLocation(engine1Violation2CodeLocations[0], path.resolve('test', 'run.test.ts'), 21, 7, 25, 4);
+        assertCodeLocation(engine1Violation2CodeLocations[0], path.resolve('test', 'code-analyzer.test.ts'), 21, 7, 25, 4);
         expect(engine1Violations[1].getPrimaryLocationIndex()).toEqual(0);
         expect(engine1Violations[1].getResourceUrls()).toEqual([
             "https://example.com/stub1RuleC",

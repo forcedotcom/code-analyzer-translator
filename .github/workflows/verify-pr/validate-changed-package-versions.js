@@ -10,14 +10,14 @@ function main() {
 
     displayList('THE FOLLOWING FILES WERE CHANGED:', changedFiles);
 
-    const changedPackages = identifyChangedPackages(changedFiles);
+    const changedPackages = identifyMeaningfullyChangedPackages(changedFiles);
 
     if (changedPackages.length === 0) {
         console.log('No changed packages; no verification needed');
         process.exit(0);
     }
 
-    displayList('THE FOLLOWING PACKAGES HAVE CHANGED FILES:', changedPackages);
+    displayList('THE FOLLOWING PACKAGES HAVE CHANGED (NON-TEST) FILES:', changedPackages);
 
     const incorrectlyVersionedPackages = identifyIncorrectlyVersionedPackages(changedPackages);
 
@@ -38,12 +38,12 @@ function displayList(header, list) {
     console.log('');
 }
 
-function identifyChangedPackages(changedFiles) {
+function identifyMeaningfullyChangedPackages(changedFiles) {
     const changedPackages = new Set();
 
     for (const changedFile of changedFiles) {
         const changedPackage = convertFileNameToPackageNameIfPossible(changedFile);
-        if (changedPackage) {
+        if (changedPackage && !isFileInTestFolder(changedFile)) {
             changedPackages.add(changedPackage);
         }
     }
@@ -58,6 +58,13 @@ function convertFileNameToPackageNameIfPossible(changedFile) {
     } else {
         return path.join(changedFilePathSegments[0], changedFilePathSegments[1]);
     }
+}
+
+function isFileInTestFolder(changedFile) {
+    const changedFilePathSegments = path.dirname(changedFile).split('/');
+    return changedFilePathSegments.length >= 3
+        && changedFilePathSegments[0] === 'packages'
+        && changedFilePathSegments[2] === 'test';
 }
 
 function identifyIncorrectlyVersionedPackages(changedPackages) {

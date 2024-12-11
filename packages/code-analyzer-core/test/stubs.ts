@@ -298,7 +298,7 @@ export function getSampleViolationForStub1RuleC(): engApi.Violation {
         message: 'SomeViolationMessage2',
         codeLocations: [
             {
-                file: 'test/run.test.ts',
+                file: 'test/code-analyzer.test.ts',
                 startLine: 21,
                 startColumn: 7,
                 endLine: 25,
@@ -319,7 +319,7 @@ export function getSampleViolationForStub1RuleE(): engApi.Violation {
         message: 'Some Violation that contains\na new line in `it` and "various" \'quotes\'. Also it has <brackets> that may need to be {escaped}.',
         codeLocations: [
             {
-                file: 'test/run.test.ts',
+                file: 'test/code-analyzer.test.ts',
                 startLine: 56,
                 startColumn: 4
             }

@@ -26,17 +26,17 @@ describe("Tests for the createWorkspace method of CodeAnalyzer", () => {
     });
 
     it("When provided a windows based path, it resolves correctly", async () => {
-        const workspace: Workspace = await codeAnalyzer.createWorkspace(['test\\run.test.ts']);
-        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test/run.test.ts')]);
+        const workspace: Workspace = await codeAnalyzer.createWorkspace(['test\\code-analyzer.test.ts']);
+        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test/code-analyzer.test.ts')]);
     });
 
     it("When including a relative file and a folder then they both converted to absolute paths", async () => {
-        const workspace: Workspace = await codeAnalyzer.createWorkspace(['src', 'test/run.test.ts']);
-        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('src'), path.resolve('test/run.test.ts')]);
+        const workspace: Workspace = await codeAnalyzer.createWorkspace(['src', 'test/code-analyzer.test.ts']);
+        expect(workspace.getFilesAndFolders()).toEqual([path.resolve('src'), path.resolve('test/code-analyzer.test.ts')]);
     });
 
     it("When including a parent folder and child paths under that folder, then the redundant children are removed", async () => {
-        const workspace: Workspace = await codeAnalyzer.createWorkspace(['test/test-data', 'test', 'test/run.test.ts']);
+        const workspace: Workspace = await codeAnalyzer.createWorkspace(['test/test-data', 'test', 'test/code-analyzer.test.ts']);
         expect(workspace.getFilesAndFolders()).toEqual([path.resolve('test')]);
     });
 
