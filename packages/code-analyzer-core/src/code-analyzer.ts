@@ -21,6 +21,7 @@ import {
     UniqueIdGenerator
 } from "./utils";
 import fs from "node:fs";
+import path from 'node:path';
 
 export interface Workspace {
     getWorkspaceId(): string
@@ -61,6 +62,8 @@ export class CodeAnalyzer {
         if (semver.major < MINIMUM_SUPPORTED_NODE) {
             throw new Error(getMessage('UnsupportedNodeVersion', MINIMUM_SUPPORTED_NODE, version));
         }
+        const nodeHomeDir: string = path.dirname(process.execPath);
+        process.env.PATH = `${nodeHomeDir}${path.delimiter}${process.env.PATH}`;
     }
 
     // For testing purposes only
