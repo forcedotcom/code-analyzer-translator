@@ -62,7 +62,9 @@ function convertFileNameToPackageNameIfPossible(changedFile) {
 
 function isFileInTestFolder(changedFile) {
     const changedFilePathSegments = path.dirname(changedFile).split('/');
-    return changedFilePathSegments.includes('test');
+    return changedFilePathSegments.length >= 3
+        && changedFilePathSegments[0] === 'packages'
+        && changedFilePathSegments[2] === 'test';
 }
 
 function identifyIncorrectlyVersionedPackages(changedPackages) {

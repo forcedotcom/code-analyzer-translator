@@ -40,7 +40,7 @@ const MESSAGE_CATALOG : MessageCatalog = {
         `%s ENGINE CONFIGURATION`,
 
     UnsupportedNodeVersion:
-        `Code Analyzer requires Node v%s or later. Current Node version: %s`,
+        `Code Analyzer requires Node v%s or later, but is currently running on Node %s. Please upgrade the version of 'node' on your machine.`,
 
     EngineConfigFieldDescription_disable_engine:
         `Whether to turn off the '%s' engine so that it is not included when running Code Analyzer commands.`,

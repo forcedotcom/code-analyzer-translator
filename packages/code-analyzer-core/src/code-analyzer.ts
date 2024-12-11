@@ -52,11 +52,15 @@ export class CodeAnalyzer {
     private readonly engineRuleDiscoveryProgressAggregator: EngineProgressAggregator = new EngineProgressAggregator();
 
     constructor(config: CodeAnalyzerConfig, version: string = process.version) {
+        this.validateEnviroment(version);
+        this.config = config;
+    }
+
+    private validateEnviroment(version: string): void {
         const semver: SemVer = new SemVer(version);
         if (semver.major < MINIMUM_SUPPORTED_NODE) {
             throw new Error(getMessage('UnsupportedNodeVersion', MINIMUM_SUPPORTED_NODE, version));
         }
-        this.config = config;
     }
 
     // For testing purposes only

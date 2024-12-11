@@ -55,7 +55,6 @@ describe("Tests for the run method of CodeAnalyzer", () => {
     const expectedStubEngine2RuleNames: string[] = ['stub2RuleA', 'stub2RuleC'];
 
     beforeEach(async () => {
-        jest.mock('process')
         sampleTimestamp = new Date();
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
         codeAnalyzer._setClock(new FixedClock(sampleTimestamp));
