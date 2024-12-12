@@ -42,6 +42,18 @@ describe("Tests for CodeAnalyzer constructor", () => {
     ])('When supplied with a Node Version of v20 or later, construction succeeds. Case: $version"', ({version}) => {
         expect(new CodeAnalyzer(CodeAnalyzerConfig.withDefaults(), version)).toBeInstanceOf(CodeAnalyzer);
     });
+
+    it("Constructor prepends the currently-running Node's parent folder to the PATH", () => {
+        // Figure out what the current value of PATH is.
+        const initialPath: string = process.env.PATH || '';
+        const nodeParentDir: string = path.dirname(process.execPath);
+
+        // Instantiate a Code Analyzer.
+        const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+
+        // Verify that the PATH was changed.
+        expect(process.env.PATH).toEqual(`${nodeParentDir}${path.delimiter}${initialPath}`);
+    });
 });
 
 describe("Tests for the run method of CodeAnalyzer", () => {
