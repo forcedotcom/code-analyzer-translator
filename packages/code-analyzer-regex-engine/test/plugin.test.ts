@@ -140,6 +140,13 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         expect(engine._getRegexRules()).toEqual(expRegexRules);
     });
 
+    it('If createEngineConfig is given an object with an unknown field, then error', async () => {
+        const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor({unknownField: 3}, 'engines.regex');
+        await expect(plugin.createEngineConfig('regex', valueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.regex',
+                'unknownField', '["custom_rules"]'));
+    });
+
     it('If custom_rules is given as an array instead of an object, emit appropriate error', async () => {
         const rawConfig: ConfigObject = {
             custom_rules: [
@@ -283,7 +290,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
         await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
-                'engines.regex.custom_rules.NoTodos.regex', 'string', 'undefined'));
+                'engines.regex.custom_rules.NoTodos.regex', 'string', 'null'));
     });
 
     it("If rule name is empty, ensure proper error is emitted", async () => {
@@ -345,7 +352,7 @@ describe('RegexEnginePlugin Custom Config Tests', () => {
         };
         const valueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.regex');
         await expect(plugin.createEngineConfig("regex", valueExtractor)).rejects.toThrow(
-            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'undefined'));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType', 'engines.regex.custom_rules.NoTodos.description', 'string', 'null'));
     });
 
     it("If file_extensions are not a string array, ensure proper error is emitted", async () => {

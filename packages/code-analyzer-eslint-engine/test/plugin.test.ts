@@ -43,9 +43,13 @@ describe('Tests for the ESLintEnginePlugin', () => {
         expect(await callCreateEngineConfig(plugin, {})).toEqual(DEFAULT_CONFIG);
     });
 
-    it('When value we do not care about is passed to createEngineConfig, then we ignore it', async () => {
+    it('When createEngineConfig is called with an object containing an invalid key, then we error', async () => {
         const userProvidedOverrides: ConfigObject = {dummy: 3};
-        expect(await callCreateEngineConfig(plugin, userProvidedOverrides)).toEqual(DEFAULT_CONFIG);
+        await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.eslint', 'dummy',
+                '["eslint_config_file","eslint_ignore_file","auto_discover_eslint_config",' +
+                '"disable_javascript_base_config","disable_lwc_base_config","disable_typescript_base_config",' +
+                '"file_extensions"]'));
     });
 
     it('When a valid eslint_config_file is passed to createEngineConfig, then it is set on the config', async () => {

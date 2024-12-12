@@ -4,6 +4,7 @@ export {
     ConfigObject,
     ConfigValue,
     ConfigValueExtractor,
+    getValueUsingCaseInsensitiveKey,
     ValueValidator
 } from "./config"
 

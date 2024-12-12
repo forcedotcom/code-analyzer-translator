@@ -44,6 +44,13 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(() => plugin.describeEngineConfig('oops')).toThrow(getMessage('UnsupportedEngineName', 'oops'));
     });
 
+    it(`When createEngineConfig for 'cpd' is given an object with an unknown field, then error`, async () => {
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({unknownField: 3}, 'engines.cpd');
+        await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.cpd', 'unknownField',
+                '["java_command","minimum_tokens","skip_duplicate_files"]'));
+    });
+
     it(`When createEngineConfig for 'cpd' is given an empty raw config, then the correct defaults are returned (assuming java version is correct on machine)`, async () => {
         // This test assumes that all environments that run this test will have JAVA v11+ installed and either has
         // * the JAVA_HOME environment variable points to the home folder of this java command
@@ -63,6 +70,13 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
             },
             skip_duplicate_files: false
         });
+    });
+
+    it(`When createEngineConfig for 'pmd' is given an object with an unknown field, then error`, async () => {
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({unknownField: 3}, 'engines.pmd');
+        await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.pmd', 'unknownField',
+                '["java_command","java_classpath_entries","custom_rulesets"]'));
     });
 
     it(`When createEngineConfig for 'pmd' is given an empty raw config, then the correct defaults are returned (assuming java version is correct on machine)`, async () => {
@@ -316,8 +330,8 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const rawConfig: ConfigObject = {minimum_tokens: {apex: 100, oops: 100}};
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
-            getMessage('InvalidFieldKeyForObject', 'engines.cpd.minimum_tokens', 'oops',
-                "'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'"));
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.cpd.minimum_tokens',
+                'oops', '["apex","html","javascript","typescript","visualforce","xml"]'));
     });
 
     it.each([-5,0,2.5])(`When createEngineConfig for 'cpd' is given a minumum_tokens.xml number %s that is not a positive integer, then error`, async (invalidValue) => {
@@ -328,7 +342,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
     });
 
     it(`When createEngineConfig for 'cpd' is given a valid minimum_tokens value, then it is used`, async() => {
-        const rawConfig: ConfigObject = {minimum_tokens: {apex: 18, xml: 30, ecmascript: 25}}; // Also test that ecmascript can be used as an alias of javascript
+        const rawConfig: ConfigObject = {minimum_toKens: {aPEx: 18, xml: 30, javaSCRipt: 25}}; // Also test that the names are case-insensitive
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.cpd');
         const resolvedConfig: ConfigObject = await plugin.createEngineConfig('cpd', configValueExtractor);
         expect(resolvedConfig['minimum_tokens']).toEqual({

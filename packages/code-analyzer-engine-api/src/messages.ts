@@ -34,6 +34,9 @@ export function getMessageFromCatalog(messageCatalog: MessageCatalog, msgId: str
 }
 
 export const SHARED_MESSAGE_CATALOG: MessageCatalog = {
+    ConfigObjectContainsInvalidKey:
+        `The '%s' configuration object contains an invalid key '%s'. Valid keys are: %s`,
+
     ConfigValueMustBeOfType:
         `The '%s' configuration value must be of type '%s' instead of type '%s'.`,
 

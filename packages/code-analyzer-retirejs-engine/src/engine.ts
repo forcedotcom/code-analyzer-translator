@@ -1,9 +1,7 @@
 import {
     COMMON_TAGS,
-    ConfigObject,
     DescribeOptions,
     Engine,
-    EnginePluginV1,
     EngineRunResults,
     EventType,
     LogEvent,
@@ -44,19 +42,6 @@ const SeverityMap: Map<RetireJsSeverity, SeverityLevel> = new Map([
     [RetireJsSeverity.Medium, SeverityLevel.Moderate],
     [RetireJsSeverity.Low, SeverityLevel.Low]
 ]);
-
-export class RetireJsEnginePlugin extends EnginePluginV1 {
-    getAvailableEngineNames(): string[] {
-        return [RetireJsEngine.NAME];
-    }
-
-    async createEngine(engineName: string, _config: ConfigObject): Promise<Engine> {
-        if (engineName === RetireJsEngine.NAME) {
-            return new RetireJsEngine();
-        }
-        throw new Error(getMessage('CantCreateEngineWithUnknownEngineName', engineName));
-    }
-}
 
 export class RetireJsEngine extends Engine {
     static readonly NAME = "retire-js";

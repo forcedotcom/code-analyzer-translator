@@ -273,6 +273,10 @@ export class CodeAnalyzer {
         const engineConfigValueExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(
             engineOverrides as engApi.ConfigObject, `${FIELDS.ENGINES}.${engineName}`, this.config.getConfigRoot());
 
+        // Although not truly a hidden field (it is well documented), we mark 'disable_engine' as a hidden field on the
+        // extractor so that each engine doesn't need to list it when using the validateOnlyContainsKeys method.
+        engineConfigValueExtractor._addHiddenKeys([FIELDS.DISABLE_ENGINE]);
+
         try {
             const engineConfig: engApi.ConfigObject = await enginePluginV1.createEngineConfig(engineName, engineConfigValueExtractor);
             const engine: engApi.Engine = await enginePluginV1.createEngine(engineName, engineConfig);

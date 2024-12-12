@@ -57,6 +57,7 @@ describe("Tests for creating and accessing configuration values", () => {
                 tags: ['Security', "SomeNewTag"]
             }
         });
+        expect(conf.getRuleOverrideFor('STUBENGINE1','STUB1RULED')).toEqual(conf.getRuleOverrideFor('stubEngine1','stub1RuleD')); // Sanity test for case insensitivity
         expect(conf.getEngineOverridesFor('stubEngine1')).toEqual({});
         expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({});
     });
@@ -85,6 +86,7 @@ describe("Tests for creating and accessing configuration values", () => {
                 severity: SeverityLevel.Moderate
             }
         });
+        expect(conf.getRuleOverridesFor('STUbengine2')).toEqual(conf.getRuleOverridesFor('stubEngine2'));  // Also test case insensitivity
         expect(conf.getEngineOverridesFor('stubEngine1')).toEqual({
             miscSetting1: true,
             miscSetting2: {
@@ -92,6 +94,7 @@ describe("Tests for creating and accessing configuration values", () => {
                 miscSetting2B: ["hello", "world"]
             }
         });
+        expect(conf.getEngineOverridesFor('stubENGINE1')).toEqual(conf.getEngineOverridesFor('stubEngine1')); // Also test case insensitivity
         expect(conf.getEngineOverridesFor('stubEngine2')).toEqual({});
     });
 
@@ -165,6 +168,12 @@ describe("Tests for creating and accessing configuration values", () => {
             getMessage('ConfigContentNotAnObject','array'));
     });
 
+    it("When top level config has an unknown key, then we error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({doesNotExist: 3})).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigObjectContainsInvalidKey','<TopLevel>', 'doesNotExist',
+                '["config_root","log_folder","rules","engines"]'));
+    });
+
     it("When engines value is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({engines: ['oops']})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','engines', 'object', 'array'));
@@ -188,6 +197,12 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When rules.someEngine.someRule is not an object then we throw an error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {someRule: [1,2]}}})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigValueMustBeOfType','rules.someEngine.someRule', 'object', 'array'));
+    });
+
+    it("When rules.someEngine.someRule contains an unknown key then we throw an error", () => {
+        expect(() => CodeAnalyzerConfig.fromObject({rules: {someEngine: {someRule: {oops: 3, tags: []}}}})).toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigObjectContainsInvalidKey','rules.someEngine.someRule', 'oops',
+                '["severity","tags"]'));
     });
 
     it("When the severity of a rule not a valid value then we throw an error", () => {
