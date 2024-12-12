@@ -98,8 +98,8 @@ export class CodeAnalyzerConfig {
         configRoot = !rawConfig.config_root ? (configRoot ?? process.cwd()) :
             validateAbsoluteFolder(rawConfig.config_root, FIELDS.CONFIG_ROOT);
         const configExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig, '', configRoot);
-        configExtractor._addHiddenKeys([FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES]);
-        configExtractor.validateOnlyContainsKeys([FIELDS.CONFIG_ROOT, FIELDS.LOG_FOLDER ,FIELDS.RULES, FIELDS.ENGINES]);
+        configExtractor.addKeysThatBypassValidation([FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES]); // Because custom_engine_plugin_modules is currently hidden
+        configExtractor.validateContainsOnlySpecifiedKeys([FIELDS.CONFIG_ROOT, FIELDS.LOG_FOLDER ,FIELDS.RULES, FIELDS.ENGINES]);
         const config: TopLevelConfig = {
             config_root: configRoot,
             log_folder: configExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
@@ -191,7 +191,7 @@ function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigVal
 }
 
 function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtractor): RuleOverride {
-    ruleOverrideExtractor.validateOnlyContainsKeys([FIELDS.SEVERITY, FIELDS.TAGS]);
+    ruleOverrideExtractor.validateContainsOnlySpecifiedKeys([FIELDS.SEVERITY, FIELDS.TAGS]);
     const engSeverity: engApi.SeverityLevel | undefined = ruleOverrideExtractor.extractSeverityLevel(FIELDS.SEVERITY);
     return {
         tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, engApi.ValueValidator.validateString),

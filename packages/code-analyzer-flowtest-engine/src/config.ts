@@ -28,7 +28,7 @@ export const FLOWTEST_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 
 export async function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor,
                                                  pythonVersionIdentifier: PythonVersionIdentifier): Promise<FlowTestConfig> {
-    configValueExtractor.validateOnlyContainsKeys(['python_command']);
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['python_command']);
     const valueExtractor: FlowTestEngineConfigValueExtractor = new FlowTestEngineConfigValueExtractor(
         configValueExtractor, pythonVersionIdentifier);
     return {

@@ -138,8 +138,8 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<PmdEngineConfig> {
-    configValueExtractor._addHiddenKeys(['rule_languages']);
-    configValueExtractor.validateOnlyContainsKeys(['java_command', 'java_classpath_entries', 'custom_rulesets']);
+    configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'java_classpath_entries', 'custom_rulesets']);
 
     const pmdConfigValueExtractor: PmdConfigValueExtractor = new PmdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
@@ -155,8 +155,8 @@ export async function validateAndNormalizePmdConfig(configValueExtractor: Config
 
 export async function validateAndNormalizeCpdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<CpdEngineConfig> {
-    configValueExtractor._addHiddenKeys(['rule_languages']);
-    configValueExtractor.validateOnlyContainsKeys(['java_command', 'minimum_tokens', 'skip_duplicate_files']);
+    configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'minimum_tokens', 'skip_duplicate_files']);
 
     const cpdConfigValueExtractor: CpdConfigValueExtractor = new CpdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
@@ -345,7 +345,7 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
         const minimumTokensExtractor: ConfigValueExtractor = this.configValueExtractor.extractObjectAsExtractor(
             'minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens);
 
-        minimumTokensExtractor.validateOnlyContainsKeys(CPD_AVAILABLE_LANGUAGES);
+        minimumTokensExtractor.validateContainsOnlySpecifiedKeys(CPD_AVAILABLE_LANGUAGES);
 
         const minimumTokensMap: Record<Language, number> = {... DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens}; // Start with copy
         for (const language of CPD_AVAILABLE_LANGUAGES) {

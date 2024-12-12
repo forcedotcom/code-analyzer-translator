@@ -28,7 +28,7 @@ describe('Tests for the RetireJsEnginePlugin', () => {
             getMessage('UnsupportedEngineName' ,'oops'));
     });
 
-    it('When createEngineConfig is an invalid engine name, then error', async () => {
+    it('When createEngineConfig is passed an invalid engine name, then error', async () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({},'engines.retire-js');
 
         await expect(plugin.createEngineConfig('oops', configValueExtractor)).rejects.toThrow(

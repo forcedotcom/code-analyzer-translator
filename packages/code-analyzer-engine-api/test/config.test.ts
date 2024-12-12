@@ -234,23 +234,23 @@ describe("Tests for ConfigValueExtractor", () => {
         expect(extractor.getConfigRoot()).toEqual(__dirname);
     });
 
-    it("When validateOnlyContainsKeys is called on an object that has extra keys, then error", () => {
+    it("When validateContainsOnlySpecifiedKeys is called on an object that has extra keys, then error", () => {
         const topLevelExtractor: ConfigValueExtractor = new ConfigValueExtractor({a: 3, b: 2, c: 3}, '', __dirname);
-        expect(() => topLevelExtractor.validateOnlyContainsKeys(['a','C'])).toThrow(
+        expect(() => topLevelExtractor.validateContainsOnlySpecifiedKeys(['a','C'])).toThrow(
             Error(getMessage('ConfigObjectContainsInvalidKey','<TopLevel>', 'b', '["a","C"]')));
         const subExtractor: ConfigValueExtractor = new ConfigValueExtractor({d: 5, E: 6}, 'some.other[3]', __dirname);
-        subExtractor._addHiddenKeys(['hidden_keys']); // Sanity check that these don't show up in the error messages
-        expect(() => subExtractor.validateOnlyContainsKeys(['d'])).toThrow(
+        subExtractor.addKeysThatBypassValidation(['hidden_keys']); // Sanity check that these don't show up in the error messages
+        expect(() => subExtractor.validateContainsOnlySpecifiedKeys(['d'])).toThrow(
             Error(getMessage('ConfigObjectContainsInvalidKey','some.other[3]', 'E', '["d"]')));
     });
 
-    it("When validateOnlyContainsKeys is called on an object that has exact or less keys, then do not error", () => {
+    it("When validateContainsOnlySpecifiedKeys is called on an object that has exact or less keys, then do not error", () => {
         // Also sanity check that the keys are case-insensitive
         const extractor: ConfigValueExtractor = new ConfigValueExtractor({a: 3, b: 2, C: 3}, '', __dirname);
-        extractor.validateOnlyContainsKeys(['A','b', 'c']); // Should not error
-        extractor.validateOnlyContainsKeys(['A','b', 'c','d','E']); // Should not error
-        extractor._addHiddenKeys(['C','d']);
-        extractor.validateOnlyContainsKeys(['a','b']); // Should not error (hidden keys are for internal use only and should also be accepted)
+        extractor.validateContainsOnlySpecifiedKeys(['A','b', 'c']); // Should not error
+        extractor.validateContainsOnlySpecifiedKeys(['A','b', 'c','d','E']); // Should not error
+        extractor.addKeysThatBypassValidation(['C','d']);
+        extractor.validateContainsOnlySpecifiedKeys(['a','b']); // Should not error (hidden keys are for internal use only and should also be accepted)
     });
 
     it("When calling extractRequiredBoolean on a field that contains a boolean, then return value", () => {

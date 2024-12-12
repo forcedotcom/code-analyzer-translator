@@ -44,7 +44,7 @@ export class ConfigValueExtractor {
     private readonly configObj: ConfigObject;
     private readonly fieldPathRoot: string;
     private readonly configRoot: string;
-    private hiddenKeys: string[] = [];
+    private keysThatBypassValidation: string[] = [];
 
     constructor(configObject: ConfigObject, fieldPathRoot: string = '', configRoot: string = process.cwd()) {
         this.configObj = configObject;
@@ -52,8 +52,8 @@ export class ConfigValueExtractor {
         this.configRoot = configRoot;
     }
 
-    _addHiddenKeys(hiddenKeys: string[]) {
-        this.hiddenKeys = this.hiddenKeys.concat(hiddenKeys);
+    addKeysThatBypassValidation(keysThatBypassValidation: string[]) {
+        this.keysThatBypassValidation = this.keysThatBypassValidation.concat(keysThatBypassValidation);
     }
 
     getObject(): ConfigObject {
@@ -68,11 +68,11 @@ export class ConfigValueExtractor {
         return this.configRoot;
     }
 
-    validateOnlyContainsKeys(keys: string[]) {
+    validateContainsOnlySpecifiedKeys(keys: string[]) {
         const actualKeys: string[] = this.getKeys();
         const lowercasePublicKeys: string[] = keys.map(k => k.toLowerCase());
         for (const key of actualKeys) {
-            if (!lowercasePublicKeys.includes(key.toLowerCase()) && !this.hiddenKeys.includes(key)) {
+            if (!lowercasePublicKeys.includes(key.toLowerCase()) && !this.keysThatBypassValidation.includes(key)) {
                 throw new Error(getMessage('ConfigObjectContainsInvalidKey',
                     this.fieldPathRoot || '<TopLevel>', key, JSON.stringify(keys)))
             }

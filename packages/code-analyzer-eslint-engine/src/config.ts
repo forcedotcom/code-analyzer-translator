@@ -112,7 +112,7 @@ export const LEGACY_ESLINT_IGNORE_FILE: string = '.eslintignore';
 
 
 export function validateAndNormalizeConfig(configValueExtractor: ConfigValueExtractor): ESLintEngineConfig {
-    configValueExtractor.validateOnlyContainsKeys(['eslint_config_file', 'eslint_ignore_file',
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['eslint_config_file', 'eslint_ignore_file',
         'auto_discover_eslint_config', 'disable_javascript_base_config', 'disable_lwc_base_config',
         'disable_typescript_base_config', 'file_extensions']);
 

@@ -63,7 +63,7 @@ export const REGEX_STRING_PATTERN: RegExp = /^\/(.*)\/(.*)$/;
 export const DEFAULT_SEVERITY_LEVEL: SeverityLevel = SeverityLevel.Moderate;
 
 export function validateAndNormalizeConfig(valueExtractor: ConfigValueExtractor): RegexEngineConfig {
-    valueExtractor.validateOnlyContainsKeys(['custom_rules']);
+    valueExtractor.validateContainsOnlySpecifiedKeys(['custom_rules']);
     const customRulesExtractor: ConfigValueExtractor = valueExtractor.extractObjectAsExtractor('custom_rules');
     const customRules: RegexRules = {};
     for (const ruleName of customRulesExtractor.getKeys()) {

@@ -14,7 +14,7 @@ export class RetireJsEnginePlugin extends EnginePluginV1 {
 
     async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
         validateEngineName(engineName);
-        configValueExtractor.validateOnlyContainsKeys([]);
+        configValueExtractor.validateContainsOnlySpecifiedKeys([]);
         return {};
     }
 }
