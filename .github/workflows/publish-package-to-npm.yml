@@ -196,6 +196,7 @@ jobs:
                       path: "package-lock.json",
                       contents: $packageLock
                     }
+                  ]
                 },
                 expectedHeadOid: $oldOid
               }) {
