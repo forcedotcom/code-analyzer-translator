@@ -1,6 +1,6 @@
 import {RunResults} from "../results";
 import * as xmlbuilder from "xmlbuilder";
-import {OutputFormatter} from "../output-format";
+import {OutputFormatter, CODE_ANALYZER_CORE_NAME} from "../output-format";
 import {JsonResultsOutput, toJsonResultsOutput} from "./json-output-format";
 
 export class XmlOutputFormatter implements OutputFormatter {
@@ -19,6 +19,7 @@ export class XmlOutputFormatter implements OutputFormatter {
         violationCountsNode.node('sev5').text(`${resultsOutput.violationCounts.sev5}`);
 
         const versionsNode: xmlbuilder.XMLElement = resultsNode.node('versions');
+        versionsNode.node(CODE_ANALYZER_CORE_NAME).text(results.getCoreVersion());
         const engineNames: string[] = results.getEngineNames();
         for (const engineName of engineNames) {
             versionsNode.node(engineName).text(results.getEngineRunResults(engineName).getEngineVersion());

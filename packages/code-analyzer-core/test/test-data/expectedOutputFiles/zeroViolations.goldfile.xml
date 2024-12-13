@@ -9,6 +9,8 @@
     <sev4>0</sev4>
     <sev5>0</sev5>
   </violationCounts>
-  <versions></versions>
+  <versions>
+    <code-analyzer>{{CORE_VERSION}}</code-analyzer>
+  </versions>
   <violations></violations>
 </results>

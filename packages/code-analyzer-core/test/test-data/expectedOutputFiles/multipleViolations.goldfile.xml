@@ -10,6 +10,7 @@
     <sev5>0</sev5>
   </violationCounts>
   <versions>
+    <code-analyzer>{{CORE_VERSION}}</code-analyzer>
     <stubEngine1>0.0.1</stubEngine1>
     <stubEngine2>0.1.0</stubEngine2>
     <stubEngine3>1.0.0</stubEngine3>

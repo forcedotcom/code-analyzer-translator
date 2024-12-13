@@ -10,6 +10,7 @@
     <sev5>0</sev5>
   </violationCounts>
   <versions>
+    <code-analyzer>{{CORE_VERSION}}</code-analyzer>
     <throwingEngine>3.0.0</throwingEngine>
   </versions>
   <violations>

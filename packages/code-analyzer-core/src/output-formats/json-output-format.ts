@@ -1,5 +1,5 @@
 import {CodeLocation, RunResults, Violation} from "../results";
-import {OutputFormatter} from "../output-format";
+import {OutputFormatter, CODE_ANALYZER_CORE_NAME} from "../output-format";
 import {Rule, SeverityLevel} from "../rules";
 
 export type JsonResultsOutput = {
@@ -64,7 +64,9 @@ export function toJsonResultsOutput(results: RunResults, sanitizeFcn: (text: str
 }
 
 function toJsonVersionObject(results: RunResults): JsonVersionOutput {
-    const versions: JsonVersionOutput = {};
+    const versions: JsonVersionOutput = {
+        [CODE_ANALYZER_CORE_NAME]: results.getCoreVersion()
+    };
     const engineNames: string[] = results.getEngineNames();
     for (const engineName of engineNames) {
         versions[engineName] = results.getEngineRunResults(engineName).getEngineVersion();
