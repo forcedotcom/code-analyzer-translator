@@ -3,7 +3,25 @@ const fs = require('fs');
 
 function main() {
     const packagesToRelease = process.argv[2].split(" ");
+
+    console.log('====== RUNNING update-dependencies-on-released-packages.js =======');
+    if (packagesToRelease.length > 0) {
+        displayList('THESE PACKAGES ARE BEING RELEASED:', packagesToRelease);
+    } else {
+        console.log('NO PACKAGES ARE BEING RELEASED. THAT SEEMS INCORRECT.');
+        // If we received no package names, that indicates problem in the release process.
+        process.exit(1);
+    }
+
+    // Split on `\n` instead of ` ` because this argument comes from $(ls).
     const allPackages = process.argv[3].split("\n");
+
+    if (allPackages.length > 0) {
+        displayList('WILL CHECK DEPENDENCIES IN THESE PACKAGES:', allPackages);
+    } else {
+        console.log('NO PACKAGES TO CHECK FOR DEPENDENCIES. THAT SEEMS INCORRECT.');
+        process.exit(1);
+    }
 
     const packageJsonsToRelease = getPackageJsons(packagesToRelease);
     const allPackageJsons = getPackageJsons(allPackages);
@@ -20,13 +38,17 @@ function main() {
 function displayMapOfLists(header, mapOfLists) {
     console.log(header);
     for (const [key, innerList] of mapOfLists.entries()) {
-        console.log(`IN ${key}:`);
-        for (const innerListItem of innerList) {
-            console.log(`* ${innerListItem}`);
-        }
-        console.log('');
+        displayList(`IN ${key}:`, innerList);
     }
     console.log('\n');
+}
+
+function displayList(header, list) {
+    console.log(header);
+    for (const item of list) {
+        console.log(`* ${listItem}`);
+    }
+    console.log('');
 }
 
 function getPackageJsons(packageNames) {
