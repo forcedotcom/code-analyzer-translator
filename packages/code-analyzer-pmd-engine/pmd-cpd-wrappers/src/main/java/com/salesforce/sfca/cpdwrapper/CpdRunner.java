@@ -9,6 +9,7 @@ import net.sourceforge.pmd.cpd.CpdAnalysis;
 import net.sourceforge.pmd.cpd.Mark;
 import net.sourceforge.pmd.cpd.Match;
 import net.sourceforge.pmd.lang.Language;
+import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.reporting.Report;
 import net.sourceforge.pmd.util.log.PmdReporter;
 import org.slf4j.event.Level;
@@ -53,16 +54,23 @@ class CpdRunner {
         System.out.println("Running CPD for language '" + language + "' with " + pathsToScan.size() +
                 " file(s) to scan using minimumTokens=" + minimumTokens + " and skipDuplicateFiles=" + skipDuplicateFiles + ".");
 
-        // Note that the name "minimumTokens" comes from the public facing documentation and the cli but
-        // behind the scenes, it maps to MinimumTileSize. To learn more about the mappings to the config, see:
-        // https://github.com/pmd/pmd/blob/main/pmd-cli/src/main/java/net/sourceforge/pmd/cli/commands/internal/CpdCommand.java
         CPDConfiguration config = new CPDConfiguration();
+
+        // Force the language so that pmd doesn't look at file extensions. Note: we already associated the files based
+        // on their file extensions to the correct languages the typescript side.
         Language cpdLanguageId = config.getLanguageRegistry().getLanguageById(language);
         if (cpdLanguageId == null) {
             throw new RuntimeException("The language \"" + language + "\" is not recognized by CPD.");
         }
-        config.setOnlyRecognizeLanguage(cpdLanguageId);
+        LanguageVersion forcedLangVer = config.getLanguageVersionDiscoverer()
+                .getDefaultLanguageVersion(cpdLanguageId);
+        config.setForceLanguageVersion(forcedLangVer);
+
+        // Note that the name "minimumTokens" comes from the public facing documentation and the cli but
+        // behind the scenes, it maps to MinimumTileSize. To learn more about the mappings to the config, see:
+        // https://github.com/pmd/pmd/blob/main/pmd-cli/src/main/java/net/sourceforge/pmd/cli/commands/internal/CpdCommand.java
         config.setMinimumTileSize(minimumTokens);
+
         config.setInputPathList(pathsToScan);
         config.setSkipDuplicates(skipDuplicateFiles);
         CpdErrorListener errorListener = new CpdErrorListener();

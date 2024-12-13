@@ -13,7 +13,7 @@ import {
 import {indent, JavaCommandExecutor, toExtensionsToLanguageMap, WorkspaceLiaison} from "./utils";
 import path from "node:path";
 import * as fs from 'node:fs/promises';
-import {DEFAULT_FILE_EXTENSIONS, Language, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
+import {Language, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
 import {
     LanguageSpecificPmdRunData,
     PmdResults,
@@ -40,7 +40,7 @@ export class PmdEngine extends Engine {
         this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.config = config;
-        this.extensionToLanguageMap = toExtensionsToLanguageMap(DEFAULT_FILE_EXTENSIONS); // TODO: Make this configurable
+        this.extensionToLanguageMap = toExtensionsToLanguageMap(config.file_extensions);
     }
 
     getName(): string {

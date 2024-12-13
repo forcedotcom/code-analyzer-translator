@@ -11,7 +11,7 @@ import {
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {CPD_ENGINE_NAME, DEFAULT_FILE_EXTENSIONS, Language} from "./constants";
+import {CPD_ENGINE_NAME, Language} from "./constants";
 import {getMessage} from "./messages";
 import {indent, JavaCommandExecutor, toExtensionsToLanguageMap, WorkspaceLiaison} from "./utils";
 import {CPD_AVAILABLE_LANGUAGES, CpdEngineConfig} from "./config";
@@ -41,7 +41,7 @@ export class CpdEngine extends Engine {
         this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor,
             (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
         this.config = config;
-        this.extensionToLanguageMap = toExtensionsToLanguageMap(DEFAULT_FILE_EXTENSIONS); // TODO: Make this configurable
+        this.extensionToLanguageMap = toExtensionsToLanguageMap(config.file_extensions);
     }
 
     getName(): string {

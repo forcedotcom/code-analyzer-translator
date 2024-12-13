@@ -4,13 +4,15 @@ import {JavaVersionIdentifier} from "./JavaVersionIdentifier";
 import {SemVer} from "semver";
 import path from "node:path";
 import {indent} from "./utils";
-import {MINIMUM_JAVA_VERSION, Language, CPD_ENGINE_NAME, PMD_ENGINE_NAME} from "./constants";
+import {MINIMUM_JAVA_VERSION, Language, CPD_ENGINE_NAME, PMD_ENGINE_NAME, DEFAULT_FILE_EXTENSIONS} from "./constants";
 import fs from "node:fs";
 
 export const PMD_AVAILABLE_LANGUAGES: Language[] = Object.values(Language).filter(l => l !== Language.TYPESCRIPT); // Typescript is available in CPD but not PMD
 export const CPD_AVAILABLE_LANGUAGES: Language[] = Object.values(Language);
 
 const DEFAULT_JAVA_COMMAND: string = 'java';
+
+const FILE_EXT_PATTERN: RegExp = /^[.][a-zA-Z0-9]+$/;
 
 export type PmdEngineConfig = {
     // Indicates the specific "java" command to use for the 'pmd' engine.
@@ -24,6 +26,12 @@ export type PmdEngineConfig = {
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'visualforce', 'xml'
     // See https://pmd.github.io/pmd/tag_rule_references.html to learn about the PMD rules available for each language.
     rule_languages: Language[]
+
+    // Specifies the list of file extensions to associate to each rule language.
+    // The rule(s) associated with a given language will run against all the files in your workspace containing one of
+    // the specified file extensions. Each file extension can only be associated to one language. If a specific language
+    // is not specified, then a set of default file extensions for that language will be used.
+    file_extensions: Record<Language, string[]>
 
     // List of jar files and/or folders to add the Java classpath when running PMD.
     // Each entry may be given as an absolute path or a relative path to 'config_root'.
@@ -44,6 +52,7 @@ export type PmdEngineConfig = {
 export const DEFAULT_PMD_ENGINE_CONFIG: PmdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
     rule_languages: PMD_AVAILABLE_LANGUAGES, // hidden
+    file_extensions: DEFAULT_FILE_EXTENSIONS,
     java_classpath_entries: [],
     custom_rulesets: []
 }
@@ -59,6 +68,12 @@ export const PMD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 
         // rule_languages - is excluded here so that it can remain hidden
         // rule_languages WILL REMAIN HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
+
+        file_extensions: {
+            descriptionText: getMessage('SharedConfigFieldDescription_file_extensions'),
+            valueType: "object",
+            defaultValue: DEFAULT_PMD_ENGINE_CONFIG.file_extensions,
+        },
 
         java_classpath_entries: {
             descriptionText: getMessage('PmdConfigFieldDescription_java_classpath_entries'),
@@ -86,6 +101,12 @@ export type CpdEngineConfig = {
     // The languages that you may choose from are: 'apex', 'html', 'javascript' (or 'ecmascript'), 'typescript', 'visualforce', 'xml'
     rule_languages: Language[]
 
+    // Specifies the list of file extensions to associate to each rule language.
+    // The rule(s) associated with a given language will run against all the files in your workspace containing one of
+    // the specified file extensions. Each file extension can only be associated to one language. If a specific language
+    // is not specified, then a set of default file extensions for that language will be used.
+    file_extensions: Record<Language, string[]>
+
     // Specifies the minimum tokens threshold for each rule language.
     // The minimum tokens threshold is the number of tokens required to be in a duplicate block of code in order to be
     // reported as a violation. The concept of a token may be defined differently per language, but in general it is a
@@ -103,6 +124,7 @@ const DEFAULT_MINIMUM_TOKENS: number = 100;
 export const DEFAULT_CPD_ENGINE_CONFIG: CpdEngineConfig = {
     java_command: DEFAULT_JAVA_COMMAND,
     rule_languages: CPD_AVAILABLE_LANGUAGES, // hidden
+    file_extensions: DEFAULT_FILE_EXTENSIONS,
     minimum_tokens: CPD_AVAILABLE_LANGUAGES.reduce((obj, lang: Language) => {
         obj[lang] = DEFAULT_MINIMUM_TOKENS;
         return obj;
@@ -122,6 +144,12 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
         // rule_languages - is excluded here so that it can remain hidden
         // rule_languages WILL REMAIN HIDDEN UNTIL A USER REQUESTS THIS - ALL LANGUAGES ARE ENABLED BY DEFAULT SO THERE MAY NOT BE A USE CASE FOR THIS YET
 
+        file_extensions: {
+            descriptionText: getMessage('SharedConfigFieldDescription_file_extensions'),
+            valueType: "object",
+            defaultValue: DEFAULT_CPD_ENGINE_CONFIG.file_extensions,
+        },
+
         minimum_tokens: {
             descriptionText: getMessage('CpdConfigFieldDescription_minimum_tokens'),
             valueType: "object",
@@ -139,7 +167,7 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<PmdEngineConfig> {
     configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
-    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'java_classpath_entries', 'custom_rulesets']);
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['file_extensions', 'java_command', 'java_classpath_entries', 'custom_rulesets']);
 
     const pmdConfigValueExtractor: PmdConfigValueExtractor = new PmdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
@@ -148,6 +176,7 @@ export async function validateAndNormalizePmdConfig(configValueExtractor: Config
     return {
         java_command: await pmdConfigValueExtractor.extractJavaCommand(),
         rule_languages: pmdConfigValueExtractor.extractRuleLanguages(),
+        file_extensions: pmdConfigValueExtractor.extractFileExtensions(),
         java_classpath_entries: pmdConfigValueExtractor.extractJavaClasspathEntries(),
         custom_rulesets: pmdConfigValueExtractor.extractCustomRulesets(javaClasspathEntries)
     }
@@ -156,7 +185,7 @@ export async function validateAndNormalizePmdConfig(configValueExtractor: Config
 export async function validateAndNormalizeCpdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<CpdEngineConfig> {
     configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
-    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'minimum_tokens', 'skip_duplicate_files']);
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['file_extensions', 'java_command', 'minimum_tokens', 'skip_duplicate_files']);
 
     const cpdConfigValueExtractor: CpdConfigValueExtractor = new CpdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
@@ -164,6 +193,7 @@ export async function validateAndNormalizeCpdConfig(configValueExtractor: Config
     return {
         java_command: await cpdConfigValueExtractor.extractJavaCommand(),
         rule_languages: cpdConfigValueExtractor.extractRuleLanguages(),
+        file_extensions: cpdConfigValueExtractor.extractFileExtensions(),
         minimum_tokens: cpdConfigValueExtractor.extractMinimumTokens(),
         skip_duplicate_files: cpdConfigValueExtractor.extractSkipDuplicateFiles()
     }
@@ -273,6 +303,35 @@ abstract class SharedConfigValueExtractor {
         }
         return ruleLanguages.sort() as Language[];
     }
+
+    extractFileExtensions(): Record<Language, string[]> {
+        const fileExtensionsExtractor: ConfigValueExtractor = this.configValueExtractor.extractObjectAsExtractor(
+            'file_extensions', DEFAULT_FILE_EXTENSIONS);
+        fileExtensionsExtractor.validateContainsOnlySpecifiedKeys(Object.keys(DEFAULT_FILE_EXTENSIONS));
+
+        const extToLangMap: Map<string, Language> = new Map(); // To keep track if file extension shows up with more than one language
+        const fileExtensionsMap: Record<Language, string[]> = {... DEFAULT_FILE_EXTENSIONS}; // Start with copy
+        for (const language of Object.keys(fileExtensionsMap) as Language[]) {
+            const fileExts: string[] = makeUnique(fileExtensionsExtractor.extractArray(language,
+                (element, elementFieldPath) => ValueValidator.validateString(element,
+                    elementFieldPath, FILE_EXT_PATTERN),
+                DEFAULT_FILE_EXTENSIONS[language]
+            )!).map(fileExt => fileExt.toLowerCase());
+
+            // Validate that none of the file extensions already exist in another language
+            for (const fileExt of fileExts) {
+                if (extToLangMap.has(fileExt) && extToLangMap.get(fileExt) !== language) {
+                    throw new Error(getMessage('InvalidFileExtensionDueToItBeingListedTwice',
+                        fileExtensionsExtractor.getFieldPath(), fileExt,
+                        JSON.stringify([extToLangMap.get(fileExt), language])));
+                }
+                extToLangMap.set(fileExt, language);
+            }
+
+            fileExtensionsMap[language] = fileExts;
+        }
+        return fileExtensionsMap;
+    }
 }
 
 class PmdConfigValueExtractor extends SharedConfigValueExtractor {
@@ -366,4 +425,8 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
 function toAvailableLanguagesText(languages: string[]): string {
     return languages.map(lang => `'${lang}'`)
         .join(', ').replace(`'javascript'`, `'javascript' (or 'ecmascript')`);
+}
+
+export function makeUnique(values: string[]): string[] {
+    return [...new Set(values)];
 }

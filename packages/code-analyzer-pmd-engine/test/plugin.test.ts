@@ -12,6 +12,7 @@ import {CpdEngine} from "../src/cpd-engine";
 import {PmdEngine} from "../src/pmd-engine";
 import {
     CPD_ENGINE_CONFIG_DESCRIPTION,
+    DEFAULT_CPD_ENGINE_CONFIG,
     DEFAULT_PMD_ENGINE_CONFIG,
     PMD_ENGINE_CONFIG_DESCRIPTION,
     PmdEngineConfig
@@ -19,6 +20,7 @@ import {
 import {JavaVersionIdentifier} from "../src/JavaVersionIdentifier";
 import { SemVer } from "semver";
 import path from "node:path";
+import {DEFAULT_FILE_EXTENSIONS} from "../src/constants";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -48,7 +50,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({unknownField: 3}, 'engines.cpd');
         await expect(plugin.createEngineConfig('cpd', configValueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.cpd', 'unknownField',
-                '["java_command","minimum_tokens","skip_duplicate_files"]'));
+                '["file_extensions","java_command","minimum_tokens","skip_duplicate_files"]'));
     });
 
     it(`When createEngineConfig for 'cpd' is given an empty raw config, then the correct defaults are returned (assuming java version is correct on machine)`, async () => {
@@ -60,13 +62,14 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
             rule_languages: ['apex', 'html', 'javascript', 'typescript', 'visualforce', 'xml'],
+            file_extensions: DEFAULT_FILE_EXTENSIONS,
             minimum_tokens: {
-                "apex": 100,
-                "html": 100,
-                "javascript": 100,
-                "typescript": 100,
-                "visualforce": 100,
-                "xml": 100
+                apex: 100,
+                html: 100,
+                javascript: 100,
+                typescript: 100,
+                visualforce: 100,
+                xml: 100
             },
             skip_duplicate_files: false
         });
@@ -76,7 +79,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor({unknownField: 3}, 'engines.pmd');
         await expect(plugin.createEngineConfig('pmd', configValueExtractor)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.pmd', 'unknownField',
-                '["java_command","java_classpath_entries","custom_rulesets"]'));
+                '["custom_rulesets","file_extensions","java_classpath_entries","java_command"]'));
     });
 
     it(`When createEngineConfig for 'pmd' is given an empty raw config, then the correct defaults are returned (assuming java version is correct on machine)`, async () => {
@@ -88,6 +91,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         expect(resolvedConfig).toEqual({
             java_command: resolvedConfig.java_command, // Already checked that it ends with 'java'
             rule_languages: ['apex', 'html', 'javascript', 'visualforce', 'xml'],
+            file_extensions: DEFAULT_FILE_EXTENSIONS,
             java_classpath_entries: [],
             custom_rulesets: []
         });
@@ -180,6 +184,68 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
         await expect(plugin.createEngineConfig(engineName, new ConfigValueExtractor(rawConfig2, `engines.${engineName}`)))
             .rejects.toThrow(getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
                 `engines.${engineName}.rule_languages[1]`, 'string', 'number'));
+    });
+
+    it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given a file_extensions value contains an invalid language, then errors`, async (engineName) => {
+        const rawConfig: ConfigObject = {
+            file_extensions: {
+                oops: ['.js', '.jsx']
+            }
+        };
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`);
+        await expect(plugin.createEngineConfig(engineName, configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey',
+                `engines.${engineName}.file_extensions`, 'oops',
+                '["apex","html","javascript","typescript","visualforce","xml"]'));
+    });
+
+    it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given a valid file_extensions value is passed to createEngineConfig, then it is set on the config`, async (engineName) => {
+        const rawConfig: ConfigObject = {
+            file_extensions: {
+                javaScriPT: ['.js', '.jsX', '.js']
+            }
+        };
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`);
+        const resolvedConfig: ConfigObject = await plugin.createEngineConfig(engineName, configValueExtractor);
+        expect(resolvedConfig['file_extensions']).toEqual({
+            ...DEFAULT_FILE_EXTENSIONS,
+            javascript: ['.js', '.jsx']}); // Also checks that duplicates are removed and that we convert to lowercase
+    });
+
+    it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given an invalid file extension value type, then error`, async (engineName) => {
+        const rawConfig: ConfigObject = {
+            file_extensions: {
+                apex: ['.cls','.trigger',3]
+            }
+        };
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`);
+        await expect(plugin.createEngineConfig(engineName, configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustBeOfType',
+                `engines.${engineName}.file_extensions.apex[2]`, 'string', 'number'));
+    });
+
+    it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given an invalid file extension value format, then error`, async (engineName) => {
+        const rawConfig: ConfigObject = {
+            file_extensions: {
+                xml: ['.xml','missingDot']
+            }
+        };
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`)
+        await expect(plugin.createEngineConfig(engineName, configValueExtractor)).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigValueMustMatchRegExp',
+                `engines.${engineName}.file_extensions.xml[1]`, '/^[.][a-zA-Z0-9]+$/'));
+    });
+
+    it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given a file extension that is listed under more than one language, then error`, async (engineName) => {
+        const rawConfig: ConfigObject = {
+            file_extensions: {
+                apex: ['.xml'] // Already listed in the xml language by default
+            }
+        };
+        const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`)
+        await expect(plugin.createEngineConfig(engineName, configValueExtractor)).rejects.toThrow(
+            getMessage('InvalidFileExtensionDueToItBeingListedTwice',
+                `engines.${engineName}.file_extensions`, '.xml', '["apex","xml"]'));
     });
 
     it(`When createEngineConfig for 'pmd' is given an unsupported rule language, then error`, async () => {
@@ -375,7 +441,7 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
     });
 
     it(`When createEngine is passed 'cpd' then the CpdEngine is returned`, async () => {
-        expect(await plugin.createEngine('cpd', {})).toBeInstanceOf(CpdEngine);
+        expect(await plugin.createEngine('cpd', DEFAULT_CPD_ENGINE_CONFIG)).toBeInstanceOf(CpdEngine);
     });
 
     it(`When createEngine is passed 'pmd' then the PmdEngine is returned`, async () => {

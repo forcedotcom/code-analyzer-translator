@@ -44,14 +44,8 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
     InvalidLegacyIgnoreFileName:
         `The '%s' configuration value is invalid. Expected the file name '%s' to be equal to '%s'.`,
 
-    InvalidFieldKeyForObject:
-        `The '%s' configuration value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`,
-
-    ConfigStringValueMustMatchPattern:
-        `The '%s' configuration value '%s' must match the pattern: /%s/`,
-
-    ConfigStringArrayValuesMustNotShareElements:
-        `The following configuration values must not share any common array elements between them:\n%s`,
+    InvalidFileExtensionDueToItBeingListedTwice:
+        `The '%s' configuration object is invalid. The file extension '%s' is currently listed under more than one language: %s`,
 
     ESLintErroredWhenScanningFile:
         `When scanning file '%s' with the eslint engine, ESLint gave the following error:\n%s`,

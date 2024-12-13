@@ -74,7 +74,7 @@ export class ConfigValueExtractor {
         for (const key of actualKeys) {
             if (!lowercasePublicKeys.includes(key.toLowerCase()) && !this.keysThatBypassValidation.includes(key)) {
                 throw new Error(getMessage('ConfigObjectContainsInvalidKey',
-                    this.fieldPathRoot || '<TopLevel>', key, JSON.stringify(keys)))
+                    this.fieldPathRoot || '<TopLevel>', key, JSON.stringify(keys.sort())))
             }
         }
     }
