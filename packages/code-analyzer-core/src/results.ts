@@ -240,7 +240,7 @@ export class UnexpectedErrorEngineRunResults implements EngineRunResults {
 export class RunResultsImpl implements RunResults {
     private readonly clock: Clock;
     private readonly runDir: string;
-    private coreVersion: string;
+    private coreVersion: string = 'X.Y.Z'; // This value will be overwritten before it ever has a chance to matter.
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
 
     constructor(clock: Clock = new RealClock(), runDir: string = process.cwd() + path.sep) {
