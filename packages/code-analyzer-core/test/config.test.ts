@@ -171,7 +171,7 @@ describe("Tests for creating and accessing configuration values", () => {
     it("When top level config has an unknown key, then we error", () => {
         expect(() => CodeAnalyzerConfig.fromObject({doesNotExist: 3})).toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG,'ConfigObjectContainsInvalidKey','<TopLevel>', 'doesNotExist',
-                '["config_root","log_folder","rules","engines"]'));
+                '["config_root","engines","log_folder","rules"]'));
     });
 
     it("When engines value is not an object then we throw an error", () => {

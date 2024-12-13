@@ -49,6 +49,22 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
 
+    it('When file_extensions associates .txt file to apex language and workspace only has .txt file, then apex rule is returned', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            file_extensions: {
+                ... DEFAULT_CPD_ENGINE_CONFIG.file_extensions,
+                apex: ['.txt'],
+            }
+        });
+        const workspace: Workspace = new Workspace([
+            path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'dummy.txt')
+        ]);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
+    });
+
     it('When selecting no languages, then zero rules are returned', async () => {
         const engine: CpdEngine = new CpdEngine({
             ... DEFAULT_CPD_ENGINE_CONFIG,
@@ -316,6 +332,23 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
 
         expect(results.violations).toHaveLength(0); // Should not pick up the someReplicatedFileWithOver100Tokens.html files
+    });
+
+    it('When file_extensions removes ".cls" but adds in ".txt" for apex language then runRules picks up correct files', async () => {
+        const engine: CpdEngine = new CpdEngine({
+            ... DEFAULT_CPD_ENGINE_CONFIG,
+            file_extensions: {
+                ... DEFAULT_CPD_ENGINE_CONFIG.file_extensions,
+                apex: ['.txt']
+            }
+        });
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
+        const ruleNames: string[] = ['DetectCopyPasteForApex'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
+        expect(results.violations).toHaveLength(1);
+        expect(results.violations[0].ruleName).toEqual('DetectCopyPasteForApex');
+        expect(results.violations[0].codeLocations[0].file).toEqual(path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace','dummy.txt'));
     });
 });
 

@@ -10,6 +10,12 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `May be provided as the name of a command that exists on the path, or an absolute file path location.\n` +
         `If unspecified, or specified as null, then an attempt will be made to automatically discover a 'java' command from your environment.`,
 
+    SharedConfigFieldDescription_file_extensions:
+        `Specifies the list of file extensions to associate to each rule language.\n` +
+        `The rule(s) associated with a given language will run against all the files in your workspace containing one of\n` +
+        `the specified file extensions. Each file extension can only be associated to one language. If a specific language\n` +
+        `is not specified, then a set of default file extensions for that language will be used.`,
+
     PmdConfigFieldDescription_java_classpath_entries:
         `List of jar files and/or folders to add the Java classpath when running PMD.\n` +
         `Each entry may be given as an absolute path or a relative path to 'config_root'.\n` +
@@ -89,7 +95,10 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Duplicate code detected for language '%s'. Found %d code locations containing the same block of code consisting of %d tokens across %d lines.`,
 
     InvalidPositiveInteger:
-        `The '%s' configuration value is invalid. The value must be a positive integer.`
+        `The '%s' configuration value is invalid. The value must be a positive integer.`,
+
+    InvalidFileExtensionDueToItBeingListedTwice:
+        `The '%s' configuration object is invalid. The file extension '%s' is currently listed under more than one language: %s`
 }
 
 /**

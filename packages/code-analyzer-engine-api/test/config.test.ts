@@ -237,7 +237,7 @@ describe("Tests for ConfigValueExtractor", () => {
     it("When validateContainsOnlySpecifiedKeys is called on an object that has extra keys, then error", () => {
         const topLevelExtractor: ConfigValueExtractor = new ConfigValueExtractor({a: 3, b: 2, c: 3}, '', __dirname);
         expect(() => topLevelExtractor.validateContainsOnlySpecifiedKeys(['a','C'])).toThrow(
-            Error(getMessage('ConfigObjectContainsInvalidKey','<TopLevel>', 'b', '["a","C"]')));
+            Error(getMessage('ConfigObjectContainsInvalidKey','<TopLevel>', 'b', '["C","a"]')));
         const subExtractor: ConfigValueExtractor = new ConfigValueExtractor({d: 5, E: 6}, 'some.other[3]', __dirname);
         subExtractor.addKeysThatBypassValidation(['hidden_keys']); // Sanity check that these don't show up in the error messages
         expect(() => subExtractor.validateContainsOnlySpecifiedKeys(['d'])).toThrow(

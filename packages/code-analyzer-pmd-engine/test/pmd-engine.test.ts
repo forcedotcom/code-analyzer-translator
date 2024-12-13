@@ -278,6 +278,22 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         await expect(engine.describeRules({})).rejects.toThrow('PMD errored when attempting to load a custom ruleset "does/not/exist.xml". ' +
             'Make sure the resource is a valid file on disk or on the Java classpath.');
     });
+
+    it('When file_extensions associates .txt file to javascript language and workspace only has .txt file, then javascript rules are returned', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            file_extensions: {
+                ... DEFAULT_PMD_ENGINE_CONFIG.file_extensions,
+                javascript: ['.txt'],
+            }
+        });
+        const workspace: Workspace = new Workspace([
+            path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'WhileLoopsMustUseBraces.txt')
+        ]);
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+
+        await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_javascriptOnly.goldfile.json');
+    });
 });
 
 async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescription[], relativeExpectedFile: string): Promise<void> {
@@ -518,6 +534,23 @@ describe('Tests for the runRules method of PmdEngine', () => {
         expect(results.violations).toHaveLength(2); // Expecting fakerule1 and fakerule7 (which both have a definition equivalent to the AvoidDebugStatements rule)
         expect(results.violations).toContainEqual(expectedFakeRule1Violation);
         expect(results.violations).toContainEqual(expectedFakeRule7Violation);
+    });
+
+    it('When file_extensions removes ".js" but adds in ".txt" for javascript language then runRules picks up correct files', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            file_extensions: {
+                ... DEFAULT_PMD_ENGINE_CONFIG.file_extensions,
+                javascript: ['.txt']
+            }
+        });
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations')]);
+        const ruleNames: string[] = ['WhileLoopsMustUseBraces-javascript'];
+        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+
+        expect(results.violations).toHaveLength(1);
+        expect(results.violations[0].ruleName).toEqual('WhileLoopsMustUseBraces-javascript');
+        expect(results.violations[0].codeLocations[0].file).toEqual(path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace','sampleViolations','WhileLoopsMustUseBraces.txt'));
     });
 });
 
