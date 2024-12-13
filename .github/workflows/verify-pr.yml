@@ -8,6 +8,14 @@ defaults:
     shell: bash
 
 jobs:
+  run_experiment_dry:
+    uses: ./.github/workflows/experimental-workflow.yml
+    with:
+      dryrun: true
+  run_experiment_wet:
+    uses: ./.github/workflows/experimental-workflow.yml
+    with:
+      dryrun: false
   validate_pr_title:
     runs-on: ubuntu-latest
     steps:

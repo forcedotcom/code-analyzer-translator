@@ -1,0 +1,36 @@
+name: experimental-workflow
+on:
+  workflow_call:
+    inputs:
+      dryrun:
+        description: lorem ipsum
+        type: boolean
+        required: false
+        default: true
+
+
+jobs:
+  first_job:
+    runs-on: macos-latest
+    steps:
+      - run: |
+          echo "doing the thing"
+  second_job:
+    runs-on: macos-latest
+    needs: first_job
+    steps:
+      - run: |
+          echo "doing the thing"
+  third_job:
+    runs-on: macos-latest
+    needs: [first_job, second_job]
+    steps:
+      - run: |
+          echo "doing the thing"
+  fourth_job:
+    runs-on: macos-latest
+    needs: [second_job, third_job]
+    if: ${{ inputs.dryrun == 'false' }}
+    steps:
+      - run: |
+          echo "doing the thing"
