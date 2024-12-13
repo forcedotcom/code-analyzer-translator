@@ -15,8 +15,13 @@ jobs:
     steps:
       - id: main
         run: |
-          OUTPUT_THING=(abcd cdef efgh)
-          echo "output_thing=$OUTPUT_THING" >> "$GITHUB_OUTPUT"
+          OUTPUT_THING=()
+          OUTPUT_THING+=('abcd')
+          OUTPUT_THING+=('bcde')
+          OUTPUT_THING+=('cdef')
+          OUTPUT_THING+=('defg')
+          OUTPUT_THING_STR=$(IFS=' '; echo "${OUTPUT_THING[*]}")
+          echo "output_thing=$OUTPUT_THING_STR" >> "$GITHUB_OUTPUT"
 
   run_experiment_part_2:
     runs-on: macos-latest
