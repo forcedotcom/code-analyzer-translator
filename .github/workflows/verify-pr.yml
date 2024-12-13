@@ -27,6 +27,7 @@ jobs:
     runs-on: macos-latest
     needs: run_experiment_part_1
     steps:
+      - uses: actions/checkout@v4
       - run: |
           LIST_TYPE_VARIABLE=(${{ needs.run_experiment_part_1.outputs.output-thing }})
           STRING_TYPE_VARIABLE="${{ needs.run_experiment_part_1.outputs.output-thing }}"
