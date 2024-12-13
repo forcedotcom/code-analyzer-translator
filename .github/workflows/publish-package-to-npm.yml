@@ -115,7 +115,7 @@ jobs:
           node ./.github/workflows/publish-package-to-npm/update-versions-in-released-packages.js "$PACKAGE_LIST"
       - name: Update inter-package dependencies
         run: |
-          RELEASABLE_PACKAGES=${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}
+          RELEASABLE_PACKAGES=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
           cd packages
           ALL_PACKAGES=`ls`
           cd ..
