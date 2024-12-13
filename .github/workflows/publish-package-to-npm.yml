@@ -112,19 +112,14 @@ jobs:
       - name: Strip '-SNAPSHOT' from to-be-released package versions
         run: |
           PACKAGE_LIST=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
-          for PACKAGE_NAME in "${PACKAGE_LIST[@]}"
-          do
-            cd ./packages/${PACKAGE_NAME}
-            npm --no-git-tag-version version patch # Increments X.Y.Z-SNAPSHOT to X.Y.Z, which is what we want.
-            cd ../..
-          done
+          node ./.github/workflows/publish-package-to-npm/update-versions-in-released-packages.js "$PACKAGE_LIST"
       - name: Update inter-package dependencies
         run: |
           RELEASABLE_PACKAGES=${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}
           cd packages
           ALL_PACKAGES=`ls`
           cd ..
-          node ./.github/workflows/publish-package-to-npm/update-dependencies-on-released-pacakges.js "$RELEASABLE_PACKAGES" "$ALL_PACKAGES"
+          node ./.github/workflows/publish-package-to-npm/update-dependencies-on-released-packages.js "$RELEASABLE_PACKAGES" "$ALL_PACKAGES"
       - name: Build
         run: |
           npm install
