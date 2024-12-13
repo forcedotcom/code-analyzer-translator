@@ -15,7 +15,7 @@ jobs:
     steps:
       - id: main
         run: |
-          OUTPUT_THING=$(abcd cdef efgh)
+          OUTPUT_THING=(abcd cdef efgh)
           echo "output_thing=$OUTPUT_THING" >> "$GITHUB_OUTPUT"
 
   run_experiment_part_2:
