@@ -240,7 +240,7 @@ jobs:
   create-postrelease-pull-request:
     runs-on: macos-latest
     needs: [prepare-release-branch, build-and-test-and-publish]
-    if: ${{ inputs.dryrun == 'false' }} # A Dry Run doesn't release, so no PR should be made
+    if: ${{ inputs.dryrun == false }} # A Dry Run doesn't release, so no PR should be made
     permissions:
       contents: write
       pull-requests: write
