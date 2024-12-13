@@ -30,7 +30,7 @@ jobs:
   fourth_job:
     runs-on: macos-latest
     needs: [second_job, third_job]
-    if: ${{ inputs.dryrun == 'false' }}
+    if: ${{ inputs.dryrun == false }}
     steps:
       - run: |
           echo "doing the thing"
