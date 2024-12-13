@@ -111,15 +111,15 @@ jobs:
           echo "branch_name=release/$NOW_TIMESTAMP" >> "$GITHUB_OUTPUT"
       - name: Strip '-SNAPSHOT' from to-be-released package versions
         run: |
-          PACKAGE_LIST=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
-          node ./.github/workflows/publish-package-to-npm/update-versions-in-released-packages.js "$PACKAGE_LIST"
+          PACKAGE_NAMES_STRING="${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}"
+          node ./.github/workflows/publish-package-to-npm/update-versions-in-released-packages.js "$PACKAGE_NAMES_STRING"
       - name: Update inter-package dependencies
         run: |
-          RELEASABLE_PACKAGES=(${{ needs.validate-packages-as-releasable.outputs.packages-to-release }})
+          PACKAGES_TO_RELEASE_STRING="${{ needs.validate-packages-as-releasable.outputs.packages-to-release }}"
           cd packages
           ALL_PACKAGES=`ls`
           cd ..
-          node ./.github/workflows/publish-package-to-npm/update-dependencies-on-released-packages.js "$RELEASABLE_PACKAGES" "$ALL_PACKAGES"
+          node ./.github/workflows/publish-package-to-npm/update-dependencies-on-released-packages.js "$PACKAGES_TO_RELEASE_STRING" "$ALL_PACKAGES"
       - name: Build
         run: |
           npm install
@@ -228,7 +228,7 @@ jobs:
             # We need the NPM token to publish.
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
             PUBLISHED_VERSION=$(jq -r ".version" package.json)
-            if [ "${{ inputs.dryrun }}" == "true" ]]; then
+            if [[ "${{ inputs.dryrun }}" == "true" ]]; then
               npm publish --tag latest-alpha --access public --verbose --dry-run
               echo "Fake-published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
             else

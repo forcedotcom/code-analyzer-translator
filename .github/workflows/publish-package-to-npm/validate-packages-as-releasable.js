@@ -4,6 +4,7 @@ const fs = require('fs');
 function main() {
     const packagesToRelease = process.argv[2].split(' ');
 
+    console.log('====== RUNNING validate-packages-as-releasable.js =======');
     if (packagesToRelease.length === 0) {
         console.log('Error: No packages selected for release');
         process.exit(1);

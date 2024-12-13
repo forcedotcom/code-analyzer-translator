@@ -4,6 +4,15 @@ const fs = require('fs');
 function main() {
     const packagesToRelease = process.argv[2].split(" ");
 
+    console.log('====== RUNNING update-versions-in-released-packages.js =======');
+    if (packagesToRelease.length > 0) {
+        displayList('RECEIVED THE FOLLOWING PACKAGE NAMES:', packagesToRelease);
+    } else {
+        console.log('RECEIVED NO PACKAGE NAMES');
+        // If we received no package names, that indicates problem in the release process.
+        process.exit(1);
+    }
+
     const packageJsonsToRelease = getPackageJsons(packagesToRelease);
 
     const packageChangesMade = updatePackageVersionsAndDescribeChanges(packageJsonsToRelease);
