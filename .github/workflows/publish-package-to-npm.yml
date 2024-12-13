@@ -143,7 +143,7 @@ jobs:
           # GraphQL also needs the top-level package-lock.json
           PACKAGE_LOCK_JSON="$(cat package-lock.json | base64)"
           
-          gh api graphql -F message="$MESSAGE" -F oldOid=`git rev-parse HEAD` -F branch="$BRANCH" \
+          gh api graphql -F message="$MESSAGE" -F oldOid=`git rev-parse HEAD` -F branch="$BRANCH_NAME" \
           -F corePackage="$CORE_PACKAGE_JSON" \
           -F apiPackage="$API_PACKAGE_JSON" \
           -F eslintPackage="$ESLINT_PACKAGE_JSON" \
