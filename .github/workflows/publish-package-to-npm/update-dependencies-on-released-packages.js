@@ -10,7 +10,7 @@ function main() {
 
     const packageChangesMade = updatePackageDependenciesAndDescribeChanges(packageJsonsToRelease, allPackageJsons);
     if (packageChangesMade.size > 0) {
-        displayMapOfLists('THE FOLLOWING DEPENDENCY CHANGES WERE MADE CHANGES WERE MADE:', packageChangesMade);
+        displayMapOfLists('THE FOLLOWING DEPENDENCY CHANGES WERE MADE:', packageChangesMade);
         persistPackageJsons(allPackages, allPackageJsons);
     } else {
         console.log('NO PACKAGE.JSON CHANGES WERE MADE');
