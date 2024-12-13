@@ -1,4 +1,11 @@
-import {ConfigObject, ConfigValueExtractor, Engine, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
+import {
+    ConfigObject,
+    ConfigValueExtractor,
+    Engine,
+    EnginePluginV1,
+    getMessageFromCatalog,
+    SHARED_MESSAGE_CATALOG
+} from "@salesforce/code-analyzer-engine-api";
 import {FlowTestEnginePlugin} from "../src";
 import {FlowTestEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
@@ -43,6 +50,13 @@ describe('Tests for the FlowTestEnginePlugin', () => {
         const userProvidedOverrides: ConfigObject = {};
         await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(getMessage('CouldNotLocatePython',
             '3.10.0', '["python3","python"]', 'engines.flowtest.python_command', FlowTestEngine.NAME, FlowTestEngine.NAME));
+    });
+
+    it('When createEngineConfig is called an object that contains an invalid key, then error', async () => {
+        const plugin: EnginePluginV1 = new FlowTestEnginePlugin(new StubPythonVersionIdentifier());
+        await expect(callCreateEngineConfig(plugin, {unknownField: 3})).rejects.toThrow(
+            getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.flowtest', 'unknownField',
+                '["python_command"]'));
     });
 
     it('When createEngineConfig is called with user provided python and it is valid, then the command is in the config', async () => {

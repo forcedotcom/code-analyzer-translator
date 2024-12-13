@@ -1,4 +1,4 @@
-import {RetireJsEnginePlugin} from "./engine";
+import {RetireJsEnginePlugin} from "./plugin";
 import {EnginePlugin} from "@salesforce/code-analyzer-engine-api";
 
 function createEnginePlugin(): EnginePlugin {

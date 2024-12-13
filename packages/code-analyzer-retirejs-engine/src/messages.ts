@@ -1,6 +1,6 @@
 const messageCatalog : { [key: string]: string } = {
-    CantCreateEngineWithUnknownEngineName:
-        `The RetireJsEnginePlugin does not support creating an engine with name '%s'.`,
+    UnsupportedEngineName:
+        `The RetireJsEnginePlugin does not support an engine with name '%s'.`,
 
     RetireJsRuleDescription:
         `Identifies JavaScript libraries with known vulnerabilities of %s severity.`,

@@ -83,26 +83,6 @@ const DUMMY_WORKSPACE: Workspace = new Workspace([path.resolve(__dirname,'test-d
 const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
 const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
 
-describe('Tests for the RetireJsEnginePlugin', () => {
-    let plugin: EnginePluginV1;
-    beforeAll(() => {
-        plugin = new RetireJsEnginePlugin();
-    });
-
-    it('When the getAvailableEngineNames method is called then only retire-js is returned', () => {
-        expect(plugin.getAvailableEngineNames()).toEqual(['retire-js']);
-    });
-
-    it('When createEngine is passed retire-js then an RetireJsEngine instance is returned', async () => {
-        expect(await plugin.createEngine('retire-js', {})).toBeInstanceOf(RetireJsEngine);
-    });
-
-    it('When createEngine is passed anything else then an error is thrown', async () => {
-        await expect(plugin.createEngine('oops', {})).rejects.toThrow(
-            getMessage('CantCreateEngineWithUnknownEngineName' ,'oops'));
-    });
-});
-
 describe('Tests for the RetireJsEngine', () => {
     let engine: Engine;
     let allRuleNames: string[];

@@ -138,6 +138,9 @@ export const CPD_ENGINE_CONFIG_DESCRIPTION: ConfigDescription = {
 
 export async function validateAndNormalizePmdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<PmdEngineConfig> {
+    configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'java_classpath_entries', 'custom_rulesets']);
+
     const pmdConfigValueExtractor: PmdConfigValueExtractor = new PmdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
 
@@ -152,6 +155,9 @@ export async function validateAndNormalizePmdConfig(configValueExtractor: Config
 
 export async function validateAndNormalizeCpdConfig(configValueExtractor: ConfigValueExtractor,
                                                     javaVersionIdentifier: JavaVersionIdentifier): Promise<CpdEngineConfig> {
+    configValueExtractor.addKeysThatBypassValidation(['rule_languages']); // because rule_languages is currently hidden
+    configValueExtractor.validateContainsOnlySpecifiedKeys(['java_command', 'minimum_tokens', 'skip_duplicate_files']);
+
     const cpdConfigValueExtractor: CpdConfigValueExtractor = new CpdConfigValueExtractor(configValueExtractor,
         javaVersionIdentifier);
 
@@ -339,29 +345,16 @@ class CpdConfigValueExtractor extends SharedConfigValueExtractor {
         const minimumTokensExtractor: ConfigValueExtractor = this.configValueExtractor.extractObjectAsExtractor(
             'minimum_tokens', DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens);
 
-        // Start with a copy will all the default values
-        const minimumTokensMap: Record<Language, number> = {...DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens};
+        minimumTokensExtractor.validateContainsOnlySpecifiedKeys(CPD_AVAILABLE_LANGUAGES);
 
-        // And override the default values with user provided values for each language found
-        for (const key of minimumTokensExtractor.getKeys()) {
-            let language: string = key.toLowerCase();
-            if (language === 'ecmascript') {
-                // Provide support for 'ecmascript' which is a supported alias of 'javascript'
-                language = 'javascript';
-            }
-
-            if (!(CPD_AVAILABLE_LANGUAGES as string[]).includes(language)) {
-                throw new Error(getMessage('InvalidFieldKeyForObject',
-                    this.configValueExtractor.getFieldPath('minimum_tokens'), key, toAvailableLanguagesText(CPD_AVAILABLE_LANGUAGES)));
-            }
-
-            const minimumTokensValue: number = minimumTokensExtractor.extractRequiredNumber(key);
+        const minimumTokensMap: Record<Language, number> = {... DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens}; // Start with copy
+        for (const language of CPD_AVAILABLE_LANGUAGES) {
+            const minimumTokensValue: number = minimumTokensExtractor.extractNumber(language, DEFAULT_CPD_ENGINE_CONFIG.minimum_tokens[language])!;
             if (minimumTokensValue <= 0 || Math.floor(minimumTokensValue) != minimumTokensValue) {
-                throw new Error(getMessage('InvalidPositiveInteger', minimumTokensExtractor.getFieldPath(key)));
+                throw new Error(getMessage('InvalidPositiveInteger', minimumTokensExtractor.getFieldPath(language)));
             }
-            minimumTokensMap[language as Language] = minimumTokensValue;
+            minimumTokensMap[language] = minimumTokensValue;
         }
-
         return minimumTokensMap;
     }
 

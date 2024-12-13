@@ -10,7 +10,7 @@ import {SeverityLevel} from "./rules";
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
     LOG_FOLDER: 'log_folder',
-    CUSTOM_ENGINE_PLUGIN_MODULES: 'custom_engine_plugin_modules',
+    CUSTOM_ENGINE_PLUGIN_MODULES: 'custom_engine_plugin_modules', // Hidden
     RULES: 'rules',
     ENGINES: 'engines',
     SEVERITY: 'severity',
@@ -98,6 +98,8 @@ export class CodeAnalyzerConfig {
         configRoot = !rawConfig.config_root ? (configRoot ?? process.cwd()) :
             validateAbsoluteFolder(rawConfig.config_root, FIELDS.CONFIG_ROOT);
         const configExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(rawConfig, '', configRoot);
+        configExtractor.addKeysThatBypassValidation([FIELDS.CUSTOM_ENGINE_PLUGIN_MODULES]); // Because custom_engine_plugin_modules is currently hidden
+        configExtractor.validateContainsOnlySpecifiedKeys([FIELDS.CONFIG_ROOT, FIELDS.LOG_FOLDER ,FIELDS.RULES, FIELDS.ENGINES]);
         const config: TopLevelConfig = {
             config_root: configRoot,
             log_folder: configExtractor.extractFolder(FIELDS.LOG_FOLDER, DEFAULT_CONFIG.log_folder)!,
@@ -159,15 +161,15 @@ export class CodeAnalyzerConfig {
     }
 
     public getRuleOverridesFor(engineName: string): RuleOverrides {
-        return this.config.rules[engineName] || {};
+        return engApi.getValueUsingCaseInsensitiveKey(this.config.rules, engineName) as RuleOverrides || {};
     }
 
     public getRuleOverrideFor(engineName: string, ruleName: string): RuleOverride {
-        return this.getRuleOverridesFor(engineName)[ruleName] || {};
+        return engApi.getValueUsingCaseInsensitiveKey(this.getRuleOverridesFor(engineName), ruleName) as RuleOverride || {};
     }
 
     public getEngineOverridesFor(engineName: string): EngineOverrides {
-        return this.config.engines[engineName] || {};
+        return engApi.getValueUsingCaseInsensitiveKey(this.config.engines, engineName) as EngineOverrides || {};
     }
 }
 
@@ -189,6 +191,7 @@ function extractRuleOverridesFrom(engineRuleOverridesExtractor: engApi.ConfigVal
 }
 
 function extractRuleOverrideFrom(ruleOverrideExtractor: engApi.ConfigValueExtractor): RuleOverride {
+    ruleOverrideExtractor.validateContainsOnlySpecifiedKeys([FIELDS.SEVERITY, FIELDS.TAGS]);
     const engSeverity: engApi.SeverityLevel | undefined = ruleOverrideExtractor.extractSeverityLevel(FIELDS.SEVERITY);
     return {
         tags: ruleOverrideExtractor.extractArray(FIELDS.TAGS, engApi.ValueValidator.validateString),

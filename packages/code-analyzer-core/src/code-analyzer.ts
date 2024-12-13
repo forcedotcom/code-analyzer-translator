@@ -273,6 +273,10 @@ export class CodeAnalyzer {
         const engineConfigValueExtractor: engApi.ConfigValueExtractor = new engApi.ConfigValueExtractor(
             engineOverrides as engApi.ConfigObject, `${FIELDS.ENGINES}.${engineName}`, this.config.getConfigRoot());
 
+        // We mark 'disable_engine' as a key that the extractor should not worry about with validation so that each
+        // engine doesn't need to list it when using the validateContainsOnlySpecifiedKeys method.
+        engineConfigValueExtractor.addKeysThatBypassValidation([FIELDS.DISABLE_ENGINE]);
+
         try {
             const engineConfig: engApi.ConfigObject = await enginePluginV1.createEngineConfig(engineName, engineConfigValueExtractor);
             const engine: engApi.Engine = await enginePluginV1.createEngine(engineName, engineConfig);

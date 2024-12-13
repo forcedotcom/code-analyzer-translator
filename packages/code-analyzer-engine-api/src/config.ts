@@ -44,11 +44,16 @@ export class ConfigValueExtractor {
     private readonly configObj: ConfigObject;
     private readonly fieldPathRoot: string;
     private readonly configRoot: string;
+    private keysThatBypassValidation: string[] = [];
 
     constructor(configObject: ConfigObject, fieldPathRoot: string = '', configRoot: string = process.cwd()) {
         this.configObj = configObject;
         this.fieldPathRoot = fieldPathRoot;
         this.configRoot = configRoot;
+    }
+
+    addKeysThatBypassValidation(keysThatBypassValidation: string[]) {
+        this.keysThatBypassValidation = this.keysThatBypassValidation.concat(keysThatBypassValidation);
     }
 
     getObject(): ConfigObject {
@@ -63,99 +68,135 @@ export class ConfigValueExtractor {
         return this.configRoot;
     }
 
-    extractRequiredBoolean(fieldName: string): boolean {
-        return ValueValidator.validateBoolean(this.configObj[fieldName], this.getFieldPath(fieldName));
+    validateContainsOnlySpecifiedKeys(keys: string[]) {
+        const actualKeys: string[] = this.getKeys();
+        const lowercasePublicKeys: string[] = keys.map(k => k.toLowerCase());
+        for (const key of actualKeys) {
+            if (!lowercasePublicKeys.includes(key.toLowerCase()) && !this.keysThatBypassValidation.includes(key)) {
+                throw new Error(getMessage('ConfigObjectContainsInvalidKey',
+                    this.fieldPathRoot || '<TopLevel>', key, JSON.stringify(keys)))
+            }
+        }
     }
 
-    extractBoolean(fieldName: string, defaultValue?: boolean): boolean | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredBoolean(fieldName);
-    }
-
-    extractRequiredNumber(fieldName: string): number {
-        return ValueValidator.validateNumber(this.configObj[fieldName], this.getFieldPath(fieldName));
-    }
-
-    extractNumber(fieldName: string, defaultValue?: number): number | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredNumber(fieldName);
-    }
-
-    extractRequiredString(fieldName: string, regexpToMatch?: RegExp): string {
-        return ValueValidator.validateString(this.configObj[fieldName], this.getFieldPath(fieldName), regexpToMatch);
-    }
-
-    extractString(fieldName: string, defaultValue?: string, regexpToMatch?: RegExp): string | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredString(fieldName, regexpToMatch);
-    }
-
-    extractRequiredSeverityLevel(fieldName: string): SeverityLevel {
-        return ValueValidator.validateSeverityLevel(this.configObj[fieldName], this.getFieldPath(fieldName));
-    }
-
-    extractSeverityLevel(fieldName: string, defaultValue?: SeverityLevel): SeverityLevel | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredSeverityLevel(fieldName);
-    }
-
-    extractRequiredObject(fieldName: string): ConfigObject {
-        return ValueValidator.validateObject(this.configObj[fieldName], this.getFieldPath(fieldName)) as ConfigObject;
-    }
-
-    extractRequiredObjectAsExtractor(fieldName: string): ConfigValueExtractor {
-        const subObject: ConfigObject = this.extractRequiredObject(fieldName);
-        return new ConfigValueExtractor(subObject, this.getFieldPath(fieldName));
-    }
-
-    extractObject(fieldName: string, defaultValue?: ConfigObject): ConfigObject | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredObject(fieldName);
-    }
-
-    extractObjectAsExtractor(fieldName: string, defaultValue?: ConfigObject): ConfigValueExtractor {
-        const subObject: ConfigObject = this.extractObject(fieldName, defaultValue) || {};
-        return new ConfigValueExtractor(subObject, this.getFieldPath(fieldName));
-    }
-
-    extractRequiredArray<T>(fieldName: string, elementValidator?: (element: unknown, elementFieldName: string) => T): T[] {
-        return ValueValidator.validateArray<T>(this.configObj[fieldName], this.getFieldPath(fieldName), elementValidator);
-    }
-
-    extractArray<T>(fieldName: string, elementValidator?: (element: unknown, elementFieldName: string) => T, defaultValue?: T[]): T[] | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredArray(fieldName, elementValidator);
-    }
-
-    extractRequiredObjectArrayAsExtractorArray(fieldName: string): ConfigValueExtractor[] {
-        const subObjects: ConfigObject[] = this.extractRequiredArray(fieldName, ValueValidator.validateObject);
-        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(fieldName)}[${index}]`));
-    }
-
-    extractObjectArrayAsExtractorArray(fieldName: string, defaultValue?: ConfigObject[]): ConfigValueExtractor[] {
-        const subObjects: ConfigObject[] = this.extractArray(fieldName, ValueValidator.validateObject, defaultValue) || [];
-        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(fieldName)}[${index}]`));
-    }
-
-    extractRequiredFile(fieldName: string): string {
-        return ValueValidator.validateFile(this.configObj[fieldName], this.getFieldPath(fieldName), [this.getConfigRoot()]);
-    }
-
-    extractFile(fieldName: string, defaultValue?: string): string | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredFile(fieldName);
-    }
-
-    extractRequiredFolder(fieldName: string): string {
-        return ValueValidator.validateFolder(this.configObj[fieldName], this.getFieldPath(fieldName), [this.getConfigRoot()]);
-    }
-
-    extractFolder(fieldName: string, defaultValue?: string): string | undefined {
-        return !this.hasValueDefinedFor(fieldName) ? defaultValue : this.extractRequiredFolder(fieldName);
-    }
-
-    getFieldPath(fieldName?: string): string {
-        if (!fieldName) {
+    getFieldPath(key?: string): string {
+        if (!key) {
             return this.fieldPathRoot;
         }
-        return this.fieldPathRoot.length > 0 ? `${this.fieldPathRoot}.${fieldName}` : fieldName;
+        return this.fieldPathRoot.length > 0 ? `${this.fieldPathRoot}.${key}` : key;
     }
 
-    hasValueDefinedFor(fieldName: string): boolean {
-        return this.configObj[fieldName] !== undefined && this.configObj[fieldName] !== null;
+    hasValueDefinedFor(key: string): boolean {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return value !== null;
+    }
+
+
+    /** ==== BOOLEAN VALUE EXTRACTION ==== **/
+    extractRequiredBoolean(key: string): boolean {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateBoolean(value, this.getFieldPath(key));
+    }
+
+    extractBoolean(key: string, defaultValue?: boolean): boolean | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredBoolean(key);
+    }
+
+
+    /** ==== NUMBER VALUE EXTRACTION ==== **/
+    extractRequiredNumber(key: string): number {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateNumber(value, this.getFieldPath(key));
+    }
+
+    extractNumber(key: string, defaultValue?: number): number | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredNumber(key);
+    }
+
+
+    /** ==== STRING VALUE EXTRACTION ==== **/
+    extractRequiredString(key: string, regexpToMatch?: RegExp): string {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateString(value, this.getFieldPath(key), regexpToMatch);
+    }
+
+    extractString(key: string, defaultValue?: string, regexpToMatch?: RegExp): string | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredString(key, regexpToMatch);
+    }
+
+
+    /** ==== SeverityLevel VALUE EXTRACTION ==== **/
+    extractRequiredSeverityLevel(key: string): SeverityLevel {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateSeverityLevel(value, this.getFieldPath(key));
+    }
+
+    extractSeverityLevel(key: string, defaultValue?: SeverityLevel): SeverityLevel | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredSeverityLevel(key);
+    }
+
+
+    /** ==== OBJECT VALUE EXTRACTION ==== **/
+    extractRequiredObject(key: string): ConfigObject {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateObject(value, this.getFieldPath(key)) as ConfigObject;
+    }
+
+    extractRequiredObjectAsExtractor(key: string): ConfigValueExtractor {
+        const subObject: ConfigObject = this.extractRequiredObject(key);
+        return new ConfigValueExtractor(subObject, this.getFieldPath(key));
+    }
+
+    extractObject(key: string, defaultValue?: ConfigObject): ConfigObject | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredObject(key);
+    }
+
+    extractObjectAsExtractor(key: string, defaultValue?: ConfigObject): ConfigValueExtractor {
+        const subObject: ConfigObject = this.extractObject(key, defaultValue) || {};
+        return new ConfigValueExtractor(subObject, this.getFieldPath(key));
+    }
+
+
+    /** ==== ARRAY VALUE EXTRACTION ==== **/
+    extractRequiredArray<T>(key: string, elementValidator?: (element: unknown, elementFieldPath: string) => T): T[] {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateArray<T>(value, this.getFieldPath(key), elementValidator);
+    }
+
+    extractArray<T>(key: string, elementValidator?: (element: unknown, elementFieldPath: string) => T, defaultValue?: T[]): T[] | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredArray(key, elementValidator);
+    }
+
+    extractRequiredObjectArrayAsExtractorArray(key: string): ConfigValueExtractor[] {
+        const subObjects: ConfigObject[] = this.extractRequiredArray(key, ValueValidator.validateObject);
+        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(key)}[${index}]`));
+    }
+
+    extractObjectArrayAsExtractorArray(key: string, defaultValue?: ConfigObject[]): ConfigValueExtractor[] {
+        const subObjects: ConfigObject[] = this.extractArray(key, ValueValidator.validateObject, defaultValue) || [];
+        return subObjects.map((elem, index) => new ConfigValueExtractor(elem, `${this.getFieldPath(key)}[${index}]`));
+    }
+
+
+    /** ==== FILE PATH EXTRACTION ==== **/
+    extractRequiredFile(key: string): string {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateFile(value, this.getFieldPath(key), [this.getConfigRoot()]);
+    }
+
+    extractFile(key: string, defaultValue?: string): string | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredFile(key);
+    }
+
+
+    /** ==== FOLDER PATH EXTRACTION ==== **/
+    extractRequiredFolder(key: string): string {
+        const value: ConfigValue = getValueUsingCaseInsensitiveKey(this.configObj, key);
+        return ValueValidator.validateFolder(value, this.getFieldPath(key), [this.getConfigRoot()]);
+    }
+
+    extractFolder(key: string, defaultValue?: string): string | undefined {
+        return !this.hasValueDefinedFor(key) ? defaultValue : this.extractRequiredFolder(key);
     }
 }
 
@@ -198,7 +239,7 @@ export class ValueValidator {
         return validateType<ConfigObject>("object", value, fieldPath);
     }
 
-    static validateArray<T>(value: unknown, fieldPath: string, elementValidator?: (element: unknown, elementFieldName: string) => T): T[] {
+    static validateArray<T>(value: unknown, fieldPath: string, elementValidator?: (element: unknown, elementFieldPath: string) => T): T[] {
         if (!Array.isArray(value)) {
             throw new Error(getMessage('ConfigValueMustBeOfType', fieldPath, 'array', getDataType(value)));
         }
@@ -264,4 +305,17 @@ function validateAtLeastOnePathExists(paths: string[], fieldPath: string): strin
 
 function getDataType(value: unknown): string {
     return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
+}
+
+export function getValueUsingCaseInsensitiveKey(obj: ConfigObject, key: string): ConfigValue {
+    if (key in obj) {
+        return obj[key];
+    }
+    key = key.toLowerCase();
+    for (const actualKey of Object.keys(obj)) {
+        if (key == actualKey.toLowerCase()) {
+            return obj[actualKey];
+        }
+    }
+    return null;
 }

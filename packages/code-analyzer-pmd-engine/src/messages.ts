@@ -89,10 +89,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Duplicate code detected for language '%s'. Found %d code locations containing the same block of code consisting of %d tokens across %d lines.`,
 
     InvalidPositiveInteger:
-        `The '%s' configuration value is invalid. The value must be a positive integer.`,
-
-    InvalidFieldKeyForObject:
-        `The '%s' configuration value is invalid. The value contained an invalid key '%s'. Valid keys for this object are: %s`
+        `The '%s' configuration value is invalid. The value must be a positive integer.`
 }
 
 /**
