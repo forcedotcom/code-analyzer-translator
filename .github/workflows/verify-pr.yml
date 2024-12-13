@@ -8,6 +8,25 @@ defaults:
     shell: bash
 
 jobs:
+  run_experiment_part_1:
+    runs-on: macos-latest
+    outputs:
+      output-thing: ${{ steps.main.outputs.output_thing }}
+    steps:
+      - id: main
+        run: |
+          OUTPUT_THING=$(abcd cdef efgh)
+          echo "output_thing=$OUTPUT_THING" >> "$GITHUB_OUTPUT"
+
+  run_experiment_part_2:
+    runs-on: macos-latest
+    needs: run_experiment_part_1
+    steps:
+      - run: |
+          LIST_TYPE_VARIABLE=(${{ needs.run_experiment_part_1.outputs.output-thing }})
+          STRING_TYPE_VARIABLE="${{ needs.run_experiment_part_1.outputs.output-thing }}"
+          node ./.github/workflows/verify-pr/experiment-script.js "$LIST_TYPE_VARIABLE"
+          node ./.github/workflows/verify-pr/experiment-script.js "$STRING_TYPE_VARIABLE"
   validate_pr_title:
     runs-on: ubuntu-latest
     steps:
