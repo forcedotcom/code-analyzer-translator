@@ -46,7 +46,7 @@ function displayMapOfLists(header, mapOfLists) {
 function displayList(header, list) {
     console.log(header);
     for (const item of list) {
-        console.log(`* ${listItem}`);
+        console.log(`* ${item}`);
     }
     console.log('');
 }
