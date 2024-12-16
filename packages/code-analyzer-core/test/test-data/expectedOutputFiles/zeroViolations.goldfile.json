@@ -8,6 +8,8 @@
     "sev4": 0,
     "sev5": 0
   },
-  "versions": {},
+  "versions": {
+    "code-analyzer": "{{CORE_VERSION}}"
+  },
   "violations": []
 }

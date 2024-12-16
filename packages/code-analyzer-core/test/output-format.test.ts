@@ -174,7 +174,10 @@ function getContentsOfExpectedOutputFile(expectedOutputFileName: string, escapeB
     }
     const encodedPathSepVar: string = encodeURI(path.sep);
 
+    const version: string = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8')).version;
+
     return contents.replaceAll('{{PATHSEP}}', pathSepVar)
+        .replace("{{CORE_VERSION}}", version)
         .replaceAll(`{{ENCODEDPATHSEP}}`, encodedPathSepVar)
         .replaceAll('{{RUNDIR}}', runDirVar)
         .replaceAll('{{ENCODEDRUNDIR}}', encodedRunDir)

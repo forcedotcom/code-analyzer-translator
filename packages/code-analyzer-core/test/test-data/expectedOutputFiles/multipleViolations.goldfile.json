@@ -9,6 +9,7 @@
     "sev5": 0
   },
   "versions": {
+    "code-analyzer": "{{CORE_VERSION}}",
     "stubEngine1": "0.0.1",
     "stubEngine2": "0.1.0",
     "stubEngine3": "1.0.0"

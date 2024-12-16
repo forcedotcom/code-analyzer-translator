@@ -4,6 +4,7 @@ import {getMessage} from "./messages";
 import {Clock, RealClock, toAbsolutePath} from "./utils";
 import {OutputFormat, OutputFormatter} from "./output-format";
 import path from "node:path";
+import fs from "node:fs";
 
 export interface CodeLocation {
     getFile(): string | undefined
@@ -32,6 +33,7 @@ export interface EngineRunResults {
 
 export interface RunResults {
     getRunDirectory(): string
+    getCoreVersion(): string
     getViolationCount(): number
     getViolationCountOfSeverity(severity: SeverityLevel): number
     getViolations(): Violation[]
@@ -238,6 +240,7 @@ export class UnexpectedErrorEngineRunResults implements EngineRunResults {
 export class RunResultsImpl implements RunResults {
     private readonly clock: Clock;
     private readonly runDir: string;
+    private coreVersion: string = ''; // This value will be overwritten before it ever has a chance to matter.
     private readonly engineRunResultsMap: Map<string, EngineRunResults> = new Map();
 
     constructor(clock: Clock = new RealClock(), runDir: string = process.cwd() + path.sep) {
@@ -245,8 +248,17 @@ export class RunResultsImpl implements RunResults {
         this.runDir = runDir;
     }
 
-    getRunDirectory() {
+    getRunDirectory(): string {
         return this.runDir;
+    }
+
+    getCoreVersion(): string {
+        if (!this.coreVersion) {
+            const pathToPackageJson: string = path.join(__dirname, '..', 'package.json');
+            const packageJson: { version: string } = JSON.parse(fs.readFileSync(pathToPackageJson, 'utf-8'));
+            this.coreVersion = packageJson.version;
+        }
+        return this.coreVersion;
     }
 
     getViolations(): Violation[] {

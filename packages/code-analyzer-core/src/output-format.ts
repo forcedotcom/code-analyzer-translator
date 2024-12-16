@@ -14,6 +14,8 @@ export enum OutputFormat {
     SARIF = "SARIF"
 }
 
+export const CODE_ANALYZER_CORE_NAME: string = 'code-analyzer';
+
 export abstract class OutputFormatter {
     abstract format(results: RunResults): string
 

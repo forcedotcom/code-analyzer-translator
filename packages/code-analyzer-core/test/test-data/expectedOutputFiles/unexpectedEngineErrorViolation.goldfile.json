@@ -9,6 +9,7 @@
     "sev5": 0
   },
   "versions": {
+    "code-analyzer": "{{CORE_VERSION}}",
     "throwingEngine": "3.0.0"
   },
   "violations": [
