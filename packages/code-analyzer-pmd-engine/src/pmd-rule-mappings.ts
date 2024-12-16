@@ -1,5 +1,7 @@
 import {COMMON_TAGS, SeverityLevel} from "@salesforce/code-analyzer-engine-api";
 
+const APP_EXCHANGE_TAG: string = "AppExchange";
+
 /**
  * The following is a list of the base PMD rules that we have reviewed where we have designated the rule tags and
  * severity (most important to determine if the "Recommended" tag is applied or not). This also helps fixed these values
@@ -12,7 +14,7 @@ import {COMMON_TAGS, SeverityLevel} from "@salesforce/code-analyzer-engine-api";
 export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: string[]}> = {
 
     // =================================================================================================================
-    //   APEX RULES
+    //   PMD-APEX RULES
     // =================================================================================================================
     "ApexAssertionsShouldIncludeMessage": {
         severity: SeverityLevel.Moderate,
@@ -269,7 +271,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
 
     // =================================================================================================================
-    //   HTML RULES
+    //   PMD-HTML RULES
     // =================================================================================================================
     "AvoidInlineStyles": {
         severity: SeverityLevel.Low,
@@ -286,7 +288,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
 
     // =================================================================================================================
-    //   JAVASCRIPT RULES
+    //   PMD-JAVASCRIPT RULES
     // =================================================================================================================
     "AssignmentInOperand": {
         severity: SeverityLevel.Moderate,
@@ -363,7 +365,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
 
     // =================================================================================================================
-    //   VISUALFORCE RULES
+    //   PMD-VISUALFORCE RULES
     // =================================================================================================================
     "VfCsrf": {
         severity: SeverityLevel.High,
@@ -380,7 +382,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
 
     // =================================================================================================================
-    //   XML RULES
+    //   PMD-XML RULES
     // =================================================================================================================
     "MissingEncoding": {
         severity: SeverityLevel.Moderate,
@@ -389,6 +391,15 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
     "MistypedCDATASection": {
         severity: SeverityLevel.Moderate,
-        tags: [/* NOT RECOMMENDED */    COMMON_TAGS.CATEGORIES.ERROR_PRONE, COMMON_TAGS.LANGUAGES.XML]
+        tags: [/* NOT RECOMMENDED */    COMMON_TAGS.CATEGORIES.ERROR_PRONE,    COMMON_TAGS.LANGUAGES.XML]
+    },
+
+
+    // =================================================================================================================
+    //   SFCA-PMD-RULES - APPEXCHANGE XML RULES
+    // =================================================================================================================
+    "AvoidInsecureHttpRemoteSiteSetting": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     }
 }

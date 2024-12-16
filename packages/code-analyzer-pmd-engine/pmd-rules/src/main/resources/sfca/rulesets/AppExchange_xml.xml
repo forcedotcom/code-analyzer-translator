@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="AppExchange"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+    <description>AppExchange Security Rules</description>
+
+    <rule name="AvoidInsecureHttpRemoteSiteSetting"
+          language="xml"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+          message="Avoid using insecure http urls in Remote Site Settings.">
+          <!-- TODO: NEED TO ADD IN externalInfoUrl ONCE WE HAVE A PERMANENT LOCATION FOR THE DOC PAGE -->
+        <description>Detects instances of a Remote Site Settings that use HTTP.Use HTTPS instead.</description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+/document/RemoteSiteSetting/url/text[starts-with(lower-case(@Text),"http://")]
+]]>
+                </value>
+            </property>
+        </properties>
+    </rule>
+
+
+</ruleset>

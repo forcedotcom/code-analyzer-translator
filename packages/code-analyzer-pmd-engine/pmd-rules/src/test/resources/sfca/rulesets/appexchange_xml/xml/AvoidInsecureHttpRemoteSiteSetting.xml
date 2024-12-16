@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>When url contains http then violation should be reported</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>6</expected-linenumbers>
+        <expected-messages>
+            <message>Avoid using insecure http urls in Remote Site Settings.</message>
+        </expected-messages>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Used for Apex callout to mapping web service</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>http://www.maptestsite.net/mapping1</url>
+</RemoteSiteSetting>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When url contains https then violation should not be reported</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Used for Apex callout to mapping web service</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://www.maptestsite.net/mapping1</url>
+</RemoteSiteSetting>
+        ]]></code>
+    </test-code>
+
+</test-data>

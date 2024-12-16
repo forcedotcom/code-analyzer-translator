@@ -202,14 +202,14 @@ describe('Tests for the PmdCpdEnginesPlugin', () => {
     it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given a valid file_extensions value is passed to createEngineConfig, then it is set on the config`, async (engineName) => {
         const rawConfig: ConfigObject = {
             file_extensions: {
-                javaScriPT: ['.js', '.jsX', '.js']
+                javaScriPT: ['.js', '.jsX', '.JS'] // And check we do uniqueness with case insensitivity
             }
         };
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, `engines.${engineName}`);
         const resolvedConfig: ConfigObject = await plugin.createEngineConfig(engineName, configValueExtractor);
         expect(resolvedConfig['file_extensions']).toEqual({
             ...DEFAULT_FILE_EXTENSIONS,
-            javascript: ['.js', '.jsx']}); // Also checks that duplicates are removed and that we convert to lowercase
+            javascript: ['.js', '.jsX']}); // Also checks that duplicates are removed
     });
 
     it.each(['cpd','pmd'])(`When createEngineConfig for '%s' is given an invalid file extension value type, then error`, async (engineName) => {
