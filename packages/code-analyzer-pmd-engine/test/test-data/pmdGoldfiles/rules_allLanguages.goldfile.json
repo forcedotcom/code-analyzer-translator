@@ -321,6 +321,17 @@
     ]
   },
   {
+    "name": "AvoidInsecureHttpRemoteSiteSetting",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects instances of a Remote Site Settings that use HTTP.Use HTTPS instead.",
+    "resourceUrls": []
+  },
+  {
     "name": "AvoidLogicInTrigger",
     "severityLevel": 3,
     "tags": [

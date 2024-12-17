@@ -58,12 +58,24 @@ export const DEFAULT_FILE_EXTENSIONS: Record<Language, string[]> = {
 
     [Language.XML]: [
         // FROM PMD's XmlLanguageModule:
-        '.xml'
+        '.xml',
 
         // Salesforce metadata file extensions to associate to XML language, specifically for the AppExchange rules:
-        // TODO: COMING SOON
+        //   Note: The metadata api pages over at
+        //           https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_types_list.htm
+        //         helps to list the file extensions for each metadata type. For example, the RemoteSiteSettings page
+        //           https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_remotesitesetting.htm
+        //         specifies that .remoteSite is the file extension for remote site settings files.
+        '.remoteSite'
     ]
 }
+
+// List of our own rulesets inside our sfca-pmd-rules jar file that we want to make available for rule selection without
+// the user needing to add it to their custom_rulesets configuration list. See "pmd-rules/src/main/resources" to see
+// which rulesets we have bundled inside our sfca-pmd-rules jar file.
+export const SFCA_RULESETS_TO_MAKE_AVAILABLE: string[] = [
+    "sfca/rulesets/AppExchange_xml.xml"
+];
 
 // This object lists all the PMD rule names that are shared across languages which helps us map back and forth to unique names
 export const SHARED_RULE_NAMES: Record<string, Language[]> = {

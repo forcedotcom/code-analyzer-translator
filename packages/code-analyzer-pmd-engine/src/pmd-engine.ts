@@ -13,7 +13,7 @@ import {
 import {indent, JavaCommandExecutor, toExtensionsToLanguageMap, WorkspaceLiaison} from "./utils";
 import path from "node:path";
 import * as fs from 'node:fs/promises';
-import {Language, PMD_ENGINE_NAME, SHARED_RULE_NAMES} from "./constants";
+import {Language, PMD_ENGINE_NAME, SFCA_RULESETS_TO_MAKE_AVAILABLE, SHARED_RULE_NAMES} from "./constants";
 import {
     LanguageSpecificPmdRunData,
     PmdResults,
@@ -118,8 +118,12 @@ export class PmdEngine extends Engine {
         if (!this.pmdRuleInfoListCache.has(cacheKey)) {
             const relevantLanguages: Language[] = await workspaceLiaison.getRelevantLanguages();
             const pmdRuleLanguageIds: string[] = relevantLanguages.map(toPmdLanguageId);
+            const allCustomRulesets: string[] = [
+                ... SFCA_RULESETS_TO_MAKE_AVAILABLE, // Our custom rulesets
+                ... this.config.custom_rulesets // The user's custom rulesets
+            ]
             const ruleInfoList: PmdRuleInfo[] = relevantLanguages.length === 0 ? [] :
-                await this.pmdWrapperInvoker.invokeDescribeCommand(this.config.custom_rulesets, pmdRuleLanguageIds, emitProgress);
+                await this.pmdWrapperInvoker.invokeDescribeCommand(allCustomRulesets, pmdRuleLanguageIds, emitProgress);
             this.pmdRuleInfoListCache.set(cacheKey, ruleInfoList);
         }
         return this.pmdRuleInfoListCache.get(cacheKey)!;

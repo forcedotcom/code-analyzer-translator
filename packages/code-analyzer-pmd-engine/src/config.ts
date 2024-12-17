@@ -312,14 +312,14 @@ abstract class SharedConfigValueExtractor {
         const extToLangMap: Map<string, Language> = new Map(); // To keep track if file extension shows up with more than one language
         const fileExtensionsMap: Record<Language, string[]> = {... DEFAULT_FILE_EXTENSIONS}; // Start with copy
         for (const language of Object.keys(fileExtensionsMap) as Language[]) {
-            const fileExts: string[] = makeUnique(fileExtensionsExtractor.extractArray(language,
+            const fileExts: string[] = makeUniqueCaseInsensitive(fileExtensionsExtractor.extractArray(language,
                 (element, elementFieldPath) => ValueValidator.validateString(element,
                     elementFieldPath, FILE_EXT_PATTERN),
                 DEFAULT_FILE_EXTENSIONS[language]
-            )!).map(fileExt => fileExt.toLowerCase());
+            )!);
 
             // Validate that none of the file extensions already exist in another language
-            for (const fileExt of fileExts) {
+            for (const fileExt of fileExts.map(fileExt => fileExt.toLowerCase())) {
                 if (extToLangMap.has(fileExt) && extToLangMap.get(fileExt) !== language) {
                     throw new Error(getMessage('InvalidFileExtensionDueToItBeingListedTwice',
                         fileExtensionsExtractor.getFieldPath(), fileExt,
@@ -427,6 +427,14 @@ function toAvailableLanguagesText(languages: string[]): string {
         .join(', ').replace(`'javascript'`, `'javascript' (or 'ecmascript')`);
 }
 
-export function makeUnique(values: string[]): string[] {
-    return [...new Set(values)];
+export function makeUniqueCaseInsensitive(arr: string[]): string[] {
+    const seen = new Set<string>();
+    return arr.filter((str) => {
+        const lowerStr = str.toLowerCase();
+        if (seen.has(lowerStr)) {
+            return false;
+        }
+        seen.add(lowerStr);
+        return true;
+    });
 }
