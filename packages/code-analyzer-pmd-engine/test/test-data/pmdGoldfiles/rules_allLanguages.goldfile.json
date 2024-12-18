@@ -232,6 +232,28 @@
     ]
   },
   {
+    "name": "AvoidApiSessionId",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of Api.Session_ID or GETSESSIONID() to retrieve a session ID.",
+    "resourceUrls": []
+  },
+  {
+    "name": "AvoidAuraWithLockerDisabled",
+    "severityLevel": 1,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of API versions with Lightning Locker disabled in Aura components. Use API version 40 or greater.",
+    "resourceUrls": []
+  },
+  {
     "name": "AvoidConsoleStatements",
     "severityLevel": 3,
     "tags": [
@@ -283,6 +305,17 @@
     ]
   },
   {
+    "name": "AvoidDisableProtocolSecurity",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects if \"Disable Protocol Security\" setting is true.",
+    "resourceUrls": []
+  },
+  {
     "name": "AvoidGlobalModifier",
     "severityLevel": 3,
     "tags": [
@@ -328,7 +361,40 @@
       "Security",
       "Xml"
     ],
-    "description": "Detects instances of a Remote Site Settings that use HTTP.Use HTTPS instead.",
+    "description": "Detects instances of a Remote Site Settings that use HTTP. Use HTTPS instead.",
+    "resourceUrls": []
+  },
+  {
+    "name": "AvoidJavaScriptCustomObject",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of custom JavaScript actions in custom rules.",
+    "resourceUrls": []
+  },
+  {
+    "name": "AvoidJavaScriptHomePageComponent",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of custom JavaScript actions in home page components.",
+    "resourceUrls": []
+  },
+  {
+    "name": "AvoidLmcIsExposedTrue",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects a Lightning Message Channel with isExposed=true, which isn’t allowed in managed packages.",
     "resourceUrls": []
   },
   {
@@ -369,6 +435,17 @@
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#avoidnonrestrictivequeries"
     ]
+  },
+  {
+    "name": "AvoidSControls",
+    "severityLevel": 1,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects if S-Controls are used since they should not be used in managed packages.",
+    "resourceUrls": []
   },
   {
     "name": "AvoidTrailingComma",
@@ -739,6 +816,17 @@
     ]
   },
   {
+    "name": "LimitConnectedAppScope",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects if a connected app uses full scope instead of limited scope. Explain this use case in your AppExchange security review submission.",
+    "resourceUrls": []
+  },
+  {
     "name": "LocalVariableNamingConventions",
     "severityLevel": 3,
     "tags": [
@@ -917,6 +1005,17 @@
     ]
   },
   {
+    "name": "ProtectSensitiveData",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects where sensitive data must be stored with Protected Custom metadata or Protected Custom settings. Protected custom settings or protected custom metadata should be used to store secrets. Refer to the \"Protect Secrets Using Platform Features\" Trailhead module for more guidance.",
+    "resourceUrls": []
+  },
+  {
     "name": "QueueableWithoutFinalizer",
     "severityLevel": 4,
     "tags": [
@@ -1076,6 +1175,17 @@
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_ecmascript_bestpractices.html#usebasewithparseint"
     ]
+  },
+  {
+    "name": "UseHttpsCallbackUrl",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects instances of an OAuth callback URL that uses HTTP. Use HTTPS instead.",
+    "resourceUrls": []
   },
   {
     "name": "VfCsrf",

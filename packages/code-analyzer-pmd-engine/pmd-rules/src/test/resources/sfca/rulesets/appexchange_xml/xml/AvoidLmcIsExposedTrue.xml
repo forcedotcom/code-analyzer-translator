@@ -5,30 +5,27 @@
         xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
 
     <test-code>
-        <description>When url contains http, then report violation</description>
+        <description>When Lightning Message Channel has isExposed=true, then report violation</description>
         <expected-problems>1</expected-problems>
         <expected-linenumbers>4</expected-linenumbers>
-        <expected-messages>
-            <message>Avoid using insecure http urls in Remote Site Settings.</message>
-        </expected-messages>
         <code><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
     <!-- ... -->
-    <url>http://www.maptestsite.net/mapping1</url>
-</RemoteSiteSetting>
+    <isExposed>true</isExposed>
+</LightningMessageChannel>
         ]]></code>
     </test-code>
 
     <test-code>
-        <description>When url contains https, then do not report violation</description>
+        <description>When Lightning Message Channel has isExposed=false, then do not report violation</description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
-<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
     <!-- ... -->
-    <url>https://www.maptestsite.net/mapping1</url>
-</RemoteSiteSetting>
+    <isExposed>false</isExposed>
+</LightningMessageChannel>
         ]]></code>
     </test-code>
 

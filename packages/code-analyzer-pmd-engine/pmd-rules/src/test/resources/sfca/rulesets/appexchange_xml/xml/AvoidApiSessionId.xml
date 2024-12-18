@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>When custom object weblinks use GETSESSIONID(), then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>6</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <webLinks>
+        <!-- ... -->
+	    <url>{!REQUIRESCRIPT(&apos;/soap/ajax/26.0/connection.js&apos;)}
+		    sforce.connection.sessionId = &apos;{!GETSESSIONID()}&apos;;
+	    </url>
+    </webLinks>
+</CustomObject>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When custom object weblinks use API.Session_Id, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>6</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <webLinks>
+        <!-- ... -->
+        <url>
+            /apex/something?id={!something__c.Id}&amp;sessionId={!$Api.Session_ID}&amp;instance={!$Api.Partner_Server_URL_260}
+        </url>
+    </webLinks>
+</CustomObject>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When custom tab uses API.Session_Id, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>4</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <url>
+        https://test.example.com/dummy.ph?param1={!API.Enterprise_Server_URL_540}&amp;sessionId={!API.Session_ID}&amp;param2={!Organization.Name}&amp;param3={!User.Email}
+    </url>
+</CustomTab>
+        ]]></code>
+    </test-code>
+
+</test-data>
