@@ -80,3 +80,7 @@ jobs:
           python-version: 3.12
       - run: npm install
       - run: npm run all
+  run_experiment:
+    uses: ./.github/workflows/experiment.yml
+    with:
+      code-analyzer-core: true
