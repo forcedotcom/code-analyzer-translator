@@ -18,6 +18,7 @@ import {MissingESLintWorkspace, PresentESLintWorkspace} from "./workspace";
 import {EmitLogEventFcn, ESLintStrategy, LegacyESLintStrategy} from "./strategy";
 import {ESLintEngineConfig} from "./config";
 import {getMessage} from "./messages";
+import {RULE_MAPPINGS} from "./rule-mappings";
 
 export class ESLintEngine extends Engine {
     static readonly NAME = "eslint";
@@ -125,11 +126,22 @@ export class ESLintEngine extends Engine {
     }
 }
 
-function toRuleDescription(name: string, metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefined): RuleDescription {
+function toRuleDescription(ruleName: string, metadata: Rule.RuleMetaData, status: ESLintRuleStatus | undefined): RuleDescription {
+    let severityLevel: SeverityLevel;
+    let tags: string[];
+
+    if (ruleName in RULE_MAPPINGS) {
+        severityLevel = RULE_MAPPINGS[ruleName].severity;
+        tags = RULE_MAPPINGS[ruleName].tags;
+    } else { // Any rule we don't know about from our RULE_MAPPINGS must be a custom rule. Unit tests prevent otherwise.
+        severityLevel = toSeverityLevel(metadata, status);
+        tags = [... toTags(metadata, status), COMMON_TAGS.CUSTOM];
+    }
+
     return {
-        name: name,
-        severityLevel: toSeverityLevel(metadata, status),
-        tags: toTags(metadata, status),
+        name: ruleName,
+        severityLevel: severityLevel,
+        tags: tags,
         description: metadata.docs?.description || '',
         resourceUrls: metadata.docs?.url ? [metadata.docs.url] : []
     }
