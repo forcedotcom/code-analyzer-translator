@@ -84,3 +84,4 @@ jobs:
     uses: ./.github/workflows/experiment.yml
     with:
       code-analyzer-core: true
+      dryrun: false

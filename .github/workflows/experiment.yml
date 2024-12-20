@@ -209,6 +209,8 @@ jobs:
     runs-on: macos-latest
     needs: [prepare-release-branch]
     if: ${{ inputs.dryrun == false }} # A Dry Run doesn't release, so no PR should be made
+    env:
+      GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: write
