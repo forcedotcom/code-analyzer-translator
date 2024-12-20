@@ -3,7 +3,8 @@
     "name": "@lwc/lwc/no-deprecated",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "disallow usage of deprecated LWC APIs",
     "resourceUrls": [
@@ -14,7 +15,8 @@
     "name": "@lwc/lwc/no-disallowed-lwc-imports",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict unexpected imports from the lwc package",
     "resourceUrls": [
@@ -25,7 +27,8 @@
     "name": "@lwc/lwc/no-unexpected-wire-adapter-usages",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict unexpected wire adapter usages",
     "resourceUrls": [
@@ -36,7 +39,8 @@
     "name": "@lwc/lwc/no-unknown-wire-adapters",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict usage of unknown wire adapters",
     "resourceUrls": [
@@ -47,7 +51,8 @@
     "name": "@lwc/lwc/valid-api",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate api decorator usage",
     "resourceUrls": [
@@ -58,7 +63,8 @@
     "name": "@lwc/lwc/valid-track",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate track decorator usage",
     "resourceUrls": [
@@ -69,7 +75,8 @@
     "name": "@lwc/lwc/valid-wire",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate wire decorator usage",
     "resourceUrls": [
@@ -80,7 +87,9 @@
     "name": "accessor-pairs",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce getter and setter pairs in objects and classes",
     "resourceUrls": [
@@ -91,7 +100,9 @@
     "name": "array-callback-return",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce `return` statements in callbacks of array methods",
     "resourceUrls": [
@@ -102,7 +113,9 @@
     "name": "arrow-body-style",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require braces around arrow function bodies",
     "resourceUrls": [
@@ -113,7 +126,9 @@
     "name": "block-scoped-var",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce the use of variables within the scope they are defined",
     "resourceUrls": [
@@ -124,7 +139,9 @@
     "name": "camelcase",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce camelcase naming convention",
     "resourceUrls": [
@@ -135,7 +152,9 @@
     "name": "capitalized-comments",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce or disallow capitalization of the first letter of a comment",
     "resourceUrls": [
@@ -146,7 +165,8 @@
     "name": "class-methods-use-this",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Enforce that class methods utilize `this`",
     "resourceUrls": [
@@ -157,7 +177,9 @@
     "name": "complexity",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum cyclomatic complexity allowed in a program",
     "resourceUrls": [
@@ -168,7 +190,8 @@
     "name": "consistent-return",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Require `return` statements to either always or never specify values",
     "resourceUrls": [
@@ -179,7 +202,9 @@
     "name": "consistent-this",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce consistent naming when capturing the current execution context",
     "resourceUrls": [
@@ -191,7 +216,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Require `super()` calls in constructors",
     "resourceUrls": [
@@ -202,7 +228,9 @@
     "name": "curly",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce consistent brace style for all control statements",
     "resourceUrls": [
@@ -213,7 +241,9 @@
     "name": "default-case",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require `default` cases in `switch` statements",
     "resourceUrls": [
@@ -224,7 +254,9 @@
     "name": "default-case-last",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce default clauses in switch statements to be last",
     "resourceUrls": [
@@ -235,7 +267,8 @@
     "name": "default-param-last",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Enforce default parameters to be last",
     "resourceUrls": [
@@ -246,7 +279,8 @@
     "name": "dot-notation",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Enforce dot notation whenever possible",
     "resourceUrls": [
@@ -257,7 +291,9 @@
     "name": "eqeqeq",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require the use of `===` and `!==`",
     "resourceUrls": [
@@ -269,7 +305,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce \"for\" loop update clause moving the counter in the right direction",
     "resourceUrls": [
@@ -280,7 +318,9 @@
     "name": "func-name-matching",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require function names to match the name of the variable or property to which they are assigned",
     "resourceUrls": [
@@ -291,7 +331,9 @@
     "name": "func-names",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow named `function` expressions",
     "resourceUrls": [
@@ -302,7 +344,9 @@
     "name": "func-style",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce the consistent use of either `function` declarations or expressions",
     "resourceUrls": [
@@ -314,7 +358,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Enforce `return` statements in getters",
     "resourceUrls": [
@@ -325,7 +370,9 @@
     "name": "grouped-accessor-pairs",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require grouped accessor pairs in object literals and classes",
     "resourceUrls": [
@@ -336,7 +383,9 @@
     "name": "guard-for-in",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require `for-in` loops to include an `if` statement",
     "resourceUrls": [
@@ -347,7 +396,9 @@
     "name": "id-denylist",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow specified identifiers",
     "resourceUrls": [
@@ -358,7 +409,9 @@
     "name": "id-length",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce minimum and maximum identifier lengths",
     "resourceUrls": [
@@ -369,7 +422,9 @@
     "name": "id-match",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require identifiers to match a specified regular expression",
     "resourceUrls": [
@@ -380,7 +435,8 @@
     "name": "init-declarations",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Require or disallow initialization in variable declarations",
     "resourceUrls": [
@@ -391,7 +447,9 @@
     "name": "line-comment-position",
     "severityLevel": 4,
     "tags": [
-      "CodeStyle"
+      "CodeStyle",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce position of line comments",
     "resourceUrls": [
@@ -402,7 +460,9 @@
     "name": "logical-assignment-operators",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow logical assignment operator shorthand",
     "resourceUrls": [
@@ -413,7 +473,9 @@
     "name": "max-classes-per-file",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum number of classes per file",
     "resourceUrls": [
@@ -424,7 +486,9 @@
     "name": "max-depth",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum depth that blocks can be nested",
     "resourceUrls": [
@@ -435,7 +499,9 @@
     "name": "max-lines",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum number of lines per file",
     "resourceUrls": [
@@ -446,7 +512,9 @@
     "name": "max-lines-per-function",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum number of lines of code in a function",
     "resourceUrls": [
@@ -457,7 +525,9 @@
     "name": "max-nested-callbacks",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum depth that callbacks can be nested",
     "resourceUrls": [
@@ -468,7 +538,8 @@
     "name": "max-params",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Enforce a maximum number of parameters in function definitions",
     "resourceUrls": [
@@ -479,7 +550,9 @@
     "name": "max-statements",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a maximum number of statements allowed in function blocks",
     "resourceUrls": [
@@ -490,7 +563,9 @@
     "name": "multiline-comment-style",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce a particular style for multiline comments",
     "resourceUrls": [
@@ -501,7 +576,9 @@
     "name": "new-cap",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require constructor names to begin with a capital letter",
     "resourceUrls": [
@@ -512,7 +589,9 @@
     "name": "no-alert",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `alert`, `confirm`, and `prompt`",
     "resourceUrls": [
@@ -523,7 +602,8 @@
     "name": "no-array-constructor",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow `Array` constructors",
     "resourceUrls": [
@@ -535,7 +615,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow using an async function as a Promise executor",
     "resourceUrls": [
@@ -546,7 +628,9 @@
     "name": "no-await-in-loop",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `await` inside of loops",
     "resourceUrls": [
@@ -557,7 +641,9 @@
     "name": "no-bitwise",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow bitwise operators",
     "resourceUrls": [
@@ -568,7 +654,9 @@
     "name": "no-caller",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `arguments.caller` or `arguments.callee`",
     "resourceUrls": [
@@ -580,7 +668,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow lexical declarations in case clauses",
     "resourceUrls": [
@@ -592,7 +682,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow reassigning class members",
     "resourceUrls": [
@@ -604,7 +695,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow comparing against -0",
     "resourceUrls": [
@@ -616,7 +709,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow assignment operators in conditional expressions",
     "resourceUrls": [
@@ -627,7 +722,9 @@
     "name": "no-console",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `console`",
     "resourceUrls": [
@@ -639,7 +736,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow reassigning `const` variables",
     "resourceUrls": [
@@ -650,7 +748,9 @@
     "name": "no-constant-binary-expression",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow expressions where the operation doesn't affect the value",
     "resourceUrls": [
@@ -662,7 +762,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow constant expressions in conditions",
     "resourceUrls": [
@@ -673,7 +775,9 @@
     "name": "no-constructor-return",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow returning value from constructor",
     "resourceUrls": [
@@ -684,7 +788,9 @@
     "name": "no-continue",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `continue` statements",
     "resourceUrls": [
@@ -696,7 +802,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow control characters in regular expressions",
     "resourceUrls": [
@@ -708,7 +816,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `debugger`",
     "resourceUrls": [
@@ -720,7 +830,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow deleting variables",
     "resourceUrls": [
@@ -731,7 +843,9 @@
     "name": "no-div-regex",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow equal signs explicitly at the beginning of regular expressions",
     "resourceUrls": [
@@ -743,7 +857,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow duplicate arguments in `function` definitions",
     "resourceUrls": [
@@ -755,7 +870,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow duplicate class members",
     "resourceUrls": [
@@ -767,7 +883,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow duplicate conditions in if-else-if chains",
     "resourceUrls": [
@@ -779,7 +897,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow duplicate keys in object literals",
     "resourceUrls": [
@@ -791,7 +910,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow duplicate case labels",
     "resourceUrls": [
@@ -802,7 +923,9 @@
     "name": "no-duplicate-imports",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow duplicate module imports",
     "resourceUrls": [
@@ -813,7 +936,9 @@
     "name": "no-else-return",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `else` blocks after `return` statements in `if` statements",
     "resourceUrls": [
@@ -825,7 +950,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow empty block statements",
     "resourceUrls": [
@@ -837,7 +964,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow empty character classes in regular expressions",
     "resourceUrls": [
@@ -848,7 +977,8 @@
     "name": "no-empty-function",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow empty functions",
     "resourceUrls": [
@@ -860,7 +990,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow empty destructuring patterns",
     "resourceUrls": [
@@ -871,7 +1003,9 @@
     "name": "no-empty-static-block",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow empty static blocks",
     "resourceUrls": [
@@ -882,7 +1016,9 @@
     "name": "no-eq-null",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `null` comparisons without type-checking operators",
     "resourceUrls": [
@@ -893,7 +1029,9 @@
     "name": "no-eval",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `eval()`",
     "resourceUrls": [
@@ -905,7 +1043,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow reassigning exceptions in `catch` clauses",
     "resourceUrls": [
@@ -916,7 +1056,9 @@
     "name": "no-extend-native",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow extending native types",
     "resourceUrls": [
@@ -927,7 +1069,9 @@
     "name": "no-extra-bind",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary calls to `.bind()`",
     "resourceUrls": [
@@ -939,7 +1083,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary boolean casts",
     "resourceUrls": [
@@ -950,7 +1096,9 @@
     "name": "no-extra-label",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary labels",
     "resourceUrls": [
@@ -962,7 +1110,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow fallthrough of `case` statements",
     "resourceUrls": [
@@ -974,7 +1124,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow reassigning `function` declarations",
     "resourceUrls": [
@@ -986,7 +1137,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow assignments to native objects or read-only global variables",
     "resourceUrls": [
@@ -997,7 +1150,9 @@
     "name": "no-implicit-coercion",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow shorthand type conversions",
     "resourceUrls": [
@@ -1008,7 +1163,9 @@
     "name": "no-implicit-globals",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow declarations in the global scope",
     "resourceUrls": [
@@ -1019,7 +1176,8 @@
     "name": "no-implied-eval",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow the use of `eval()`-like methods",
     "resourceUrls": [
@@ -1031,7 +1189,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow assigning to imported bindings",
     "resourceUrls": [
@@ -1042,7 +1201,9 @@
     "name": "no-inline-comments",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow inline comments after code",
     "resourceUrls": [
@@ -1054,7 +1215,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow variable or `function` declarations in nested blocks",
     "resourceUrls": [
@@ -1066,7 +1229,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow invalid regular expression strings in `RegExp` constructors",
     "resourceUrls": [
@@ -1077,7 +1242,8 @@
     "name": "no-invalid-this",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow use of `this` in contexts where the value of `this` is `undefined`",
     "resourceUrls": [
@@ -1089,7 +1255,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow irregular whitespace",
     "resourceUrls": [
@@ -1100,7 +1268,9 @@
     "name": "no-iterator",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of the `__iterator__` property",
     "resourceUrls": [
@@ -1111,7 +1281,9 @@
     "name": "no-label-var",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow labels that share a name with a variable",
     "resourceUrls": [
@@ -1122,7 +1294,9 @@
     "name": "no-labels",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow labeled statements",
     "resourceUrls": [
@@ -1133,7 +1307,9 @@
     "name": "no-lone-blocks",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary nested blocks",
     "resourceUrls": [
@@ -1144,7 +1320,9 @@
     "name": "no-lonely-if",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `if` statements as the only statement in `else` blocks",
     "resourceUrls": [
@@ -1155,7 +1333,8 @@
     "name": "no-loop-func",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow function declarations that contain unsafe references inside loop statements",
     "resourceUrls": [
@@ -1167,7 +1346,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow literal numbers that lose precision",
     "resourceUrls": [
@@ -1178,7 +1359,8 @@
     "name": "no-magic-numbers",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow magic numbers",
     "resourceUrls": [
@@ -1190,7 +1372,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow characters which are made with multiple code points in character class syntax",
     "resourceUrls": [
@@ -1201,7 +1385,9 @@
     "name": "no-multi-assign",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow use of chained assignment expressions",
     "resourceUrls": [
@@ -1212,7 +1398,9 @@
     "name": "no-multi-str",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow multiline strings",
     "resourceUrls": [
@@ -1223,7 +1411,9 @@
     "name": "no-negated-condition",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow negated conditions",
     "resourceUrls": [
@@ -1234,7 +1424,9 @@
     "name": "no-nested-ternary",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow nested ternary expressions",
     "resourceUrls": [
@@ -1245,7 +1437,9 @@
     "name": "no-new",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `new` operators outside of assignments or comparisons",
     "resourceUrls": [
@@ -1256,7 +1450,9 @@
     "name": "no-new-func",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `new` operators with the `Function` object",
     "resourceUrls": [
@@ -1267,7 +1463,8 @@
     "name": "no-new-native-nonconstructor",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow `new` operators with global non-constructor functions",
     "resourceUrls": [
@@ -1279,7 +1476,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow `new` operators with the `Symbol` object",
     "resourceUrls": [
@@ -1290,7 +1488,9 @@
     "name": "no-new-wrappers",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `new` operators with the `String`, `Number`, and `Boolean` objects",
     "resourceUrls": [
@@ -1302,7 +1502,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `\\8` and `\\9` escape sequences in string literals",
     "resourceUrls": [
@@ -1314,7 +1516,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow calling global object properties as functions",
     "resourceUrls": [
@@ -1325,7 +1528,9 @@
     "name": "no-object-constructor",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow calls to the `Object` constructor without an argument",
     "resourceUrls": [
@@ -1334,10 +1539,12 @@
   },
   {
     "name": "no-octal",
-    "severityLevel": 3,
+    "severityLevel": 2,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow octal literals",
     "resourceUrls": [
@@ -1348,7 +1555,9 @@
     "name": "no-octal-escape",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow octal escape sequences in string literals",
     "resourceUrls": [
@@ -1359,7 +1568,9 @@
     "name": "no-param-reassign",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow reassigning `function` parameters",
     "resourceUrls": [
@@ -1370,7 +1581,9 @@
     "name": "no-plusplus",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the unary operators `++` and `--`",
     "resourceUrls": [
@@ -1381,7 +1594,9 @@
     "name": "no-promise-executor-return",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow returning values from Promise executor functions",
     "resourceUrls": [
@@ -1392,7 +1607,9 @@
     "name": "no-proto",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of the `__proto__` property",
     "resourceUrls": [
@@ -1404,7 +1621,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow calling some `Object.prototype` methods directly on objects",
     "resourceUrls": [
@@ -1416,7 +1635,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow variable redeclaration",
     "resourceUrls": [
@@ -1428,7 +1648,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow multiple spaces in regular expressions",
     "resourceUrls": [
@@ -1439,7 +1661,9 @@
     "name": "no-restricted-exports",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow specified names in exports",
     "resourceUrls": [
@@ -1450,7 +1674,9 @@
     "name": "no-restricted-globals",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow specified global variables",
     "resourceUrls": [
@@ -1461,8 +1687,8 @@
     "name": "no-restricted-imports",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [
@@ -1473,7 +1699,9 @@
     "name": "no-restricted-properties",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow certain properties on certain objects",
     "resourceUrls": [
@@ -1484,7 +1712,9 @@
     "name": "no-restricted-syntax",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow specified syntax",
     "resourceUrls": [
@@ -1495,7 +1725,9 @@
     "name": "no-return-assign",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow assignment operators in `return` statements",
     "resourceUrls": [
@@ -1506,7 +1738,9 @@
     "name": "no-script-url",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `javascript:` urls",
     "resourceUrls": [
@@ -1518,7 +1752,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow assignments where both sides are exactly the same",
     "resourceUrls": [
@@ -1529,7 +1765,9 @@
     "name": "no-self-compare",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow comparisons where both sides are exactly the same",
     "resourceUrls": [
@@ -1540,7 +1778,9 @@
     "name": "no-sequences",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow comma operators",
     "resourceUrls": [
@@ -1552,7 +1792,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow returning values from setters",
     "resourceUrls": [
@@ -1563,7 +1804,8 @@
     "name": "no-shadow",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow variable declarations from shadowing variables declared in the outer scope",
     "resourceUrls": [
@@ -1575,7 +1817,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow identifiers from shadowing restricted names",
     "resourceUrls": [
@@ -1587,7 +1831,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow sparse arrays",
     "resourceUrls": [
@@ -1598,7 +1844,9 @@
     "name": "no-template-curly-in-string",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow template literal placeholder syntax in regular strings",
     "resourceUrls": [
@@ -1609,7 +1857,9 @@
     "name": "no-ternary",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow ternary operators",
     "resourceUrls": [
@@ -1621,7 +1871,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow `this`/`super` before calling `super()` in constructors",
     "resourceUrls": [
@@ -1632,7 +1883,8 @@
     "name": "no-throw-literal",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow throwing literals as exceptions",
     "resourceUrls": [
@@ -1644,7 +1896,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow the use of undeclared variables unless mentioned in `/*global */` comments",
     "resourceUrls": [
@@ -1655,7 +1908,9 @@
     "name": "no-undef-init",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow initializing variables to `undefined`",
     "resourceUrls": [
@@ -1666,7 +1921,9 @@
     "name": "no-undefined",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `undefined` as an identifier",
     "resourceUrls": [
@@ -1677,7 +1934,9 @@
     "name": "no-underscore-dangle",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow dangling underscores in identifiers",
     "resourceUrls": [
@@ -1689,7 +1948,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow confusing multiline expressions",
     "resourceUrls": [
@@ -1700,7 +1961,9 @@
     "name": "no-unmodified-loop-condition",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unmodified loop conditions",
     "resourceUrls": [
@@ -1711,7 +1974,9 @@
     "name": "no-unneeded-ternary",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow ternary operators when simpler alternatives exist",
     "resourceUrls": [
@@ -1723,7 +1988,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow unreachable code after `return`, `throw`, `continue`, and `break` statements",
     "resourceUrls": [
@@ -1734,7 +2000,9 @@
     "name": "no-unreachable-loop",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow loops with a body that allows only one iteration",
     "resourceUrls": [
@@ -1746,7 +2014,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow control flow statements in `finally` blocks",
     "resourceUrls": [
@@ -1758,7 +2028,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow negating the left operand of relational operators",
     "resourceUrls": [
@@ -1770,7 +2041,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow use of optional chaining in contexts where the `undefined` value is not allowed",
     "resourceUrls": [
@@ -1781,7 +2054,8 @@
     "name": "no-unused-expressions",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow unused expressions",
     "resourceUrls": [
@@ -1793,7 +2067,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unused labels",
     "resourceUrls": [
@@ -1804,7 +2080,9 @@
     "name": "no-unused-private-class-members",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unused private class members",
     "resourceUrls": [
@@ -1816,7 +2094,8 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow unused variables",
     "resourceUrls": [
@@ -1827,7 +2106,8 @@
     "name": "no-use-before-define",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript"
     ],
     "description": "Disallow the use of variables before they are defined",
     "resourceUrls": [
@@ -1839,7 +2119,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow useless backreferences in regular expressions",
     "resourceUrls": [
@@ -1850,7 +2132,9 @@
     "name": "no-useless-call",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary calls to `.call()` and `.apply()`",
     "resourceUrls": [
@@ -1862,7 +2146,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary `catch` clauses",
     "resourceUrls": [
@@ -1873,7 +2159,9 @@
     "name": "no-useless-computed-key",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary computed property keys in objects and classes",
     "resourceUrls": [
@@ -1884,7 +2172,9 @@
     "name": "no-useless-concat",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary concatenation of literals or template literals",
     "resourceUrls": [
@@ -1895,7 +2185,8 @@
     "name": "no-useless-constructor",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow unnecessary constructors",
     "resourceUrls": [
@@ -1907,7 +2198,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow unnecessary escape characters",
     "resourceUrls": [
@@ -1918,7 +2211,9 @@
     "name": "no-useless-rename",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow renaming import, export, and destructured assignments to the same name",
     "resourceUrls": [
@@ -1929,7 +2224,9 @@
     "name": "no-useless-return",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow redundant return statements",
     "resourceUrls": [
@@ -1940,7 +2237,10 @@
     "name": "no-var",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "Recommended",
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require `let` or `const` instead of `var`",
     "resourceUrls": [
@@ -1951,7 +2251,9 @@
     "name": "no-void",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `void` operators",
     "resourceUrls": [
@@ -1962,7 +2264,9 @@
     "name": "no-warning-comments",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow specified warning terms in comments",
     "resourceUrls": [
@@ -1974,7 +2278,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `with` statements",
     "resourceUrls": [
@@ -1985,7 +2291,9 @@
     "name": "object-shorthand",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow method and property shorthand syntax for object literals",
     "resourceUrls": [
@@ -1996,7 +2304,9 @@
     "name": "one-var",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce variables to be declared either together or separately in functions",
     "resourceUrls": [
@@ -2007,7 +2317,9 @@
     "name": "operator-assignment",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow assignment operator shorthand where possible",
     "resourceUrls": [
@@ -2018,7 +2330,9 @@
     "name": "prefer-arrow-callback",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require using arrow functions for callbacks",
     "resourceUrls": [
@@ -2029,7 +2343,10 @@
     "name": "prefer-const",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "Recommended",
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require `const` declarations for variables that are never reassigned after declared",
     "resourceUrls": [
@@ -2040,7 +2357,8 @@
     "name": "prefer-destructuring",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Require destructuring from arrays and/or objects",
     "resourceUrls": [
@@ -2051,7 +2369,9 @@
     "name": "prefer-exponentiation-operator",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow the use of `Math.pow` in favor of the `**` operator",
     "resourceUrls": [
@@ -2062,7 +2382,9 @@
     "name": "prefer-named-capture-group",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce using named capture group in regular expression",
     "resourceUrls": [
@@ -2073,7 +2395,9 @@
     "name": "prefer-numeric-literals",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow `parseInt()` and `Number.parseInt()` in favor of binary, octal, and hexadecimal literals",
     "resourceUrls": [
@@ -2084,7 +2408,9 @@
     "name": "prefer-object-has-own",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow use of `Object.prototype.hasOwnProperty.call()` and prefer use of `Object.hasOwn()`",
     "resourceUrls": [
@@ -2095,7 +2421,9 @@
     "name": "prefer-object-spread",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow using Object.assign with an object literal as the first argument and prefer the use of object spread instead",
     "resourceUrls": [
@@ -2106,7 +2434,8 @@
     "name": "prefer-promise-reject-errors",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Require using Error objects as Promise rejection reasons",
     "resourceUrls": [
@@ -2117,7 +2446,9 @@
     "name": "prefer-regex-literals",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow use of the `RegExp` constructor in favor of regular expression literals",
     "resourceUrls": [
@@ -2128,7 +2459,10 @@
     "name": "prefer-rest-params",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "Recommended",
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require rest parameters instead of `arguments`",
     "resourceUrls": [
@@ -2139,7 +2473,10 @@
     "name": "prefer-spread",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "Recommended",
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require spread operators instead of `.apply()`",
     "resourceUrls": [
@@ -2150,7 +2487,9 @@
     "name": "prefer-template",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require template literals instead of string concatenation",
     "resourceUrls": [
@@ -2161,7 +2500,9 @@
     "name": "radix",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce the consistent use of the radix argument when using `parseInt()`",
     "resourceUrls": [
@@ -2172,7 +2513,9 @@
     "name": "require-atomic-updates",
     "severityLevel": 2,
     "tags": [
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Disallow assignments that can lead to race conditions due to usage of `await` or `yield`",
     "resourceUrls": [
@@ -2183,7 +2526,8 @@
     "name": "require-await",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow async functions which have no `await` expression",
     "resourceUrls": [
@@ -2194,7 +2538,9 @@
     "name": "require-unicode-regexp",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce the use of `u` or `v` flag on RegExp",
     "resourceUrls": [
@@ -2206,7 +2552,9 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require generator functions to contain `yield`",
     "resourceUrls": [
@@ -2217,7 +2565,9 @@
     "name": "sort-imports",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce sorted import declarations within modules",
     "resourceUrls": [
@@ -2228,7 +2578,9 @@
     "name": "sort-keys",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require object keys to be sorted",
     "resourceUrls": [
@@ -2239,7 +2591,9 @@
     "name": "sort-vars",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require variables within the same declaration block to be sorted",
     "resourceUrls": [
@@ -2250,7 +2604,9 @@
     "name": "strict",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow strict mode directives",
     "resourceUrls": [
@@ -2261,7 +2617,9 @@
     "name": "symbol-description",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require symbol descriptions",
     "resourceUrls": [
@@ -2272,7 +2630,9 @@
     "name": "unicode-bom",
     "severityLevel": 4,
     "tags": [
-      "CodeStyle"
+      "CodeStyle",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow Unicode byte order mark (BOM)",
     "resourceUrls": [
@@ -2284,7 +2644,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require calls to `isNaN()` when checking for `NaN`",
     "resourceUrls": [
@@ -2296,7 +2658,9 @@
     "severityLevel": 2,
     "tags": [
       "Recommended",
-      "ErrorProne"
+      "ErrorProne",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Enforce comparing `typeof` expressions against valid strings",
     "resourceUrls": [
@@ -2307,7 +2671,9 @@
     "name": "vars-on-top",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require `var` declarations be placed at the top of their containing scope",
     "resourceUrls": [
@@ -2318,7 +2684,9 @@
     "name": "yoda",
     "severityLevel": 3,
     "tags": [
-      "BestPractices"
+      "BestPractices",
+      "Javascript",
+      "Typescript"
     ],
     "description": "Require or disallow \"Yoda\" conditions",
     "resourceUrls": [

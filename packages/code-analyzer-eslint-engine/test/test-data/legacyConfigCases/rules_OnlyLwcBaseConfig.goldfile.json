@@ -3,7 +3,8 @@
     "name": "@lwc/lwc/no-deprecated",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "disallow usage of deprecated LWC APIs",
     "resourceUrls": [
@@ -14,7 +15,8 @@
     "name": "@lwc/lwc/no-disallowed-lwc-imports",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict unexpected imports from the lwc package",
     "resourceUrls": [
@@ -25,7 +27,8 @@
     "name": "@lwc/lwc/no-unexpected-wire-adapter-usages",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict unexpected wire adapter usages",
     "resourceUrls": [
@@ -36,7 +39,8 @@
     "name": "@lwc/lwc/no-unknown-wire-adapters",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "restrict usage of unknown wire adapters",
     "resourceUrls": [
@@ -47,7 +51,8 @@
     "name": "@lwc/lwc/valid-api",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate api decorator usage",
     "resourceUrls": [
@@ -58,7 +63,8 @@
     "name": "@lwc/lwc/valid-track",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate track decorator usage",
     "resourceUrls": [
@@ -69,7 +75,8 @@
     "name": "@lwc/lwc/valid-wire",
     "severityLevel": 3,
     "tags": [
-      "Recommended"
+      "Recommended",
+      "Javascript"
     ],
     "description": "validate wire decorator usage",
     "resourceUrls": [
@@ -80,8 +87,8 @@
     "name": "no-restricted-imports",
     "severityLevel": 3,
     "tags": [
-      "Recommended",
-      "BestPractices"
+      "BestPractices",
+      "Javascript"
     ],
     "description": "Disallow specified modules when loaded by `import`",
     "resourceUrls": [
