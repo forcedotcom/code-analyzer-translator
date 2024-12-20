@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>When JavaScript is in object custom button weblink, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>5</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <openType>onClickJavaScript</openType>
+    <url>alert(&quot;Show this alert!&quot;);</url>
+</WebLink>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When JavaScript is not in object custom button weblink, then do not report violation</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <openType>newWindow</openType>
+    <url>https://example.com</url>
+</WebLink>
+        ]]></code>
+    </test-code>
+
+</test-data>

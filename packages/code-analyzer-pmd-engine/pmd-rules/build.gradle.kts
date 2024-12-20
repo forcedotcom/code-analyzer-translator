@@ -74,6 +74,17 @@ tasks.test {
 // The jacocoTestReport and jacocoTestCoverageVerification tasks must be run separately from the test task
 // Otherwise, running a single test from the IDE will trigger this verification.
 tasks.jacocoTestCoverageVerification {
+
+    // Exclude specific classes from the coverage verification calculation
+    classDirectories.setFrom(
+        fileTree("build/classes/java/main").filter {
+            // Normalize the path to use forward slashes for comparison purposes
+            val normalizedPath = it.path.replace("\\", "/")
+            // Exclude the DetectSecretsInCustomObjects class because the Security team hasn't given us a valid test for it yet:
+            !normalizedPath.contains("com/salesforce/security/pmd/xml/DetectSecretsInCustomObjects.class")
+        }
+    )
+
     violationRules {
         rule {
             limit {

@@ -398,7 +398,57 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
     // =================================================================================================================
     //   SFCA-PMD-RULES - APPEXCHANGE XML RULES
     // =================================================================================================================
+    "AvoidApiSessionId": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidAuraWithLockerDisabled": {
+        severity: SeverityLevel.Critical,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidDisableProtocolSecurity": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
     "AvoidInsecureHttpRemoteSiteSetting": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidJavaScriptCustomObject": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidJavaScriptHomePageComponent": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidLmcIsExposedTrue": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidSControls": {
+        severity: SeverityLevel.Critical,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "LimitConnectedAppScope": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "ProtectSensitiveData": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "UseHttpsCallbackUrl": {
         severity: SeverityLevel.Moderate,
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     }

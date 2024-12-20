@@ -26,7 +26,6 @@ export enum Language {
 //    * Typescript ('typescript') Language Module [CPD Only - No PMD Support]: https://github.com/pmd/pmd/blob/master/pmd-javascript/src/main/java/net/sourceforge/pmd/lang/typescript/TsLanguageModule.java
 //    * Visualforce ('visualforce') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-visualforce/src/main/java/net/sourceforge/pmd/lang/visualforce/VfLanguageModule.java
 //    * XML ('xml') Language Model [CPD+PMD]: https://github.com/pmd/pmd/blob/master/pmd-xml/src/main/java/net/sourceforge/pmd/lang/xml/XmlLanguageModule.java
-//   Additionally, we must support the file extensions that the AppExchange rules want to also process per language.
 export const DEFAULT_FILE_EXTENSIONS: Record<Language, string[]> = {
     [Language.APEX]: [
         // From PMD's ApexLanguageModule:
@@ -58,15 +57,7 @@ export const DEFAULT_FILE_EXTENSIONS: Record<Language, string[]> = {
 
     [Language.XML]: [
         // FROM PMD's XmlLanguageModule:
-        '.xml',
-
-        // Salesforce metadata file extensions to associate to XML language, specifically for the AppExchange rules:
-        //   Note: The metadata api pages over at
-        //           https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_types_list.htm
-        //         helps to list the file extensions for each metadata type. For example, the RemoteSiteSettings page
-        //           https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_remotesitesetting.htm
-        //         specifies that .remoteSite is the file extension for remote site settings files.
-        '.remoteSite'
+        '.xml'
     ]
 }
 

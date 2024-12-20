@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>Homepage component has javascript link, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>3</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+	<body>&lt;a href=javascript:alert(11)&gt;Hello World &lt;/a&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+</HomePageComponent>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When Homepage component has script tag, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>3</expected-linenumbers>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+	<body>&lt;b&gt;Hello World &lt;/b&gt;
+		&lt;script&gt;
+		alert(99);
+		&lt;/script&gt;
+	</body>
+    <pageComponentType>htmlArea</pageComponentType>
+</HomePageComponent>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When Homepage component does not have script tag, then do not report violation</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<HomePageComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+	<body>&lt;b&gt;Hello World &lt;/b&gt;</body>
+    <pageComponentType>htmlArea</pageComponentType>
+</HomePageComponent>
+        ]]></code>
+    </test-code>
+
+</test-data>
