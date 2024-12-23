@@ -183,7 +183,7 @@ describe('Tests for the ESLintEnginePlugin', () => {
         };
         await expect(callCreateEngineConfig(plugin, userProvidedOverrides)).rejects.toThrow(
             getMessageFromCatalog(SHARED_MESSAGE_CATALOG, 'ConfigObjectContainsInvalidKey', 'engines.eslint.file_extensions',
-                'oops', '["javascript","typescript"]'));
+                'oops', '["javascript","other","typescript"]'));
     });
 
     it('When a valid file_extensions.javascript value is passed to createEngineConfig, then it is set on the config', async () => {

@@ -20,20 +20,21 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Whether to have Code Analyzer automatically discover/apply any ESLint configuration and ignore files from your workspace.`,
 
     ConfigFieldDescription_disable_javascript_base_config:
-        `Whether to turn off the default base configuration that supplies the standard ESLint rules for javascript files.`,
+        `Whether to turn off the default base configuration that supplies the standard ESLint rules for JavaScript files.`,
 
     ConfigFieldDescription_disable_lwc_base_config:
-        `Whether to turn off the default base configuration that supplies the LWC rules for javascript files.`,
+        `Whether to turn off the default base configuration that supplies the LWC rules for JavaScript files.`,
 
     ConfigFieldDescription_disable_typescript_base_config:
-        `Whether to turn off the default base configuration that supplies the standard rules for typescript files.`,
+        `Whether to turn off the default base configuration that supplies the standard rules for TypeScript files.`,
 
     ConfigFieldDescription_file_extensions:
-        `Extensions of the files in your workspace that will be used to discover rules for javascript and typescript.\n` +
-        `Each file extension can only be associated to one language. If a specific language is not specified, then the\n` +
-        `following list of default file extensions will be used:\n` +
-        `  javascript: ['.js', '.cjs', '.mjs']\n` +
-        `  typescript: ['.ts']`,
+        `Extensions of the files in your workspace that will be used to discover rules.\n` +
+        `To associate file extensions to the standard ESLint JavaScript rules, LWC rules, or custom JavaScript-based\n` +
+        `rules, add them under the 'javascript' language. To associate file extensions to the standard TypeScript\n` +
+        `rules or custom TypeScript-based rules, add them under the 'typescript' language. To allow for the\n` +
+        `discovery of custom rules that are associated with any other language, then add the associated file\n` +
+        `extensions under the 'other' language.`,
 
     UnsupportedEngineName:
         `The ESLintEnginePlugin does not support an engine with name '%s'.`,
