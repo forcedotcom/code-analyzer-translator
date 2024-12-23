@@ -78,7 +78,7 @@ export class PmdWrapperInvoker {
         this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg) => {
             if (stdOutMsg.startsWith(STDOUT_ERROR_MARKER)) {
-                const errorMessage: string = stdOutMsg.slice(STDOUT_ERROR_MARKER.length);
+                const errorMessage: string = stdOutMsg.slice(STDOUT_ERROR_MARKER.length).replaceAll('{NEWLINE}','\n');
                 throw new Error(errorMessage);
             } else {
                 this.emitLogEvent(LogLevel.Fine, `[JAVA StdOut]: ${stdOutMsg}`)

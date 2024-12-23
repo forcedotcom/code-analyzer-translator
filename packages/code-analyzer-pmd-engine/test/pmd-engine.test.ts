@@ -160,7 +160,8 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         expectContainsRuleWithName(ruleDescriptions, 'fakerule8'); // From somecat3.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule9'); // From somecat3.xml
         const fakeRule10Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule10'); // From somecat4.xml
-        expect(fakeRule10Description.severityLevel).toEqual(SeverityLevel.High);
+        expect(fakeRule10Description.severityLevel).toEqual(SeverityLevel.Low); // Default when priority is not in ruleset file
+        expect(fakeRule10Description.description).toEqual(''); // Default when no description is in ruleset file
         expect(fakeRule10Description.tags).toEqual(['Recommended', 'SomeCat4', 'Javascript', 'Custom']);
         expect(fakeRule10Description.resourceUrls).toHaveLength(0); // This particular rule purposely has no externalInfoUrl defined, so we confirm that it gives no resourceUrls.
         expectContainsRuleWithName(ruleDescriptions, 'fakerule11'); // From somecat4.xml
@@ -275,8 +276,9 @@ describe('Tests for the describeRules method of PmdEngine', () => {
                 'does/not/exist.xml'
             ]
         });
+        // Note that toThrow always checks for a substring instead of exact match, which is why this works:
         await expect(engine.describeRules({})).rejects.toThrow('PMD errored when attempting to load a custom ruleset "does/not/exist.xml". ' +
-            'Make sure the resource is a valid file on disk or on the Java classpath.');
+            'Make sure the resource is a valid ruleset file on disk or on the Java classpath.\n\nPMD Exception:');
     });
 
     it('When file_extensions associates .txt file to javascript language and workspace only has .txt file, then javascript rules are returned', async () => {
@@ -551,6 +553,25 @@ describe('Tests for the runRules method of PmdEngine', () => {
         expect(results.violations).toHaveLength(1);
         expect(results.violations[0].ruleName).toEqual('WhileLoopsMustUseBraces-javascript');
         expect(results.violations[0].codeLocations[0].file).toEqual(path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace','sampleViolations','WhileLoopsMustUseBraces.txt'));
+    });
+
+    it('When custom rule does not define a violation message in the ruleset file, then a processing error should report exist`', async () => {
+        const engine: PmdEngine = new PmdEngine({
+            ... DEFAULT_PMD_ENGINE_CONFIG,
+            rule_languages: [Language.JAVASCRIPT],
+            custom_rulesets: [
+                path.join(TEST_DATA_FOLDER, 'custom rules', 'subfolder', 'somecat4.xml') // Contains fakerule10 which has no violation message
+            ]
+        });
+
+        const logEvents: LogEvent[] = [];
+        engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
+
+        const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'fakerule10.js')]);
+        await engine.runRules(['fakerule10'], {workspace: workspace});
+        const errorLogEvents: LogEvent[] = logEvents.filter(event => event.logLevel === LogLevel.Error);
+        expect(errorLogEvents).toHaveLength(1);
+        expect(errorLogEvents[0].message).toContain('Message was null');
     });
 });
 
