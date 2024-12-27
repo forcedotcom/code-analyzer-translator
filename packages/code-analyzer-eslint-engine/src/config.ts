@@ -33,11 +33,12 @@ export type ESLintEngineConfig = {
     // Default: false
     disable_typescript_base_config: boolean
 
-    // Extensions of the files in your workspace that will be used to discover rules for javascript and typescript.
-    // Each file extension can only be associated to one language. If a specific language is not specified, then the
-    // following list of default file extensions will be used:
-    //   javascript: ['.js', '.cjs', '.mjs']
-    //   typescript: ['.ts']
+    // Extensions of the files in your workspace that will be used to discover rules.
+    // To associate file extensions to the standard ESLint JavaScript rules, LWC rules, or custom JavaScript-based
+    // rules, add them under the 'javascript' language. To associate file extensions to the standard TypeScript
+    // rules or custom TypeScript-based rules, add them under the 'typescript' language. To allow for the
+    // discovery of custom rules that are associated with any other language, then add the associated file
+    // extensions under the 'other' language.
     file_extensions: FileExtensionsObject
 
     // (INTERNAL USE ONLY) Copy of the code analyzer config root.
@@ -46,7 +47,8 @@ export type ESLintEngineConfig = {
 
 type FileExtensionsObject = {
     javascript: string[],
-    typescript: string[]
+    typescript: string[],
+    other: string[]
 };
 
 export const DEFAULT_CONFIG: ESLintEngineConfig = {
@@ -58,7 +60,8 @@ export const DEFAULT_CONFIG: ESLintEngineConfig = {
     disable_typescript_base_config: false,
     file_extensions: {
         javascript: ['.js', '.cjs', '.mjs'],
-        typescript: ['.ts']
+        typescript: ['.ts'],
+        other: []
     },
     config_root: process.cwd() // INTERNAL USE ONLY
 }
@@ -169,7 +172,7 @@ class ESLintEngineConfigValueExtractor {
                 (element, elementFieldPath) => ValueValidator.validateString(element,
                     elementFieldPath, ESLintEngineConfigValueExtractor.FILE_EXT_PATTERN),
                 DEFAULT_CONFIG.file_extensions[language as keyof FileExtensionsObject]
-            )!).map(fileExt => fileExt.toLowerCase());
+            )!.map(fileExt => fileExt.toLowerCase()));
 
             // Validate that none of the file extensions already exist in another language
             for (const fileExt of fileExts) {

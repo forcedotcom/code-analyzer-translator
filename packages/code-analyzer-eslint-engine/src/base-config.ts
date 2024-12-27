@@ -53,36 +53,24 @@ export class LegacyBaseConfigFactory {
     }
 
     private createJavascriptConfig(baseRuleset: BaseRuleset): Linter.ConfigOverride {
-        return {
+        const jsConfig: Linter.ConfigOverride = {
             files: this.config.file_extensions.javascript.map(ext => `*${ext}`),
             extends: [`eslint:${baseRuleset}`]
         }
+        return this.addJavascriptParser(jsConfig);
     }
 
     private createLwcConfig(): Linter.ConfigOverride {
-        return {
+        const lwcConfig: Linter.ConfigOverride = {
             files: this.config.file_extensions.javascript.map(ext => `*${ext}`),
             extends: [
                 "@salesforce/eslint-config-lwc/base" // Always using base for now. all and recommended both require additional plugins
             ],
             plugins: [
                 "@lwc/eslint-plugin-lwc"
-            ],
-            parser: "@babel/eslint-parser",
-            parserOptions: {
-                requireConfigFile: false,
-                babelOptions: {
-                    babelrc: false,
-                    configFile: false,
-                    parserOpts: {
-                        plugins: [
-                            "classProperties",
-                            ["decorators", { "decoratorsBeforeExport": false }]
-                        ]
-                    }
-                }
-            }
+            ]
         }
+        return this.addJavascriptParser(lwcConfig);
     }
 
     private createJavascriptPlusLwcConfig(baseRuleset: BaseRuleset): Linter.ConfigOverride {
@@ -92,7 +80,7 @@ export class LegacyBaseConfigFactory {
     }
 
     private createTypescriptConfig(baseRuleset: BaseRuleset): Linter.ConfigOverride {
-        return {
+        const tsConfig: Linter.ConfigOverride = {
             files: this.config.file_extensions.typescript.map(ext => `*${ext}`),
             extends: [
                 `eslint:${baseRuleset}`, // The typescript plugin applies the base rules to the typescript files, so we want this
@@ -100,15 +88,38 @@ export class LegacyBaseConfigFactory {
             ],
             plugins: [
                 "@typescript-eslint"
-            ],
-            parser: '@typescript-eslint/parser',
-            parserOptions: {
-                // Finds the tsconfig.json file nearest to each source file. This should work for most users.
-                // If not, then we may consider letting user specify this via config or alternatively, users can just
-                // set disable_typescript_base_config=true and configure typescript in their own eslint config file.
-                // See https://typescript-eslint.io/packages/parser/#project
-                project: true
+            ]
+        };
+        return this.addTypescriptParser(tsConfig);
+    }
+
+    private addJavascriptParser(config: Linter.ConfigOverride): Linter.ConfigOverride {
+        config.parser = "@babel/eslint-parser";
+        config.parserOptions = {
+            requireConfigFile: false,
+            babelOptions: {
+                babelrc: false,
+                configFile: false,
+                parserOpts: {
+                    plugins: [
+                        "classProperties",
+                        ["decorators", {"decoratorsBeforeExport": false}]
+                    ]
+                }
             }
+        };
+        return config;
+    }
+
+    private addTypescriptParser(config: Linter.ConfigOverride): Linter.ConfigOverride {
+        config.parser = '@typescript-eslint/parser';
+        config.parserOptions = {
+            // Finds the tsconfig.json file nearest to each source file. This should work for most users.
+            // If not, then we may consider letting user specify this via config or alternatively, users can just
+            // set disable_typescript_base_config=true and configure typescript in their own eslint config file.
+            // See https://typescript-eslint.io/packages/parser/#project
+            project: true
         }
+        return config;
     }
 }

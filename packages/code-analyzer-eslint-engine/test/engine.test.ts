@@ -293,6 +293,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
     it('When file_extensions.javascript and file_extensions.typescript are both empty, then no rules are returned', async () => {
         const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
             file_extensions: {
+                ...DEFAULT_CONFIG.file_extensions,
                 javascript: [],
                 typescript: []
             }
@@ -383,6 +384,39 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(
             {workspace: new Workspace([workspaceThatHasEslintIgnoreFile])});
         expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+    });
+
+    it('When custom rules only apply to file extensions that are not javascript or typescript based, then without specifying file extensions, they are not picked up', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname,
+            disable_lwc_base_config: true,
+            disable_javascript_base_config: true,
+            disable_typescript_base_config: true,
+            eslint_config_file: path.join(workspaceThatHasCustomConfigWithNewRules, '.eslintrc_customLanguage.yml')
+        });
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: new Workspace([workspaceThatHasCustomConfigWithNewRules])});
+
+        expect(ruleDescriptions).toHaveLength(0);
+    });
+
+    it('When custom rules only apply to file extensions that are not javascript or typescript based, then when specifying file extensions, they are picked up', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname,
+            disable_lwc_base_config: true,
+            disable_javascript_base_config: true,
+            disable_typescript_base_config: true,
+            eslint_config_file: path.join(workspaceThatHasCustomConfigWithNewRules, '.eslintrc_customLanguage.yml'),
+            file_extensions:{
+                ... DEFAULT_CONFIG.file_extensions,
+                other: ['.html', '.cmp']
+            }
+        });
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(
+            {workspace: new Workspace([workspaceThatHasCustomConfigWithNewRules])});
+
+        expect(ruleDescriptions).toHaveLength(3);
+        expect(ruleDescriptions.map(rd => rd.name)).toEqual(["dummy/my-rule-1", "dummy/my-rule-2", "dummy/my-rule-3"]);
     });
 });
 
@@ -490,6 +524,35 @@ describe('Typical tests for the runRules method of ESLintEngine', () => {
             "message": "Avoid using variables named 'oops'",
             "primaryLocationIndex": 0,
             "ruleName": "dummy/my-rule-1"
+        });
+    });
+
+    it('When custom rules only apply to file extensions that are not javascript or typescript based, then when specifying file extensions, the rules run', async () => {
+        const engine: ESLintEngine = new ESLintEngine({...DEFAULT_CONFIG,
+            config_root: __dirname,
+            eslint_config_file: path.join(workspaceThatHasCustomConfigWithNewRules, '.eslintrc_customLanguage.yml'),
+            file_extensions:{
+                ... DEFAULT_CONFIG.file_extensions,
+                other: ['.html', '.cmp']
+            }
+        });
+
+        const runOptions: RunOptions = {workspace: new Workspace([path.join(workspaceThatHasCustomConfigWithNewRules)])};
+
+        const results: EngineRunResults = await engine.runRules(['dummy/my-rule-1'], runOptions);
+
+        expect(results.violations).toHaveLength(1);
+        expect(results.violations[0]).toEqual({
+            ruleName: "dummy/my-rule-1",
+            primaryLocationIndex: 0,
+            message: "Avoid using variables named 'forbidden'",
+            codeLocations: [{
+                file: path.join(workspaceThatHasCustomConfigWithNewRules, 'dummy.html'),
+                startLine: 2,
+                startColumn: 5,
+                endLine: 2,
+                endColumn: 14
+            }]
         });
     });
 

@@ -68,7 +68,8 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
     async getCandidateFilesForBaseConfig(_filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         return createPlaceholderCandidateFiles([
                 ... this.config.file_extensions.javascript,
-                ... this.config.file_extensions.typescript],
+                ... this.config.file_extensions.typescript,
+                ... this.config.file_extensions.other],
             this.config.config_root
         )
     }
@@ -87,6 +88,7 @@ export class MissingESLintWorkspace implements ESLintWorkspace {
 type FilesOfInterest = {
     javascriptFiles: string[]
     typescriptFiles: string[]
+    otherFiles: string[]
 }
 
 export class PresentESLintWorkspace implements ESLintWorkspace {
@@ -102,7 +104,9 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
 
     async getFilesToScan(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
         const filesOfInterest: FilesOfInterest = await this.getFilesOfInterest(filterFcn);
-        return filesOfInterest.javascriptFiles.concat(filesOfInterest.typescriptFiles);
+        return filesOfInterest.javascriptFiles
+            .concat(filesOfInterest.typescriptFiles)
+            .concat(filesOfInterest.otherFiles);
     }
 
     async getCandidateFilesForUserConfig(filterFcn: AsyncFilterFnc<string>): Promise<string[]> {
@@ -140,17 +144,20 @@ export class PresentESLintWorkspace implements ESLintWorkspace {
             return this.filesOfInterest;
         }
 
-        this.filesOfInterest = { javascriptFiles: [], typescriptFiles: [] };
+        this.filesOfInterest = { javascriptFiles: [], typescriptFiles: [], otherFiles: [] };
         for (const file of await this.delegateWorkspace.getExpandedFiles()) {
             const fileExt = path.extname(file).toLowerCase();
             if (this.config.file_extensions.javascript.includes(fileExt)) {
                 this.filesOfInterest.javascriptFiles.push(file);
             } else if (this.config.file_extensions.typescript.includes(fileExt)) {
                 this.filesOfInterest.typescriptFiles.push(file);
+            } else if (this.config.file_extensions.other.includes(fileExt)) {
+                this.filesOfInterest.otherFiles.push(file);
             }
         }
         this.filesOfInterest.javascriptFiles = await filterAsync(this.filesOfInterest.javascriptFiles, filterFcn);
         this.filesOfInterest.typescriptFiles = await filterAsync(this.filesOfInterest.typescriptFiles, filterFcn);
+        this.filesOfInterest.otherFiles = await filterAsync(this.filesOfInterest.otherFiles, filterFcn);
 
         return this.filesOfInterest;
     }
