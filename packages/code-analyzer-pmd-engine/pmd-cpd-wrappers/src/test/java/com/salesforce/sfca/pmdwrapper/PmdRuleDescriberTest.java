@@ -135,8 +135,8 @@ public class PmdRuleDescriberTest {
         try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
             Exception thrown = assertThrows(Exception.class, () ->
                     ruleDescriber.describeRulesFor(List.of("does/not/exist.xml"), Set.of("apex", "visualforce")));
-            assertThat(thrown.getMessage(), is("PMD errored when attempting to load a custom ruleset \"does/not/exist.xml\". " +
-                            "Make sure the resource is a valid file on disk or on the Java classpath."));
+            assertThat(thrown.getMessage(), containsString("PMD errored when attempting to load a custom ruleset \"does/not/exist.xml\". " +
+                            "Make sure the resource is a valid ruleset file on disk or on the Java classpath."));
             }
     }
 
@@ -221,25 +221,79 @@ public class PmdRuleDescriberTest {
         }
     }
 
+    @Test
+    void whenDescribeRulesIsGivenCustomRulesetThatIsNotValid_thenError(@TempDir Path tempDir) throws Exception {
+        Path rulesetFile = tempDir.resolve("sampleRulesetFile.xml");
+        Files.write(rulesetFile, "<oops></oops>".getBytes());
+        String rulesetFileStr = rulesetFile.toAbsolutePath().toString();
+
+        try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
+            Exception thrown = assertThrows(Exception.class, () ->
+                    ruleDescriber.describeRulesFor(List.of(rulesetFileStr), Set.of("apex")));
+            assertThat(thrown.getMessage(), containsString("PMD errored when attempting to load a custom ruleset \"" + rulesetFileStr + "\". " +
+                    "Make sure the resource is a valid ruleset file on disk or on the Java classpath."));
+        }
+    }
+
+    @Test
+    void whenDescribeRulesIsGivenCustomRulesetWithMissingRuleDescriptionPriorityAndUrl_thenDefaultsAreGiven(@TempDir Path tempDir) throws Exception {
+        Path rulesetFile = tempDir.resolve("sampleRulesetFile.xml");
+        String contents = createSampleRuleset("sampleRuleset",
+                "<rule name=\"sampleRule\"\n" +
+                        "      language=\"apex\"\n" +
+                        "      class=\"net.sourceforge.pmd.lang.rule.xpath.XPathRule\">\n" +
+                        "    <properties>\n" +
+                        "        <property name=\"xpath\">\n" +
+                        "            <value><![CDATA[\n" +
+                        "//MethodCallExpression[lower-case(@FullMethodName)='foo']\n" +
+                        "            ]]></value>\n" +
+                        "        </property>\n" +
+                        "    </properties>\n" +
+                        "</rule>");
+        Files.write(rulesetFile, contents.getBytes());
+
+        try (StdOutCaptor stdoutCaptor = new StdOutCaptor()) {
+            List<PmdRuleInfo> ruleInfoList = ruleDescriber.describeRulesFor(
+                    List.of(rulesetFile.toAbsolutePath().toString()),
+                    Set.of("apex"));
+
+            PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule", "apex");
+            assertThat(ruleInfo.ruleSet, is("sampleRuleset"));
+            assertThat(ruleInfo.description, is(""));
+            assertThat(ruleInfo.externalInfoUrl, is(nullValue()));
+            assertThat(ruleInfo.priority, is("Low")); // PMD's default priority when ruleset doesn't specify
+            assertThat(ruleInfo.ruleSetFile, is(rulesetFile.toAbsolutePath().toString()));
+        }
+    }
+
     static String createSampleRuleset(String rulesetName, String ruleName, String language, int priority) {
+        return createSampleRuleset(rulesetName,
+                "<rule name=\"" + ruleName + "\"\n" +
+                "      language=\"" + language + "\"\n" +
+                "      message=\"Sample " + ruleName + " message\"\n" +
+                "      class=\"net.sourceforge.pmd.lang.rule.xpath.XPathRule\"\n" +
+                "      externalInfoUrl=\"https://" + ruleName + ".com\">\n" +
+                "    <description>Sample " + ruleName + " description</description>\n" +
+                "    <priority>" + priority + "</priority>\n" +
+                "    <properties>\n" +
+                "        <property name=\"xpath\">\n" +
+                "            <value>\n" +
+                "<![CDATA[\n" +
+                "//MethodCallExpression[lower-case(@FullMethodName)='" + ruleName + "']\n" +
+                "]]>\n" +
+                "            </value>\n" +
+                "        </property>\n" +
+                "    </properties>\n" +
+                "</rule>");
+    }
+
+    static String createSampleRuleset(String rulesetName, String ruleXml) {
         return "<ruleset name=\"" + rulesetName + "\"\n" +
                 "         xmlns=\"http://pmd.sourceforge.net/ruleset/2.0.0\"\n" +
                 "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "         xsi:schemaLocation=\"http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd\">\n" +
                 "    <description>Sample " + rulesetName + " Description</description>\n" +
-                "    <rule name=\"" + ruleName + "\" language=\"" + language + "\" message=\"Sample " + ruleName + " message\" class=\"net.sourceforge.pmd.lang.rule.xpath.XPathRule\" externalInfoUrl=\"https://" + ruleName + ".com\">\n" +
-                "        <description>Sample " + ruleName + " description</description>\n" +
-                "        <priority>" + priority + "</priority>\n" +
-                "        <properties>\n" +
-                "            <property name=\"xpath\">\n" +
-                "                <value>\n" +
-                "<![CDATA[\n" +
-                "//MethodCallExpression[lower-case(@FullMethodName)='" + ruleName + "']\n" +
-                "]]>\n" +
-                "                </value>\n" +
-                "            </property>\n" +
-                "        </properties>\n" +
-                "    </rule>\n" +
+                ruleXml.lines().map(l -> "    " + l).collect(Collectors.joining("\n")) + "\n" +
                 "</ruleset>";
     }
 

@@ -12,28 +12,17 @@
 	</description>
 
 	<rule name="fakerule10"
-		  message="Avoid using with - it's bad news"
 		  language="ecmascript"
 		  since="5.0.1"
-		  class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"> <!-- Removed the externalInfoUrl attribute so that we can test what happens when this is missing -->
-		<description>Avoid using with - it's bad news</description>
-		<priority>1</priority>
+		  class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+		<!-- Missing message, priority, description, and externalUrl on purpose because PMD doesn't require them - so we can test this scenario -->
 		<properties>
 			<property name="xpath">
-				<value>
-					<![CDATA[
+				<value><![CDATA[
 //WithStatement
-]]>
-				</value>
+				]]></value>
 			</property>
 		</properties>
-		<example>
-			<![CDATA[
-with (object) {
-    property = 3; // Might be on object, might be on window: who knows.
-}
-]]>
-		</example>
 	</rule>
 
 	<rule name="fakerule11"

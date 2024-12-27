@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 class PmdRuleDescriber {
     /**
@@ -109,7 +110,7 @@ class PmdRuleDescriber {
                     pmdRuleInfo.description = getLimitedDescription(rule);
                     pmdRuleInfo.externalInfoUrl = rule.getExternalInfoUrl();
                     pmdRuleInfo.ruleSet = rule.getRuleSetName();
-                    pmdRuleInfo.priority = rule.getPriority().toString();
+                    pmdRuleInfo.priority = rule.getPriority().toString(); // If priority isn't set in ruleset file, then PMD uses "Low" by default. So no need for null check here.
                     pmdRuleInfo.ruleSetFile = ruleSet.getFileName();
                     ruleInfoList.add(pmdRuleInfo);
                 }
@@ -122,7 +123,7 @@ class PmdRuleDescriber {
     private static String getLimitedDescription(Rule rule) {
         // Since the rule description can be long, we remove unnecessary whitespace and clip the message
         // so that users can read more on the website if it is over 500 characters long.
-        String ruleDescription = rule.getDescription().trim()
+        String ruleDescription = Objects.requireNonNullElse(rule.getDescription(),"").trim()
                 .replaceAll("\\s+"," ") // Switch to only use a single space whenever whitespace is found
                 .replaceAll("\\[([^]]+)]\\([^)]+\\)", "$1"); // Remove markdown urls. i.e. replace "[phrase](<url>)" with "phrase"
         if (ruleDescription.length() > 500) {
@@ -152,15 +153,16 @@ class PmdErrorListener implements PmdReporter {
         if (throwable != null) {
             String message = throwable.getMessage();
             if (throwable instanceof RuleSetLoadException && message.contains("Cannot load ruleset ")) {
-                Pattern pattern = Pattern.compile("Cannot load ruleset (.+?):");
+                Pattern pattern = Pattern.compile("Cannot load ruleset (.+?): ");
                 Matcher matcher = pattern.matcher(message);
                 if (matcher.find()) {
                     String ruleset = matcher.group(1).trim();
                     String errorMessage = "PMD errored when attempting to load a custom ruleset \"" + ruleset + "\". " +
-                            "Make sure the resource is a valid file on disk or on the Java classpath.";
+                            "Make sure the resource is a valid ruleset file on disk or on the Java classpath.\n\n" +
+                            "PMD Exception: \n" + message.lines().map(l -> "  | " + l).collect(Collectors.joining("n"));
 
                     // The typescript side can more easily handle error messages that come from stdout with "[Error] " marker
-                    System.out.println("[Error] " + errorMessage);
+                    System.out.println("[Error] " + errorMessage.replaceAll("\n","{NEWLINE}"));
                     throw new RuntimeException(errorMessage, throwable);
                 }
             }
