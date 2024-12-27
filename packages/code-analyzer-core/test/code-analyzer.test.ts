@@ -49,10 +49,20 @@ describe("Tests for CodeAnalyzer constructor", () => {
         const nodeParentDir: string = path.dirname(process.execPath);
 
         // Instantiate a Code Analyzer.
-        const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
 
         // Verify that the PATH was changed.
         expect(process.env.PATH).toEqual(`${nodeParentDir}${path.delimiter}${initialPath}`);
+    });
+});
+
+describe("Tests for getConfig method", () => {
+    it.each([
+        CodeAnalyzerConfig.withDefaults(),
+        CodeAnalyzerConfig.fromObject({log_folder: __dirname})
+    ])("When getConfig is called, it returns the exact CodeAnalyzerConfig that was passed to the constructor", (config: CodeAnalyzerConfig) => {
+        const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer(config);
+        expect(codeAnalyzer.getConfig()).toEqual(config);
     });
 });
 
@@ -350,6 +360,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         const engine1Violation1CodeLocations: CodeLocation[] = engine1Violations[0].getCodeLocations();
         expect(engine1Violation1CodeLocations).toHaveLength(1);
         assertCodeLocation(engine1Violation1CodeLocations[0], path.resolve('test', 'config.test.ts'), 3, 6, 11, 8);
+        expect(engine1Violations[0].getPrimaryLocation()).toEqual(engine1Violation1CodeLocations[0]);
         expect(engine1Violations[0].getPrimaryLocationIndex()).toEqual(0);
         expect(engine1Violations[0].getResourceUrls()).toEqual(["https://example.com/stub1RuleA"]);
         expect(engine1Violations[1].getRule()).toEqual(selection.getRule('stubEngine1', 'stub1RuleC'));
@@ -382,6 +393,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         assertCodeLocation(engine2Violation1CodeLocations[0], path.resolve('test', 'stubs.ts'), 4, 13);
         assertCodeLocation(engine2Violation1CodeLocations[1], path.resolve('test', 'test-helpers.ts'), 9, 1);
         assertCodeLocation(engine2Violation1CodeLocations[2], path.resolve('test', 'stubs.ts'), 76, 8);
+        expect(engine2Violations[0].getPrimaryLocation()).toEqual(engine2Violation1CodeLocations[2]);
         expect(engine2Violations[0].getPrimaryLocationIndex()).toEqual(2);
         expect(engine2Violations[0].getResourceUrls()).toEqual([]);
 
@@ -539,6 +551,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getRule().getResourceUrls()).toEqual([]);
         expect(violations[0].getRule().getSeverityLevel()).toEqual(SeverityLevel.Critical);
         expect(violations[0].getRule().getTags()).toEqual([]);
+        expect(violations[0].getPrimaryLocation()).toEqual(UndefinedCodeLocation.INSTANCE);
         expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
         expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
         expect(violations[0].getMessage()).toEqual(getMessage('UnexpectedEngineErrorViolationMessage',

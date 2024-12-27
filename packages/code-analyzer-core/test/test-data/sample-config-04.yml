@@ -1,7 +1,7 @@
 engines:
   stubEngine1:
-    disable_engine: true
-    misc_value: 3
+    disable_enginE: true # Also test for case insensitivity
+    misc_valuE: 3 # Also test for case insensitivity
 
   someMiscEngine:
     disable_engine: false
