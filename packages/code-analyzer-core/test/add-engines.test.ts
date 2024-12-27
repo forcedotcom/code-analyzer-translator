@@ -224,8 +224,8 @@ describe("Tests for adding engines to Code Analyzer", () => {
         codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.fromFile(path.join(TEST_DATA_DIR, 'sample-config-04.yml')));
         await codeAnalyzer.addEnginePlugin(new stubs.StubEnginePlugin());
         expect(codeAnalyzer.getEngineConfig('stubEngine1')).toEqual({
-            disable_engine: true,
-            misc_value: 3
+            disable_enginE: true,
+            misc_valuE: 3
         });
     });
 

@@ -19,6 +19,7 @@ export interface Violation {
     getRule(): Rule
     getMessage(): string
     getCodeLocations(): CodeLocation[]
+    getPrimaryLocation(): CodeLocation
     getPrimaryLocationIndex(): number
     getResourceUrls(): string[]
 }
@@ -126,6 +127,10 @@ export class ViolationImpl implements Violation {
         return this.apiViolation.codeLocations.map(l => new CodeLocationImpl(l));
     }
 
+    getPrimaryLocation(): CodeLocation {
+        return new CodeLocationImpl(this.apiViolation.codeLocations[this.getPrimaryLocationIndex()]);
+    }
+
     getPrimaryLocationIndex(): number {
         return this.apiViolation.primaryLocationIndex;
     }
@@ -159,6 +164,10 @@ export class UnexpectedEngineErrorViolation implements Violation {
 
     getCodeLocations(): CodeLocation[] {
         return [UndefinedCodeLocation.INSTANCE];
+    }
+
+    getPrimaryLocation(): CodeLocation {
+        return UndefinedCodeLocation.INSTANCE;
     }
 
     getPrimaryLocationIndex(): number {

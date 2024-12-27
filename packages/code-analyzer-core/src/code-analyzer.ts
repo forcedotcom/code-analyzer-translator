@@ -74,6 +74,10 @@ export class CodeAnalyzer {
         this.uniqueIdGenerator = uniqueIdGenerator;
     }
 
+    public getConfig(): CodeAnalyzerConfig {
+        return this.config;
+    }
+
     public async createWorkspace(filesAndFolders: string[]): Promise<Workspace> {
         const workspaceId: string = this.uniqueIdGenerator.getUniqueId('workspace');
         const fileValidationPromises: Promise<string>[] = filesAndFolders.map(validateFileOrFolder);
@@ -262,7 +266,7 @@ export class CodeAnalyzer {
             throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
         }
 
-        if (engineOverrides[FIELDS.DISABLE_ENGINE]) {
+        if (engApi.getValueUsingCaseInsensitiveKey(engineOverrides, FIELDS.DISABLE_ENGINE)) {
             this.emitLogEvent(LogLevel.Debug, getMessage('EngineDisabled', engineName,
                 `${FIELDS.ENGINES}.${engineName}.${FIELDS.DISABLE_ENGINE}`))
             // If engine is disabled then instead of returning no config, we simply return whatever overrides the user gave.
@@ -559,15 +563,19 @@ function toConfigDescription(engineConfigDescription: engApi.ConfigDescription, 
                 descriptionText: getMessage('EngineConfigFieldDescription_disable_engine', engineName),
                 valueType: "boolean",
                 defaultValue: false,
-                wasSuppliedByUser: FIELDS.DISABLE_ENGINE in engineOverrides
+                wasSuppliedByUser: hasCaseInsensitiveKey(engineOverrides, FIELDS.DISABLE_ENGINE)
             }
         }
     }
     for (const fieldName in engineConfigDescription.fieldDescriptions) {
         configDescription.fieldDescriptions[fieldName] = {
             ... engineConfigDescription.fieldDescriptions[fieldName],
-            wasSuppliedByUser: fieldName in engineOverrides
+            wasSuppliedByUser: hasCaseInsensitiveKey(engineOverrides, fieldName)
         };
     }
     return configDescription;
+}
+
+function hasCaseInsensitiveKey(obj: object, key: string): boolean {
+    return Object.keys(obj).some(k => k.toLowerCase() === key.toLowerCase());
 }
