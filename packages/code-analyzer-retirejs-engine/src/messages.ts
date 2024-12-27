@@ -1,4 +1,11 @@
-const messageCatalog : { [key: string]: string } = {
+import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
+
+const MESSAGE_CATALOG : { [key: string]: string } = {
+    ConfigOverview:
+        `RETIRE-JS ENGINE CONFIGURATION\n` +
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-retire-js.html#retirejs-configuration-reference`,
+
     UnsupportedEngineName:
         `The RetireJsEnginePlugin does not support an engine with name '%s'.`,
 
@@ -45,19 +52,5 @@ const messageCatalog : { [key: string]: string } = {
  * @param args - The arguments that will fill in the %s and %d markers.
  */
 export function getMessage(msgId: string, ...args: (string | number)[]): string {
-    const messageTemplate = messageCatalog[msgId];
-    if (messageTemplate === undefined) {
-        throw new Error(`Message with id "${msgId}" does not exist in the message catalog.`);
-    }
-    const argsLength = args.length; // Capturing length here because once we shift, it'll change.
-    let replaceCount = 0;
-    const message: string = messageTemplate.replace(/%[sd]/g, (match) => {
-        replaceCount++;
-        return String(args.shift() ?? match)
-    });
-    if (replaceCount != argsLength) {
-        throw new Error(`Incorrect length of args for the call to getMessage('${msgId}',...args).\n`
-            + `Expected length: ${replaceCount}. Actual length: ${argsLength}.`);
-    }
-    return message;
+    return getMessageFromCatalog(MESSAGE_CATALOG, msgId, ...args);
 }

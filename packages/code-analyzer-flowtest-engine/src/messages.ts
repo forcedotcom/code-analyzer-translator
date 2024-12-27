@@ -3,7 +3,8 @@ import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 const MESSAGE_CATALOG: {[key: string]: string} = {
     ConfigOverview:
         `FLOWTEST ENGINE CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-flowtest.html#flowtest-configuration-reference`,
 
     ConfigFieldDescription_python_command:
         `Indicates the specific Python command to use for the 'flowtest' engine.\n` +

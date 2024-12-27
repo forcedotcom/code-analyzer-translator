@@ -8,6 +8,7 @@ import {
 import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
 import {getMessage} from "../src/messages";
+import {RETIREJS_ENGINE_CONFIG_DESCRIPTION} from "../src/plugin";
 
 describe('Tests for the RetireJsEnginePlugin', () => {
     let plugin: EnginePluginV1;
@@ -17,6 +18,15 @@ describe('Tests for the RetireJsEnginePlugin', () => {
 
     it('When the getAvailableEngineNames method is called then only retire-js is returned', () => {
         expect(plugin.getAvailableEngineNames()).toEqual(['retire-js']);
+    });
+
+    it('When describeEngineConfig is called, then it returns the expected ConfigDescription', () => {
+        expect(plugin.describeEngineConfig('retire-js')).toEqual(RETIREJS_ENGINE_CONFIG_DESCRIPTION);
+    });
+
+    it('When describeEngineConfig is called with the wrong engine, then error', () => {
+        expect(() => plugin.describeEngineConfig('oops')).toThrow(
+            getMessage('UnsupportedEngineName' ,'oops'));
     });
 
     it('When createEngine is passed retire-js then an RetireJsEngine instance is returned', async () => {

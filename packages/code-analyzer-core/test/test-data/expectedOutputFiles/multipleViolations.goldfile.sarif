@@ -7,7 +7,7 @@
         "driver": {
           "name": "stubEngine1",
           "semanticVersion": "0.0.1",
-          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engines.html",
           "rules": [
             {
               "id": "stub1RuleA",
@@ -217,7 +217,7 @@
         "driver": {
           "name": "stubEngine2",
           "semanticVersion": "0.1.0",
-          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engines.html",
           "rules": [
             {
               "id": "stub2RuleC",
@@ -308,7 +308,7 @@
         "driver": {
           "name": "stubEngine3",
           "semanticVersion": "1.0.0",
-          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/version-5.html",
+          "informationUri": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engines.html",
           "rules": [
             {
               "id": "stub3RuleA",
