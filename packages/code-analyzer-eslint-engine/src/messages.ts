@@ -3,7 +3,8 @@ import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 const MESSAGE_CATALOG : { [key: string]: string } = {
     ConfigOverview:
         `ESLINT ENGINE CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-eslint.html#eslint-configuration-reference`,
 
     ConfigFieldDescription_eslint_config_file:
         `Your project's main ESLint configuration file. May be an absolute path or a path relative to the config_root.\n` +

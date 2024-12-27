@@ -3,7 +3,8 @@ import {getMessageFromCatalog, MessageCatalog} from "@salesforce/code-analyzer-e
 const MESSAGE_CATALOG : MessageCatalog = {
     ConfigOverview:
         `CODE ANALYZER CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/config-custom.html`,
 
     ConfigFieldDescription_config_root:
         `The absolute folder path to which all other path values in this configuration may be relative to.\n` +

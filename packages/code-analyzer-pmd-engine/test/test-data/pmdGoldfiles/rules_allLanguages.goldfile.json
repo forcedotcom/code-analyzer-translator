@@ -240,7 +240,9 @@
       "Xml"
     ],
     "description": "Detects use of Api.Session_ID or GETSESSIONID() to retrieve a session ID.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidapisessionid"
+    ]
   },
   {
     "name": "AvoidAuraWithLockerDisabled",
@@ -251,7 +253,9 @@
       "Xml"
     ],
     "description": "Detects use of API versions with Lightning Locker disabled in Aura components. Use API version 40 or greater.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidaurawithlockerdisabled"
+    ]
   },
   {
     "name": "AvoidConsoleStatements",
@@ -313,7 +317,9 @@
       "Xml"
     ],
     "description": "Detects if \"Disable Protocol Security\" setting is true.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoiddisableprotocolsecurity"
+    ]
   },
   {
     "name": "AvoidGlobalModifier",
@@ -362,7 +368,9 @@
       "Xml"
     ],
     "description": "Detects instances of a Remote Site Settings that use HTTP. Use HTTPS instead.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidinsecurehttpremotesitesetting"
+    ]
   },
   {
     "name": "AvoidJavaScriptCustomObject",
@@ -373,7 +381,9 @@
       "Xml"
     ],
     "description": "Detects use of custom JavaScript actions in custom rules.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascriptcustomobject"
+    ]
   },
   {
     "name": "AvoidJavaScriptHomePageComponent",
@@ -384,7 +394,9 @@
       "Xml"
     ],
     "description": "Detects use of custom JavaScript actions in home page components.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascripthomepagecomponent"
+    ]
   },
   {
     "name": "AvoidLmcIsExposedTrue",
@@ -395,7 +407,9 @@
       "Xml"
     ],
     "description": "Detects a Lightning Message Channel with isExposed=true, which isn’t allowed in managed packages.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidlmcisexposedtrue"
+    ]
   },
   {
     "name": "AvoidLogicInTrigger",
@@ -445,7 +459,9 @@
       "Xml"
     ],
     "description": "Detects if S-Controls are used since they should not be used in managed packages.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidscontrols"
+    ]
   },
   {
     "name": "AvoidTrailingComma",
@@ -824,7 +840,9 @@
       "Xml"
     ],
     "description": "Detects if a connected app uses full scope instead of limited scope. Explain this use case in your AppExchange security review submission.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#limitconnectedappscope"
+    ]
   },
   {
     "name": "LocalVariableNamingConventions",
@@ -1013,7 +1031,9 @@
       "Xml"
     ],
     "description": "Detects where sensitive data must be stored with Protected Custom metadata or Protected Custom settings. Protected custom settings or protected custom metadata should be used to store secrets. Refer to the \"Protect Secrets Using Platform Features\" Trailhead module for more guidance.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+    ]
   },
   {
     "name": "QueueableWithoutFinalizer",
@@ -1185,7 +1205,9 @@
       "Xml"
     ],
     "description": "Detects instances of an OAuth callback URL that uses HTTP. Use HTTPS instead.",
-    "resourceUrls": []
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#usehttpscallbackurl"
+    ]
   },
   {
     "name": "VfCsrf",

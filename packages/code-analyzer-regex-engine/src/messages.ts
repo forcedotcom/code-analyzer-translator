@@ -3,7 +3,8 @@ import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 const MESSAGE_CATALOG : { [key: string]: string } = {
     ConfigOverview:
         `REGEX ENGINE CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-regex.html#regex-configuration-reference`,
 
     ConfigFieldDescription_custom_rules:
         `Custom rules to be added to the 'regex' engine of the format custom_rules.{rule_name}.{rule_property_name} = {value} where:\n` +

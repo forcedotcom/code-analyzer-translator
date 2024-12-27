@@ -3,7 +3,8 @@ import {getMessageFromCatalog} from "@salesforce/code-analyzer-engine-api";
 const MESSAGE_CATALOG : { [key: string]: string } = {
     PmdConfigOverview:
         `PMD ENGINE CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-pmd.html#pmd-configuration-reference`,
 
     SharedConfigFieldDescription_java_command:
         `Indicates the specific 'java' command associated with the JRE or JDK to use for the '%s' engine.\n` +
@@ -33,7 +34,8 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
 
     CpdConfigOverview:
         `CPD ENGINE CONFIGURATION\n` +
-        `To learn more about this configuration, visit: __LINK_COMING_SOON__`,
+        `To learn more about this configuration, visit:\n` +
+        `  https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-cpd.html#cpd-configuration-reference`,
 
     CpdConfigFieldDescription_minimum_tokens:
         `Specifies the minimum tokens threshold for each rule language.\n` +
