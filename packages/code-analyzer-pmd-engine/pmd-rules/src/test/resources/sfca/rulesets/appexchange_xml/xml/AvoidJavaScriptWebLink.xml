@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>When openType is "onClickJavaScript" in WebLink, then report violation</description>
+        <expected-problems>1</expected-problems>
+        <expected-linenumbers>3</expected-linenumbers>
+        <code><![CDATA[
+<CustomPageWebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <openType>onClickJavaScript</openType>
+</CustomPageWebLink>
+        ]]></code>
+    </test-code>
+
+    <test-code>
+        <description>When openType is not "onClickJavaScript" in WebLink, then do not report violation</description>
+        <expected-problems>0</expected-problems>
+        <code><![CDATA[
+<CustomPageWebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ... -->
+    <openType>sidebar</openType>
+</CustomPageWebLink>
+        ]]></code>
+    </test-code>
+
+</test-data>

@@ -3,7 +3,6 @@ package com.salesforce.security.pmd.xml;
 import net.sourceforge.pmd.lang.xml.ast.internal.XmlParserImpl.RootXmlNode;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,48 +19,10 @@ import net.sourceforge.pmd.lang.document.FileId;
 import net.sourceforge.pmd.lang.rule.AbstractRule;
 import org.xml.sax.SAXException;
 
+import com.salesforce.security.pmd.utils.SecretsInPackageUtils;
+
 public class DetectSecretsInCustomObjects extends AbstractRule {
-    private static final List<String> PRIVACY_FIELD_MAPPINGS_LIST = List.of(
-            "SSN",
-            "SOCIALSECURITY",
-            "SOCIAL_SECURITY",
-            "NATIONALID",
-            "NATIONAL_ID",
-            "NATIONAL_IDENTIFIER",
-            "NATIONALIDENTIFIER",
-            "DRIVERSLICENSE",
-            "DRIVERS_LICENSE",
-            "DRIVER_LICENSE",
-            "DRIVERLICENSE",
-            "PASSPORT",
-            "AADHAAR",
-            "AADHAR" //More?
-    );
-
-    private static final List<String> AUTH_FIELD_MAPPINGS_LIST = List.of(
-            "KEY", // potentially high false +ve rate
-            "ACCESS",
-            "PASS",
-            "ENCRYPT",
-            "TOKEN",
-            "HASH",
-            "SECRET",
-            "SIGNATURE",
-            "SIGN",
-            "AUTH", //AUTHORIZATION,AUTHENTICATION,AUTHENTICATE,OAUTH
-            "AUTHORIZATION",
-            "AUTHENTICATION",
-            "AUTHENTICATE",
-            "BEARER",
-            "CRED", //cred, credential(s),
-            "REFRESH", //
-            "CERT",
-            "PRIVATE",
-            "PUBLIC",
-            "JWT"
-    );
-
-    public static final String VISIBILITY_XPATH_EXPR = "/CustomObject/visibility[text()=\"Public\"]";
+     public static final String VISIBILITY_XPATH_EXPR = "/CustomObject/visibility[text()=\"Public\"]";
     public static final String PRIVACY_FIELD_XPATH_EXPR = "/CustomField/type[text()!=\"EncryptedText\"]";
     private static final String CUSTOM_SETTINGS_XPATH_EXPR = "/CustomObject/customSettingsType";
 
@@ -73,10 +34,10 @@ public class DetectSecretsInCustomObjects extends AbstractRule {
             return;
         }
         String fieldName = fieldNameFromFileName(fieldFileName);
-        if (isAnAuthTokenField(fieldName)) {
+        if (SecretsInPackageUtils.isAnAuthTokenField(fieldName)) {
             doObjectVisibilityCheck(ctx, target, fieldFileName);
         }
-        if (isAnInsecurePrivacyField(fieldName)) {
+        if (SecretsInPackageUtils.isAnInsecurePrivacyField(fieldName)) {
             checkFieldType(ctx, target, fieldName);
         }
     }
@@ -155,25 +116,6 @@ public class DetectSecretsInCustomObjects extends AbstractRule {
         catch(Exception e) {
             return null; //TBD: Handle the exception properly
         }
-    }
-
-    public boolean isAnAuthTokenField(String fieldName) {
-        return isAPartialMatchInList(fieldName.toUpperCase(), AUTH_FIELD_MAPPINGS_LIST);
-    }
-
-    public boolean isAnInsecurePrivacyField(String fieldName) {
-        return isAPartialMatchInList(fieldName.toUpperCase(), PRIVACY_FIELD_MAPPINGS_LIST);
-    }
-
-
-    private static boolean isAPartialMatchInList(String inputStr, List<String> listOfStrings) {
-        String inputStrUpper = inputStr.toUpperCase();
-        for (String eachStr : listOfStrings) {
-            if (inputStrUpper.contains(eachStr)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static Document parseDocument(String xmlFile) throws ParserConfigurationException, SAXException, IOException {
