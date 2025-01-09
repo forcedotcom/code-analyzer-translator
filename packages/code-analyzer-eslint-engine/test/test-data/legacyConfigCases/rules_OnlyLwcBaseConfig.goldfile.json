@@ -4,6 +4,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "BestPractices",
       "Javascript"
     ],
     "description": "disallow usage of deprecated LWC APIs",
@@ -16,6 +18,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "BestPractices",
       "Javascript"
     ],
     "description": "restrict unexpected imports from the lwc package",
@@ -28,6 +32,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "BestPractices",
       "Javascript"
     ],
     "description": "restrict unexpected wire adapter usages",
@@ -40,6 +46,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "BestPractices",
       "Javascript"
     ],
     "description": "restrict usage of unknown wire adapters",
@@ -52,6 +60,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "ErrorProne",
       "Javascript"
     ],
     "description": "validate api decorator usage",
@@ -64,6 +74,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "ErrorProne",
       "Javascript"
     ],
     "description": "validate track decorator usage",
@@ -76,6 +88,8 @@
     "severityLevel": 3,
     "tags": [
       "Recommended",
+      "LWC",
+      "ErrorProne",
       "Javascript"
     ],
     "description": "validate wire decorator usage",

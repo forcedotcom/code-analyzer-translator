@@ -1,5 +1,8 @@
 import {COMMON_TAGS, SeverityLevel} from "@salesforce/code-analyzer-engine-api";
 
+// Convenience tag to apply to the LWC rules
+const LWC = "LWC";
+
 /**
  * The following is a list of the base rules that we have reviewed where we have designated the rule tags and
  * severity (most important to determine if the "Recommended" tag is applied or not). This also helps fixed these values
@@ -817,31 +820,31 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
     // =================================================================================================================
     "@lwc/lwc/no-deprecated": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/no-disallowed-lwc-imports": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/no-unexpected-wire-adapter-usages": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/no-unknown-wire-adapters": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/valid-api": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.ERROR_PRONE, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/valid-track": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.ERROR_PRONE, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
     "@lwc/lwc/valid-wire": {
         severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.ERROR_PRONE, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
 
 
