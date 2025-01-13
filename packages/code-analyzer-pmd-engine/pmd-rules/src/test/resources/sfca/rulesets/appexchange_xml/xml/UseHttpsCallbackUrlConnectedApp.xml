@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
 
     <test-code>
-        <description>If Connected App has unsafe callback, then report violation</description>
+        <description>When Connected App has unsafe callback, then report violation</description>
         <expected-problems>1</expected-problems>
         <expected-linenumbers>6</expected-linenumbers>
         <code><![CDATA[
@@ -21,7 +21,7 @@
     </test-code>
 
     <test-code>
-        <description>If Connected App has even just one unsafe callback url, then report violation</description>
+        <description>When Connected App has even just one unsafe callback url, then report violation</description>
         <expected-problems>1</expected-problems>
         <expected-linenumbers>6</expected-linenumbers>
         <code><![CDATA[
@@ -41,7 +41,7 @@
     </test-code>
 
     <test-code>
-        <description>Connected App with unsafe callback url False positive</description>
+        <description>When Connected App has safe callback url, then do not report violation</description>
         <expected-problems>0</expected-problems>
         <code><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
