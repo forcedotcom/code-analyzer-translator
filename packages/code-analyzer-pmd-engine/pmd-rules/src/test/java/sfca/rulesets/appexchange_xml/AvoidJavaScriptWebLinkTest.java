@@ -2,7 +2,7 @@ package sfca.rulesets.appexchange_xml;
 
 import net.sourceforge.pmd.test.SimpleAggregatorTst;
 
-public class UseHttpsCallbackUrlTest extends SimpleAggregatorTst {
+public class AvoidJavaScriptWebLinkTest extends SimpleAggregatorTst {
     @Override
     protected void setUp() {
         // The test data xml file for this rule's test will always be in the resources directory using a naming
@@ -10,7 +10,7 @@ public class UseHttpsCallbackUrlTest extends SimpleAggregatorTst {
         //     "resources/<TestPackageName>/xml/<RuleName>.xml".
         // In this case "sfca.rulesets.appexchange_xml" is the package name of this test file. Thus, the associated test
         // data xml file for this rule must be found at:
-        //      "resource/sfca/rulesets/appexchange_xml/xml/UseHttpsCallbackUrl.xml"
-        addRule("sfca/rulesets/AppExchange_xml.xml", "UseHttpsCallbackUrl");
+        //      "resource/sfca/rulesets/appexchange_xml/xml/AvoidJavaScriptWebLink.xml"
+        addRule("sfca/rulesets/AppExchange_xml.xml", "AvoidJavaScriptWebLink");
     }
 }

@@ -309,7 +309,7 @@
     ]
   },
   {
-    "name": "AvoidDisableProtocolSecurity",
+    "name": "AvoidDisableProtocolSecurityRemoteSiteSetting",
     "severityLevel": 3,
     "tags": [
       "AppExchange",
@@ -318,7 +318,7 @@
     ],
     "description": "Detects if \"Disable Protocol Security\" setting is true.",
     "resourceUrls": [
-      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoiddisableprotocolsecurity"
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoiddisableprotocolsecurityremotesitesetting"
     ]
   },
   {
@@ -332,6 +332,19 @@
     "description": "Global classes should be avoided (especially in managed packages) as they can never be deleted or changed in signature. Always check twice if something needs to be global. Many interfaces (e.g. Batch) required global modifiers in the past but don't require this anymore. Don't lock yourself in.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#avoidglobalmodifier"
+    ]
+  },
+  {
+    "name": "AvoidHardCodedCredentialsInAura",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Html"
+    ],
+    "description": "Detects use of hard coded credentials in Aura components.",
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidhardcodedcredentialsinaura"
     ]
   },
   {
@@ -396,6 +409,32 @@
     "description": "Detects use of custom JavaScript actions in home page components.",
     "resourceUrls": [
       "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascripthomepagecomponent"
+    ]
+  },
+  {
+    "name": "AvoidJavaScriptInUrls",
+    "severityLevel": 1,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of JavaScript-style URLs (javascript:) in components, such as web links and buttons. Avoid JavaScript-style URLs in managed packages.",
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascriptinurls"
+    ]
+  },
+  {
+    "name": "AvoidJavaScriptWebLink",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Xml"
+    ],
+    "description": "Detects use of custom JavaScript actions in web links.",
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascriptweblink"
     ]
   },
   {
@@ -476,6 +515,19 @@
     ]
   },
   {
+    "name": "AvoidUnescapedHtmlInAura",
+    "severityLevel": 2,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Html"
+    ],
+    "description": "Detects use of aura:unescapedHtml,which should be used cautiously. Developers should ensure that the unescapedHtml should not use tainted input to protect against XSS.",
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidunescapedhtmlinaura"
+    ]
+  },
+  {
     "name": "AvoidWithStatement",
     "severityLevel": 2,
     "tags": [
@@ -549,6 +601,19 @@
     "description": "The first parameter of System.debug, when using the signature with two parameters, is a LoggingLevel enum. Having the Logging Level specified provides a cleaner log, and improves readability of it.",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_bestpractices.html#debugsshoulduselogginglevel"
+    ]
+  },
+  {
+    "name": "DetectUseLwcDomManual",
+    "severityLevel": 3,
+    "tags": [
+      "AppExchange",
+      "Security",
+      "Html"
+    ],
+    "description": "Detects instances of lwc:dom=\"manual\" that could allow unintentional or malicious user input. Don't allow user input on these elements.",
+    "resourceUrls": [
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#detectuselwcdommanual"
     ]
   },
   {
@@ -1197,7 +1262,7 @@
     ]
   },
   {
-    "name": "UseHttpsCallbackUrl",
+    "name": "UseHttpsCallbackUrlConnectedApp",
     "severityLevel": 3,
     "tags": [
       "AppExchange",
@@ -1206,7 +1271,7 @@
     ],
     "description": "Detects instances of an OAuth callback URL that uses HTTP. Use HTTPS instead.",
     "resourceUrls": [
-      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#usehttpscallbackurl"
+      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#usehttpscallbackurlconnectedapp"
     ]
   },
   {

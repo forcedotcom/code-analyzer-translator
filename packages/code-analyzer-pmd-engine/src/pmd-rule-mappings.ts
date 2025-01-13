@@ -396,6 +396,25 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
 
 
     // =================================================================================================================
+    //   SFCA-PMD-RULES - APPEXCHANGE HTML RULES
+    // =================================================================================================================
+    "AvoidHardCodedCredentialsInAura": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
+    },
+
+    "AvoidUnescapedHtmlInAura": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
+    },
+
+    "DetectUseLwcDomManual": {
+        severity: SeverityLevel.Moderate,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
+    },
+
+
+    // =================================================================================================================
     //   SFCA-PMD-RULES - APPEXCHANGE XML RULES
     // =================================================================================================================
     "AvoidApiSessionId": {
@@ -408,7 +427,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     },
 
-    "AvoidDisableProtocolSecurity": {
+    "AvoidDisableProtocolSecurityRemoteSiteSetting": {
         severity: SeverityLevel.Moderate,
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     },
@@ -419,6 +438,16 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
     },
 
     "AvoidJavaScriptCustomObject": {
+        severity: SeverityLevel.High,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidJavaScriptInUrls": {
+        severity: SeverityLevel.Critical,
+        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
+    },
+
+    "AvoidJavaScriptWebLink": {
         severity: SeverityLevel.High,
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     },
@@ -448,7 +477,7 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     },
 
-    "UseHttpsCallbackUrl": {
+    "UseHttpsCallbackUrlConnectedApp": {
         severity: SeverityLevel.Moderate,
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.XML]
     }

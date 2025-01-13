@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset name="AppExchange"
+<ruleset name="AppExchange_xml"
          xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
-    <description>AppExchange Security Rules</description>
+    <description>AppExchange Security Rules for XML Language</description>
 
 
     <rule name="AvoidApiSessionId"
@@ -44,11 +44,11 @@
     </rule>
 
 
-    <rule name="AvoidDisableProtocolSecurity"
+    <rule name="AvoidDisableProtocolSecurityRemoteSiteSetting"
           language="xml"
           class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
           message="Protocol security setting is disabled."
-          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoiddisableprotocolsecurity">
+          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoiddisableprotocolsecurityremotesitesetting">
         <description>Detects if &quot;Disable Protocol Security&quot; setting is true.</description>
         <priority>3</priority>
         <properties>
@@ -118,6 +118,40 @@
     </rule>
 
 
+    <rule name="AvoidJavaScriptInUrls"
+          language="xml"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+          message="Avoid clickable JavaScript-style URLs."
+          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascriptinurls">
+        <description>Detects use of JavaScript-style URLs (javascript:) in components, such as web links and buttons. Avoid JavaScript-style URLs in managed packages.</description>
+        <priority>1</priority>
+        <properties>
+            <property name="xpath">
+                <value><![CDATA[
+/document//url/text[contains(upper-case(@Text),"JAVASCRIPT:")]/..
+                ]]></value>
+            </property>
+        </properties>
+    </rule>
+
+
+    <rule name="AvoidJavaScriptWebLink"
+          language="xml"
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
+          message="Avoid using JavaScript in web links."
+          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#avoidjavascriptweblink">
+        <description>Detects use of custom JavaScript actions in web links.</description>
+        <priority>2</priority>
+        <properties>
+            <property name="xpath">
+                <value><![CDATA[
+/document/CustomPageWebLink/openType/text[@Text="onClickJavaScript"]/..
+                ]]></value>
+            </property>
+        </properties>
+    </rule>
+
+
     <rule name="AvoidLmcIsExposedTrue"
           language="xml"
           class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
@@ -179,11 +213,11 @@
     </rule>
 
 
-    <rule name="UseHttpsCallbackUrl"
+    <rule name="UseHttpsCallbackUrlConnectedApp"
           language="xml"
           class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
           message="Update to secure Oauth callback URL over HTTPS."
-          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#usehttpscallbackurl">
+          externalInfoUrl="https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#usehttpscallbackurlconnectedapp">
         <description>Detects instances of an OAuth callback URL that uses HTTP. Use HTTPS instead.</description>
         <priority>3</priority>
         <properties>

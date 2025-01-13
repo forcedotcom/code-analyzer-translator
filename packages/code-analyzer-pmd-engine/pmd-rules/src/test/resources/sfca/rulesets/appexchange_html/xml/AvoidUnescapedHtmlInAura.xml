@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-data
+        xmlns="http://pmd.sourceforge.net/rule-tests"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://pmd.sourceforge.net/rule-tests https://pmd.sourceforge.net/rule-tests_1_0_0.xsd">
+
+    <test-code>
+        <description>When unescapedHtml is used, then report violation</description>
+        <expected-problems>2</expected-problems>
+        <expected-linenumbers>5,6</expected-linenumbers>
+        <code><![CDATA[
+<aura:component>
+    <aura:attribute name="searchResult" type="List" access="private"/>
+    <aura:attribute name="someString" type="List" access="private" default="abcd"/>
+    <aura:iteration items="{!v.searchResult}" var="record">
+        <aura:unescapedHtml value="{!record.Field0}"/>
+        <aura:unescapedHtml value="{!someString}"/>
+    </aura:iteration>
+</aura:component>
+        ]]></code>
+    </test-code>
+
+</test-data>
