@@ -99,9 +99,18 @@ export class CodeAnalyzer {
 
     public async dynamicallyAddEnginePlugin(enginePluginModulePath: string): Promise<void> {
         let pluginModule;
+        let resolvedModulePath: string;
         try {
-            enginePluginModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigRoot()]});
-            pluginModule = (await import(enginePluginModulePath));
+            try {
+                resolvedModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigRoot()]});
+            } catch (ignored) {
+                // On windows, there is an edge case where a standalone file in the same directory as the user's config
+                // file may not be resolved by require.resolve if given as just the file name. So we attempt to resolve
+                // this using path.resolve for this edge case.
+                resolvedModulePath = path.resolve(this.config.getConfigRoot(), enginePluginModulePath);
+            }
+            // To avoid issues with dynamically importing absolute paths on Windows, we need to use 'file://' URI format
+            pluginModule = (await import(`file://${resolvedModulePath.replaceAll('\\', '/')}`));
         } catch (err) {
             throw new Error(getMessage('FailedToDynamicallyLoadModule', enginePluginModulePath, (err as Error).message), {cause: err});
         }
