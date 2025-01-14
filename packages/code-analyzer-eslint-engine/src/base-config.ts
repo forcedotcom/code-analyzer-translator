@@ -64,11 +64,32 @@ export class LegacyBaseConfigFactory {
         const lwcConfig: Linter.ConfigOverride = {
             files: this.config.file_extensions.javascript.map(ext => `*${ext}`),
             extends: [
-                "@salesforce/eslint-config-lwc/base" // Always using base for now. all and recommended both require additional plugins
+                "@salesforce/eslint-config-lwc/base", // Using base instead of recommended. See the comment below.
+                "plugin:@lwc/lwc-platform/recommended"
             ],
             plugins: [
-                "@lwc/eslint-plugin-lwc"
-            ]
+                "@lwc/eslint-plugin-lwc",
+                "@lwc/lwc-platform",
+                "@salesforce/eslint-plugin-lightning"
+            ],
+            // The following is a better alternative than extending from @salesforce/eslint-config-lwc/recommended:
+            //   Note that we don't want to pull in all the base javascript rules again (from eslint:Recommended),
+            //   which is why we don't just extend from @salesforce/eslint-config-lwc/lwc/recommended (which
+            //   pulls in everything again). Therefore, we just add in the recommended @lwc/lwc/* and
+            //   @salesforce/lightning/* rules that aren't included in @salesforce/eslint-config-lwc/base here.
+            rules: {
+                '@lwc/lwc/no-api-reassignments': 'error',
+                '@lwc/lwc/no-async-operation': 'error',
+                '@lwc/lwc/no-attributes-during-construction': 'error',
+                '@lwc/lwc/no-document-query': 'error',
+                '@lwc/lwc/no-inner-html': 'error',
+                '@lwc/lwc/no-leading-uppercase-api-name': 'error',
+                '@lwc/lwc/no-template-children': 'error',
+                '@lwc/lwc/prefer-custom-event': 'error',
+                '@lwc/lwc/valid-api': ['error', {disallowUnderscoreUppercaseMix: true,}],
+                '@lwc/lwc/valid-graphql-wire-adapter-callback-parameters': 'error',
+                '@salesforce/lightning/valid-apex-method-invocation': 'error',
+            }
         }
         return this.addJavascriptParser(lwcConfig);
     }

@@ -138,12 +138,20 @@ function toRuleDescription(ruleName: string, metadata: Rule.RuleMetaData, status
         tags = [... toTags(metadata, status), COMMON_TAGS.CUSTOM];
     }
 
+    let ruleUrl: string | undefined = metadata.docs?.url;
+    // Currently, each lwc-platform rule's url points to internal an internal git.soma repo which is not accessible
+    // to external users, so we remove them.
+    // See https://git.soma.salesforce.com/lwc/eslint-plugin-lwc-platform/issues/151
+    // TODO: Remove this check once the lwc-platform rules are fixed and we have updated our dependency
+    if (ruleUrl && ruleUrl.includes("://git.soma")) {
+        ruleUrl = undefined
+    }
     return {
         name: ruleName,
         severityLevel: severityLevel,
         tags: tags,
         description: metadata.docs?.description || '',
-        resourceUrls: metadata.docs?.url ? [metadata.docs.url] : []
+        resourceUrls: ruleUrl ? [ruleUrl] : []
     }
 }
 
