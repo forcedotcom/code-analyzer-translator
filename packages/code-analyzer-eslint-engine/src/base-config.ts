@@ -72,12 +72,12 @@ export class LegacyBaseConfigFactory {
                 "@lwc/lwc-platform",
                 "@salesforce/eslint-plugin-lightning"
             ],
-            // The following is a better alternative than extending from @salesforce/eslint-config-lwc/recommended:
-            //   Note that we don't want to pull in all the base javascript rules again (from eslint:Recommended),
-            //   which is why we don't just extend from @salesforce/eslint-config-lwc/lwc/recommended (which
-            //   pulls in everything again). Therefore, we just add in the recommended @lwc/lwc/* and
-            //   @salesforce/lightning/* rules that aren't included in @salesforce/eslint-config-lwc/base here.
             rules: {
+                // The following is a better alternative than extending from @salesforce/eslint-config-lwc/recommended:
+                //   Note that we don't want to pull in all the base javascript rules again (from eslint:Recommended),
+                //   which is why we don't just extend from @salesforce/eslint-config-lwc/lwc/recommended (which
+                //   pulls in everything again). Therefore, we just add in the recommended @lwc/lwc/* and
+                //   @salesforce/lightning/* rules that aren't included in @salesforce/eslint-config-lwc/base here.
                 '@lwc/lwc/no-api-reassignments': 'error',
                 '@lwc/lwc/no-async-operation': 'error',
                 '@lwc/lwc/no-attributes-during-construction': 'error',
@@ -89,6 +89,11 @@ export class LegacyBaseConfigFactory {
                 '@lwc/lwc/valid-api': ['error', {disallowUnderscoreUppercaseMix: true,}],
                 '@lwc/lwc/valid-graphql-wire-adapter-callback-parameters': 'error',
                 '@salesforce/lightning/valid-apex-method-invocation': 'error',
+
+                // This one rule is broken and thus we need to turn it off for now.
+                // See https://git.soma.salesforce.com/lwc/eslint-plugin-lwc-platform/issues/152
+                // TODO: Turn it back on when the rule has been fixed
+                '@lwc/lwc-platform/valid-offline-wire': 'off'
             }
         }
         return this.addJavascriptParser(lwcConfig);

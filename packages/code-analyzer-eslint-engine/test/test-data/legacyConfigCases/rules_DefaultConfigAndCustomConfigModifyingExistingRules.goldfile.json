@@ -324,18 +324,6 @@
     "resourceUrls": []
   },
   {
-    "name": "@lwc/lwc-platform/valid-offline-wire",
-    "severityLevel": 3,
-    "tags": [
-      "Recommended",
-      "LWC",
-      "ErrorProne",
-      "Javascript"
-    ],
-    "description": "validate wire decorator usage for offline support",
-    "resourceUrls": []
-  },
-  {
     "name": "@lwc/lwc/no-api-reassignments",
     "severityLevel": 3,
     "tags": [

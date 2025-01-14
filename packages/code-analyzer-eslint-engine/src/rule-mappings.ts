@@ -926,10 +926,15 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
         severity: SeverityLevel.Moderate,
         tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
     },
-    "@lwc/lwc-platform/valid-offline-wire": {
-        severity: SeverityLevel.Moderate,
-        tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.ERROR_PRONE,    COMMON_TAGS.LANGUAGES.JAVASCRIPT]
-    },
+
+    // This one rule is broken and thus we need to turn it off for now.
+    // See https://git.soma.salesforce.com/lwc/eslint-plugin-lwc-platform/issues/152
+    // TODO: Turn it back on when the rule has been fixed:
+    // "@lwc/lwc-platform/valid-offline-wire": {
+    //     severity: SeverityLevel.Moderate,
+    //     tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.ERROR_PRONE,    COMMON_TAGS.LANGUAGES.JAVASCRIPT]
+    // },
+
     "@lwc/lwc/no-api-reassignments": {
         severity: SeverityLevel.Moderate,
         tags: [COMMON_TAGS.RECOMMENDED, LWC, COMMON_TAGS.CATEGORIES.BEST_PRACTICES, COMMON_TAGS.LANGUAGES.JAVASCRIPT]
