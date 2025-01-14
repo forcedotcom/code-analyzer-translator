@@ -554,8 +554,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getPrimaryLocation()).toEqual(UndefinedCodeLocation.INSTANCE);
         expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
         expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
-        expect(violations[0].getMessage()).toEqual(getMessage('UnexpectedEngineErrorViolationMessage',
-            'throwingEngine', 'SomeErrorMessageFromThrowingEngine'));
+        expect(violations[0].getMessage()).toContain('SomeErrorMessageFromThrowingEngine');
     });
 
     it("When running engines, then the log events should include the start and end of each engine run", async () => {

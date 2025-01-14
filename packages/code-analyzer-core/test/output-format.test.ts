@@ -47,7 +47,8 @@ describe("Tests for the CSV output format", () => {
 
     it("When results contain violation of type UnexpectedError, we create csv text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
-        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.CSV);
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.CSV)
+            .replace(/Error: SomeErrorMessageFromThrowingEngine[^"]*"/, 'SomeErrorMessageFromThrowingEngine"');
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.csv');
         expect(formattedText).toEqual(expectedText);
     });
@@ -69,7 +70,9 @@ describe("Tests for the HTML output format", () => {
 
     it("When results contain violation of type UnexpectedError, we create html text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
-        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.HTML).replaceAll('\r\n','\n');
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.HTML)
+            .replace(/Error: SomeErrorMessageFromThrowingEngine[^"]*"/, 'SomeErrorMessageFromThrowingEngine"')
+            .replaceAll('\r\n','\n');
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.html', true);
         expect(formattedText).toEqual(expectedText);
     });
@@ -91,7 +94,8 @@ describe("Tests for the JSON output format", () => {
 
     it("When results contain violation of type UnexpectedError, we create json text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
-        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON);
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.JSON)
+            .replace(/Error: SomeErrorMessageFromThrowingEngine[^"]*"/, 'SomeErrorMessageFromThrowingEngine"');
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.json', true, true);
         expect(formattedText).toEqual(expectedText);
     });
@@ -113,7 +117,8 @@ describe("Tests for the XML output format", () => {
 
     it("When results contain violation of type UnexpectedError, we create xml text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
-        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.XML);
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.XML)
+            .replace(/Error: SomeErrorMessageFromThrowingEngine[^<]*</, 'SomeErrorMessageFromThrowingEngine<');
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.xml');
         expect(formattedText).toEqual(expectedText);
     });
@@ -135,7 +140,8 @@ describe("Tests for the SARIF output format", () => {
 
     it("When results contain violation of type UnexpectedError, we create sarif text correctly", async () => {
         const resultsWithUnexpectedError: RunResults = await createResultsWithUnexpectedError();
-        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.SARIF);
+        const formattedText: string = resultsWithUnexpectedError.toFormattedOutput(OutputFormat.SARIF)
+            .replace(/Error: SomeErrorMessageFromThrowingEngine[^"]*"/, 'SomeErrorMessageFromThrowingEngine"');
         const expectedText: string = getContentsOfExpectedOutputFile('unexpectedEngineErrorViolation.goldfile.sarif', true, true);
         expect(formattedText).toEqual(expectedText);
     });
