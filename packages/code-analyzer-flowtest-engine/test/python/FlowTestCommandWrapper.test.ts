@@ -5,7 +5,9 @@ import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
 
 const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
-const PATH_TO_WORKSPACES = path.join(__dirname, '..', 'test-data', 'example-workspaces');
+const PATH_TO_MULTIPLE_FLOWS_WORKSPACE = path.resolve(__dirname, '..', 'test-data', 'example workspaces', 'contains-multiple-flows');
+const PATH_TO_EXAMPLE1: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example1-containsWithoutSharingViolations.flow-meta.xml');
+const PATH_TO_EXAMPLE2: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example2-containsWithSharingViolations.flow');
 
 describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
@@ -20,22 +22,20 @@ describe('FlowTestCommandWrapper implementations', () => {
                 };
 
                 beforeAll(async () => {
-                    results = await wrapper.runFlowTestRules(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows'), statusProcessorFunction);
+                    results = await wrapper.runFlowTestRules(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, statusProcessorFunction);
                     // The `counter` property is irrelevant to us, and causes problems across platforms. So delete it.
                     for (const queryName of Object.keys(results.results)) {
                         for (const queryResults of results.results[queryName]) {
-                            delete (queryResults as any).counter;
+                            delete queryResults.counter;
                         }
                     }
-                }, 30000);
+                });
 
                 it('Correctly reads and parses results', async () => {
                     const goldfileName: string = 'results.goldfile.json';
                     const goldFileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfileName), {encoding: 'utf-8'}))
-                        .replaceAll('"__PATH_TO_SUBFLOW_TEST1__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'subflow_test1.flow-meta.xml')))
-                        .replaceAll('"__PATH_TO_INNER_SUBFLOW_EXAMPLE__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'inner_subflow_example.flow-meta.xml')))
-                        .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'example1.flow-meta.xml')))
-                        .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows', 'example2.flow-meta.xml')));
+                        .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(PATH_TO_EXAMPLE1))
+                        .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(PATH_TO_EXAMPLE2));
 
                     const expectedResults: FlowTestExecutionResult = JSON.parse(goldFileContents) as FlowTestExecutionResult;
 
@@ -47,6 +47,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                     for (let i = 0; i < expectedKeys.length; i++) {
                         const key = expectedKeys[i];
                         const expectedValue = expectedResults.results[key];
+                        expect(key in results.results).toEqual(true);
                         expect(results.results[key]).toHaveLength(expectedValue.length);
                         expect(results.results[key]).toEqual(expectedValue);
                     }
@@ -84,7 +85,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                     });
 
                     const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PYTHON_COMMAND);
-                    await expect(wrapper.runFlowTestRules(path.join(PATH_TO_WORKSPACES, 'contains-multiple-flows'), (_num) => {}))
+                    await expect(wrapper.runFlowTestRules(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, (_num) => {}))
                         .rejects
                         .toThrow(expectedMessage);
                 });
