@@ -103,10 +103,14 @@ export class CodeAnalyzer {
         try {
             try {
                 resolvedModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigRoot()]});
-            } catch (ignored) {
+            } catch (err) {
                 // On windows, there is an edge case where a standalone file in the same directory as the user's config
                 // file may not be resolved by require.resolve if given as just the file name. So we attempt to resolve
                 // this using path.resolve for this edge case.
+                this.emitLogEvent(LogLevel.Fine, `While dynamically importing '${enginePluginModulePath}', ` +
+                    `require.resolve failed with the following exception, so we will attempt to resolve with ` +
+                    `path.resolve instead.\nError:\n` +
+                    (err instanceof Error) ? (err as Error).stack || (err as Error).message : (err as string));
                 resolvedModulePath = path.resolve(this.config.getConfigRoot(), enginePluginModulePath);
             }
             // To avoid issues with dynamically importing absolute paths on Windows, we need to use 'file://' URI format
