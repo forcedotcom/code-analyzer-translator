@@ -1,14 +1,4 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
-import {
-    ConfigObject,
-    ConfigValueExtractor,
-    DescribeOptions,
-    Engine,
-    EngineRunResults,
-    LogLevel,
-    RuleDescription,
-    RunOptions
-} from "@salesforce/code-analyzer-engine-api"
 
 /**
  * StubEnginePlugin - A plugin stub with preconfigured outputs to help with testing
@@ -37,7 +27,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
         return {}
     }
 
-    async createEngineConfig(engineName: string, configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+    async createEngineConfig(engineName: string, configValueExtractor: engApi.ConfigValueExtractor): Promise<engApi.ConfigObject> {
         return {
             ...configValueExtractor.getObject(),
             engine_name: engineName,
@@ -72,7 +62,7 @@ export class StubEnginePlugin extends engApi.EnginePluginV1 {
 export class StubEngine1 extends engApi.Engine {
     readonly config: engApi.ConfigObject;
     readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
-    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: engApi.DescribeOptions}[] = [];
     resultsToReturn: engApi.EngineRunResults = { violations: [] }
 
     constructor(config: engApi.ConfigObject) {
@@ -88,10 +78,10 @@ export class StubEngine1 extends engApi.Engine {
         return Promise.resolve('0.0.1');
     }
 
-    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: engApi.DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
         this.emitDescribeRulesProgressEvent(20);
-        this.emitLogEvent(LogLevel.Warn, "someMiscWarnMessageFromStubEngine1");
+        this.emitLogEvent(engApi.LogLevel.Warn, "someMiscWarnMessageFromStubEngine1");
         this.emitDescribeRulesProgressEvent(80);
         return [
             {
@@ -135,7 +125,7 @@ export class StubEngine1 extends engApi.Engine {
     async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
         this.emitRunRulesProgressEvent(0);
-        this.emitLogEvent(LogLevel.Fine, "someMiscFineMessageFromStubEngine1");
+        this.emitLogEvent(engApi.LogLevel.Fine, "someMiscFineMessageFromStubEngine1");
         this.emitRunRulesProgressEvent(50);
         this.emitRunRulesProgressEvent(100);
         return this.resultsToReturn;
@@ -153,7 +143,7 @@ export function createEnginePlugin(): engApi.EnginePlugin {
 export class StubEngine2 extends engApi.Engine {
     readonly config: engApi.ConfigObject;
     readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
-    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: engApi.DescribeOptions}[] = [];
     resultsToReturn: engApi.EngineRunResults = { violations: [] }
 
     constructor(config: engApi.ConfigObject) {
@@ -169,10 +159,10 @@ export class StubEngine2 extends engApi.Engine {
         return Promise.resolve('0.1.0');
     }
 
-    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: engApi.DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
         this.emitDescribeRulesProgressEvent(30);
-        this.emitLogEvent(LogLevel.Error, "someMiscErrorMessageFromStubEngine2");
+        this.emitLogEvent(engApi.LogLevel.Error, "someMiscErrorMessageFromStubEngine2");
         this.emitDescribeRulesProgressEvent(90);
         return [
             {
@@ -201,7 +191,7 @@ export class StubEngine2 extends engApi.Engine {
 
     async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
-        this.emitLogEvent(LogLevel.Info, "someMiscInfoMessageFromStubEngine2");
+        this.emitLogEvent(engApi.LogLevel.Info, "someMiscInfoMessageFromStubEngine2");
         this.emitRunRulesProgressEvent(5);
         this.emitRunRulesProgressEvent(63);
         return this.resultsToReturn;
@@ -211,7 +201,7 @@ export class StubEngine2 extends engApi.Engine {
 export class StubEngine3 extends engApi.Engine {
     readonly config: engApi.ConfigObject;
     readonly runRulesCallHistory: {ruleNames: string[], runOptions: engApi.RunOptions}[] = [];
-    readonly describeRulesCallHistory: {describeOptions: DescribeOptions}[] = [];
+    readonly describeRulesCallHistory: {describeOptions: engApi.DescribeOptions}[] = [];
     resultsToReturn: engApi.EngineRunResults = { violations: [] };
 
     constructor(config: engApi.ConfigObject) {
@@ -227,10 +217,10 @@ export class StubEngine3 extends engApi.Engine {
         return Promise.resolve('1.0.0');
     }
 
-    async describeRules(describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+    async describeRules(describeOptions: engApi.DescribeOptions): Promise<engApi.RuleDescription[]> {
         this.describeRulesCallHistory.push({describeOptions});
         this.emitDescribeRulesProgressEvent(50);
-        this.emitLogEvent(LogLevel.Error, 'someMiscErrorMessageFromStubEngine3');
+        this.emitLogEvent(engApi.LogLevel.Error, 'someMiscErrorMessageFromStubEngine3');
         this.emitDescribeRulesProgressEvent(85);
         return [
             {
@@ -245,7 +235,7 @@ export class StubEngine3 extends engApi.Engine {
 
     async runRules(ruleNames: string[], runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         this.runRulesCallHistory.push({ruleNames, runOptions});
-        this.emitLogEvent(LogLevel.Info, 'someMiscInfoMessageFromStubEngine3');
+        this.emitLogEvent(engApi.LogLevel.Info, 'someMiscInfoMessageFromStubEngine3');
         this.emitRunRulesProgressEvent(5);
         this.emitRunRulesProgressEvent(80);
         return this.resultsToReturn;
@@ -416,7 +406,7 @@ class FutureEngine extends engApi.Engine {
         return Promise.resolve('2.0.0');
     }
 
-    async describeRules(_describeOptions: DescribeOptions): Promise<engApi.RuleDescription[]> {
+    async describeRules(_describeOptions: engApi.DescribeOptions): Promise<engApi.RuleDescription[]> {
         return [];
     }
 
@@ -476,7 +466,7 @@ export class ThrowingPlugin3 extends engApi.EnginePluginV1 {
         return ['someEngine'];
     }
 
-    async createEngineConfig(_engineName: string, _configValueExtractor: ConfigValueExtractor): Promise<ConfigObject> {
+    async createEngineConfig(_engineName: string, _configValueExtractor: engApi.ConfigValueExtractor): Promise<engApi.ConfigObject> {
         throw new Error('SomeErrorFromCreateEngineConfig')
     }
 
@@ -540,7 +530,7 @@ export class RepeatedRuleNameEnginePlugin extends engApi.EnginePluginV1 {
         return ['repeatedRuleNameEngine'];
     }
 
-    async createEngine(_engineName: string, _config: ConfigObject): Promise<Engine> {
+    async createEngine(_engineName: string, _config: engApi.ConfigObject): Promise<engApi.Engine> {
         return new RepeatedRuleNameEngine();
     }
 }
@@ -557,7 +547,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
         return Promise.resolve('4.0.0');
     }
 
-    async describeRules(_describeOptions: DescribeOptions): Promise<RuleDescription[]> {
+    async describeRules(_describeOptions: engApi.DescribeOptions): Promise<engApi.RuleDescription[]> {
         return [
             {
                 name: "repeatedRule",
@@ -576,7 +566,7 @@ class RepeatedRuleNameEngine extends engApi.Engine {
         ];
     }
 
-    async runRules(_ruleNames: string[], _runOptions: RunOptions): Promise<EngineRunResults> {
+    async runRules(_ruleNames: string[], _runOptions: engApi.RunOptions): Promise<engApi.EngineRunResults> {
         return { violations: [] };
     }
 }
