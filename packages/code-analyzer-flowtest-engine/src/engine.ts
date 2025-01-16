@@ -52,7 +52,7 @@ export class FlowTestEngine extends Engine {
     public async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
         if (describeOptions.workspace && (await this.getRelevantFiles(describeOptions.workspace)).length == 0) {
-            this.emitLogEvent(LogLevel.Debug, 'Workspace contains no Flow files. Returning no flowtest rules.');
+            this.emitLogEvent(LogLevel.Fine, 'Workspace contains no Flow files. Returning no flowtest rules.');
             this.emitDescribeRulesProgressEvent(100);
             return [];
         }
