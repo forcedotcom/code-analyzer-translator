@@ -7,7 +7,8 @@ import {
     EngineRunResults,
     LogLevel,
     RuleDescription,
-    RunOptions
+    RunOptions,
+    Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
 import {
@@ -31,6 +32,7 @@ const POST_INVOCATION_RUN_PERCENT = 90;
 export class FlowTestEngine extends Engine {
     public static readonly NAME: string = 'flowtest';
     private readonly commandWrapper: FlowTestCommandWrapper;
+    private relevantFilesCache: Map<string, string[]> = new Map();
 
     public constructor(commandWrapper: FlowTestCommandWrapper) {
         super();
@@ -49,14 +51,10 @@ export class FlowTestEngine extends Engine {
 
     public async describeRules(describeOptions: DescribeOptions): Promise<RuleDescription[]> {
         this.emitDescribeRulesProgressEvent(0);
-        if (describeOptions.workspace) {
-            const workspaceFiles: string[] = await describeOptions.workspace.getExpandedFiles();
-            // If a workspace is provided but it contains no flow files, then return no rules.
-            if (!workspaceFiles.some(fileIsFlowFile)) {
-                this.emitLogEvent(LogLevel.Debug, 'Workspace contains no Flow files; returning no rules');
-                this.emitDescribeRulesProgressEvent(100);
-                return [];
-            }
+        if (describeOptions.workspace && (await this.getRelevantFiles(describeOptions.workspace)).length == 0) {
+            this.emitLogEvent(LogLevel.Fine, 'Workspace contains no Flow files. Returning no flowtest rules.');
+            this.emitDescribeRulesProgressEvent(100);
+            return [];
         }
         this.emitDescribeRulesProgressEvent(75);
         const consolidatedNames: string[] = getConsolidatedRuleNames();
@@ -67,6 +65,11 @@ export class FlowTestEngine extends Engine {
 
     public async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         this.emitRunRulesProgressEvent(0);
+        const relevantFiles: string[] = await this.getRelevantFiles(runOptions.workspace);
+        if (relevantFiles.length == 0) {
+            return { violations: [] };
+        }
+
         const workspaceRoot: string | null = runOptions.workspace.getWorkspaceRoot();
         // If we can't identify a single directory as the root of the workspace, then there's nothing for us to pass into
         // FlowTest. So just throw an error and be done with it.
@@ -77,12 +80,21 @@ export class FlowTestEngine extends Engine {
         }
         this.emitRunRulesProgressEvent(PRE_INVOCATION_RUN_PERCENT);
         const percentageUpdateHandler = /* istanbul ignore next */ (percentage: number) => {
-            this.emitDescribeRulesProgressEvent(normalizeRelativeCompletionPercentage(percentage));
+            this.emitRunRulesProgressEvent(normalizeRelativeCompletionPercentage(percentage));
         }
         const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(workspaceRoot, percentageUpdateHandler);
-        const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames, await runOptions.workspace.getExpandedFiles());
+        const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames, relevantFiles);
         this.emitRunRulesProgressEvent(100);
         return convertedResults;
+    }
+
+    private async getRelevantFiles(workspace: Workspace): Promise<string[]> {
+        const cacheKey: string = workspace.getWorkspaceId();
+        if (!this.relevantFilesCache.has(cacheKey)) {
+            const relevantFiles: string[] = (await workspace.getExpandedFiles()).filter(fileIsFlowFile);
+            this.relevantFilesCache.set(cacheKey, relevantFiles);
+        }
+        return this.relevantFilesCache.get(cacheKey)!;
     }
 }
 
@@ -102,9 +114,9 @@ function normalizeRelativeCompletionPercentage(flowTestPercentage: number): numb
     return PRE_INVOCATION_RUN_PERCENT + ((flowTestPercentage * percentageSpread) / 100);
 }
 
-function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[], allowedFiles: string[]): EngineRunResults {
+function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[], relevantFiles: string[]): EngineRunResults {
     const requestedRulesSet: Set<string> = new Set(requestedRules);
-    const allowedFilesSet: Set<string> = new Set(allowedFiles);
+    const relevantFileSet: Set<string> = new Set(relevantFiles);
     const results: EngineRunResults = {
         violations: []
     };
@@ -124,7 +136,7 @@ function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, re
             // of the Workspace. To combat this, we iterate over the files referenced and discard a Violation if it references
             // files that are not part of the Workspace.
             const flowNodes: FlowNodeDescriptor[] = flowTestRuleResult.flow;
-            if (flowNodes.some(node => !allowedFilesSet.has(node.flow_path))) {
+            if (flowNodes.some(node => !relevantFileSet.has(node.flow_path))) {
                 continue;
             }
 

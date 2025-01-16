@@ -10,15 +10,14 @@ export interface FlowTestCommandWrapper {
 }
 
 export type FlowTestExecutionResult = {
-    results: {
-        [queryId: string]: FlowTestRuleResult[]
-    }
+    results: Record<string, FlowTestRuleResult[]>
 }
 
 export type FlowTestRuleResult = {
     flow: FlowNodeDescriptor[];
     query_name: string;
     severity: string;
+    counter?: number;
     description: string;
     elem_name: string;
     field: string;
@@ -92,22 +91,25 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         return path.join(tmpDir, `flow-test-execution-${Date.now()}.json`);
     }
 
-    // istanbul ignore next
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private executionResultsAreValid(executionResults: any): executionResults is FlowTestExecutionResult {
+    private executionResultsAreValid(executionResults: object): executionResults is FlowTestExecutionResult {
         if (!('results' in executionResults) || typeof executionResults.results !== 'object') {
             return false;
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const results: any = executionResults.results;
+        if (executionResults.results === null) {
+            // This is actually a passing scenario where there are no violations found, so we resolve to {} to avoid
+            // null pointer issues. See https://git.soma.salesforce.com/SecurityTools/FlowSecurityLinter/issues/59
+            executionResults.results = {};
+        }
+        const results: object = executionResults.results as object;
 
         for (const key of Object.keys(results)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result: any = results[key];
+            const result: unknown = results[key as keyof object];
+            /* istanbul ignore next */
             if (!Array.isArray(result)) {
                 return false;
             }
             for (const ruleResult of result) {
+                /* istanbul ignore next */
                 if (!this.ruleResultIsValid(ruleResult)) {
                     return false;
                 }
@@ -116,9 +118,8 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         return true;
     }
 
-    // istanbul ignore next
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private ruleResultIsValid(ruleResult: any): ruleResult is FlowTestRuleResult {
+    /* istanbul ignore next */
+    private ruleResultIsValid(ruleResult: object): ruleResult is FlowTestRuleResult {
         if (!('query_name' in ruleResult) || typeof ruleResult.query_name !== 'string') {
             return false;
         }
@@ -140,8 +141,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         if (!('flow' in ruleResult) || !(Array.isArray(ruleResult.flow))) {
             return false;
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const flowNodes: any[] = ruleResult.flow;
+        const flowNodes: object[] = ruleResult.flow;
         for (const flowNode of flowNodes) {
             if (!this.flowNodeIsValid(flowNode)) {
                 return false;
@@ -150,9 +150,8 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         return true;
     }
 
-    // istanbul ignore next
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private flowNodeIsValid(flowNode: any): flowNode is FlowNodeDescriptor {
+    /* istanbul ignore next */
+    private flowNodeIsValid(flowNode: object): flowNode is FlowNodeDescriptor {
         if (!('influenced_var' in flowNode) || typeof flowNode.influenced_var !== 'string') {
             return false;
         }
