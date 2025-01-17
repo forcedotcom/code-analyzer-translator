@@ -160,7 +160,8 @@ export class UnexpectedEngineErrorViolation implements Violation {
 
     getMessage(): string {
         return getMessage('UnexpectedEngineErrorViolationMessage', this.engineName,
-            this.error.stack ? this.error.stack : this.error.message); // Prefer to get the whole stack when possible
+            this.error.stack ? this.error.stack :  // Prefer to get the whole stack when possible
+                /* istanbul ignore next */ this.error.message);
     }
 
     getCodeLocations(): CodeLocation[] {

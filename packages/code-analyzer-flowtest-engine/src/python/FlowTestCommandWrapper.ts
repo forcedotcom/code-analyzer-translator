@@ -74,7 +74,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         let parsedResults: object;
         try {
             parsedResults = JSON.parse(outputFileContents);
-        } catch (e) {
+        } catch (_err) {
             throw new Error(getMessage('ResultsFileNotValidJson', outputFileContents));
         }
 

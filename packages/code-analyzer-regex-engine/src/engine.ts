@@ -119,7 +119,7 @@ export class RegexEngine extends Engine {
             try {
                 await fs.promises.access(medataFileName, fs.constants.F_OK);
                 fileContents = fileContents + await fs.promises.readFile(medataFileName, {encoding: 'utf8'}) ;
-            } catch (err) {
+            } catch (_err) {
                 // Silently proceed if -meta.xml file doesn't exist or there was a problem reading it.
             }
         }

@@ -79,7 +79,7 @@ class FlowTestEngineConfigValueExtractor {
                 if (version !== null && version.compare(MINIMUM_PYTHON_VERSION) >= 0) {
                     return pythonCommand;
                 }
-            } catch (err) {
+            } catch (_err) {
                 // continue
             }
         }
