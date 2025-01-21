@@ -43,22 +43,28 @@ describe('Tests for the getName method of ESLintEngine', () => {
 })
 
 describe('Tests for the describeRules method of ESLintEngine', () => {
-    type LEGACY_CASE = {description: string, folder: string, expectationFile: string};
+    const LWC_CONFIG_RULES: RuleDescription[] = loadRuleDescriptions('rules_OnlyLwcBaseConfig.goldfile.json');
+    const JS_CONFIG_RULES: RuleDescription[] = loadRuleDescriptions('rules_OnlyJavascriptBaseConfig.goldfile.json');
+    const TS_CONFIG_RULES: RuleDescription[] = loadRuleDescriptions('rules_OnlyTypescriptBaseConfig.goldfile.json');
+    const DEFAULT_RULES: RuleDescription[] = makeUniqueAndSorted([...LWC_CONFIG_RULES, ...JS_CONFIG_RULES, ...TS_CONFIG_RULES]);
+    const CUSTOM_RULES: RuleDescription[] = loadRuleDescriptions('rules_OnlyCustomConfigWithNewRules.goldfile.json');
+
+    type LEGACY_CASE = {description: string, folder: string, expectationRuleDescriptions: RuleDescription[]};
     const legacyCases: LEGACY_CASE[] = [
         {
             description: 'with no customizations',
             folder: workspaceWithNoCustomConfig,
-            expectationFile: 'rules_DefaultConfig.goldfile.json'
+            expectationRuleDescriptions: DEFAULT_RULES
         },
         {
             description: 'with config that modifies existing rules',
             folder: workspaceThatHasCustomConfigModifyingExistingRules,
-            expectationFile: 'rules_DefaultConfigAndCustomConfigModifyingExistingRules.goldfile.json'
+            expectationRuleDescriptions: DEFAULT_RULES // Rule descriptions do not change even if rule properties are modified
         },
         {
             description: 'with config that adds a new plugin and rules',
             folder: workspaceThatHasCustomConfigWithNewRules,
-            expectationFile: 'rules_DefaultConfigAndCustomConfigWithNewRules.goldfile.json'
+            expectationRuleDescriptions: makeUniqueAndSorted([...DEFAULT_RULES, ...CUSTOM_RULES])
         },
     ]
 
@@ -70,7 +76,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
                 auto_discover_eslint_config: true
             });
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-            expectRulesToMatchLegacyExpectationFile(ruleDescriptions, caseObj.expectationFile);
+            expect(ruleDescriptions).toEqual(caseObj.expectationRuleDescriptions);
         } finally {
             process.chdir(origWorkingDir);
         }
@@ -82,7 +88,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
             workspace: new Workspace([caseObj.folder])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, caseObj.expectationFile);
+        expect(ruleDescriptions).toEqual(caseObj.expectationRuleDescriptions);
     });
 
     it.each(legacyCases)('When describing rules while config_root is folder $description and auto_discover_eslint_config=true, then return expected', async (caseObj: LEGACY_CASE) => {
@@ -91,21 +97,21 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             config_root: caseObj.folder
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, caseObj.expectationFile);
+        expect(ruleDescriptions).toEqual(caseObj.expectationRuleDescriptions);
     });
 
     it('When describing rules from a workspace with no javascript files, then no javascript rules should return', async () => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
                 path.join(workspaceWithNoCustomConfig, 'dummy3.txt'), path.join(workspaceWithNoCustomConfig, 'dummy2.ts')])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When describing rules from a workspace with no typescript files, then no typescript rules should returned', async () => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: new Workspace([
             path.join(workspaceWithNoCustomConfig, 'dummy1.js'), path.join(workspaceWithNoCustomConfig, 'dummy3.txt')])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoTypescriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...LWC_CONFIG_RULES, ...JS_CONFIG_RULES]));
     });
 
     it('When describing rules from a workspace with no javascript or typescript files, then no rules should return', async () => {
@@ -131,7 +137,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
             workspace: new Workspace([workspaceWithNoCustomConfig])});
 
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfigAndCustomConfigWithNewRules.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...DEFAULT_RULES, ...CUSTOM_RULES]));
     });
 
     it('When auto_discover_eslint_config=false and eslint_config_file is not provided, then no user config should be applied', async () => {
@@ -148,7 +154,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({
                 workspace: new Workspace([workspaceThatHasCustomConfigModifyingExistingRules])}); // ... and include it in the workspace
 
-            expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig.goldfile.json');
+            expect(ruleDescriptions).toEqual(DEFAULT_RULES);
 
             // Sanity check that we emit an info log event letting the user know that their custom eslint config isn't being used
             const relPathFromConfigRoot: string = path.join(workspaceThatHasCustomConfigModifyingExistingRules.slice((process.cwd() + path.sep).length), '.eslintrc.json');
@@ -176,7 +182,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             const ruleDescriptions: RuleDescription[] = await engine.describeRules({
                 workspace: new Workspace([workspaceThatHasCustomConfigWithNewRules])}); // ... and include it in the workspace
 
-            expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfigAndCustomConfigModifyingExistingRules.goldfile.json');
+            expect(ruleDescriptions).toEqual(DEFAULT_RULES); // Modifying rule properties does not change rule descriptions
         } finally {
             process.chdir(origWorkingDir);
         }
@@ -187,7 +193,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_javascript_base_config: true
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DisabledJavascriptBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...LWC_CONFIG_RULES, ...TS_CONFIG_RULES]));
     });
 
     it('When disable_lwc_base_config=true, then the lwc rules are removed but javascript rules remain', async() => {
@@ -195,7 +201,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_lwc_base_config: true
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DisabledLwcBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...JS_CONFIG_RULES, ...TS_CONFIG_RULES]));
     });
 
     it('When disable_typescript_base_config=true, then the typescript rules are removed', async() => {
@@ -203,7 +209,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_typescript_base_config: true
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DisabledTypescriptBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...LWC_CONFIG_RULES, ...JS_CONFIG_RULES]));
     });
 
     it('When disable_lwc_base_config=true and disable_typescript_base_config=true, then only base javascript rules remain', async() => {
@@ -212,7 +218,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_lwc_base_config: true,
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyJavascriptBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(JS_CONFIG_RULES);
     });
 
     it('When disable_javascript_base_config=true and disable_lwc_base_config=true, then only base typescript rules remain', async() => {
@@ -221,7 +227,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_lwc_base_config: true,
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyTypescriptBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When disable_javascript_base_config=true and disable_typescript_base_config=true, then only base lwc rules remain', async() => {
@@ -230,7 +236,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_typescript_base_config: true,
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyLwcBaseConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(LWC_CONFIG_RULES);
     });
 
     it('When all *_javascript_base_config equal true and no custom config exists, then no rules should exist', async() => {
@@ -252,7 +258,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             disable_lwc_base_config: true
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyCustomConfigWithNewRules.goldfile.json');
+        expect(ruleDescriptions).toEqual(loadRuleDescriptions('rules_OnlyCustomConfigWithNewRules.goldfile.json'));
     });
 
     it('When all base configs are off and custom config that modifies eslint rules exists and auto_discover_eslint_config=true, then only custom config is applied', async() => {
@@ -265,7 +271,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({
             workspace: new Workspace([path.join(workspaceThatHasCustomConfigModifyingExistingRules, 'dummy1.js')])
         });
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_OnlyCustomConfigModifyingExistingRules.goldfile.json');
+        expect(ruleDescriptions).toEqual(loadRuleDescriptions('rules_OnlyCustomConfigModifyingExistingRules.goldfile.json'));
     });
 
     it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
@@ -276,7 +282,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             }
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When file_extensions.javascript is empty, then javascript rules do not get picked up', async () => {
@@ -287,7 +293,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
             }
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoTypescriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...LWC_CONFIG_RULES, ...JS_CONFIG_RULES]));
     });
 
     it('When file_extensions.javascript and file_extensions.typescript are both empty, then no rules are returned', async () => {
@@ -337,7 +343,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
         });
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(
             {workspace: new Workspace([workspaceThatIgnoresFilesByConfig])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When workspace contains .eslintignore that ignores a file but has not be applied, then that file not ignored and an info event is emitted', async () => {
@@ -349,7 +355,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(
             {workspace: new Workspace([workspaceThatHasEslintIgnoreFile])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig.goldfile.json');
+        expect(ruleDescriptions).toEqual(makeUniqueAndSorted([...LWC_CONFIG_RULES, ...JS_CONFIG_RULES, ... TS_CONFIG_RULES]));
 
         const relPathFromCwd: string = path.join(workspaceThatHasEslintIgnoreFile.slice((process.cwd() + path.sep).length), '.eslintignore');
         const relPathFromConfigRoot: string = path.join(workspaceThatHasEslintIgnoreFile.slice((__dirname + path.sep).length), '.eslintignore');
@@ -370,7 +376,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(
             {workspace: new Workspace([workspaceThatHasEslintIgnoreFile])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When workspace contains .eslintignore that is set as the eslint_ignore_file value, then that file is ignored', async () => {
@@ -383,7 +389,7 @@ describe('Tests for the describeRules method of ESLintEngine', () => {
 
         const ruleDescriptions: RuleDescription[] = await engine.describeRules(
             {workspace: new Workspace([workspaceThatHasEslintIgnoreFile])});
-        expectRulesToMatchLegacyExpectationFile(ruleDescriptions, 'rules_DefaultConfig_NoJavascriptFilesInWorkspace.goldfile.json');
+        expect(ruleDescriptions).toEqual(TS_CONFIG_RULES);
     });
 
     it('When custom rules only apply to file extensions that are not javascript or typescript based, then without specifying file extensions, they are not picked up', async () => {
@@ -669,9 +675,12 @@ describe('Tests for emitting events', () => {
     });
 });
 
-function expectRulesToMatchLegacyExpectationFile(ruleDescriptions: RuleDescription[], expectationFile: string): void {
-    const actualRuleDescriptionsJsonString: string = JSON.stringify(ruleDescriptions, undefined, 2);
-    const expectedRuleDescriptionsJsonString: string = fs.readFileSync(
-        path.join(legacyConfigCasesFolder, expectationFile), 'utf8');
-    expect(actualRuleDescriptionsJsonString).toEqual(expectedRuleDescriptionsJsonString);
+function loadRuleDescriptions(fileNameFromLegacyConfigCasesFolder: string): RuleDescription[] {
+    return JSON.parse(fs.readFileSync(path.join(legacyConfigCasesFolder,
+        fileNameFromLegacyConfigCasesFolder), 'utf8')) as RuleDescription[];
+}
+
+function makeUniqueAndSorted(ruleDescriptions: RuleDescription[]): RuleDescription[] {
+    return Array.from(new Map(ruleDescriptions.map(rule => [rule.name, rule])).values())
+        .sort((r1, r2) => r1.name.localeCompare((r2.name)));
 }
