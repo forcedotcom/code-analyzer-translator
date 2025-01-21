@@ -103,7 +103,7 @@ export class CodeAnalyzer {
         try {
             try {
                 resolvedModulePath = require.resolve(enginePluginModulePath, {paths: [this.config.getConfigRoot()]});
-            } catch (err) {
+            } catch (err) /* istanbul ignore next */ {
                 // On windows, there is an edge case where a standalone file in the same directory as the user's config
                 // file may not be resolved by require.resolve if given as just the file name. So we attempt to resolve
                 // this using path.resolve for this edge case.
