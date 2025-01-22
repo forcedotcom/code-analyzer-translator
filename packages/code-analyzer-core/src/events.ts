@@ -1,5 +1,8 @@
 import { EngineRunResults } from "./results"
 
+/**
+ * Enum of event types that are available from CodeAnalyzer to listen to
+ */
 export enum EventType {
     LogEvent = "LogEvent",
     RuleSelectionProgressEvent = "RuleSelectionProgressEvent",
@@ -8,6 +11,9 @@ export enum EventType {
     EngineResultsEvent = "EngineResultsEvent"
 }
 
+/**
+ * Enum of Log Levels
+ */
 export enum LogLevel {
     Error = 1,
     Warn = 2,
@@ -16,6 +22,10 @@ export enum LogLevel {
     Fine = 5
 }
 
+/**
+ * Event emitted when Code Analyzer logs a message
+ *   These events are received by callbacks provided to the {@link CodeAnalyzer.onEvent} for {@link EventType.LogEvent}.
+ */
 export type LogEvent = {
     type: EventType.LogEvent,
     timestamp: Date,
@@ -23,12 +33,20 @@ export type LogEvent = {
     message: string
 }
 
+/**
+ * Event emitted to report the progress of an invocation of {@link CodeAnalyzer.selectRules}
+ *   These events are received by callbacks provided to the {@link CodeAnalyzer.onEvent} for {@link EventType.RuleSelectionProgressEvent}.
+ */
 export type RuleSelectionProgressEvent = {
     type: EventType.RuleSelectionProgressEvent,
     timestamp: Date,
     percentComplete: number
 }
 
+/**
+ * Event emitted when an engine logs a message
+ *   These events are received by callbacks provided to the {@link CodeAnalyzer.onEvent} for {@link EventType.EngineLogEvent}.
+ */
 export type EngineLogEvent = {
     type: EventType.EngineLogEvent,
     timestamp: Date,
@@ -37,6 +55,10 @@ export type EngineLogEvent = {
     message: string
 }
 
+/**
+ * Event emitted when an engine reports on its run progress
+ *   These events are received by callbacks provided to the {@link CodeAnalyzer.onEvent} for {@link EventType.EngineRunProgressEvent}.
+ */
 export type EngineRunProgressEvent = {
     type: EventType.EngineRunProgressEvent,
     timestamp: Date,
@@ -44,10 +66,17 @@ export type EngineRunProgressEvent = {
     percentComplete: number
 }
 
+/**
+ * Event emitted when an engine finishes running rules in order to immediately provide its {@link EngineRunResults}
+ *   These events are received by callbacks provided to the {@link CodeAnalyzer.onEvent} for {@link EventType.EngineResultsEvent}.
+ */
 export type EngineResultsEvent = {
     type: EventType.EngineResultsEvent
     timestamp: Date,
     results: EngineRunResults
 }
 
+/**
+ * Convenience type corresponding to each of the various events that can be emitted by Code Analyzer
+ */
 export type Event = LogEvent | RuleSelectionProgressEvent | EngineLogEvent | EngineRunProgressEvent | EngineResultsEvent;

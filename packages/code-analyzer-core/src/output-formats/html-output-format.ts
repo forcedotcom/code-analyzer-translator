@@ -10,6 +10,10 @@ import {
 
 const HTML_TEMPLATE_VERSION: string = '0.0.11';
 const HTML_TEMPLATE_FILE: string = path.resolve(__dirname, '..', '..', 'output-templates', `html-template-${HTML_TEMPLATE_VERSION}.txt`);
+
+/**
+ * Formatter for HTML Output Format
+ */
 export class HtmlOutputFormatter implements OutputFormatter {
     private static readonly TIMESTAMP_HOLE: string = '{{###TIMESTAMP###}}';
     private static readonly RUNDIR_HOLE: string = '{{###RUNDIR###}}';

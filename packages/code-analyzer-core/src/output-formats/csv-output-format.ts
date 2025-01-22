@@ -5,10 +5,11 @@ import {OutputFormatter} from "../output-format";
 import {Rule} from "../rules";
 import {makeRelativeIfPossible} from "./json-output-format";
 
-// Note that CSV format is limited and doesn't support showing certain information, like multiple code
-// locations. CSV format will be a lot like our table view or the main table in the html format.
-// We will make users aware of this through our public documentation.
-
+/**
+ * Formatter for CSV Output Format
+ *
+ * Note that CSV format is limited and doesn't support showing certain information, like multiple code locations.
+ */
 export class CsvOutputFormatter implements OutputFormatter {
     format(results: RunResults): string {
         // Leveraging the JsonViolationOutput data structure for now. This may change in the near future.

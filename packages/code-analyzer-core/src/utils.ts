@@ -1,5 +1,8 @@
 import path from "node:path";
 
+// THIS FILE CONTAINS UTILITIES WHICH ARE USED INTERNALLY ONLY.
+// None of the following exported interfaces and functions should be exported from the index file.
+
 export function toAbsolutePath(fileOrFolder: string): string {
     // Convert slashes to platform specific slashes and then convert to absolute path
     return path.resolve(fileOrFolder.replace(/[\\/]/g, path.sep));

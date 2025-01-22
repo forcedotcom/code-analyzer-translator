@@ -23,24 +23,50 @@ import {
 import fs from "node:fs";
 import path from 'node:path';
 
+/**
+ * Interface for workspaces
+ */
 export interface Workspace {
     getWorkspaceId(): string
     getFilesAndFolders(): string[]
 }
 
+/**
+ * Optional options available to the selectRules method of the CodeAnalyzer class
+ */
 export type SelectOptions = {
+    /** The workspace containing the files used to determine the applicable rules for the files within it */
     workspace?: Workspace
 }
 
+/**
+ * Options available to the run method of the CodeAnalyzer class
+ */
 export type RunOptions = {
+    /** The workspace containing the files to run the selected rules against */
     workspace: Workspace
+
+    /** Starting points within your workspace to restrict any path-based analysis rules to.
+     * If you don't specify this option, then any path-based analysis rules automatically discover and use all starting
+     * points found in your workspace. Use this option to restrict the starting points to only those you want in your
+     * code analysis. This option only applies to path-based analysis rules which are only available from some engines.
+     */
     pathStartPoints?: string[]
 }
 
+/**
+ * Object containing an engine's resolved configuration options
+ */
 export type EngineConfig = engApi.ConfigObject;
 
 const MINIMUM_SUPPORTED_NODE = 20;
 
+/**
+ * Primary class to perform Salesforce Code Analyzer runs.
+ *     Use this class to add engines, then select rules associated with those engines, and then run the selected rules
+ *     against a specified workspace of files. Add listeners to this class to receive log and progress events associated
+ *     with selecting and running rules.
+ */
 export class CodeAnalyzer {
     private readonly config: CodeAnalyzerConfig;
     private clock: Clock = new RealClock();
@@ -74,10 +100,17 @@ export class CodeAnalyzer {
         this.uniqueIdGenerator = uniqueIdGenerator;
     }
 
+    /**
+     * Convenience method to return the same CodeAnalyzerConfig instance that was provided to the constructor
+     */
     public getConfig(): CodeAnalyzerConfig {
         return this.config;
     }
 
+    /**
+     * Creates a {@link Workspace} instance associated with a specified list of files and folders
+     * @param filesAndFolders string array of files and/or folders to include
+     */
     public async createWorkspace(filesAndFolders: string[]): Promise<Workspace> {
         const workspaceId: string = this.uniqueIdGenerator.getUniqueId('workspace');
         const fileValidationPromises: Promise<string>[] = filesAndFolders.map(validateFileOrFolder);
@@ -85,6 +118,10 @@ export class CodeAnalyzer {
         return new WorkspaceImpl(validatedFilesAndFolders, workspaceId);
     }
 
+    /**
+     * Adds all engines associated with the provided EnginePlugin so that their rules are registered with Code Analyzer
+     * @param enginePlugin {@link EnginePlugin} instance
+     */
     public async addEnginePlugin(enginePlugin: engApi.EnginePlugin): Promise<void> {
         if (enginePlugin.getApiVersion() > engApi.ENGINE_API_VERSION) {
             this.emitLogEvent(LogLevel.Warn, getMessage('EngineFromFutureApiDetected',
@@ -97,6 +134,11 @@ export class CodeAnalyzer {
         await Promise.all(promises);
     }
 
+    /**
+     * Dynamically loads a module containing an {@link EnginePlugin} and adds its engines to Code Analyzer
+     *     Note that the module must export a createEnginePlugin() function that returns an EnginePlugin.
+     * @param enginePluginModulePath string containing a discoverable name or location of an engine plugin module
+     */
     public async dynamicallyAddEnginePlugin(enginePluginModulePath: string): Promise<void> {
         let pluginModule;
         let resolvedModulePath: string;
@@ -126,10 +168,19 @@ export class CodeAnalyzer {
         return this.addEnginePlugin(enginePlugin);
     }
 
+    /**
+     * Returns the names of the engines that have been added to Code Analyzer
+     */
     public getEngineNames(): string[] {
         return Array.from(this.engines.keys());
     }
 
+    /**
+     * Returns the engine specific configuration associated with the specified engine name
+     *     Note that the returned object contains the fully resolved configuration with all values and not just what the
+     *     user wrote in their configuration file.
+     * @param engineName the name of the engine that you wish you retrieve the configuration for
+     */
     public getEngineConfig(engineName: string): EngineConfig {
         if (this.engineConfigs.has(engineName)) {
             return this.engineConfigs.get(engineName)!;
@@ -137,6 +188,10 @@ export class CodeAnalyzer {
         throw new Error(getMessage('FailedToGetEngineConfig', engineName));
     }
 
+    /**
+     * Returns a {@link ConfigDescription} that describes the top level properties of the engine specific configuration
+     * @param engineName the name of the engine that you wish to describe the configuration for
+     */
     public getEngineConfigDescription(engineName: string): ConfigDescription {
         if (this.engineConfigDescriptions.has(engineName)) {
             return this.engineConfigDescriptions.get(engineName)!;
@@ -144,6 +199,20 @@ export class CodeAnalyzer {
         throw new Error(getMessage('FailedToGetEngineConfigDescription', engineName));
     }
 
+    /**
+     * Selects all rules that match any of the provided rule selectors
+     *      A rule selector can either be:
+     *        * an engine name (to run all the rules associated with that engine),
+     *        * a rule tag (to run all rules with that tag),
+     *        * a rule severity level (to run all rules with that severity level),
+     *        * or an individual rule name.
+     *      To reduce the rules found from one selector with another selector, i.e. to perform an intersection
+     *      operation, use a colon to combine both the selectors into one. For example: ["pmd:Recommended"].
+     *      Provide more than one rule selector in the array to add the rules found from one selector to the rules found
+     *      from another selector, i.e. to perform a union operation. For example: ["pmd", "eslint"].
+     * @param selectors array of rule selector strings
+     * @param selectOptions optional {@link SelectOptions} instance
+     */
     public async selectRules(selectors: string[], selectOptions?: SelectOptions): Promise<RuleSelection> {
         // TODO: Before we expose core to external clients, we might consider throwing an exception if selectRules is
         //  called a second time before the first call to selectRules hasn't finished. This can occur if someone builds
@@ -166,6 +235,11 @@ export class CodeAnalyzer {
         return ruleSelection;
     }
 
+    /**
+     * Runs all the rules specified by the provided rule selection and returns a {@link RunResults} instance
+     * @param ruleSelection {@link RuleSelection} making up the rules that you wish to run
+     * @param runOptions {@link RunOptions} containing options including the {@link Workspace} to run the rules against
+     */
     public async run(ruleSelection: RuleSelection, runOptions: RunOptions): Promise<RunResults> {
         // TODO: Before we expose core to external clients, we might consider throwing an exception if run is
         //  called a second time before the first call to run hasn't finished. This can occur if someone builds
@@ -187,6 +261,13 @@ export class CodeAnalyzer {
         return runResults;
     }
 
+    /**
+     * Attach a listener callback to one of the events that Code Analyzer may emit
+     *   Example usage:
+     *     codeAnalyzer.onEvent(EventType.LogEvent, (evt) => console.log(`${evt.logLevel}: ${evt.message}`));
+     * @param eventType The {@link EventType} that you would like to add a callback for
+     * @param callback The callback function that should be invoked when an associated event is emitted
+     */
     public onEvent<T extends Event>(eventType: T["type"], callback: (event: T) => void): void {
         this.eventEmitter.on(eventType, callback);
     }

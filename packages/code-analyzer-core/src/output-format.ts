@@ -6,6 +6,9 @@ import {XmlOutputFormatter} from "./output-formats/xml-output-format";
 import {HtmlOutputFormatter} from "./output-formats/html-output-format";
 import {SarifOutputFormatter} from "./output-formats/sarif-output-format";
 
+/**
+ * Enum of output formats available
+ */
 export enum OutputFormat {
     CSV = "CSV",
     JSON = "JSON",
@@ -14,11 +17,24 @@ export enum OutputFormat {
     SARIF = "SARIF"
 }
 
+// exported internally only to be shared between multiple source files
 export const CODE_ANALYZER_CORE_NAME: string = 'code-analyzer';
 
+/**
+ * Abstract class to convert RunResults to formatted output text
+ */
 export abstract class OutputFormatter {
-    abstract format(results: RunResults): string
+    /**
+     * Formats run results into output text as a string
+     * @param runResults RunResults to be formatted
+     */
+    abstract format(runResults: RunResults): string
 
+    /**
+     * Creates the {@link OutputFormatter} associated with an {@link OutputFormat}
+     * @param format {@link OutputFormat} instance
+     * @param clock (optional - for internal testing purposes only)
+     */
     static forFormat(format: OutputFormat, /* istanbul ignore next */ clock: Clock = new RealClock()) {
         switch (format) {
             case OutputFormat.CSV:
