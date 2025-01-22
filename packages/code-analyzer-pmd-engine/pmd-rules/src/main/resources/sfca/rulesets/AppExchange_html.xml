@@ -25,7 +25,9 @@
         <priority>2</priority>
     </rule>
 
-
+    <!-- Until further notice, the Product Security team feels it is best to remove this rule until they can make it
+        more stable since the PMD HTML parser seems to throw errors on a number of LWC HTML files. -->
+    <!--
     <rule name="DetectUseLwcDomManual"
           language="html"
           class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
@@ -41,5 +43,6 @@
             </property>
         </properties>
     </rule>
+    -->
 
 </ruleset>

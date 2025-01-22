@@ -408,10 +408,12 @@ export const RULE_MAPPINGS: Record<string, {severity: SeverityLevel, tags: strin
         tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
     },
 
-    "DetectUseLwcDomManual": {
-        severity: SeverityLevel.Moderate,
-        tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
-    },
+    // Until further notice, the Product Security team feels it is best to remove this rule until they can make it
+    // more stable since the PMD HTML parser seems to throw errors on a number of LWC HTML files.
+    // "DetectUseLwcDomManual": {
+    //     severity: SeverityLevel.Moderate,
+    //     tags: [/* NOT RECOMMENDED */  APP_EXCHANGE_TAG, COMMON_TAGS.CATEGORIES.SECURITY, COMMON_TAGS.LANGUAGES.HTML]
+    // },
 
 
     // =================================================================================================================
