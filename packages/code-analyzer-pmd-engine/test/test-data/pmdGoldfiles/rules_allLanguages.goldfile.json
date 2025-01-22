@@ -604,19 +604,6 @@
     ]
   },
   {
-    "name": "DetectUseLwcDomManual",
-    "severityLevel": 3,
-    "tags": [
-      "AppExchange",
-      "Security",
-      "Html"
-    ],
-    "description": "Detects instances of lwc:dom=\"manual\" that could allow unintentional or malicious user input. Don't allow user input on these elements.",
-    "resourceUrls": [
-      "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#detectuselwcdommanual"
-    ]
-  },
-  {
     "name": "EagerlyLoadedDescribeSObjectResult",
     "severityLevel": 2,
     "tags": [
