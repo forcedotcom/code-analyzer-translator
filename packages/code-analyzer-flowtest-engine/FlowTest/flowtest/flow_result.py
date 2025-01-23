@@ -12,7 +12,8 @@ from datetime import datetime
 from typing import TextIO
 
 sys.modules['_elementtree'] = None
-import xml.etree.ElementTree as ET
+from public.custom_parser import ET
+import public.custom_parser as CP
 
 from flowtest import ESAPI
 from flowtest import flow_metrics
@@ -213,7 +214,7 @@ class ResultsProcessor(object):
 
         Used internally to generate popcrab compatible
         xml and html report formats.
-
+        
         Also useful for testing
 
         Returns:
@@ -288,7 +289,7 @@ class ResultsProcessor(object):
                       "email": self.email,
                       "scan_start": self.scan_start,
                       "scan_end": self.scan_end,
-                      "results": self.results_dict
+                      "results": self.results_dict or {}
                       }
         return job_result
 
@@ -309,9 +310,9 @@ def _validate_and_prettify_xml(xml_str: str) -> str:
     Returns:
         validated/beautified xml_string
     """
-    my_root = ET.fromstring(bytes(xml_str, encoding='utf-8'))
+    my_root = CP.get_root_from_string(bytes(xml_str, encoding='utf-8'))
     ET.indent(my_root)
-    return ET.tostring(my_root, encoding='unicode', default_namespace='http://soap.sforce.com/2006/04/metadata')
+    return ET.tostring(my_root, encoding='utf')
 
 
 def _merge_results(results: list[QueryResult]) -> [QueryResult]:
@@ -361,7 +362,7 @@ def _merge_results(results: list[QueryResult]) -> [QueryResult]:
             query_id=qr.query_id,
             influence_statement=qr.influence_statement,
             paths=frozenset(new_paths)
-        )
+            )
         )
 
     return new_list

@@ -14,7 +14,8 @@ import logging
 import traceback
 
 from flow_parser import parse
-from flow_parser.parse import ET
+import public.custom_parser as CP
+from public.custom_parser import ET
 from flowtest.control_flow import Crawler
 from flowtest.flows import FlowVector
 from flowtest.util import propagate

@@ -14,12 +14,12 @@ import logging
 import public.parse_utils as parse_utils
 import flowtest.util as util
 from public.contracts import FlowParser
+import public.custom_parser as CP
 
 from public.parse_utils import get_by_tag, get_tag, get_name, get_named_elems, STRING_LITERAL_TOKEN
 from public.enums import RunMode, FlowType
 from public.data_obj import VariableType
 from public.enums import DataType, ReferenceType
-
 
 #: hardcoded sfdc metadata namespace
 ns: str = '{http://soap.sforce.com/2006/04/metadata}'
@@ -41,7 +41,7 @@ def get_root(path: str) -> ET.Element:
         the root of the xml file
 
     """
-    return ET.parse(path, parser=parse_utils.LineNumberingParser()).getroot()
+    return CP.get_root(path)
 
 
 class Parser(FlowParser):
@@ -199,13 +199,14 @@ class Parser(FlowParser):
         """
         if path is None:
             path = self.flow_path
-        # do this first, as this method will be called all the time
+        # do this first, as this method will be called all the time.
+        # Look in cache of already resolved names, plus string literals and globals are handled here
         res = self.__get_type(path=path, name=name)
         if res is not None:
             # the variable is already in our map
             return name, None, res
 
-        # second cache, contains properties already seen as well as names
+        # second cache, contains properties already seen as well as names of flow elements
         seen = dict.get(self.__resolutions, (path, name))
         if seen is not None:
             return seen
@@ -230,9 +231,37 @@ class Parser(FlowParser):
             # This means we check splits[0] last
             tst = '.'.join(splits[0:-i])
             var_type = self.__get_type(name=tst, path=path, strict=strict)
+
             if var_type is not None:
+                # check if this is an automatic storage reference
+                # e.g. my_recordLookup.output or my_subflow.output
+                # if it is, we treat the variable name as elem.name
+                #
+                #
+                # NOTE: there are a number of ways to do this, all with downsides
+                # but we choose to look for anything other than a direct reference as indirect
+                if i == 1 and (var_type.reference is not ReferenceType.CollectionReference) and (
+                        var_type.reference is not ReferenceType.Direct):
+                    # We have an indirect reference, e.g. subflow.foo or subflow.foo.bar
+                    # add this to the cache of parsed variables
+                    ref_name = tst + '.' + splits[1]
+                    self.__parsed_vars[(path, ref_name)] = var_type  # TODO: try to get more precise type
+
+                    if spl_len == 2:
+                        # while we could just continue, we can handle this now directly to save lookup
+                        to_return = (ref_name, None, var_type)
+
+                    else:
+                        # We have subflow.foo.bar..
+                        to_return = (ref_name, name[len(tst) + 1:], var_type)
+
+                    # add this resolution to the cache
+                    self.__resolutions[(path, name)] = to_return
+                    return to_return
+
                 # name is foo.bar.baz so if foo.bar is best (most specific) match,
                 # we need to skip the period to get baz
+
                 to_return = (tst, name[len(tst) + 1:], var_type)
 
                 # add to cache of resolutions, so we don't need to go through this again
@@ -245,7 +274,7 @@ class Parser(FlowParser):
 
     @classmethod
     def from_file(cls, filepath: str, old_parser: Parser = None) -> Parser:
-        root = ET.parse(filepath, parser=parse_utils.LineNumberingParser()).getroot()
+        root = CP.get_root(filepath)
         parser = Parser(root)
         parser.flow_path = filepath
         parser.update(old_parser=old_parser)
@@ -255,9 +284,9 @@ class Parser(FlowParser):
     def from_string(cls, xml_string: str | bytes, filepath_to_use: str,
                     old_parser: Parser = None) -> Parser:
         if isinstance(xml_string, str):
-            root = ET.fromstring(xml_string.encode())
+            root = CP.get_root_from_string(xml_string.encode())
         elif isinstance(xml_string, bytes):
-            root = ET.fromstring(xml_string)
+            root = CP.get_root_from_string(xml_string)
         else:
             raise ValueError(f"cannot build a parser from type {type(xml_string)}."
                              f" Please use str or bytes.")

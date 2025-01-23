@@ -330,7 +330,7 @@ class Frame(object):
 
         Args:
             current_flow_path: current path of flow
-            all_flow_paths: map[flow_name: flow_path] for all flows in
+            all_flow_paths: map[(global flow_name, local flow_name): flow_path] for all flows in
                 scope to be scanned
             resolved_subflows: subflows that have been already processed
             parent_subflow: current subflow element that spawned this

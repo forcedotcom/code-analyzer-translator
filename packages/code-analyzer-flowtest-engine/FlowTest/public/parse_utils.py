@@ -15,13 +15,14 @@
 """
 from __future__ import annotations
 
+
 import logging
 import re
 import sys
 
-sys.modules['_elementtree'] = None
-import xml.etree.ElementTree as ET
+import public.custom_parser as CP
 
+from public.custom_parser import ET
 
 from public.enums import DataType, ConnType
 
@@ -131,7 +132,7 @@ def is_decision(elem: ET.Element) -> bool:
     return get_tag(elem) == 'decisions'
 
 
-def get_by_tag(elem: ET.Element, tagname: str) -> list[ET.etree._Element]:
+def get_by_tag(elem: ET.Element, tagname: str) -> list[ET.Element]:
     """Get list of all elem with the tag (ignoring ns).
 
         Convenience method as manually dealing with namespaces is clumsy.
@@ -178,8 +179,7 @@ def get_elem_string(elem: ET.Element) -> str | None:
     if elem is None:
         return ''
     else:
-        return ET.tostring(elem, encoding='unicode',
-                           default_namespace='http://soap.sforce.com/2006/04/metadata').strip()
+        return CP.to_string(elem)
 
 
 def get_line_no(elem: ET.Element) -> int:
@@ -569,22 +569,4 @@ def get_subflow_input_map(subflow: ET.Element) -> {str: str}:
         key = key_refs[0].text
         accum[key] = val
     return accum
-
-
-class LineNumberingParser(ET.XMLParser):
-    def _start(self, *args, **kwargs):
-        # Here we assume the default XML parser which is expat
-        # and copy its element position attributes into output Elements
-        element = super(self.__class__, self)._start(*args, **kwargs)
-        element.sourceline = self.parser.CurrentLineNumber
-        element._start_column_number = self.parser.CurrentColumnNumber
-        element._start_byte_index = self.parser.CurrentByteIndex
-        return element
-
-    def _end(self, *args, **kwargs):
-        element = super(self.__class__, self)._end(*args, **kwargs)
-        element._end_line_number = self.parser.CurrentLineNumber
-        element._end_column_number = self.parser.CurrentColumnNumber
-        element._end_byte_index = self.parser.CurrentByteIndex
-        return element
 

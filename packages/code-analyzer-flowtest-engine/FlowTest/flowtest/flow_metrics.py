@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 # set up logging
 logger = logging.getLogger(__name__)
 
+# NB parent only works with lxml
 
 SFDC_OBJECT_NAME = 'Scan_Info__c'
 RESULT_ROOT_TAG = 'CxXMLResults'
@@ -985,7 +986,7 @@ def _pre_parse(xml_file,
 
     Returns:
         src_data
-
+        
     """
 
     context = None

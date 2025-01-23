@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import logging
 import argparse
@@ -87,6 +88,25 @@ def check_not_exist(x: str) -> str:
     return x
 
 
+def get_flow_paths_from_file(file_path: str):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as fp:
+            data = fp.read()
+    except UnicodeDecodeError:
+        # CP1252 is used on older windows systems
+        try:
+            with open(file_path, 'r', encoding='cp1252') as fp:
+                data = fp.read()
+        except UnicodeDecodeError:
+            print("Unable to input file")
+            raise
+
+    splits = re.split(r',|\n', data)
+    trimmed = [x.strip() for x in splits]
+    cleaned = [os.path.abspath(check_file_exists(x)) for x in trimmed if x is not None and len(x) > 0]
+    return cleaned
+
+
 def get_flow_paths(args: argparse.Namespace) -> (list[str], {str: str}):
     """Given the arguments parsed by argparse, returns the flow filenames and names
     that should be processed.
@@ -98,23 +118,34 @@ def get_flow_paths(args: argparse.Namespace) -> (list[str], {str: str}):
         a tuple of (list of all flows to scan, dict: flow_name ->
         flow_path)
     """
+    arg_file = args.infile
     arg_flow = args.flow
     arg_dir = args.dir
     count = 0
+    flow_map = None
 
-    if arg_dir is None:
-        arg_dir = CURR_DIR
+    # file takes precedence and others are ignored
+    if arg_file is not None:
+        flow_paths = get_flow_paths_from_file(arg_file)
 
-    flow_map = util.get_flows_in_dir(arg_dir)
+    # next are the flows passed as a csv list in an argument
+    elif arg_flow is not None:
+        flow_paths = [os.path.abspath(x) for x in arg_flow.split(",")]
 
-    if arg_flow is None:
+    # finally we scan an entire directory (including subdirectories)
+    else:
+        if arg_dir is None:
+            arg_dir = CURR_DIR
+
+        flow_map = util.get_flows_in_dir(arg_dir)
         flows = list(flow_map.values())
         flow_paths = [os.path.abspath(x) for x in flows]
 
-    else:
-        flow_paths = [os.path.abspath(x) for x in arg_flow.split(",")]
+    # Once we have flow paths, we determine labels and namespaces
+    if flow_map is None:
+        flow_map = {}
         for a_flow in flow_paths:
-            label = util.get_label(os.path.dirname(a_flow), a_flow)
+            label = util.get_label(os.path.dirname(a_flow), os.path.basename(a_flow))
             if label is not None and label not in flow_map:
                 flow_map[label] = a_flow
 
@@ -168,6 +199,9 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
                                             "subflows in this directory will be scanned"),
                        type=check_dir_exists)
 
+    paths.add_argument("--infile", help="path of file containing csv separated lists of flows to scan."
+                                        "No other flows will be processed", type=check_file_exists)
+
     """
         Options for debug/log handling
     """
@@ -177,7 +211,6 @@ def parse_args(my_args: list[str], default: str = None) -> argparse.Namespace:
 
     parser.add_argument("--debug", action='store_true', help="whether to set logging level to debug")
     parser.add_argument("--no_log", action='store_true', help="disables logging")
-
 
     """
         Options for crawl-spec generation

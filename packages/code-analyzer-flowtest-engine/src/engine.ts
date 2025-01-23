@@ -70,20 +70,12 @@ export class FlowTestEngine extends Engine {
             return { violations: [] };
         }
 
-        const workspaceRoot: string | null = runOptions.workspace.getWorkspaceRoot();
-        // If we can't identify a single directory as the root of the workspace, then there's nothing for us to pass into
-        // FlowTest. So just throw an error and be done with it.
-        // NOTE: The only known case where this can occur is if a Windows user is scanning files on two different drives
-        //       (e.g., "C:" and "D:"). Since this is an extreme edge case, it's one we're willing to tolerate.
-        if (workspaceRoot === null) {
-            throw new Error(getMessage('WorkspaceLacksIdentifiableRoot', runOptions.workspace.getFilesAndFolders().join(', ')));
-        }
         this.emitRunRulesProgressEvent(PRE_INVOCATION_RUN_PERCENT);
         const percentageUpdateHandler = /* istanbul ignore next */ (percentage: number) => {
             this.emitRunRulesProgressEvent(normalizeRelativeCompletionPercentage(percentage));
         }
-        const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(workspaceRoot, percentageUpdateHandler);
-        const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames, relevantFiles);
+        const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(relevantFiles, percentageUpdateHandler);
+        const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames);
         this.emitRunRulesProgressEvent(100);
         return convertedResults;
     }
@@ -114,9 +106,8 @@ function normalizeRelativeCompletionPercentage(flowTestPercentage: number): numb
     return PRE_INVOCATION_RUN_PERCENT + ((flowTestPercentage * percentageSpread) / 100);
 }
 
-function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[], relevantFiles: string[]): EngineRunResults {
+function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, requestedRules: string[]): EngineRunResults {
     const requestedRulesSet: Set<string> = new Set(requestedRules);
-    const relevantFileSet: Set<string> = new Set(relevantFiles);
     const results: EngineRunResults = {
         violations: []
     };
@@ -130,16 +121,7 @@ function toEngineRunResults(flowTestExecutionResult: FlowTestExecutionResult, re
             if (!requestedRulesSet.has(ruleName)) {
                 continue;
             }
-            // FlowTest has some logic to try and discover referenced Subflows in nearby directories. If it can find the
-            // Subflow, then it is pulled into analysis, and if it can't, then the parent flow analysis ceases.
-            // This can technically create situations where Violations are present referencing Flows that are not part
-            // of the Workspace. To combat this, we iterate over the files referenced and discard a Violation if it references
-            // files that are not part of the Workspace.
             const flowNodes: FlowNodeDescriptor[] = flowTestRuleResult.flow;
-            if (flowNodes.some(node => !relevantFileSet.has(node.flow_path))) {
-                continue;
-            }
-
             results.violations.push({
                 ruleName,
                 message: flowTestRuleResult.description,
