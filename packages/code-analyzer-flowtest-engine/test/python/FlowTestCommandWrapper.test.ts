@@ -54,7 +54,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 });
 
                 it('Correctly parses status updates from stdout', () => {
-                    expect(completionPercentages).toEqual([0, 25, 50, 75]);
+                    expect(completionPercentages).toEqual([0, 33.3, 66.7]);
                 });
 
                 it('Generates no log file', async () => {

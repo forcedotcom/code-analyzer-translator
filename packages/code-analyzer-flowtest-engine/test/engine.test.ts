@@ -52,7 +52,7 @@ describe('Tests for the FlowTestEngine', () => {
             // No need to do in-depth examination of the results, since other tests already do that. Just make sure we
             // got the right number of violations.
             expect(results.violations).toHaveLength(4);
-            expect(runProgressEvents.map(e => e.percentComplete)).toEqual([0, 10, 10, 30, 50, 70, 100]);
+            expect(runProgressEvents.map(e => e.percentComplete)).toEqual([0, 10, 10, 36.64, 63.36, 100]);
         });
     });
 

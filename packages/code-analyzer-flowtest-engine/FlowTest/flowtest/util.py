@@ -43,7 +43,8 @@ def get_flows_in_dir(root_dir: str) -> {str: str}:
     flow_paths = dict()
     for root, dir_names, filenames in os.walk(root_dir):
         for filename in filenames:
-            flow_paths[get_label(root, filename)] = os.path.join(root, filename)
+            if filename.endswith(".flow") or filename.endswith("flow-meta.xml"):
+                flow_paths[get_label(root, filename)] = os.path.join(root, filename)
 
     return flow_paths
 
@@ -71,7 +72,7 @@ def get_label(root: str, filename: str) -> (str, str):
     else:
         short_fname = filename
 
-    local_label = filename.split('-')[0]
+    local_label = short_fname.split('-')[0]
     parent_dirname = pathlib.PurePath(root).name
     namespaced_label = f"{parent_dirname}__{local_label}"
     return namespaced_label, local_label
@@ -204,7 +205,7 @@ def resolve_name(all_flow_paths: {(str, str): str}, sub_name: str) -> str | None
     """return path of subflow to load based on subflow label
 
     Args:
-        all_flow_paths: all flow paths in scan scope
+        all_flow_paths: all flow paths in scan scope in the form (abs label, local label) --> abs_flow_path
         sub_name: subflow label
 
     Returns:
