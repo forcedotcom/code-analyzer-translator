@@ -18,9 +18,11 @@ changeWorkingDirectoryToPackageRoot();
 const PATH_TO_NO_FLOWS_WORKSPACE = path.resolve(__dirname, 'test-data', 'example workspaces', 'contains-no-flows');
 const PATH_TO_MULTIPLE_FLOWS_WORKSPACE = path.resolve(__dirname, 'test-data', 'example workspaces', 'contains-multiple-flows');
 const PATH_TO_ONE_FLOW_NO_VIOLATIONS_WORKSPACE = path.resolve(__dirname, 'test-data', 'example workspaces', 'contains-one-flow-no-violations');
-const PATH_TO_EXAMPLE1: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example1-containsWithoutSharingViolations.flow-meta.xml');
-const PATH_TO_EXAMPLE2: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example2-containsWithSharingViolations.flow');
-const PATH_TO_EXAMPLE3: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example3-containsNoViolations.flow');
+const PATH_TO_EXAMPLE1: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example1_containsWithoutSharingViolations.flow-meta.xml');
+const PATH_TO_EXAMPLE2: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example2_containsWithSharingViolations.flow');
+const PATH_TO_EXAMPLE3: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example3_containsNoViolations.flow');
+const PATH_TO_EXAMPLE4_PARENTFLOW: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_parentFlow.flow-meta.xml');
+const PATH_TO_EXAMPLE4_SUBFLOW: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_subflow.flow-meta.xml');
 
 describe('Tests for the FlowTestEngine', () => {
     const flowtestCommandWrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper('python3');
@@ -51,8 +53,8 @@ describe('Tests for the FlowTestEngine', () => {
             const results: EngineRunResults = await engine.runRules(ruleDescriptors.map(r => r.name), {workspace});
             // No need to do in-depth examination of the results, since other tests already do that. Just make sure we
             // got the right number of violations.
-            expect(results.violations).toHaveLength(4);
-            expect(runProgressEvents.map(e => e.percentComplete)).toEqual([0, 10, 10, 36.64, 63.36, 100]);
+            expect(results.violations).toHaveLength(7);
+            expect(runProgressEvents.map(e => e.percentComplete)).toEqual([0, 10, 10, 26, 42, 58, 74, 100]);
         });
     });
 
@@ -127,6 +129,8 @@ describe('Tests for the FlowTestEngine', () => {
         describe('#runRules', () => {
 
             const expectedExample1Violation1: Violation = {
+                ruleName: "PreventPassingUserDataIntoElementWithoutSharing",
+                message: "User controlled data flows into recordUpdates element data in run mode: SystemModeWithoutSharing",
                 codeLocations: [
                     {
                         comment: "change_subject_of_case.change_subject_of_case: Initialization",
@@ -147,13 +151,13 @@ describe('Tests for the FlowTestEngine', () => {
                         startLine: 102
                     }
                 ],
-                message: "User controlled data flows into recordUpdates element data in run mode: SystemModeWithoutSharing",
                 primaryLocationIndex: 2,
-                resourceUrls: [],
-                ruleName: "PreventPassingUserDataIntoElementWithoutSharing"
+                resourceUrls: []
             };
 
             const expectedExample1Violation2: Violation = {
+                ruleName: "PreventPassingUserDataIntoElementWithoutSharing",
+                message: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithoutSharing",
                 codeLocations: [
                     {
                         comment: "change_subject_of_case.change_subject_of_case: Initialization",
@@ -174,13 +178,13 @@ describe('Tests for the FlowTestEngine', () => {
                         startLine: 69
                     }
                 ],
-                message: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithoutSharing",
                 primaryLocationIndex: 2,
-                resourceUrls: [],
-                ruleName: "PreventPassingUserDataIntoElementWithoutSharing"
+                resourceUrls: []
             };
 
             const expectedExample2Violation1: Violation = {
+                ruleName: "PreventPassingUserDataIntoElementWithSharing",
+                message: "User controlled data flows into recordUpdates element data in run mode: SystemModeWithSharing",
                 codeLocations: [
                     {
                         comment: "change_subject_of_case.change_subject_of_case: Initialization",
@@ -201,13 +205,13 @@ describe('Tests for the FlowTestEngine', () => {
                         startLine: 102
                     }
                 ],
-                message: "User controlled data flows into recordUpdates element data in run mode: SystemModeWithSharing",
                 primaryLocationIndex: 2,
-                resourceUrls: [],
-                ruleName: "PreventPassingUserDataIntoElementWithSharing"
+                resourceUrls: []
             };
 
             const expectedExample2Violation2: Violation = {
+                ruleName: "PreventPassingUserDataIntoElementWithSharing",
+                message: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithSharing",
                 codeLocations: [
                     {
                         comment: "change_subject_of_case.change_subject_of_case: Initialization",
@@ -228,10 +232,86 @@ describe('Tests for the FlowTestEngine', () => {
                         startLine: 69
                     }
                 ],
-                message: "User controlled data flows into recordDeletes element selector in run mode: SystemModeWithSharing",
                 primaryLocationIndex: 2,
-                resourceUrls: [],
-                ruleName: "PreventPassingUserDataIntoElementWithSharing"
+                resourceUrls: []
+            };
+
+            function createSharedExample4Violation(inputAssignmentField: string): Violation {
+                return {
+                    ruleName: "PreventPassingUserDataIntoElementWithoutSharing",
+                    message: "User controlled data flows into recordCreates element data in run mode: SystemModeWithoutSharing",
+                    codeLocations: [
+                    {
+                        file: PATH_TO_EXAMPLE4_PARENTFLOW,
+                        startLine: 91,
+                        startColumn: 1,
+                        comment: "input_text.input_text: Initialization"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_PARENTFLOW,
+                        startLine: 10,
+                        startColumn: 1,
+                        comment: "input_text.input_text influences assign_input_to_var.parent_input_var: Variable Assignment"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_SUBFLOW,
+                        startLine: 109,
+                        startColumn: 1,
+                        comment: "assign_input_to_var.parent_input_var influences call_subflow.input_var1: output via subflow assignment"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_SUBFLOW,
+                        startLine: 46,
+                        startColumn: 1,
+                        comment: `call_subflow.input_var1 influences create_case.${inputAssignmentField}: flow into recordCreates via influence over ${inputAssignmentField} in run mode SystemModeWithoutSharing`
+                    }
+                ],
+                    primaryLocationIndex: 3,
+                    resourceUrls: []
+                };
+            }
+
+            const expectedExample4Violation1: Violation = createSharedExample4Violation('AccountId');
+
+            const expectedExample4Violation2: Violation = createSharedExample4Violation('SuppliedName');
+            
+            const expectedExample4Violation3: Violation = {
+                ruleName: "PreventPassingUserDataIntoElementWithoutSharing",
+                message: "User controlled data flows into recordLookups element selector in run mode: SystemModeWithoutSharing",
+                codeLocations: [
+                    {
+                        file: PATH_TO_EXAMPLE4_SUBFLOW,
+                        startLine: 82,
+                        startColumn: 1,
+                        comment: "enter_text_subflow.enter_text_subflow: Initialization"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_SUBFLOW,
+                        startLine: 19,
+                        startColumn: 1,
+                        comment: "enter_text_subflow.enter_text_subflow influences combine_vars.combine_vars: Parsed from formulas"
+                    },
+                    {
+                    file: PATH_TO_EXAMPLE4_SUBFLOW,
+                        startLine: 10,
+                        startColumn: 1,
+                        comment: "combine_vars.combine_vars influences assign_enter_to_output.output_var1: Variable Assignment"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_PARENTFLOW,
+                        startLine: 109,
+                        startColumn: 1,
+                        comment: "assign_enter_to_output.output_var1 influences call_subflow.call_subflow.output_var1: output via subflow assignment"
+                    },
+                    {
+                        file: PATH_TO_EXAMPLE4_PARENTFLOW,
+                        startLine: 42,
+                        startColumn: 1,
+                        comment: "call_subflow.call_subflow.output_var1 influences get_records.SuppliedName: flow into recordLookups via influence over SuppliedName in run mode SystemModeWithoutSharing"
+                    }
+                ],
+                primaryLocationIndex: 4,
+                resourceUrls: []
             };
 
             let engine: FlowTestEngine;
@@ -243,23 +323,6 @@ describe('Tests for the FlowTestEngine', () => {
                 jest.restoreAllMocks();
             });
 
-            it('If Workspace has no root, throws an error', async () => {
-                // ==== SETUP ====
-                // Stub out the Workspace's getRoot method so it returns null.
-                jest.spyOn(Workspace.prototype, 'getWorkspaceRoot').mockImplementation(() => {
-                    return null;
-                });
-
-                // ==== TESTED BEHAVIOR ====
-                // Specify a rule. It doesn't matter which one.
-                const selectedRuleNames: string[] = ['PreventPassingUserDataIntoElementWithoutSharing'];
-                // Specify files. It doesn't matter which.
-                const workspaceFiles: string[] = [PATH_TO_EXAMPLE1];
-                await expect(engine.runRules(selectedRuleNames, { workspace: new Workspace(workspaceFiles) }))
-                    // Expect the error message to mention the lack of a root directory
-                    .rejects.toThrow('has no identifiable root directory');
-            });
-
             it('When running both rules on workspace that contains violations for SystemModeWithoutSharing and SystemModeWithSharing, then results are as expected', async () => {
                 const selectedRuleNames: string[] = [
                     'PreventPassingUserDataIntoElementWithSharing',
@@ -269,24 +332,27 @@ describe('Tests for the FlowTestEngine', () => {
                     workspace: new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])
                 });
 
-                expect(engineResults.violations).toHaveLength(4);
+                expect(engineResults.violations).toHaveLength(7);
                 expect(engineResults.violations).toContainEqual(expectedExample1Violation1);
                 expect(engineResults.violations).toContainEqual(expectedExample1Violation2);
                 expect(engineResults.violations).toContainEqual(expectedExample2Violation1);
                 expect(engineResults.violations).toContainEqual(expectedExample2Violation2);
+                expect(engineResults.violations).toContainEqual(expectedExample4Violation1);
+                expect(engineResults.violations).toContainEqual(expectedExample4Violation2);
+                expect(engineResults.violations).toContainEqual(expectedExample4Violation3);
             });
 
             it('When running only one rule on workspace that contains violations for multiple rules, then results should only contain results for the selected rule', async () => {
                 const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
-                const selectedRuleNames: string[] = ['PreventPassingUserDataIntoElementWithoutSharing'];
+                const selectedRuleNames: string[] = ['PreventPassingUserDataIntoElementWithSharing'];
                 const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
                     workspace: new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])
                 });
 
                 expect(engineResults.violations).toHaveLength(2);
-                expect(engineResults.violations).toContainEqual(expectedExample1Violation1);
-                expect(engineResults.violations).toContainEqual(expectedExample1Violation2);
+                expect(engineResults.violations).toContainEqual(expectedExample2Violation1);
+                expect(engineResults.violations).toContainEqual(expectedExample2Violation2);
             });
 
             it('When workspace includes only some files from within a folder, then filters out results for files outside of workspace', async () => {
@@ -352,8 +418,45 @@ describe('Tests for the FlowTestEngine', () => {
                 expect(engineResults.violations).toHaveLength(0);
             });
 
-            // TODO: Add in test that has violation that spans multiple files (parent flow file to sub flow file)
-            //       --> Waiting for valid flow files example from Robert Sussland
+            it('When workspace contains a parent flow but not its child subflow, then return valid results with zero violations', async () => {
+                const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
+
+                const selectedRuleNames: string[] = [
+                    'PreventPassingUserDataIntoElementWithSharing',
+                    'PreventPassingUserDataIntoElementWithoutSharing'
+                ];
+
+                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
+                    workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-parent-without-subflow')])
+                });
+                expect(engineResults1.violations).toHaveLength(0);
+
+                // Sanity check that we get same result even if the directory that contains the parent flow contains the child flow (although not specified in workspace)
+                const engineResults2: EngineRunResults = await engine.runRules(selectedRuleNames, {
+                    workspace: new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_parentFlow.flow-meta.xml')])
+                });
+                expect(engineResults2.violations).toHaveLength(0);
+            });
+
+            it('When workspace contains a child subflow but not its parent flow, then return valid results with zero violations', async () => {
+                const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
+
+                const selectedRuleNames: string[] = [
+                    'PreventPassingUserDataIntoElementWithSharing',
+                    'PreventPassingUserDataIntoElementWithoutSharing'
+                ];
+
+                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
+                    workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-subflow-without-parent')])
+                });
+                expect(engineResults1.violations).toHaveLength(0);
+
+                // Sanity check that we get same result even if the directory that contains the child subflow contains the parent flow (although not specified in workspace)
+                const engineResults2: EngineRunResults = await engine.runRules(selectedRuleNames, {
+                    workspace: new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_subflow.flow-meta.xml')])
+                });
+                expect(engineResults2.violations).toHaveLength(0);
+            });
         });
 
         describe('#getEngineVersion', () => {

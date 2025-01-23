@@ -1,12 +1,13 @@
-import path from 'node:path';
 import * as fsp from 'node:fs/promises';
 import tmp from 'tmp';
 import {PythonCommandExecutor} from './PythonCommandExecutor';
 import {getMessage} from '../messages';
-
+import {promisify} from "node:util";
+import path from "node:path";
+import fs from "node:fs";
 
 export interface FlowTestCommandWrapper {
-    runFlowTestRules(dir: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult>;
+    runFlowTestRules(flowFilesToScan: string[], completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult>;
 }
 
 export type FlowTestExecutionResult = {
@@ -42,16 +43,20 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         this.pythonCommandExecutor = new PythonCommandExecutor(pythonCommand);
     }
 
-    public async runFlowTestRules(dir: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {
-        const tmpFile: string = this.createTmpFileName();
+    public async runFlowTestRules(flowFilesToScan: string[], completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {
+        const tempDir: string = await createTempDir();
+        const flowFilesToScanFile: string = path.join(tempDir, 'flowFilesToScan.txt');
+        await fs.promises.writeFile(flowFilesToScanFile, flowFilesToScan.join('\n'), 'utf-8');
+
+        const flowtestResultsFile: string = path.join(tempDir, 'flowtestResultsFile.json')
         const pythonArgs: string[] = [
             '-m',
             'flowtest',
             '--no_log',
             '-j',
-            tmpFile,
-            '-d',
-            dir
+            flowtestResultsFile,
+            '--infile',
+            flowFilesToScanFile
         ];
 
         const processStdout = (stdoutMsg: string) => {
@@ -69,7 +74,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
 
         await this.pythonCommandExecutor.exec(pythonArgs, processStdout);
 
-        const outputFileContents: string = await fsp.readFile(tmpFile, {encoding: 'utf-8'});
+        const outputFileContents: string = await fsp.readFile(flowtestResultsFile, 'utf-8');
 
         let parsedResults: object;
         try {
@@ -85,20 +90,9 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         return parsedResults;
     }
 
-    private createTmpFileName(): string {
-        tmp.setGracefulCleanup();
-        const tmpDir: string = tmp.dirSync({unsafeCleanup: true}).name;
-        return path.join(tmpDir, `flow-test-execution-${Date.now()}.json`);
-    }
-
     private executionResultsAreValid(executionResults: object): executionResults is FlowTestExecutionResult {
         if (!('results' in executionResults) || typeof executionResults.results !== 'object') {
             return false;
-        }
-        if (executionResults.results === null) {
-            // This is actually a passing scenario where there are no violations found, so we resolve to {} to avoid
-            // null pointer issues. See https://git.soma.salesforce.com/SecurityTools/FlowSecurityLinter/issues/59
-            executionResults.results = {};
         }
         const results: object = executionResults.results as object;
 
@@ -172,4 +166,9 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         }
         return 'source_text' in flowNode && typeof flowNode.source_text === 'string';
     }
+}
+
+const tmpDirAsync = promisify((options: tmp.DirOptions, cb: tmp.DirCallback) => tmp.dir(options, cb));
+async function createTempDir() : Promise<string> {
+    return tmpDirAsync({keep: false, unsafeCleanup: true});
 }
