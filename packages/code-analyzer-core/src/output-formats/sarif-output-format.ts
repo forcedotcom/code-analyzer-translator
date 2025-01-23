@@ -4,6 +4,9 @@ import * as sarif from "sarif";
 import {Rule, SeverityLevel} from "../rules";
 import {OutputFormatter} from "../output-format";
 
+/**
+ * Formatter for SARIF Output Format
+ */
 export class SarifOutputFormatter implements OutputFormatter {
     format(results: RunResults): string {
         const runDir = results.getRunDirectory();

@@ -4,6 +4,9 @@ import path from "node:path";
 const NON_DOT_FOLDERS_TO_EXCLUDE: string[] = ['node_modules'];
 const NON_DOT_FILES_TO_EXCLUDE: string[] = ['code_analyzer_config.yml', 'code_analyzer_config.yaml'];
 
+/**
+ * Class that describes a users workspace of files and folders that should be scanned
+ */
 export class Workspace {
     private static nextId: number = 0;
     private readonly workspaceId: string;

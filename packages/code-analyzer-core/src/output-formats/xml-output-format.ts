@@ -3,6 +3,9 @@ import * as xmlbuilder from "xmlbuilder";
 import {OutputFormatter, CODE_ANALYZER_CORE_NAME} from "../output-format";
 import {JsonResultsOutput, toJsonResultsOutput} from "./json-output-format";
 
+/**
+ * Formatter for XML Output Format
+ */
 export class XmlOutputFormatter implements OutputFormatter {
     format(results: RunResults): string {
         // XML and JSON output formats are very similar, so leveraging the same data structure from JSON for now.

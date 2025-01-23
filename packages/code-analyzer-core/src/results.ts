@@ -6,45 +6,115 @@ import {OutputFormat, OutputFormatter} from "./output-format";
 import path from "node:path";
 import fs from "node:fs";
 
+/**
+ * Describes the code location details associated with a {@link Violation}
+ */
 export interface CodeLocation {
+    /** Returns the file associated with a violation */
     getFile(): string | undefined
+
+    /** Returns the start line in the file where the violating code begins */
     getStartLine(): number | undefined
+
+    /** Returns the column associated with the start line where the violating code begins */
     getStartColumn(): number | undefined
-    getComment(): string | undefined
+
+    /** Returns the end line in the file where the violating code ends */
     getEndLine(): number | undefined
+
+    /** Returns the column associated with the end line where the violating code ends */
     getEndColumn(): number | undefined
+
+    /** Returns an optional comment to give core context associated with this line or block of code */
+    getComment(): string | undefined
 }
 
+/**
+ * Describes a violation that an engine found in one or more code locations
+ */
 export interface Violation {
+    /** Returns the name of the rule associated with the violation */
     getRule(): Rule
+
+    /** Returns the violation message */
     getMessage(): string
+
+    /** Returns an array of {@link CodeLocation} instances associated with the violation */
     getCodeLocations(): CodeLocation[]
+
+    /** Returns the primary {@link CodeLocation} associated with the violation */
     getPrimaryLocation(): CodeLocation
+
+    /** Returns the index of the primary code location within the code locations array */
     getPrimaryLocationIndex(): number
+
+    /** Returns an array of urls for resources associated with the violation */
     getResourceUrls(): string[]
 }
 
+/**
+ * Describes the results of an individual engine's run of rules
+ */
 export interface EngineRunResults {
+    /** Returns the name of the engine */
     getEngineName(): string
+
+    /** Returns the version of the engine */
     getEngineVersion(): string
+
+    /** Returns the total amount of violations detected from the engine */
     getViolationCount(): number
+
+    /**
+     * Returns the number of violations detected from the engine that are associated with a specified {@link SeverityLevel}
+     * @param severity {@link SeverityLevel} to return the count for
+     */
     getViolationCountOfSeverity(severity: SeverityLevel): number
+
+    /** Returns the array of {@link Violation} instances for the engine */
     getViolations(): Violation[]
 }
 
+/**
+ * Describes the overall results of running all selected engine rules
+ */
 export interface RunResults {
+    /** Returns the directory from which the run occurred */
     getRunDirectory(): string
+
+    /** Returns the version of Code Analyzer (core) */
     getCoreVersion(): string
+
+    /** Returns the total number of violations across all engines that ran */
     getViolationCount(): number
+
+    /**
+     * Returns the number of violations detected across all engines that ran that are associated with a specified {@link SeverityLevel}
+     * @param severity {@link SeverityLevel} to return the count for
+     */
     getViolationCountOfSeverity(severity: SeverityLevel): number
+
+    /** Returns the array of {@link Violation} instances across all engines */
     getViolations(): Violation[]
+
+    /** Returns the names of the engines that ran */
     getEngineNames(): string[]
+
+    /**
+     * Returns the {@link EngineRunResults} for the specified engine
+     * @param engineName the name of the engine to return results for
+     */
     getEngineRunResults(engineName: string): EngineRunResults
+
+    /**
+     * Returns a formatted string of the results using the specified {@link OutputFormat}
+     * @param format the {@link OutputFormat} to format the results to
+     */
     toFormattedOutput(format: OutputFormat): string
 }
 
 
-/******* IMPLEMENTATIONS: **************************************************************************/
+/******* IMPLEMENTATIONS: *************************************************************************/
 export class CodeLocationImpl implements CodeLocation {
     private readonly apiCodeLocation: engApi.CodeLocation;
 

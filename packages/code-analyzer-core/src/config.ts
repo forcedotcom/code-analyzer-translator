@@ -7,6 +7,7 @@ import {getMessage} from "./messages";
 import {toAbsolutePath} from "./utils"
 import {SeverityLevel} from "./rules";
 
+// Only exported internally to share across files
 export const FIELDS = {
     CONFIG_ROOT: 'config_root',
     LOG_FOLDER: 'log_folder',
@@ -18,10 +19,15 @@ export const FIELDS = {
     DISABLE_ENGINE: 'disable_engine'
 } as const;
 
+/**
+ * Object containing the unresolved user specified engine configuration override values
+ */
 export type EngineOverrides = engApi.ConfigObject;
 
+/**
+ * Object containing the user specified rule override values
+ */
 export type RuleOverrides = Record<string, RuleOverride>;
-
 export type RuleOverride = {
     severity?: SeverityLevel
     tags?: string[]
@@ -35,6 +41,7 @@ type TopLevelConfig = {
     custom_engine_plugin_modules: string[] // INTERNAL USE ONLY
 }
 
+// Only exported internally to help with testing
 export const DEFAULT_CONFIG: TopLevelConfig = {
     config_root: process.cwd(),
     log_folder: os.tmpdir(),
@@ -43,6 +50,9 @@ export const DEFAULT_CONFIG: TopLevelConfig = {
     custom_engine_plugin_modules: [], // INTERNAL USE ONLY
 };
 
+/**
+ * Object containing an overview and top level field descriptions of specific section of the Code Analyzer configuration
+ */
 export type ConfigDescription = {
     // A brief overview of this specific configuration object. It is recommended to include a link to documentation when possible.
     overview: string
@@ -50,7 +60,6 @@ export type ConfigDescription = {
     // Description objects for the primary fields in the configuration
     fieldDescriptions: Record<string, ConfigFieldDescription>
 }
-
 export type ConfigFieldDescription = engApi.ConfigFieldDescription & {
     // Whether or not the user has supplied a value for the field in their configuration file
     //   Note: Unlike the Engine API's ConfigFieldDescription, core has the ability to determine if the user supplied
@@ -58,13 +67,23 @@ export type ConfigFieldDescription = engApi.ConfigFieldDescription & {
     wasSuppliedByUser: boolean
 }
 
+/**
+ * Class that represents a Code Analyzer configuration
+ */
 export class CodeAnalyzerConfig {
     private readonly config: TopLevelConfig;
 
+    /**
+     * Creates a {@link CodeAnalyzerConfig} instance containing only default values
+     */
     public static withDefaults() {
         return new CodeAnalyzerConfig(DEFAULT_CONFIG);
     }
 
+    /**
+     * Creates a {@link CodeAnalyzerConfig} instance from a YAML or JSON file
+     * @param file an absolute path to the configuration file to be parsed
+     */
     public static fromFile(file: string) {
         file = toAbsolutePath(file);
         if (!fs.existsSync(file)) {
@@ -83,16 +102,31 @@ export class CodeAnalyzerConfig {
         }
     }
 
+    /**
+     * Creates a {@link CodeAnalyzerConfig} instance from a JSON string
+     * @param jsonString the string containing the JSON to be parsed
+     * @param configRoot the root folder from which all file path values within the configuration are relative to
+     */
     public static fromJsonString(jsonString: string, configRoot?: string): CodeAnalyzerConfig {
         const data: object = parseAndValidate(() => JSON.parse(jsonString));
         return CodeAnalyzerConfig.fromObject(data, configRoot);
     }
 
+    /**
+     * Creates a {@link CodeAnalyzerConfig} instance from a YAML string
+     * @param yamlString the string containing the YAML to be parsed
+     * @param configRoot the root folder for all file path values within the configuration are relative to
+     */
     public static fromYamlString(yamlString: string, configRoot?: string): CodeAnalyzerConfig {
         const data: object = parseAndValidate(() => yaml.load(yamlString));
         return CodeAnalyzerConfig.fromObject(data, configRoot);
     }
 
+    /**
+     * Creates a {@link CodeAnalyzerConfig} instance from an object
+     * @param data the object containing the configuration options
+     * @param configRoot the root folder for all file path values within the configuration are relative to
+     */
     public static fromObject(data: object, configRoot?: string): CodeAnalyzerConfig {
         const rawConfig: engApi.ConfigObject = data as engApi.ConfigObject;
         configRoot = !rawConfig.config_root ? (configRoot ?? process.cwd()) :
@@ -112,6 +146,9 @@ export class CodeAnalyzerConfig {
         return new CodeAnalyzerConfig(config);
     }
 
+    /**
+     * Returns a {@link ConfigDescription} which describes the top level files associated with the Code Analyzer Config
+     */
     public getConfigDescription(): ConfigDescription {
         return {
             overview: getMessage('ConfigOverview'),
@@ -148,26 +185,50 @@ export class CodeAnalyzerConfig {
         this.config = config;
     }
 
+    /**
+     * Returns the absolute path of where log files should be stored by Code Analyzer when selecting and running rules.
+     *     Note that it is responsibility of clients of CodeAnalyzer to write log files to this folder if they wish.
+     */
     public getLogFolder(): string {
         return this.config.log_folder;
     }
 
+    /**
+     * Returns the absolute path folder where all path based values within the configuration may be relative to.
+     *     Typically, this is set as the folder where a configuration file was loaded from, but doesn't have to be.
+     */
     public getConfigRoot(): string {
         return this.config.config_root;
     }
 
+    /**
+     * Returns any user-specified custom engine plugin modules that have been specified in the configuration.
+     */
     public getCustomEnginePluginModules(): string[] {
         return this.config.custom_engine_plugin_modules;
     }
 
+    /**
+     * Returns a {@link RuleOverrides} instance containing the user specified overrides for all rules associated with the specified engine
+     * @param engineName name of the engine
+     */
     public getRuleOverridesFor(engineName: string): RuleOverrides {
         return engApi.getValueUsingCaseInsensitiveKey(this.config.rules, engineName) as RuleOverrides || {};
     }
 
+    /**
+     * Returns a {@link RuleOverride} instance containing the user specified override values for the specified rule
+     * @param engineName name of the engine
+     * @param ruleName name of the rule
+     */
     public getRuleOverrideFor(engineName: string, ruleName: string): RuleOverride {
         return engApi.getValueUsingCaseInsensitiveKey(this.getRuleOverridesFor(engineName), ruleName) as RuleOverride || {};
     }
 
+    /**
+     * Returns a {@link EngineOverrides} instance containing the user specified engine override values for the specified engine
+     * @param engineName name of the engine
+     */
     public getEngineOverridesFor(engineName: string): EngineOverrides {
         return engApi.getValueUsingCaseInsensitiveKey(this.config.engines, engineName) as EngineOverrides || {};
     }

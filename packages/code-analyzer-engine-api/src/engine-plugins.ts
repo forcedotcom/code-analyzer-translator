@@ -3,11 +3,17 @@ import {ConfigDescription, ConfigObject, ConfigValueExtractor} from "./config";
 
 export const ENGINE_API_VERSION: number = 1.0;
 
+/**
+ * Interface for engine plugins
+ */
 export interface EnginePlugin  {
     getApiVersion(): number
     getAvailableEngineNames(): string[]
 }
 
+/**
+ * Abstract class that all engine plugins should extend from in order to properly register their engines as "v1" engines
+ */
 export abstract class EnginePluginV1 implements EnginePlugin {
     /**
      * Returns the plugin's api version.

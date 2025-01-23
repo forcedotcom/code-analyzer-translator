@@ -1,6 +1,9 @@
 import * as engApi from "@salesforce/code-analyzer-engine-api"
 import {getMessage} from "./messages";
 
+/**
+ * Enum of rule severity levels
+ */
 export enum SeverityLevel {
     Critical = 1,
     High = 2,
@@ -9,24 +12,55 @@ export enum SeverityLevel {
     Info = 5
 }
 
+/**
+ * Describes a specific rule from an engine
+ */
 export interface Rule {
+    /** Returns the name of the rule */
     getName(): string
+
+    /** Returns the name of the engine from which the rule comes from */
     getEngineName(): string
+
+    /** Returns the {@link SeverityLevel} associated with the rule */
     getSeverityLevel(): SeverityLevel
+
+    /** Returns an array of tags associated with the rule that can be used in rule selection */
     getTags(): string[]
+
+    /** Returns a string describing what the rule does */
     getDescription(): string
+
+    /** Returns an array of urls associated with resources to learn more about the rule */
     getResourceUrls(): string[]
 }
 
+/**
+ * Class associated with a specific selection of rules
+ */
 export interface RuleSelection {
+    /** Returns the number of rules selected */
     getCount(): number
+
+    /** Returns the names of the engines that have at least one rule selected */
     getEngineNames(): string[]
+
+    /**
+     * Returns an array {@link Rule} instances associated with the rules that have been selected for the specified engine
+     * @param engineName the name of the engine to return selected rules for
+     */
     getRulesFor(engineName: string): Rule[]
+
+    /**
+     * Returns a specific {@link Rule} from a rule selection based on its engine and name.
+     * @param engineName the name of the engine associated with the selected rule
+     * @param ruleName the name of the selected rule that you wish to return
+     */
     getRule(engineName: string, ruleName: string): Rule
 }
 
 
-/******* IMPLEMENTATIONS: **************************************************************************/
+/******* IMPLEMENTATIONS: *************************************************************************/
 
 export class RuleImpl implements Rule {
     private readonly engineName: string
