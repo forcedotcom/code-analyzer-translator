@@ -418,7 +418,10 @@ describe('Tests for the FlowTestEngine', () => {
                 expect(engineResults.violations).toHaveLength(0);
             });
 
-            it('When workspace contains a parent flow but not its child subflow, then return valid results with zero violations', async () => {
+            it.each([
+                new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-parent-without-subflow')]),
+                new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_parentFlow.flow-meta.xml')])
+            ])('When workspace contains a parent flow but not its child subflow, then return valid results with zero violations', async (workspace) => {
                 const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
                 const selectedRuleNames: string[] = [
@@ -427,18 +430,15 @@ describe('Tests for the FlowTestEngine', () => {
                 ];
 
                 const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-parent-without-subflow')])
+                    workspace: workspace
                 });
                 expect(engineResults1.violations).toHaveLength(0);
-
-                // Sanity check that we get same result even if the directory that contains the parent flow contains the child flow (although not specified in workspace)
-                const engineResults2: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_parentFlow.flow-meta.xml')])
-                });
-                expect(engineResults2.violations).toHaveLength(0);
             });
 
-            it('When workspace contains a child subflow but not its parent flow, then return valid results with zero violations', async () => {
+            it.each([
+                new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-subflow-without-parent')]),
+                new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_subflow.flow-meta.xml')])
+            ])('When workspace contains a child subflow but not its parent flow, then return valid results with zero violations', async (workspace) => {
                 const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
                 const selectedRuleNames: string[] = [
@@ -447,15 +447,9 @@ describe('Tests for the FlowTestEngine', () => {
                 ];
 
                 const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([path.resolve(__dirname, 'test-data', 'example workspaces','contains-subflow-without-parent')])
+                    workspace: workspace
                 });
                 expect(engineResults1.violations).toHaveLength(0);
-
-                // Sanity check that we get same result even if the directory that contains the child subflow contains the parent flow (although not specified in workspace)
-                const engineResults2: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([path.resolve(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'example4_subflow.flow-meta.xml')])
-                });
-                expect(engineResults2.violations).toHaveLength(0);
             });
 
             // TODO: Add in tests for case of scanning 2 folders with the exact same flows.

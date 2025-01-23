@@ -1,4 +1,3 @@
-import * as fsp from 'node:fs/promises';
 import tmp from 'tmp';
 import {PythonCommandExecutor} from './PythonCommandExecutor';
 import {getMessage} from '../messages';
@@ -74,7 +73,7 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
 
         await this.pythonCommandExecutor.exec(pythonArgs, processStdout);
 
-        const outputFileContents: string = await fsp.readFile(flowtestResultsFile, 'utf-8');
+        const outputFileContents: string = await fs.promises.readFile(flowtestResultsFile, 'utf-8');
 
         let parsedResults: object;
         try {
