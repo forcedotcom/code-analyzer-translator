@@ -457,6 +457,10 @@ describe('Tests for the FlowTestEngine', () => {
                 });
                 expect(engineResults2.violations).toHaveLength(0);
             });
+
+            // TODO: Add in tests for case of scanning 2 folders with the exact same flows.
+            // Currently there is a bug here, and so we are waiting on:
+            //    https://git.soma.salesforce.com/SecurityTools/FlowSecurityLinter/issues/62
         });
 
         describe('#getEngineVersion', () => {
