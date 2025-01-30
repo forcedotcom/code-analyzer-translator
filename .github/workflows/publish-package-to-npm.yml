@@ -229,11 +229,14 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
             PUBLISHED_VERSION=$(jq -r ".version" package.json)
             if [[ "${{ inputs.dryrun }}" == "true" ]]; then
-              npm publish --tag latest-alpha --access public --verbose --dry-run
+              npm publish --tag latest-beta --access public --verbose --dry-run
               echo "Fake-published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
             else
-              npm publish --tag latest-alpha --access public --verbose
+              npm publish --tag latest-beta --access public --verbose
               echo "Published ${PACKAGE_NAME}@${PUBLISHED_VERSION}"
+          
+              npm dist-tag add @salesforce/${PACKAGE_NAME}@${PUBLISHED_VERSION} latest
+              echo "Added latest tag to @salesforce/${PACKAGE_NAME}@${PUBLISHED_VERSION}"
             fi
             cd ../..
           done

@@ -6,11 +6,15 @@
 #   to regenerate the java files (under the <root>/.gradle folder) which is then used by the build.gradle.kts file(s).
 
 [versions]
-gson = "2.11.0"
 hamcrest = "3.0"
-junit-jupiter = "5.11.3"
+junit-jupiter = "5.11.4"
 pmd = "7.9.0" # !!! IMPORTANT !!! KEEP THIS IN SYNC WITH PMD_VERSION INSIDE OF: src/constants.ts
-slf4j-nop = "2.0.16" # For now, we throw slf4j logs away (using this no-op module). We might use an actual logger in the future.
+
+# For the following: Keep in sync with whatever pmd-core pulls in. Basically, we don't want duplicates in our java-lib folder.
+# To see pmd-core's dependencies, go to https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd-core
+slf4j-nop = "1.7.36" # (Keep in sync with pmd-core > slf4j-api version). For now, we throw slf4j logs away (using this no-op module). We might use an actual logger in the future.
+gson = "2.11.0" # (Keep in sync with pmd-core > gson version).
+
 
 [libraries]
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
