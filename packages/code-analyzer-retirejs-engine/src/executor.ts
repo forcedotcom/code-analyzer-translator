@@ -73,7 +73,7 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
         const cmdStr: string = `${RETIRE_COMMAND} ${commandArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(',')}`;
         this.emitLogEvent(LogLevel.Fine, `Executing command: ${cmdStr}`);
         try {
-            await this.runCmdWithArgs(RETIRE_COMMAND, commandArgs);
+            await this.runRetireCmdWithArgs(RETIRE_COMMAND, commandArgs);
         } catch (err) /* istanbul ignore next */ {
             const errMsg: string = err instanceof Error ? (err as Error).message : `${err}`;
             throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', cmdStr, errMsg));
@@ -90,9 +90,10 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
         }
     }
 
-    private async runCmdWithArgs(cmd:string, argArray: string[]): Promise<void> {
+    private async runRetireCmdWithArgs(cmd:string, argArray: string[]): Promise<void> {
         return new Promise<void>((res, rej) => {
-            const childProcess: ChildProcessWithoutNullStreams = spawn(cmd, argArray);
+            const childProcess: ChildProcessWithoutNullStreams = spawn(cmd, argArray,
+                { shell: process.platform.startsWith('win') }); // Use shell on window's machines
             let output: string = '';
             /* istanbul ignore next */
             const processOutput = (data: string) => output += data;
