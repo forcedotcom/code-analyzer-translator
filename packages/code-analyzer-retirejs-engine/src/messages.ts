@@ -25,7 +25,7 @@ const MESSAGE_CATALOG : { [key: string]: string } = {
         `Vulnerability details: %s`,
 
     UnexpectedErrorWhenExecutingCommand:
-        `An unexpected error was thrown when executing the command '%s': %s`,
+        `An unexpected error was thrown when executing the command '%s'.\nOutput from command:\n%s`,
 
     UnexpectedErrorWhenProcessingOutputFile:
         `An unexpected error was thrown when processing the output file '%s': %s`,

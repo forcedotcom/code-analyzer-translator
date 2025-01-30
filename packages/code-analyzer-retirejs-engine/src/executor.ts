@@ -1,14 +1,11 @@
 import {Finding} from "retire/lib/types";
-import {exec, ExecException} from "node:child_process";
-import {promisify} from "node:util";
+import {ChildProcessWithoutNullStreams, spawn} from "node:child_process";
 import fs from "node:fs";
 import * as utils from "./utils";
 import path from "node:path";
 import {DecoratedStreamZip} from './zip-decorator';
 import {getMessage} from "./messages";
 import {LogLevel} from "@salesforce/code-analyzer-engine-api";
-
-const execAsync = promisify(exec);
 
 // To handle the special case where a vulnerable library is found within a zip archive, a RetireJsExecutor can use this
 // marker to update the file field to look like <zip_file>::[ZIPPED_FILE]::<embedded_file> which the engine handles.
@@ -64,25 +61,22 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
 
     private async scanFolder(folder: string): Promise<Finding[]> {
         const tempOutputFile: string = (await utils.createTempDir()) + path.sep + 'output.json';
-        const command: string = RETIRE_COMMAND +
-            ` --path "${folder}"` +
-            ` --exitwith 13` +
-            ` --outputformat jsonsimple` +
-            ` --outputpath "${tempOutputFile}"` +
-            ` --jsrepo "${RETIRE_JS_VULN_REPO_FILE}"` +
-            ` --ext "${JS_EXTENSIONS.map(ext => ext.replace('.','')).join(',')}"`;
+        const commandArgs: string[] = [
+            '--path', folder,
+            '--exitwith', '13',
+            '--outputformat', 'jsonsimple',
+            '--outputpath', tempOutputFile,
+            '--jsrepo', RETIRE_JS_VULN_REPO_FILE,
+            '--ext', JS_EXTENSIONS.map(ext => ext.replace('.','')).join(',')
+        ]
 
-        this.emitLogEvent(LogLevel.Fine, `Executing command: ${command}`);
+        const cmdStr: string = `${RETIRE_COMMAND} ${commandArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(',')}`;
+        this.emitLogEvent(LogLevel.Fine, `Executing command: ${cmdStr}`);
         try {
-            await execAsync(command, {encoding: 'utf-8'});
-        } catch (err) {
-            const execError: ExecException = err as ExecException;
-            /* istanbul ignore next */
-            if (execError.code != 13) {
-                throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', command, execError.message) +
-                    `\n\n[stdout]:\n${execError.stdout}\n[stderror]:\n${execError.stderr}`,
-                    {cause: err});
-            }
+            await this.runRetireCmdWithArgs(RETIRE_COMMAND, commandArgs);
+        } catch (err) /* istanbul ignore next */ {
+            const errMsg: string = err instanceof Error ? (err as Error).message : `${err}`;
+            throw new Error(getMessage('UnexpectedErrorWhenExecutingCommand', cmdStr, errMsg));
         }
 
         this.emitLogEvent(LogLevel.Fine, `Parsing output file: ${tempOutputFile}`);
@@ -94,6 +88,28 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
             throw new Error(getMessage('UnexpectedErrorWhenProcessingOutputFile', tempOutputFile, (err as Error).message),
                 {cause: err});
         }
+    }
+
+    private async runRetireCmdWithArgs(cmd:string, argArray: string[]): Promise<void> {
+        return new Promise<void>((res, rej) => {
+            const childProcess: ChildProcessWithoutNullStreams = spawn(cmd, argArray,
+                { shell: process.platform.startsWith('win') }); // Use shell on window's machines
+            let output: string = '';
+            /* istanbul ignore next */
+            const processOutput = (data: string) => output += data;
+            childProcess.stdout.on('data', processOutput);
+            childProcess.stderr.on('data', processOutput);
+            /* istanbul ignore next */
+            childProcess.on('error', err => rej(err.message));
+            childProcess.on('exit', (code: number) => {
+                /* istanbul ignore else */
+                if (code === 0 || code === 13) { // 0: success with 0 found,  13: success with >0 found
+                    res();
+                } else {
+                    rej(output);
+                }
+            });
+        });
     }
 }
 
