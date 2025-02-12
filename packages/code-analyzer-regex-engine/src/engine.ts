@@ -23,6 +23,12 @@ const TEXT_BASED_FILE_EXTS = new Set<string>(
     ]
 )
 
+/**
+ * The number of files that can be processed by the Regex engine simultaneously.
+ * Batching the files allows us to control how many are open at once, and avoid hitting system limits over it.
+ */
+const FILE_BATCH_SIZE = 1000;
+
 export class RegexEngine extends Engine {
     static readonly NAME = "regex";
     private readonly regexRules: RegexRules;
@@ -93,9 +99,19 @@ export class RegexEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const textFiles: string[] = await this.getTextFiles(runOptions.workspace);
-        const ruleRunPromises: Promise<Violation[]>[] = textFiles.map(file => this.runRulesForFile(file, ruleNames));
+        let batchMultiplier = 0;
+        const violations: Violation[] = [];
+        while (batchMultiplier * FILE_BATCH_SIZE < textFiles.length) {
+            // Turns out there's a system-level limit on how many files can be open at once. In order to avoid hitting
+            // this limit while still reaping the benefits of `Promise.all()`, we'll process the files in batches.
+            const textFileBatch = textFiles.slice(batchMultiplier * FILE_BATCH_SIZE, (batchMultiplier + 1) * FILE_BATCH_SIZE);
+            const ruleRunPromises: Promise<Violation[]>[] = textFileBatch.map(file => this.runRulesForFile(file, ruleNames));
+            const newViolations = (await Promise.all(ruleRunPromises)).flat();
+            violations.push(...newViolations);
+            batchMultiplier++;
+        }
         return {
-            violations: (await Promise.all(ruleRunPromises)).flat()
+            violations
         };
     }
 
