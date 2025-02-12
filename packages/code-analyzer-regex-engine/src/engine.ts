@@ -93,9 +93,20 @@ export class RegexEngine extends Engine {
 
     async runRules(ruleNames: string[], runOptions: RunOptions): Promise<EngineRunResults> {
         const textFiles: string[] = await this.getTextFiles(runOptions.workspace);
-        const ruleRunPromises: Promise<Violation[]>[] = textFiles.map(file => this.runRulesForFile(file, ruleNames));
+        let batchMultiplier = 0;
+        let violations: Violation[] = [];
+        while (batchMultiplier * 1000 < textFiles.length) {
+            // Turns out there's a system-level limit on how many files can be open at once. In order to avoid hitting
+            // this limit while still reaping the benefits of `Promise.all()`, we'll process the files in batches of
+            // 1000.
+            const textFileBatch = textFiles.slice(batchMultiplier * 1000, (batchMultiplier + 1) * 1000);
+            const ruleRunPromises: Promise<Violation[]>[] = textFileBatch.map(file => this.runRulesForFile(file, ruleNames));
+            const newViolations = (await Promise.all(ruleRunPromises)).flat();
+            violations = [...violations, ...newViolations];
+            batchMultiplier++;
+        }
         return {
-            violations: (await Promise.all(ruleRunPromises)).flat()
+            violations
         };
     }
 
