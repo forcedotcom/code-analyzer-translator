@@ -383,7 +383,7 @@
       "Performance",
       "Apex"
     ],
-    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informatio... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
+    "description": "This rule finds `DescribeSObjectResult`s which could have been loaded eagerly via `SObjectType.getDescribe()`. When using `SObjectType.getDescribe()` or `Schema.describeSObjects()` without supplying a `SObjectDescribeOptions`, implicitly it will be using `SObjectDescribeOptions.DEFAULT` and then all child relationships will be loaded eagerly regardless whether this informati... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_performance.html#eagerlyloadeddescribesobjectresult"
     ]
@@ -797,7 +797,7 @@
       "Design",
       "Apex"
     ],
-    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well, as long as the class itself is not entirely unused. A class is considered used, if it contains at least one other method/variable declaration that is used, as shown in the test project file Foo.cls. ApexLink is used to make this possible and... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
+    "description": "Avoid having unused methods since they make understanding and maintaining code harder. This rule finds not only unused private methods, but public methods as well, as long as the class itself is not entirely unused. A class is considered used, if it contains at least one other method/variable declaration that is used, as shown in the test project file Foo.cls. ApexLink is used to make this possible... Learn more: https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod",
     "resourceUrls": [
       "https://docs.pmd-code.org/pmd-doc-{{PMD_VERSION}}/pmd_rules_apex_design.html#unusedmethod"
     ]

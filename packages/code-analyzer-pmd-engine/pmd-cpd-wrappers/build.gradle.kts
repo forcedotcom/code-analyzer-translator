@@ -31,18 +31,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-// TEMPORARY - FOR SOME REASON WHEN UPGRADING TO PMD 7.9.0, THE TRANSITIVE DEPENDENCY:
-//    io.github.apex-dev-tools:apex-parser
-// IS GETTING PULLED IN AS 4.3.1 INSTEAD OF THE LISTED 4.3.0 AND IT SEEMS TO HAVE A BUG: A MISSING DEPENDENCY LISTED.
-// SO WE SHOULD FORCE 4.3.0 TO GET PULLED IN INSTEAD UNTIL THIS IS FIXED.
-// See https://github.com/pmd/pmd/issues/5456
-// TODO: As soon as the pmd folks fix this ^... we should remove this workaround:
-configurations.all {
-    resolutionStrategy {
-        force("io.github.apex-dev-tools:apex-parser:4.3.0")
-    }
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
