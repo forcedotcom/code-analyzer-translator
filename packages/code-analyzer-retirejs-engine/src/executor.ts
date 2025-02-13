@@ -92,8 +92,10 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
 
     private async runRetireCmdWithArgs(cmd:string, argArray: string[]): Promise<void> {
         return new Promise<void>((res, rej) => {
-            const childProcess: ChildProcessWithoutNullStreams = spawn(cmd, argArray,
-                { shell: process.platform.startsWith('win') }); // Use shell on window's machines
+            const childProcess: ChildProcessWithoutNullStreams = spawn(['.', path.basename(cmd)].join(path.sep), argArray, {
+                shell: process.platform.startsWith('win'), // Use shell on window's machines
+                cwd: path.dirname(cmd)
+            });
             let output: string = '';
             /* istanbul ignore next */
             const processOutput = (data: string) => output += data;
