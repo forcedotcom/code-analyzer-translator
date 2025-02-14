@@ -46,7 +46,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         // Also check that we have fine logs with the argument list and the duration in milliseconds
         const fineLogEvents: LogEvent[] = logEvents.filter(e => e.logLevel === LogLevel.Fine);
         expect(fineLogEvents.length).toBeGreaterThanOrEqual(3);
-        expect(fineLogEvents[0].message).toContain('Calling JAVA command with');
+        expect(fineLogEvents[0].message).toContain('Calling command:');
         expect(fineLogEvents[1].message).toContain('ARGUMENTS');
         expect(fineLogEvents[2].message).toContain('milliseconds');
 

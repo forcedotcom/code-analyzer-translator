@@ -47,7 +47,7 @@ export type CpdProcessingError = {
 export class CpdWrapperInvoker {
     private readonly javaCommandExecutor: JavaCommandExecutor;
     private temporaryWorkingDir?: string;
-    private emitLogEvent: (logLevel: LogLevel, message: string) => void;
+    private readonly emitLogEvent: (logLevel: LogLevel, message: string) => void;
 
     constructor(javaCommandExecutor: JavaCommandExecutor, emitLogEvent: (logLevel: LogLevel, message: string) => void) {
         this.javaCommandExecutor = javaCommandExecutor;
@@ -68,7 +68,6 @@ export class CpdWrapperInvoker {
         const javaClassPaths: string[] = [
             path.join(CPD_WRAPPER_LIB_FOLDER, '*'),
         ];
-        this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg: string) => {
             if (stdOutMsg.startsWith(STDOUT_PROGRESS_MARKER)) {
                 const cpdWrapperProgress: number = parseFloat(stdOutMsg.slice(STDOUT_PROGRESS_MARKER.length));

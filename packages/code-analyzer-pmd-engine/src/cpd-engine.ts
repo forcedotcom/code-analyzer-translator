@@ -37,9 +37,8 @@ export class CpdEngine extends Engine {
 
     constructor(config: CpdEngineConfig) {
         super();
-        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
-        this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor,
-            (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command, this.emitLogEvent.bind(this));
+        this.cpdWrapperInvoker = new CpdWrapperInvoker(javaCommandExecutor, this.emitLogEvent.bind(this));
         this.config = config;
         this.extensionToLanguageMap = toExtensionsToLanguageMap(config.file_extensions);
     }

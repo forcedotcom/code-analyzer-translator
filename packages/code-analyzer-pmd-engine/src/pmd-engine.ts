@@ -35,10 +35,9 @@ export class PmdEngine extends Engine {
 
     constructor(config: PmdEngineConfig) {
         super();
-        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command);
+        const javaCommandExecutor: JavaCommandExecutor = new JavaCommandExecutor(config.java_command, this.emitLogEvent.bind(this));
         const userProvidedJavaClasspathEntries: string[] = config.java_classpath_entries;
-        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries,
-            (logLevel: LogLevel, message: string) => this.emitLogEvent(logLevel, message));
+        this.pmdWrapperInvoker = new PmdWrapperInvoker(javaCommandExecutor, userProvidedJavaClasspathEntries, this.emitLogEvent.bind(this));
         this.config = config;
         this.extensionToLanguageMap = toExtensionsToLanguageMap(config.file_extensions);
     }
