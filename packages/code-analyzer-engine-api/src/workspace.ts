@@ -129,14 +129,12 @@ export class Workspace {
      */
     private removeRedundantPaths(absolutePaths: string[]): string[] {
         const seenPathsSet: Set<string> = new Set();
-        // `abcd` is alphabetically before `abcd/efgh`, so sorting the paths alphabetically will make sure that
-        // parent folders are ahead of the files/folders they contain.
-        const sortedPaths: string[] = [...absolutePaths].sort();
+        const pathsSortedByLength: string[] = [...absolutePaths].sort((a, b) => a.length - b.length);
         // This won't necessarily store the exact paths, but it'll store something that's unique to each path.
         // And storing them as a Set means that comparison checks are O(1) instead of O(n).
         const nonRedundantPathKeys: Set<string> = new Set();
         const nonRedundantPaths: string[] = [];
-        for (const currentPath of sortedPaths) {
+        for (const currentPath of pathsSortedByLength) {
             // All of our comparisons should be done against lowercase-only strings, to prevent casing shenanigans.
             const lowerCaseCurrentPath: string = currentPath.toLowerCase();
             // If we've already seen this path, then we've already decided whether to keep or discard it, so we can
