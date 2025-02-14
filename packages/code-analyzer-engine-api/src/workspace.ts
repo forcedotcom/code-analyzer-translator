@@ -128,17 +128,38 @@ export class Workspace {
      *    Also, if we find duplicate entries, we remove those as well.
      */
     private removeRedundantPaths(absolutePaths: string[]): string[] {
+        const seenPathsSet: Set<string> = new Set();
         const pathsSortedByLength: string[] = [...absolutePaths].sort((a, b) => a.length - b.length);
-        const filteredPaths: string[] = [];
+        // This won't necessarily store the exact paths, but it'll store something that's unique to each path.
+        // And storing them as a Set means that comparison checks are O(1) instead of O(n).
+        const nonRedundantPathKeys: Set<string> = new Set();
+        const nonRedundantPaths: string[] = [];
         for (const currentPath of pathsSortedByLength) {
-            const isAlreadyContained = filteredPaths.some(existingPath =>
-                currentPath.startsWith(existingPath + path.sep) || existingPath === currentPath
-            );
-            if (!isAlreadyContained || this.isExcludeCandidate(currentPath)) {
-                filteredPaths.push(currentPath);
+            // All of our comparisons should be done against lowercase-only strings, to prevent casing shenanigans.
+            const lowerCaseCurrentPath: string = currentPath.toLowerCase();
+            // If we've already seen this path, then we've already decided whether to keep or discard it, so we can
+            // just skip it.
+            if (seenPathsSet.has(lowerCaseCurrentPath)) {
+                continue;
+            }
+            // Mark the path as one we've seen.
+            seenPathsSet.add(lowerCaseCurrentPath);
+            // Split the path into its segments.
+            const pathSegments: string[] = lowerCaseCurrentPath.split(path.sep);
+            let foundMatchingPathKey: boolean = false;
+            for (let i = 1; i < pathSegments.length; i++) {
+                const partialPathKey: string = pathSegments.slice(0, i).join(path.sep);
+                if (nonRedundantPathKeys.has(partialPathKey)) {
+                    foundMatchingPathKey = true;
+                    break;
+                }
+            }
+            if (!foundMatchingPathKey || this.isExcludeCandidate(currentPath)) {
+                nonRedundantPaths.push(currentPath);
+                nonRedundantPathKeys.add(lowerCaseCurrentPath);
             }
         }
-        return filteredPaths.sort(); // sort alphabetically
+        return nonRedundantPaths.sort();
     }
 }
 
