@@ -55,7 +55,7 @@ export class PmdWrapperInvoker {
     private readonly javaCommandExecutor: JavaCommandExecutor;
     private readonly userProvidedJavaClasspathEntries: string[];
     private temporaryWorkingDir?: string;
-    private emitLogEvent: (logLevel: LogLevel, message: string) => void;
+    private readonly emitLogEvent: (logLevel: LogLevel, message: string) => void;
 
     constructor(javaCommandExecutor: JavaCommandExecutor, userProvidedJavaClasspathEntries: string[], emitLogEvent: (logLevel: LogLevel, message: string) => void) {
         this.javaCommandExecutor = javaCommandExecutor;
@@ -75,7 +75,6 @@ export class PmdWrapperInvoker {
             path.join(PMD_WRAPPER_LIB_FOLDER, '*'),
             ... this.userProvidedJavaClasspathEntries.map(toJavaClasspathEntry)
         ];
-        this.emitLogEvent(LogLevel.Fine, `Calling JAVA command with class path containing ${JSON.stringify(javaClassPaths)} and arguments: ${JSON.stringify(javaCmdArgs)}`);
         await this.javaCommandExecutor.exec(javaCmdArgs, javaClassPaths, (stdOutMsg) => {
             if (stdOutMsg.startsWith(STDOUT_ERROR_MARKER)) {
                 const errorMessage: string = stdOutMsg.slice(STDOUT_ERROR_MARKER.length).replaceAll('{NEWLINE}','\n');

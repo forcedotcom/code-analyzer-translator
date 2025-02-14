@@ -3,7 +3,7 @@ import {promisify} from "node:util";
 import {ChildProcessWithoutNullStreams, spawn} from "node:child_process";
 import {getMessage} from "./messages";
 import path from "node:path";
-import {Workspace} from "@salesforce/code-analyzer-engine-api";
+import {LogLevel, Workspace} from "@salesforce/code-analyzer-engine-api";
 import {Language} from "./constants";
 
 tmp.setGracefulCleanup();
@@ -22,9 +22,11 @@ const NO_OP = () => {};
 
 export class JavaCommandExecutor {
     private readonly javaCommand: string;
+    private readonly emitLogEvent: (logLevel: LogLevel, message: string) => void;
 
-    constructor(javaCommand: string = 'java') {
+    constructor(javaCommand: string = 'java', emitLogEvent: (logLevel: LogLevel, message: string) => void = () => {}) {
         this.javaCommand = javaCommand;
+        this.emitLogEvent = emitLogEvent;
     }
 
     async exec(javaCmdArgs: string[], javaClassPaths: string[] = [], processStdOut: ProcessStdOutFcn = NO_OP): Promise<void> {
@@ -32,7 +34,11 @@ export class JavaCommandExecutor {
             const stderrMessages: string[] = [];
             const allJavaArgs: string[] = javaClassPaths.length == 0 ? javaCmdArgs :
                 ['-cp', javaClassPaths.join(path.delimiter), ... javaCmdArgs];
-            const javaProcess: ChildProcessWithoutNullStreams = spawn('java', allJavaArgs);
+
+            this.emitLogEvent(LogLevel.Fine, `Calling command: ${this.javaCommand} ` +
+                allJavaArgs.map(arg => arg.startsWith('-') ? arg : `"${arg}"`).join(' '));
+
+            const javaProcess: ChildProcessWithoutNullStreams = spawn(this.javaCommand, allJavaArgs);
 
             javaProcess.stdout.on('data', (data: Buffer) => {
                 const msg: string = data.toString().trim();
