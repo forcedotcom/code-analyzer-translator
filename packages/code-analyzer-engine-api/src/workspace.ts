@@ -156,7 +156,7 @@ export class Workspace {
             }
             if (!foundMatchingPathKey || this.isExcludeCandidate(currentPath)) {
                 nonRedundantPaths.push(currentPath);
-                nonRedundantPathKeys.add(pathSegments.join(path.sep));
+                nonRedundantPathKeys.add(lowerCaseCurrentPath);
             }
         }
         return nonRedundantPaths.sort();
