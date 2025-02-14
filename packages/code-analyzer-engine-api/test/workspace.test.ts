@@ -19,9 +19,10 @@ describe('Tests for the Workspace class', () => {
 
     it("When including a parent folder and child paths under that folder, then the redundant children are removed", async () => {
         const workspace: Workspace = new Workspace([
-            path.join(__dirname, 'test-data'),
+            path.join(__dirname, 'tEst-data'),
+            path.join(__dirname, 'test-dAta'),
             __dirname,
-            path.join(__dirname, 'run.test.ts')
+            path.join(__dirname, 'run.teSt.tS')
         ]);
         expect(workspace.getFilesAndFolders()).toEqual([__dirname]);
     });
