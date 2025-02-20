@@ -70,7 +70,8 @@ export class SimpleRetireJsExecutor implements RetireJsExecutor {
             '--ext', JS_EXTENSIONS.map(ext => ext.replace('.','')).join(',')
         ]
 
-        const cmdStr: string = `${RETIRE_COMMAND} ${commandArgs.map(a => a.includes(' ') ? `"${a}"` : a).join(',')}`;
+        const cmdStr: string = `${RETIRE_COMMAND} ${commandArgs.map(a => a.includes(' ') ? 
+            /* istanbul ignore next */ `"${a}"` : a).join(',')}`;
         this.emitLogEvent(LogLevel.Fine, `Executing command: ${cmdStr}`);
         try {
             await this.runRetireCmdWithArgs(RETIRE_COMMAND, commandArgs);

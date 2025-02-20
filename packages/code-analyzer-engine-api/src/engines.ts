@@ -8,8 +8,21 @@ import {Workspace} from "./workspace";
  * Options available to the {@link Engine.describeRules} method
  */
 export type DescribeOptions = {
-    // The workspace may or may not be available. If available then it can be used to give a more accurate list
-    // of rules back to the user if the rules are dependent upon what files are in the workspace.
+    /**
+     * The absolute path where additional log files should be stored by engines when describing rules.
+     *     Note that engines should use the emitLogEvent method as a primary means of logging into the main Code
+     *     Analyzer log file, and should only use this log folder if additional log files need to be created. If files
+     *     are written to this folder, then we recommend that engines specify that the file was created by logging its
+     *     full path into the main log with the emitLogEvent method.
+     */
+    logFolder: string
+
+    /**
+     * The workspace may or may not be available. If available, then engines should use this workspace object to give a
+     * more accurate list of which of the engine's rules are relevant to the files in the workspace. That is
+     * if there are rules for this engine that are simply not applicable to the files available, then the rule
+     * descriptions for those rules should not be returned in the output of the {@link Engine.describeRules} method.
+     */
     workspace?: Workspace
 }
 
@@ -18,14 +31,23 @@ export type DescribeOptions = {
  */
 export type RunOptions = {
     /**
-     * The workspace is always present when {@link Engine.runRules} is called, and it provides the files that the rules
-     * should run against.
+     * The absolute path where additional log files should be stored by engines when running rules.
+     *     Note that engines should use the emitLogEvent method as a primary means of logging into the main Code
+     *     Analyzer log file, and should only use this log folder if additional log files need to be created. If files
+     *     are written to this folder, then we recommend that engines specify that the file was created by logging its
+     *     full path into the main log with the emitLogEvent method.
+     */
+    logFolder: string
+
+    /**
+     * The workspace object specifying the files that the engine's rules should run against.
      */
     workspace: Workspace
 
     /**
      * If the implementing engine has path based rules, then the engine can decide to reduce the number of paths to
-     * analyze if the user has provided a list of path start points here.
+     * analyze if the user has provided a list of path start points here. Note that users may not always supply this
+     * option and so engines that want to leverage it must use it conditionally based on whether it is defined.
      */
     pathStartPoints?: PathPoint[]
 }

@@ -1,9 +1,11 @@
 import path from 'node:path';
 import {
+    DescribeOptions,
     DescribeRulesProgressEvent,
     EngineRunResults,
     EventType,
     RuleDescription,
+    RunOptions,
     RunRulesProgressEvent,
     SeverityLevel,
     Violation,
@@ -12,6 +14,7 @@ import {
 import {FlowTestEngine} from "../src/engine";
 import {RunTimeFlowTestCommandWrapper} from "../src/python/FlowTestCommandWrapper";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
+import os from "node:os";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -43,14 +46,15 @@ describe('Tests for the FlowTestEngine', () => {
             engine.onEvent(EventType.RunRulesProgressEvent, (e: RunRulesProgressEvent) => runProgressEvents.push(e));
 
             // Part 1: Describing production rules.
-            const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
+            const ruleDescriptors: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
             // No need to do in-depth examination of the rules, since other tests already do that. Just make sure we got
             // the right number of rules.
             expect(ruleDescriptors).toHaveLength(2);
             expect(describeProgressEvents.map(e => e.percentComplete)).toEqual([0, 75, 100]);
 
             // Part 2: Running production rules.
-            const results: EngineRunResults = await engine.runRules(ruleDescriptors.map(r => r.name), {workspace});
+            const results: EngineRunResults = await engine.runRules(ruleDescriptors.map(r => r.name),
+                createRunOptions(workspace));
             // No need to do in-depth examination of the results, since other tests already do that. Just make sure we
             // got the right number of violations.
             expect(results.violations).toHaveLength(7);
@@ -64,7 +68,7 @@ describe('Tests for the FlowTestEngine', () => {
                 it('Consolidates well-formed FlowTest rule descriptors into Code Analyzer rule descriptors', async () => {
                     const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
-                    const ruleDescriptors: RuleDescription[] = await engine.describeRules({});
+                    const ruleDescriptors: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
                     expect(ruleDescriptors).toHaveLength(2);
                     expect(ruleDescriptors[0]).toEqual({
@@ -102,7 +106,7 @@ describe('Tests for the FlowTestEngine', () => {
                 ])('When workspace $desc, rules are returned', async ({workspace}) => {
                     const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
-                    const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
+                    const ruleDescriptors: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
                     expect(ruleDescriptors).toHaveLength(2);
                 });
@@ -119,7 +123,7 @@ describe('Tests for the FlowTestEngine', () => {
                 ])('When workspace $desc, no rules are returned', async ({workspace}) => {
                     const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
-                    const ruleDescriptors: RuleDescription[] = await engine.describeRules({workspace});
+                    const ruleDescriptors: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
                     expect(ruleDescriptors).toHaveLength(0);
                 });
@@ -328,9 +332,8 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithSharing',
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])));
 
                 expect(engineResults.violations).toHaveLength(7);
                 expect(engineResults.violations).toContainEqual(expectedExample1Violation1);
@@ -346,9 +349,8 @@ describe('Tests for the FlowTestEngine', () => {
                 const engine: FlowTestEngine = new FlowTestEngine(flowtestCommandWrapper);
 
                 const selectedRuleNames: string[] = ['PreventPassingUserDataIntoElementWithSharing'];
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_MULTIPLE_FLOWS_WORKSPACE])));
 
                 expect(engineResults.violations).toHaveLength(2);
                 expect(engineResults.violations).toContainEqual(expectedExample2Violation1);
@@ -363,9 +365,8 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
 
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_EXAMPLE2])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_EXAMPLE2])));
 
                 expect(engineResults.violations).toHaveLength(2);
                 expect(engineResults.violations).toContainEqual(expectedExample2Violation1);
@@ -377,9 +378,8 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithSharing',
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_NO_FLOWS_WORKSPACE])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_NO_FLOWS_WORKSPACE])));
 
                 expect(engineResults.violations).toHaveLength(0);
             });
@@ -392,9 +392,8 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
 
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_EXAMPLE3])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_EXAMPLE3])));
 
                 expect(engineResults.violations).toHaveLength(0);
             });
@@ -411,9 +410,8 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
 
-                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: new Workspace([PATH_TO_ONE_FLOW_NO_VIOLATIONS_WORKSPACE])
-                });
+                const engineResults: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(
+                    new Workspace([PATH_TO_ONE_FLOW_NO_VIOLATIONS_WORKSPACE])));
 
                 expect(engineResults.violations).toHaveLength(0);
             });
@@ -429,9 +427,7 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
 
-                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: workspace
-                });
+                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(workspace));
                 expect(engineResults1.violations).toHaveLength(0);
             });
 
@@ -446,9 +442,7 @@ describe('Tests for the FlowTestEngine', () => {
                     'PreventPassingUserDataIntoElementWithoutSharing'
                 ];
 
-                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, {
-                    workspace: workspace
-                });
+                const engineResults1: EngineRunResults = await engine.runRules(selectedRuleNames, createRunOptions(workspace));
                 expect(engineResults1.violations).toHaveLength(0);
             });
 
@@ -467,3 +461,17 @@ describe('Tests for the FlowTestEngine', () => {
         });
     });
 });
+
+function createDescribeOptions(workspace?: Workspace): DescribeOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}
+
+function createRunOptions(workspace: Workspace): RunOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}

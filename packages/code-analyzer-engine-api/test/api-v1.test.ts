@@ -14,6 +14,7 @@ import {
     RunRulesProgressEvent,
     Workspace
 } from "../src";
+import * as os from "node:os";
 
 describe('Tests for v1', () => {
     it('EnginePluginV1 getApiVersion should return 1.0', () => {
@@ -49,8 +50,8 @@ describe('Tests for v1', () => {
         });
 
         const workspace: Workspace = new Workspace([]);
-        await dummyEngine.describeRules({workspace: workspace});
-        await dummyEngine.runRules(["dummy"], {workspace: workspace});
+        await dummyEngine.describeRules({workspace: workspace, logFolder: os.tmpdir()});
+        await dummyEngine.runRules(["dummy"], {workspace: workspace, logFolder: os.tmpdir()});
 
         expect(logEvents).toHaveLength(2);
         expect(logEvents[0]).toEqual({

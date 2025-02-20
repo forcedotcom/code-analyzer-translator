@@ -2,15 +2,14 @@ import {
     CodeLocation,
     DescribeOptions,
     Engine,
-    EnginePluginV1,
     EngineRunResults,
+    PathPoint,
     RuleDescription,
     RunOptions,
     SeverityLevel,
     Violation,
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
-import {RetireJsEnginePlugin} from "../src";
 import {RetireJsEngine} from "../src/engine";
 import {RetireJsExecutor} from "../src/executor";
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
@@ -18,6 +17,7 @@ import path from "node:path";
 import fs from "node:fs";
 import {Finding} from "retire/lib/types";
 import {getMessage} from "../src/messages";
+import os from "node:os";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -80,8 +80,8 @@ const EXPECTED_VIOLATION_4: Violation = {
 }
 
 const DUMMY_WORKSPACE: Workspace = new Workspace([path.resolve(__dirname,'test-data','scenarios','1_hasJsLibraryWithVulnerability')]);
-const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = {workspace: DUMMY_WORKSPACE}
-const DUMMY_RUN_OPTIONS: RunOptions = {workspace: DUMMY_WORKSPACE}
+const DUMMY_DESCRIBE_OPTIONS: DescribeOptions = createDescribeOptions(DUMMY_WORKSPACE);
+const DUMMY_RUN_OPTIONS: RunOptions = createRunOptions(DUMMY_WORKSPACE);
 
 describe('Tests for the RetireJsEngine', () => {
     let engine: Engine;
@@ -141,10 +141,8 @@ describe('Tests for the RetireJsEngine', () => {
         engine = new RetireJsEngine(spyExecutor);
 
         const workspace: Workspace = new Workspace([path.resolve('build-tools'), path.resolve('test/test-helpers.ts')]);
-        const runOptions: RunOptions = {
-            workspace: workspace,
-            pathStartPoints: [{file: 'test/test-helpers.ts'}] // Sanity check that this should be ignored by this engine
-        };
+        const pathStartPoints: PathPoint[] = [{file: 'test/test-helpers.ts'}]; // Sanity check that this should be ignored by this engine
+        const runOptions: RunOptions = createRunOptions(workspace, pathStartPoints);
         const results: EngineRunResults = await engine.runRules(allRuleNames, runOptions);
 
         expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: [
@@ -190,7 +188,7 @@ describe('Tests for the RetireJsEngine', () => {
         engine = new RetireJsEngine(spyExecutor);
         const workspace: Workspace = new Workspace([
             path.resolve('test','test-data','scenarios','8_hasVulnerabilitiesUnderFoldersToSkip')]);
-        await engine.runRules(allRuleNames, {workspace: workspace});
+        await engine.runRules(allRuleNames, createRunOptions(workspace));
         expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
     });
 
@@ -199,7 +197,7 @@ describe('Tests for the RetireJsEngine', () => {
         engine = new RetireJsEngine(spyExecutor);
         const workspace: Workspace = new Workspace([
             path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')]);
-        await engine.runRules(allRuleNames, {workspace: workspace});
+        await engine.runRules(allRuleNames, createRunOptions(workspace));
         expect(spyExecutor.executeCallHistory).toEqual([{targetFiles: []}]);
     });
 
@@ -207,7 +205,7 @@ describe('Tests for the RetireJsEngine', () => {
         const workspace: Workspace = new Workspace([
             path.resolve('test','test-data','scenarios','9_hasVulnerabilityInNonTargetedTextFile')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         expect(ruleDescriptions).toHaveLength(0);
     });
 });
@@ -225,5 +223,21 @@ class StubRetireJsExecutor implements RetireJsExecutor {
     async execute(_targetFiles: string[]): Promise<Finding[]> {
         const jsonStr: string = fs.readFileSync(path.resolve('test','test-data','sampleRetireJsExecutorFindings.json'),'utf-8');
         return JSON.parse(jsonStr) as Finding[];
+    }
+}
+
+
+function createDescribeOptions(workspace?: Workspace): DescribeOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}
+
+function createRunOptions(workspace: Workspace, pathStartPoints?: PathPoint[]): RunOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace,
+        pathStartPoints: pathStartPoints
     }
 }
