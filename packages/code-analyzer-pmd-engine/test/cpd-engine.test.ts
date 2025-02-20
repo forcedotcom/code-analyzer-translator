@@ -1,9 +1,11 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
+    DescribeOptions,
     DescribeRulesProgressEvent,
     EngineRunResults,
     EventType,
     RuleDescription,
+    RunOptions,
     RunRulesProgressEvent,
     Violation,
     Workspace
@@ -13,6 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {DEFAULT_CPD_ENGINE_CONFIG} from "../src/config";
 import {Language} from "../src/constants";
+import os from "node:os";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -31,7 +34,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const progressEvents: DescribeRulesProgressEvent[] = [];
         engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
 
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allDefaultLanguages.goldfile.json');
 
@@ -44,7 +47,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
@@ -60,7 +63,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'dummy.txt')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
@@ -71,7 +74,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             rule_languages: []
         });
 
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         expect(ruleDescriptions).toHaveLength(0);
     });
@@ -82,7 +85,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             rule_languages: [Language.APEX]
         });
 
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
@@ -97,7 +100,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'someReplicatedFileWithOver100Tokens.html')
         ]);
 
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndHtmlOnly.goldfile.json');
     });
@@ -113,12 +116,12 @@ async function expectRulesToMatchGoldFile(actualRuleDescriptions: RuleDescriptio
 describe('Tests for the runRules method of CpdEngine', () => {
     it('When zero rules names are provided then return zero violations', async () => {
         const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
-        expect(await engine.runRules([], {workspace: new Workspace([__dirname])})).toEqual({violations: []});
+        expect(await engine.runRules([], createRunOptions(new Workspace([__dirname])))).toEqual({violations: []});
     });
 
     it('When rule name is not associated with a language that CPD knows about, then throw error', async () => {
         const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
-        await expect(engine.runRules(['DetectCopyPasteForOops'], {workspace: new Workspace([__dirname])})).rejects.toThrow(
+        await expect(engine.runRules(['DetectCopyPasteForOops'], createRunOptions(new Workspace([__dirname])))).rejects.toThrow(
             /Unexpected error: The rule 'DetectCopyPasteForOops' does not map to a supported CPD language:.*/);
     });
 
@@ -126,7 +129,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const engine: CpdEngine = new CpdEngine(DEFAULT_CPD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'ApexClass1_ItselfContainsDuplicateBlocksOfMoreThan100Tokens.cls')]);
         const ruleNames: string[] = ['DetectCopyPasteForHtml'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(0);
     });
@@ -138,7 +141,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
             path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace', 'sampleJavascript2_ContainsNearlyAllTheSameTokensAsSampleJavascript1.js') // duplicate blocks are smaller than default 100 tokens
         ]);
         const ruleNames: string[] = ['DetectCopyPasteForJavascript'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(0);
     });
@@ -151,7 +154,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
         const ruleNames: string[] = ['DetectCopyPasteForApex', 'DetectCopyPasteForHtml', 'DetectCopyPasteForJavascript'];
 
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         const expViolation1: Violation = {
             ruleName: "DetectCopyPasteForHtml",
@@ -253,7 +256,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
         const ruleNames: string[] = ['DetectCopyPasteForJavascript'];
 
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         const expViolation1: Violation = {
             ruleName: "DetectCopyPasteForJavascript",
@@ -329,7 +332,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
         const ruleNames: string[] = ['DetectCopyPasteForHtml'];
 
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(0); // Should not pick up the someReplicatedFileWithOver100Tokens.html files
     });
@@ -344,7 +347,7 @@ describe('Tests for the runRules method of CpdEngine', () => {
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'sampleCpdWorkspace')]);
         const ruleNames: string[] = ['DetectCopyPasteForApex'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(1);
         expect(results.violations[0].ruleName).toEqual('DetectCopyPasteForApex');
@@ -360,3 +363,17 @@ describe('Tests for the getEngineVersion method of CpdEngine', () => {
         expect(version).toMatch(/\d+\.\d+\.\d+.*/);
     });
 });
+
+function createDescribeOptions(workspace?: Workspace): DescribeOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}
+
+function createRunOptions(workspace: Workspace): RunOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}

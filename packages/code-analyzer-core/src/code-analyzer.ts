@@ -246,7 +246,7 @@ export class CodeAnalyzer {
         //  up a bunch of RunResults promises and then does a Promise.all on them. Otherwise, the progress events may
         //  override each other.
 
-        const engineRunOptions: engApi.RunOptions = await extractEngineRunOptions(runOptions);
+        const engineRunOptions: engApi.RunOptions = await extractEngineRunOptions(runOptions, this.config.getLogFolder());
         this.emitLogEvent(LogLevel.Debug, getMessage('RunningWithRunOptions', JSON.stringify(engineRunOptions,
             (key, value) => key === "expandedFiles" ? undefined : value))); // omit the expandedFiles since it is very large
 
@@ -277,8 +277,8 @@ export class CodeAnalyzer {
         if (!this.rulesCache.has(cacheKey)) {
             this.engineRuleDiscoveryProgressAggregator.reset(this.getEngineNames());
             const engApiWorkspace: engApi.Workspace | undefined = workspace ? toEngApiWorkspace(workspace) : undefined;
-            const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(
-                engineName => this.getAllRulesFor(engineName, {workspace: engApiWorkspace}));
+            const rulePromises: Promise<RuleImpl[]>[] = this.getEngineNames().map(engineName =>
+                this.getAllRulesFor(engineName, {workspace: engApiWorkspace, logFolder: this.config.getLogFolder()}));
             this.rulesCache.set(cacheKey, (await Promise.all(rulePromises)).flat());
         }
         return this.rulesCache.get(cacheKey)!;
@@ -488,11 +488,12 @@ function validateRuleDescriptions(ruleDescriptions: engApi.RuleDescription[], en
     }
 }
 
-async function extractEngineRunOptions(runOptions: RunOptions): Promise<engApi.RunOptions> {
+async function extractEngineRunOptions(runOptions: RunOptions, logFolder: string): Promise<engApi.RunOptions> {
     if(runOptions.workspace.getFilesAndFolders().length == 0) {
         throw new Error(getMessage('AtLeastOneFileOrFolderMustBeIncluded'));
     }
     const engineRunOptions: engApi.RunOptions = {
+        logFolder: logFolder,
         workspace: toEngApiWorkspace(runOptions.workspace),
     };
     if (runOptions.pathStartPoints && runOptions.pathStartPoints.length > 0) {

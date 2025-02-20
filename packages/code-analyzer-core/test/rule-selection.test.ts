@@ -250,6 +250,7 @@ describe('Tests for selecting rules', () => {
         await codeAnalyzer.selectRules(['all']);
 
         const expectedDescribeOptions: engApi.DescribeOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: undefined
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;
@@ -265,6 +266,7 @@ describe('Tests for selecting rules', () => {
         await codeAnalyzer.selectRules(['all'], selectOptions);
 
         const expectedDescribeOptions: engApi.DescribeOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: new engApi.Workspace([path.resolve('src'), path.resolve('test')], "FixedId")
         };
         const stubEngine1: stubs.StubEngine1 = plugin.getCreatedEngine('stubEngine1') as stubs.StubEngine1;

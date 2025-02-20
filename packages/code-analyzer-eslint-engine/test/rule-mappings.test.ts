@@ -2,11 +2,12 @@ import {RuleDescription} from "@salesforce/code-analyzer-engine-api";
 import {RULE_MAPPINGS} from "../src/rule-mappings";
 import {ESLintEngine} from "../src/engine";
 import {DEFAULT_CONFIG} from "../src/config";
+import * as os from "node:os";
 
 describe('Tests for the rule-mappings', () => {
     it('Test that the list of all bundled rules matches our RULE_MAPPINGS list', async () => {
         const engine: ESLintEngine = new ESLintEngine(DEFAULT_CONFIG);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules({logFolder: os.tmpdir()});
         const actualRuleNames: Set<string> = new Set(ruleDescriptions.map(rd => rd.name));
         const ruleNamesInRuleMappings: Set<string> = new Set(Object.keys(RULE_MAPPINGS));
 

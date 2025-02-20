@@ -164,6 +164,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: new engApi.Workspace([path.resolve('src')], "FixedId")
         };
         expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
@@ -181,6 +182,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: new engApi.Workspace([path.resolve('test')], "FixedId"),
             pathStartPoints: [
                 { file: path.resolve("test", "test-data") },
@@ -202,6 +204,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         });
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: new engApi.Workspace([
                     path.resolve("src", "index.ts"),
                     path.resolve("src", "utils.ts"),
@@ -247,6 +250,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(stubEngine1.runRulesCallHistory).toEqual([{
             ruleNames: expectedStubEngine1RuleNames,
             runOptions: {
+                logFolder: codeAnalyzer.getConfig().getLogFolder(),
                 workspace: new engApi.Workspace(dummyWorkspace.getFilesAndFolders(), dummyWorkspace.getWorkspaceId())
             }
         }]);
@@ -257,6 +261,7 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         await codeAnalyzer.run(selection, sampleRunOptions);
 
         const expectedEngineRunOptions: engApi.RunOptions = {
+            logFolder: codeAnalyzer.getConfig().getLogFolder(),
             workspace: new engApi.Workspace([__dirname], "FixedId")
         };
         expect(stubEngine1.runRulesCallHistory).toHaveLength(1);
@@ -704,6 +709,7 @@ class DummyWorkspace implements Workspace {
 }
 
 function expectEquivalentRunOptions(actual: engApi.RunOptions, expected: engApi.RunOptions): void {
+    expect(actual.logFolder).toEqual(expected.logFolder);
     expectEquivalentWorkspaces(actual.workspace, expected.workspace);
     expect(actual.pathStartPoints).toEqual(expected.pathStartPoints);
 }

@@ -1,13 +1,13 @@
 import {changeWorkingDirectoryToPackageRoot} from "./test-helpers";
 import {
     ConfigObject,
-    ConfigValueExtractor,
+    ConfigValueExtractor, DescribeOptions,
     DescribeRulesProgressEvent,
     EngineRunResults,
     EventType,
     LogEvent,
     LogLevel,
-    RuleDescription,
+    RuleDescription, RunOptions,
     RunRulesProgressEvent,
     SeverityLevel,
     Violation,
@@ -19,6 +19,7 @@ import path from "node:path";
 import {Language, PMD_VERSION} from "../src/constants";
 import {DEFAULT_PMD_ENGINE_CONFIG, PMD_AVAILABLE_LANGUAGES, PmdEngineConfig} from "../src/config";
 import {PmdCpdEnginesPlugin} from "../src";
+import os from "node:os";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -40,7 +41,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const progressEvents: DescribeRulesProgressEvent[] = [];
         engine.onEvent(EventType.DescribeRulesProgressEvent, (e: DescribeRulesProgressEvent) => progressEvents.push(e));
 
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
 
         // Also check that we have fine logs with the argument list and the duration in milliseconds
@@ -54,7 +55,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         expect(progressEvents.map(e => e.percentComplete)).toEqual([5, 14, 77, 86, 95, 100]);
 
         // Also sanity check that calling describeRules a second time gives same results (from cache):
-        expect(await engine.describeRules({})).toEqual(ruleDescriptions);
+        expect(await engine.describeRules(createDescribeOptions())).toEqual(ruleDescriptions);
     });
 
     it('When using defaults with workspace containing only apex code, then only apex rules are returned', async () => {
@@ -62,7 +63,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.cls')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
 
@@ -72,7 +73,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.trigger'),
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.page')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexAndVisualforce.goldfile.json');
     });
 
@@ -82,7 +83,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.trigger'),
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_apexOnly.goldfile.json');
     });
 
@@ -91,7 +92,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.page')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_visualforceOnly.goldfile.json');
     });
 
@@ -100,7 +101,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         expect(ruleDescriptions).toHaveLength(0);
     });
 
@@ -109,7 +110,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             ... DEFAULT_PMD_ENGINE_CONFIG,
             rule_languages: PMD_AVAILABLE_LANGUAGES
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_allLanguages.goldfile.json');
 
         // SANITY CHECK THAT NO RULES IN PMD HAVE A '-' CHARACTER IN ITS NAME SINCE IT IS WHAT WE USE TO MAKE UNIQUE NAMES
@@ -125,7 +126,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             ... DEFAULT_PMD_ENGINE_CONFIG,
             rule_languages: []
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
         expect(ruleDescriptions).toHaveLength(0);
     });
 
@@ -137,7 +138,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.js')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_javascriptOnly.goldfile.json');
     });
 
@@ -150,7 +151,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
                 path.join(TEST_DATA_FOLDER, 'custom rules', 'subfolder', 'somecat4.xml')
             ]
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         const fakeRule7Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule7'); // From somecat3.xml
         expect(fakeRule7Description.severityLevel).toEqual(SeverityLevel.Low);
@@ -177,7 +178,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
                 'sfca/rulesets/examples.xml',
             ]
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         const exampleRule1: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'ExampleJavaBasedRule');
         expect(exampleRule1.description).toEqual('Example Java Based Rule - Detects when a variable is called "foo".');
@@ -201,7 +202,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
                 'category/joshapex/somecat2.xml'
             ]
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         const fakeRule1Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule1'); // From rulesets_apex_rules1.jar
         expect(fakeRule1Description.severityLevel).toEqual(SeverityLevel.Moderate);
@@ -227,7 +228,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
                 'category/joshapex/somecat2.xml'
             ]
         });
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         expectDoesNotContainRuleWithName(ruleDescriptions, 'fakerule1'); // From rulesets_apex_rules1.jar
         expectDoesNotContainRuleWithName(ruleDescriptions, 'fakerule2'); // From rulesets_apex_rules1.jar
@@ -256,7 +257,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const configValueExtractor: ConfigValueExtractor = new ConfigValueExtractor(rawConfig, 'engines.pmd', configRoot);
         const resolvedConfig: ConfigObject = await plugin.createEngineConfig('pmd', configValueExtractor);
         const engine: PmdEngine = new PmdEngine(resolvedConfig as PmdEngineConfig);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions());
 
         const expectedRuleNames: string[] = [
             'fakerule1', 'fakerule2', 'fakerule3', // From rulesets_apex_rules1.jar
@@ -277,7 +278,8 @@ describe('Tests for the describeRules method of PmdEngine', () => {
             ]
         });
         // Note that toThrow always checks for a substring instead of exact match, which is why this works:
-        await expect(engine.describeRules({})).rejects.toThrow('PMD errored when attempting to load a custom ruleset "does/not/exist.xml". ' +
+        await expect(engine.describeRules(createDescribeOptions())).rejects.toThrow(
+            'PMD errored when attempting to load a custom ruleset "does/not/exist.xml". ' +
             'Make sure the resource is a valid ruleset file on disk or on the Java classpath.\n\nPMD Exception:');
     });
 
@@ -292,7 +294,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         const workspace: Workspace = new Workspace([
             path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'WhileLoopsMustUseBraces.txt')
         ]);
-        const ruleDescriptions: RuleDescription[] = await engine.describeRules({workspace: workspace});
+        const ruleDescriptions: RuleDescription[] = await engine.describeRules(createDescribeOptions(workspace));
 
         await expectRulesToMatchGoldFile(ruleDescriptions, 'rules_javascriptOnly.goldfile.json');
     });
@@ -431,7 +433,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
     it('When zero rule names are provided then return zero violations', async () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
-        const results: EngineRunResults = await engine.runRules([], {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules([], createRunOptions(workspace));
         expect(results.violations).toHaveLength(0);
     });
 
@@ -442,7 +444,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.txt')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(0);
 
@@ -457,7 +459,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'dummy.xml')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(0);
     });
@@ -471,7 +473,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
 
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop', 'VfUnescapeEl'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(3);
         expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
@@ -492,7 +494,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['OperationWithLimitsInLoop'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
         expect(results.violations).toHaveLength(1);
         expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
     });
@@ -501,7 +503,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         const engine: PmdEngine = new PmdEngine(DEFAULT_PMD_ENGINE_CONFIG);
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['WhileLoopsMustUseBraces', 'ExcessiveParameterList', 'VfCsrf'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
         expect(results.violations).toHaveLength(0);
     });
 
@@ -512,7 +514,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['ConsistentReturn', 'WhileLoopsMustUseBraces-javascript', 'MissingEncoding' /* sanity check: not relevant to workspace */, 'OperationWithLimitsInLoop'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
         expect(results.violations).toHaveLength(3);
         expect(results.violations).toContainEqual(expectedOperationWithLimitsInLoopViolation);
         expect(results.violations).toContainEqual(expectedConsistentReturnViolation);
@@ -532,7 +534,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace')]);
         const ruleNames: string[] = ['fakerule1', 'fakerule2', 'fakerule7', 'fakerule8'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
         expect(results.violations).toHaveLength(2); // Expecting fakerule1 and fakerule7 (which both have a definition equivalent to the AvoidDebugStatements rule)
         expect(results.violations).toContainEqual(expectedFakeRule1Violation);
         expect(results.violations).toContainEqual(expectedFakeRule7Violation);
@@ -548,7 +550,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         });
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations')]);
         const ruleNames: string[] = ['WhileLoopsMustUseBraces-javascript'];
-        const results: EngineRunResults = await engine.runRules(ruleNames, {workspace: workspace});
+        const results: EngineRunResults = await engine.runRules(ruleNames, createRunOptions(workspace));
 
         expect(results.violations).toHaveLength(1);
         expect(results.violations[0].ruleName).toEqual('WhileLoopsMustUseBraces-javascript');
@@ -568,7 +570,7 @@ describe('Tests for the runRules method of PmdEngine', () => {
         engine.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));
 
         const workspace: Workspace = new Workspace([path.join(TEST_DATA_FOLDER, 'samplePmdWorkspace', 'sampleViolations', 'fakerule10.js')]);
-        await engine.runRules(['fakerule10'], {workspace: workspace});
+        await engine.runRules(['fakerule10'], createRunOptions(workspace));
         const errorLogEvents: LogEvent[] = logEvents.filter(event => event.logLevel === LogLevel.Error);
         expect(errorLogEvents).toHaveLength(1);
         expect(errorLogEvents[0].message).toContain('Message was null');
@@ -604,5 +606,19 @@ function expectNoDuplicateRuleNames(ruleDescriptions: RuleDescription[]): void {
             throw new Error(`The rule name ${ruleDescription.name} appears more than once among the rule descriptions.`);
         }
         seen.add(ruleDescription.name);
+    }
+}
+
+function createDescribeOptions(workspace?: Workspace): DescribeOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
+    }
+}
+
+function createRunOptions(workspace: Workspace): RunOptions {
+    return {
+        logFolder: os.tmpdir(),
+        workspace: workspace
     }
 }
