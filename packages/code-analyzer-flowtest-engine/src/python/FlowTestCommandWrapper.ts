@@ -6,7 +6,7 @@ import path from "node:path";
 import fs from "node:fs";
 
 export interface FlowTestCommandWrapper {
-    runFlowTestRules(flowFilesToScan: string[], completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult>;
+    runFlowTestRules(flowFilesToScan: string[], absLogFilePath: string, completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult>;
 }
 
 export type FlowTestExecutionResult = {
@@ -42,7 +42,8 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         this.pythonCommandExecutor = new PythonCommandExecutor(pythonCommand);
     }
 
-    public async runFlowTestRules(flowFilesToScan: string[], completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {
+    public async runFlowTestRules(flowFilesToScan: string[], absLogFilePath: string,
+                                  completionPercentageHandler: (percentage: number) => void): Promise<FlowTestExecutionResult> {
         const tempDir: string = await createTempDir();
         const flowFilesToScanFile: string = path.join(tempDir, 'flowFilesToScan.txt');
         await fs.promises.writeFile(flowFilesToScanFile, flowFilesToScan.join('\n'), 'utf-8');
@@ -51,11 +52,13 @@ export class RunTimeFlowTestCommandWrapper implements FlowTestCommandWrapper {
         const pythonArgs: string[] = [
             '-m',
             'flowtest',
-            '--no_log',
-            '-j',
-            flowtestResultsFile,
+            '--debug',
+            '--log_file',
+            absLogFilePath,
             '--infile',
-            flowFilesToScanFile
+            flowFilesToScanFile,
+            '--json',
+            flowtestResultsFile
         ];
 
         const processStdout = (stdoutMsg: string) => {

@@ -11,12 +11,9 @@ import {
     Workspace
 } from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from './messages';
-import {
-    FlowNodeDescriptor,
-    FlowTestCommandWrapper,
-    FlowTestExecutionResult
-} from "./python/FlowTestCommandWrapper";
-import {getConsolidatedRuleName, getConsolidatedRuleNames, getConsolidatedRuleByName} from "./hardcoded-catalog";
+import {FlowNodeDescriptor, FlowTestCommandWrapper, FlowTestExecutionResult} from "./python/FlowTestCommandWrapper";
+import {getConsolidatedRuleByName, getConsolidatedRuleName, getConsolidatedRuleNames} from "./hardcoded-catalog";
+import {Clock, formatToDateTimeString, RealClock} from "./utils";
 
 /**
  * An arbitrarily chosen value for how close the engine is to completion before the underlying FlowTest tool is invoked,
@@ -32,11 +29,13 @@ const POST_INVOCATION_RUN_PERCENT = 90;
 export class FlowTestEngine extends Engine {
     public static readonly NAME: string = 'flowtest';
     private readonly commandWrapper: FlowTestCommandWrapper;
+    private readonly clock: Clock;
     private relevantFilesCache: Map<string, string[]> = new Map();
 
-    public constructor(commandWrapper: FlowTestCommandWrapper) {
+    public constructor(commandWrapper: FlowTestCommandWrapper, clock: Clock = new RealClock()) {
         super();
         this.commandWrapper =  commandWrapper;
+        this.clock = clock;
     }
 
     public getName(): string {
@@ -70,11 +69,16 @@ export class FlowTestEngine extends Engine {
             return { violations: [] };
         }
 
+        const dateTimeStr: string = formatToDateTimeString(this.clock.now());
+        const logFile: string = path.join(runOptions.logFolder, `sfca-flowtest-${dateTimeStr}.log`);
+        this.emitLogEvent(LogLevel.Debug, getMessage('WritingFlowtestLogToFile', logFile));
+
         this.emitRunRulesProgressEvent(PRE_INVOCATION_RUN_PERCENT);
         const percentageUpdateHandler = /* istanbul ignore next */ (percentage: number) => {
             this.emitRunRulesProgressEvent(normalizeRelativeCompletionPercentage(percentage));
         }
-        const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(relevantFiles, percentageUpdateHandler);
+        const executionResults: FlowTestExecutionResult = await this.commandWrapper.runFlowTestRules(
+            relevantFiles, logFile, percentageUpdateHandler);
         const convertedResults: EngineRunResults = toEngineRunResults(executionResults, ruleNames);
         this.emitRunRulesProgressEvent(100);
         return convertedResults;
