@@ -43,7 +43,7 @@ def get_flows_in_dir(root_dir: str) -> {str: str}:
     flow_paths = dict()
     for root, dir_names, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.endswith(".flow") or filename.endswith("flow-meta.xml"):
+            if filename.endswith(".flow") or filename.endswith(".flow-meta.xml"):
                 flow_paths[get_label(root, filename)] = os.path.join(root, filename)
 
     return flow_paths
@@ -241,3 +241,15 @@ def resolve_name(all_flow_paths: {(str, str): str}, sub_name: str) -> str | None
         return None
 
     return sub_path
+
+
+def safe_list_add(a_list, b_list) -> list:
+    # this should be in standard library
+    if a_list is None and b_list is None:
+        return None
+    elif a_list is None:
+        return b_list
+    elif b_list is None:
+        return a_list
+    else:
+        return a_list + b_list

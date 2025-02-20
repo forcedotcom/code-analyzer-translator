@@ -11,9 +11,11 @@ from dataclasses import dataclass, field
 from typing import TextIO
 
 import flow_parser.parse as parse
+from flow_parser.parse import Parser
 from public.data_obj import BranchVisitor, CrawlStep
 from public.enums import ConnType
-from public.parse_utils import ET, get_name, get_conn_target_map, is_subflow, is_loop, get_tag
+from public.parse_utils import (ET, get_name, get_conn_target_map,
+                                is_subflow, is_loop, get_tag)
 
 
 @dataclass(frozen=True)
@@ -127,7 +129,7 @@ class Segment(JSONSerializable):
             subflows = [0]
         else:
             subflows = []
-        conn_map = get_conn_target_map(elem)
+        conn_map = get_connector_map(elem, parser=parser)
         optional_values = [x[2] for x in conn_map.values() if x[2] is False]
         is_optional = len(optional_values) == 0
         curr_elem = elem
@@ -142,7 +144,7 @@ class Segment(JSONSerializable):
         index = 0
         while len(conn_map) > 0:
 
-            conn_map = get_conn_target_map(curr_elem)
+            conn_map = get_connector_map(curr_elem, parser=parser)
             curr_name = get_name(curr_elem)
             if curr_name in traversed:
                 # we are looping back in the segment. break here, and
@@ -686,6 +688,26 @@ class Crawler:
             return None
         else:
             return res
+
+
+def get_connector_map(elem: ET.Element,
+                      parser: Parser) -> {ET.Element: (str, ConnType, bool)}:
+    """
+    Wrapper for getting connectors that handles start elements and missing
+    connector targets, which requires a parser. 
+    
+    Args:
+        elem: element to search for connectors
+        parser: parser containing global file data
+
+    Returns:
+        connector map
+
+    """
+    raw = get_conn_target_map(elem)
+
+    # make sure the target elem exists
+    return {x: v for x, v in raw.items() if v[0] in parser.all_names}
 
 
 def dump_cfg(x, fp: TextIO):

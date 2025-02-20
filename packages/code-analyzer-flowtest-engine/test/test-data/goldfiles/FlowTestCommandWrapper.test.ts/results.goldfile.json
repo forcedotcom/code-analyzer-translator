@@ -17,7 +17,7 @@
         "comment" : "Initialization",
         "flow_path" : "__PATH_TO_EXAMPLE1__",
         "line_no" : 124,
-        "source_text" : "<fields xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
+        "source_text" : "<fields>\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
       }, {
         "influenced_var" : "another_case_holder.Subject",
         "influencer_var" : "change_subject_of_case",
@@ -25,7 +25,7 @@
         "comment" : "Variable Assignment",
         "flow_path" : "__PATH_TO_EXAMPLE1__",
         "line_no" : 26,
-        "source_text" : "<assignmentItems xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
+        "source_text" : "<assignmentItems>\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
       }, {
         "influenced_var" : "update_to_new_subject",
         "influencer_var" : "another_case_holder",
@@ -50,7 +50,7 @@
         "comment" : "Initialization",
         "flow_path" : "__PATH_TO_EXAMPLE1__",
         "line_no" : 124,
-        "source_text" : "<fields xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
+        "source_text" : "<fields>\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
       }, {
         "influenced_var" : "another_case_holder.Subject",
         "influencer_var" : "change_subject_of_case",
@@ -58,7 +58,7 @@
         "comment" : "Variable Assignment",
         "flow_path" : "__PATH_TO_EXAMPLE1__",
         "line_no" : 26,
-        "source_text" : "<assignmentItems xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
+        "source_text" : "<assignmentItems>\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
       }, {
         "influenced_var" : "delete_created_case",
         "influencer_var" : "another_case_holder",
@@ -83,7 +83,7 @@
         "comment" : "Initialization",
         "flow_path" : "__PATH_TO_EXAMPLE2__",
         "line_no" : 124,
-        "source_text" : "<fields xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
+        "source_text" : "<fields>\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
       }, {
         "influenced_var" : "another_case_holder.Subject",
         "influencer_var" : "change_subject_of_case",
@@ -91,7 +91,7 @@
         "comment" : "Variable Assignment",
         "flow_path" : "__PATH_TO_EXAMPLE2__",
         "line_no" : 26,
-        "source_text" : "<assignmentItems xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
+        "source_text" : "<assignmentItems>\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
       }, {
         "influenced_var" : "update_to_new_subject",
         "influencer_var" : "another_case_holder",
@@ -116,7 +116,7 @@
         "comment" : "Initialization",
         "flow_path" : "__PATH_TO_EXAMPLE2__",
         "line_no" : 124,
-        "source_text" : "<fields xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
+        "source_text" : "<fields>\n            <name>change_subject_of_case</name>\n            <dataType>String</dataType>\n            <defaultValue>\n                <elementReference>another_case_holder.Subject</elementReference>\n            </defaultValue>\n            <fieldText>change subject of case</fieldText>\n            <fieldType>InputField</fieldType>\n            <isRequired>true</isRequired>\n        </fields>"
       }, {
         "influenced_var" : "another_case_holder.Subject",
         "influencer_var" : "change_subject_of_case",
@@ -124,7 +124,7 @@
         "comment" : "Variable Assignment",
         "flow_path" : "__PATH_TO_EXAMPLE2__",
         "line_no" : 26,
-        "source_text" : "<assignmentItems xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
+        "source_text" : "<assignmentItems>\n            <assignToReference>another_case_holder.Subject</assignToReference>\n            <operator>Assign</operator>\n            <value>\n                <elementReference>change_subject_of_case</elementReference>\n            </value>\n        </assignmentItems>"
       }, {
         "influenced_var" : "delete_created_case",
         "influencer_var" : "another_case_holder",

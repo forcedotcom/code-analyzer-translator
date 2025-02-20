@@ -15,7 +15,6 @@
 """
 from __future__ import annotations
 
-
 import logging
 import re
 import sys
@@ -302,6 +301,46 @@ def get_sinks_from_field_values(elems: ET.Element) -> list[(str, str)]:
 
 
 def get_conn_target_map(elem: ET.Element) -> {ET.Element: (str, ConnType, bool)}:
+    """Get a connector map that also works for all possible start elements
+
+    Args:
+        elem: element to search for connectors
+
+    Returns:
+        connector map (connector elem: name of target, type of connector, is_optional)
+
+        optional connectors are ones that need not be followed, e.g. in a decision.
+        If an element contains only optional connectors, then it may be a terminal element
+    """
+    if elem is None:
+        return None
+
+    tag = get_tag(elem)
+    if tag == 'startElementReference':
+        conn_name = elem.text
+        if conn_name is None or conn_name == '':
+            return {}
+        else:
+            return {elem: (conn_name, ConnType.Other, False)}
+
+    elif tag == 'start':
+        standard_connectors = _get_conn_target_map(elem)
+        scheduled_paths = elem.findall(f'.//{ns}scheduledPaths/{ns}connector')
+        if scheduled_paths is None or len(scheduled_paths) == 0:
+            return standard_connectors
+        else:
+            for x in scheduled_paths:
+                try:
+                    conn_name = x.find('.//{ns}targetReference').text
+                    standard_connectors[x] = (conn_name, ConnType.Other, False)
+                except:
+                    continue
+            return standard_connectors
+    else:
+        return _get_conn_target_map(elem)
+
+
+def _get_conn_target_map(elem: ET.Element) -> {ET.Element: (str, ConnType, bool)}:
     """returns map from connectors at elem to where they point
 
     Args:
@@ -313,7 +352,9 @@ def get_conn_target_map(elem: ET.Element) -> {ET.Element: (str, ConnType, bool)}
     if elem is None:
         return {}
     to_return = {}
-    if get_tag(elem) == 'decisions':
+    el_tag = get_tag(elem)
+
+    if el_tag == 'decisions':
         is_decision_ = True
     else:
         is_decision_ = False
@@ -569,4 +610,3 @@ def get_subflow_input_map(subflow: ET.Element) -> {str: str}:
         key = key_refs[0].text
         accum[key] = val
     return accum
-
