@@ -192,4 +192,12 @@ public class DescribeSObjectsExample {
         ]]></example>
 	</rule>
 
+	<!-- This rule references an existing rule modifying it's properties. It is here so we can test that the custom tag
+	     associated with the name of this ruleset file, "SomeCat3", gets applied while preserving the existing
+	     "BestPractices" tag. -->
+	<rule ref="category/apex/bestpractices.xml/DebugsShouldUseLoggingLevel">
+		<properties>
+			<property name="strictMode" value="false" />
+		</properties>
+	</rule>
 </ruleset>

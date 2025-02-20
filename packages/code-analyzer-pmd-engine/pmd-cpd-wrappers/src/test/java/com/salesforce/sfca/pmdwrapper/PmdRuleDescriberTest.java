@@ -66,7 +66,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "OperationWithLimitsInLoop", "apex");
         assertThat(ruleInfo.description, is("Database class methods, DML operations, SOQL queries, SOSL queries, Approval class methods, Email sending, async scheduling or queueing within loops can cause governor limit exceptions. Instead, try to batch up the data into a list and invoke the operation once on that list of data outside the loop."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#operationwithlimitsinloop")));
-        assertThat(ruleInfo.ruleSet, is("Performance"));
+        assertThat(ruleInfo.ruleSets, is(List.of("Performance")));
         assertThat(ruleInfo.priority, is("Medium"));
         assertThat(ruleInfo.ruleSetFile, is("category/apex/performance.xml"));
     }
@@ -83,7 +83,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "ForLoopsMustUseBraces", "ecmascript");
         assertThat(ruleInfo.description, is("Avoid using 'for' statements without using curly braces."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#forloopsmustusebraces")));
-        assertThat(ruleInfo.ruleSet, is("Code Style"));
+        assertThat(ruleInfo.ruleSets, is(List.of("Code Style")));
         assertThat(ruleInfo.priority, is("Medium"));
         assertThat(ruleInfo.ruleSetFile, is("category/ecmascript/codestyle.xml"));
     }
@@ -100,7 +100,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "VfUnescapeEl", "visualforce");
         assertThat(ruleInfo.description, is("Avoid unescaped user controlled content in EL as it results in XSS."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#vfunescapeel")));
-        assertThat(ruleInfo.ruleSet, is("Security"));
+        assertThat(ruleInfo.ruleSets, is(List.of("Security")));
         assertThat(ruleInfo.priority, is("Medium"));
         assertThat(ruleInfo.ruleSetFile, is("category/visualforce/security.xml"));
     }
@@ -117,7 +117,7 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "MissingEncoding", "xml");
         assertThat(ruleInfo.description, is("When the character encoding is missing from the XML declaration, the parser may produce garbled text. This is completely dependent on how the parser is set up and the content of the XML file, so it may be hard to reproduce. Providing an explicit encoding ensures accurate and consistent parsing."));
         assertThat(ruleInfo.externalInfoUrl, allOf(startsWith("https://"), endsWith(".html#missingencoding")));
-        assertThat(ruleInfo.ruleSet, is("Best Practices"));
+        assertThat(ruleInfo.ruleSets, is(List.of("Best Practices")));
         assertThat(ruleInfo.priority, is("Medium"));
         assertThat(ruleInfo.ruleSetFile, is("category/xml/bestpractices.xml"));
     }
@@ -154,14 +154,14 @@ public class PmdRuleDescriberTest {
         PmdRuleInfo sampleRuleInfo1 = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule1", "apex");
         assertThat(sampleRuleInfo1.description, is("Sample sampleRule1 description"));
         assertThat(sampleRuleInfo1.externalInfoUrl, is("https://sampleRule1.com"));
-        assertThat(sampleRuleInfo1.ruleSet, is("sampleRuleset1"));
+        assertThat(sampleRuleInfo1.ruleSets, is(List.of("sampleRuleset1")));
         assertThat(sampleRuleInfo1.priority, is("Medium"));
         assertThat(sampleRuleInfo1.ruleSetFile, is(rulesetFile1.toAbsolutePath().toString()));
 
         PmdRuleInfo sampleRuleInfo2 = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule2", "visualforce");
         assertThat(sampleRuleInfo2.description, is("Sample sampleRule2 description"));
         assertThat(sampleRuleInfo2.externalInfoUrl, is("https://sampleRule2.com"));
-        assertThat(sampleRuleInfo2.ruleSet, is("sampleRuleset2"));
+        assertThat(sampleRuleInfo2.ruleSets, is(List.of("sampleRuleset2")));
         assertThat(sampleRuleInfo2.priority, is("Low"));
         assertThat(sampleRuleInfo2.ruleSetFile, is(rulesetFile2.toAbsolutePath().toString()));
     }
@@ -212,7 +212,7 @@ public class PmdRuleDescriberTest {
             PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "ApexCRUDViolation", "apex");
             assertThat(ruleInfo.description, is("Sample ApexCRUDViolation description"));
             assertThat(ruleInfo.externalInfoUrl, is("https://ApexCRUDViolation.com"));
-            assertThat(ruleInfo.ruleSet, is("sampleRuleset"));
+            assertThat(ruleInfo.ruleSets, is(List.of("sampleRuleset", "Security")));
             assertThat(ruleInfo.priority, is("High"));
             assertThat(ruleInfo.ruleSetFile, is(rulesetFile.toAbsolutePath().toString()));
 
@@ -258,7 +258,7 @@ public class PmdRuleDescriberTest {
                     Set.of("apex"));
 
             PmdRuleInfo ruleInfo = assertContainsOneRuleWithNameAndLanguage(ruleInfoList, "sampleRule", "apex");
-            assertThat(ruleInfo.ruleSet, is("sampleRuleset"));
+            assertThat(ruleInfo.ruleSets, is(List.of("sampleRuleset")));
             assertThat(ruleInfo.description, is(""));
             assertThat(ruleInfo.externalInfoUrl, is(nullValue()));
             assertThat(ruleInfo.priority, is("Low")); // PMD's default priority when ruleset doesn't specify
