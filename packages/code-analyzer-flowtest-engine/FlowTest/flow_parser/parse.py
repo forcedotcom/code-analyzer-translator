@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import sys
 
+from flow_parser import expression_parser
+
 sys.modules['_elementtree'] = None
 import xml.etree.ElementTree as ET
 
@@ -79,6 +81,9 @@ class Parser(FlowParser):
 
         #: frozen set of all elements that have a child of <name> and are thus flow globals
         self.all_named_elems: frozenset[ET.Element] | None = None
+
+        #: set of all names (names of named elements)
+        self.all_names: (str,) or None = None
 
         #: variables marked 'available for input', as a pair (flow_path, name)
         self.input_variables: frozenset[(str, str)] | None = None
@@ -309,8 +314,9 @@ class Parser(FlowParser):
 
         """
 
-        all_named, vars_, inputs, outputs = _get_global_flow_data(self.flow_path, self.root)
+        all_named, all_names, vars_, inputs, outputs = _get_global_flow_data(self.flow_path, self.root)
         self.all_named_elems = all_named
+        self.all_names = all_names
         self.__parsed_vars = vars_
         self.input_variables = inputs
         self.output_variables = outputs
@@ -473,11 +479,12 @@ class Parser(FlowParser):
             return res1[0]
 
         elif len(res2) == 1:
-            return self.get_by_name(res2[0].text)
+            # res2[0] = first connector target
+            return res2[0]
 
         # Put in provision for older flows that are missing start elements but have only
         # a single crud element
-        candidates = get_by_tag(self.root, 'recordUpdates')
+        candidates = get_by_tag(self.root, 'recordUpdates') + get_by_tag(self.root, 'recordCreates')
         if len(candidates) == 1:
             return candidates[0]
 
@@ -496,14 +503,18 @@ class Parser(FlowParser):
             expr = None
             if elem.tag == f'{ns}textTemplates':
                 expr = elem.find(f'{ns}text').text
+                if expr is not None:
+                    influencers = expression_parser.extract_expression(expr)
+                    [accum.append((var, elem)) for var in influencers]
             if elem.tag == f'{ns}formulas':
                 # is a formula
                 expr = elem.find(f'{ns}expression').text
+                if expr is not None:
+                    # we parse formulas but only extract (grep) text templates
+                    influencers = expression_parser.parse_expression(expr)
+                    [accum.append((var, elem)) for var in influencers]
             if expr is None:
                 raise RuntimeError(f"could not find expression for {elem}")
-
-            influencers = parse_utils.parse_expression(expr)
-            [accum.append((var, elem)) for var in influencers]
 
         return accum
 
@@ -713,6 +724,7 @@ def _get_global_flow_data(flow_path, root: ET.Element) -> ([ET.Element], {str: V
     assert all_named is not None
 
     name_dict = {x: get_name(x) for x in all_named}
+    all_names = tuple(name_dict.values())
     vars_ = {}
     inputs = []
     outputs = []
@@ -732,7 +744,7 @@ def _get_global_flow_data(flow_path, root: ET.Element) -> ([ET.Element], {str: V
             if var.is_output is True:
                 outputs.append((flow_path, name_dict[x]))
 
-    return all_named, vars_, frozenset(inputs), frozenset(outputs)
+    return all_named, all_names, vars_, frozenset(inputs), frozenset(outputs)
 
 
 def _resolve_globals(name: str):

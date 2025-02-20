@@ -17,8 +17,28 @@ def get_root_from_string(byte_str) -> ET.Element:
 
 
 def to_string(elem: ET.Element) -> str:
-    return ET.tostring(elem, encoding='unicode',
-                       default_namespace='http://soap.sforce.com/2006/04/metadata').strip()
+    return clean_string(ET.tostring(elem, encoding='unicode',
+                                    default_namespace='http://soap.sforce.com/2006/04/metadata').strip())
+
+
+def clean_string(msg: str) -> str:
+    """
+    removes namespace declarations from xml
+        1) <ns0:recordCreates> --> <recordCreates>
+        2) </ns0:recordCreates> --> <recordCreates>
+        3) <recordCreates xmlns="http://soap.sforce.com/2006/04/metadata"> --> <recordCreates>
+        4) <recordCreates xmlns:ns0=\"http://soap.sforce.com/2006/04/metadata\"> --><recordCreates>
+
+    Args:
+        msg: string to clean
+
+    Returns:
+        cleaned string
+    """
+    msg1 = msg.replace("<ns0:", "<").replace("</ns0:", "</")
+    msg2 = (msg1.replace(' xmlns="http://soap.sforce.com/2006/04/metadata"', '')
+            .replace(' xmlns:ns0="http://soap.sforce.com/2006/04/metadata"', ''))
+    return msg2
 
 
 class LineNumberingParser(ET.XMLParser):

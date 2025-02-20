@@ -146,8 +146,11 @@ def get_flow_paths(args: argparse.Namespace) -> (list[str], {str: str}):
         flow_map = {}
         for a_flow in flow_paths:
             label = util.get_label(os.path.dirname(a_flow), os.path.basename(a_flow))
-            if label is not None and label not in flow_map:
-                flow_map[label] = a_flow
+            if label is not None:
+                if label in flow_map:
+                    print("alert, label %s in map already" % label)
+                else:
+                    flow_map[label] = a_flow
 
     count = len(flow_paths)
     if count > 0:

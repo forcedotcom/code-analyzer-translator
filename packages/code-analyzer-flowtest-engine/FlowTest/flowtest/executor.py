@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import traceback
 from typing import TYPE_CHECKING
 
 import flowtest.control_flow as crawl_spec
@@ -591,59 +592,68 @@ class Frame(object):
             self.query_manager.query(action=QueryAction.process_elem, state=self.state)
 
     def process_subflow(self, current_elem):
-        sub_name = parse_utils.get_subflow_name(current_elem)
-        sub_path = resolve_name(self.all_flow_paths, sub_name=sub_name)
 
-        if sub_path is None:
-            # We can't find the path of the sub flow, so don't process
-            # A log was already filed.
+        # Any problem and all, we return None and the parent
+        # continues on as if the subflow did not exist
+
+        try:
+            sub_name = parse_utils.get_subflow_name(current_elem)
+            sub_path = resolve_name(self.all_flow_paths, sub_name=sub_name)
+
+            if sub_path is None:
+                # We can't find the path of the sub flow, so don't process
+                # A log was already filed.
+                return None
+
+            # parent variable name --> child input variable name
+            input_map = public.parse_utils.get_subflow_input_map(current_elem)
+
+            # this is the vector map we want to push into the child:
+            vector_map = {(self.flow_path, x): self.state.get_or_make_vector(x) for x in input_map}
+
+            prediction = call_carnac(input_cache=self.subflow_input_cache,
+                                     vector_map=vector_map,
+                                     subflow_path=sub_path,
+                                     outputs=None)
+
+            if TRY_CARNAC is True:
+                # add inputs to cache:
+                self.subflow_input_cache = add_inputs_to_call_cache(self.subflow_input_cache,
+                                                                    sub_path,
+                                                                    vector_map)
+            if TRUST_CARNAC is True and prediction is not None:
+                output_variable_map = get_output_variable_map(
+                    subflow_elem=current_elem,
+                    subflow_output_vars=self.subflow_output_variable_cache[sub_path]
+                )
+
+                # wire cached output variables to this influence map
+                self.state.add_vectors_from_other_flow(src_flow_path=sub_path,
+                                                       output_vector_map=prediction,
+                                                       src2tgt_variable_map=output_variable_map,
+                                                       transition_elem=current_elem)
+
+                logger.info("fast forwarded through subflow as it was already invoked with the same input vars")
+
+                return None
+
+            else:
+                print(f"\tprocessing subflow {sub_path}.. ")
+
+                child_frame = self.spawn_child_frame(subflow=current_elem,
+                                                     sub_path=sub_path,
+                                                     input_map=input_map,
+                                                     vector_map=vector_map)
+
+                child_frame.inputs = vector_map
+
+                child_frame.prediction = prediction
+
+                return child_frame
+
+        except Exception as e:
+            logger.critical("Error processing subflow:\n" + traceback.format_exc())
             return None
-
-        # parent variable name --> child input variable name
-        input_map = public.parse_utils.get_subflow_input_map(current_elem)
-
-        # this is the vector map we want to push into the child:
-        vector_map = {(self.flow_path, x): self.state.get_or_make_vector(x) for x in input_map}
-
-        prediction = call_carnac(input_cache=self.subflow_input_cache,
-                                 vector_map=vector_map,
-                                 subflow_path=sub_path,
-                                 outputs=None)
-
-        if TRY_CARNAC is True:
-            # add inputs to cache:
-            self.subflow_input_cache = add_inputs_to_call_cache(self.subflow_input_cache,
-                                                                sub_path,
-                                                                vector_map)
-        if TRUST_CARNAC is True and prediction is not None:
-            output_variable_map = get_output_variable_map(
-                subflow_elem=current_elem,
-                subflow_output_vars=self.subflow_output_variable_cache[sub_path]
-            )
-
-            # wire cached output variables to this influence map
-            self.state.add_vectors_from_other_flow(src_flow_path=sub_path,
-                                                   output_vector_map=prediction,
-                                                   src2tgt_variable_map=output_variable_map,
-                                                   transition_elem=current_elem)
-
-            logger.info("fast forwarded through subflow as it was already invoked with the same input vars")
-
-            return None
-
-        else:
-            print(f"\tprocessing subflow {sub_path}.. ")
-
-            child_frame = self.spawn_child_frame(subflow=current_elem,
-                                                 sub_path=sub_path,
-                                                 input_map=input_map,
-                                                 vector_map=vector_map)
-
-            child_frame.inputs = vector_map
-
-            child_frame.prediction = prediction
-
-            return child_frame
 
 
 def parse_flow(flow_path: str,

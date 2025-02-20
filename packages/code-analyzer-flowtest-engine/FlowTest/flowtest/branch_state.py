@@ -12,6 +12,7 @@ from __future__ import annotations
 import copy
 import logging
 import traceback
+from operator import ifloordiv
 
 from flow_parser import parse
 import public.custom_parser as CP
@@ -28,6 +29,8 @@ SUBFLOW_WIRE_COMMENT = "output via subflow assignment"
 
 #: string to use in :class:`public.DataInfluenceStatement` comments
 INITIALIZATION_COMMENT = "Initialization"
+
+MAX_FORMULA_DUPLICATES = 3
 
 #: module logger
 logger = logging.getLogger(__name__)
@@ -822,7 +825,7 @@ def _build_path_from_history(parser: parse.Parser, history: tuple[DataInfluenceS
                 element names and properties, as well as extract type
                 information from the flow xml file.
             history: tuple of DataflowInfluenceStatement
-            \*\*type_replacements: [expert use] name/value pairs for property overrides
+            type_replacements: [expert use] name/value pairs for property overrides
 
         Returns:
             DataflowInfluencePath
@@ -866,11 +869,15 @@ def _build_formula_map(parser: parse.Parser, flow_path: str) -> dict[(str, str):
         flow_path: filepath of current flow
 
     Returns:
-        a fully resolved map:: {elem_name --> [DataflowInfluencePaths]}
+        a fully resolved map:: {(flow_path, elem_name) --> [DataflowInfluencePaths]}
     """
     raw_formula_map = _get_raw_formula_map(parser, flow_path)
     flow_path = parser.flow_path
-    return {(flow_path, x): _resolve_influencers(x, raw_formula_map, parser) for x in raw_formula_map}
+    to_return = {}
+
+    for x in raw_formula_map:
+        to_return[(flow_path, x)] = _resolve_influencers(x, raw_formula_map, parser)
+    return to_return
 
 
 def _get_raw_formula_map(parser: parse.Parser, flow_path: str) -> dict[str:list[DataInfluenceStatement]]:
@@ -997,12 +1004,19 @@ def _resolve_influencers(elem_ref_name: ET.Element,
     to_resolve = [_build_path_from_history(history=(x,), parser=parser, strict=False)
                   for x in raw_formula_map[elem_ref_name]]
 
+    seen_resolvers = set()
+
     while len(to_resolve) > 0:
         curr_flow = to_resolve.pop()
-        if curr_flow.influencer_name in raw_formula_map:
+        if (curr_flow.influencer_name in raw_formula_map and
+                curr_flow.influencer_name not in seen_resolvers):
+
+            seen_resolvers.add(curr_flow.influencer_name)
+
             to_resolve = to_resolve + [DataInfluencePath.combine(
                 _build_path_from_history(history=(x,), parser=parser), curr_flow
-            ) for x in raw_formula_map[curr_flow.influencer_name]]
+            ) for x in raw_formula_map[curr_flow.influencer_name]
+            ]
         else:
             accum.add(curr_flow)
 
@@ -1018,11 +1032,38 @@ def _resolve_influencers(elem_ref_name: ET.Element,
     # formula1 <- formula2 and
     # formula1 <- formula2 <- var
     # ...so we remove the intermediate flows here:
+    duplicates = set()
     for x in accum:
         if x.influencer_name in raw_formula_map:
-            accum.remove(x)
+            duplicates.add(x)
+            # no need to look for other occurrences in raw_formula_map
+            continue
 
-    return accum
+    deduped = accum - duplicates
+
+    # next, we limit how many times the same influencer can appear
+    # NOTE: this will result in some loss of accuracy, because it's
+    # possible than the same variable will influence an expression in
+    # different ways, only one of which are security relevant, and this
+    # analysis may hide that info by pruning meaningful dataflow paths.
+    #
+    # However, we want to limit dataflow explosion so there is a trade off.
+    #
+    # TODO: consider doing this only for large formula maps
+
+    seen_influencers = {}
+    excess_influencers = set()
+
+    for x in deduped:
+        if x.influencer_name not in seen_influencers:
+            seen_influencers[x.influencer_name] = 1
+        else:
+            if seen_influencers[x.influencer_name] == MAX_FORMULA_DUPLICATES:
+                excess_influencers.add(x)
+            else:
+                seen_influencers[x.influencer_name] += 1
+
+    return deduped - excess_influencers
 
 
 def _populate_defaults(state: BranchState, parser: parse.Parser) -> None:
