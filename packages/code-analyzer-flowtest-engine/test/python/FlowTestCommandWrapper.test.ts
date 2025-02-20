@@ -1,7 +1,8 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 import {FlowTestExecutionResult, RunTimeFlowTestCommandWrapper} from "../../src/python/FlowTestCommandWrapper";
 import {PythonCommandExecutor} from '../../src/python/PythonCommandExecutor';
+import os from "node:os";
 
 const PYTHON_COMMAND = 'python3';
 const PATH_TO_GOLDFILES = path.join(__dirname, '..', 'test-data', 'goldfiles', 'FlowTestCommandWrapper.test.ts');
@@ -11,6 +12,13 @@ const PATH_TO_EXAMPLE2: string = path.join(PATH_TO_MULTIPLE_FLOWS_WORKSPACE, 'ex
 
 describe('FlowTestCommandWrapper implementations', () => {
     describe('RunTimeFlowTestCommandWrapper', () => {
+        let tempLogFile: string;
+
+        beforeAll(async() => {
+            const tempFolder: string = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'engine-test'));
+            tempLogFile = path.join(tempFolder, "flowtest_logfile.log");
+        })
+
         describe('#runFlowTestRules()', () => {
 
             describe('Successful execution', () => {
@@ -22,7 +30,7 @@ describe('FlowTestCommandWrapper implementations', () => {
                 };
 
                 beforeAll(async () => {
-                    results = await wrapper.runFlowTestRules([PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2], statusProcessorFunction);
+                    results = await wrapper.runFlowTestRules([PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2], tempLogFile, statusProcessorFunction);
                     // The `counter` property is irrelevant to us, and causes problems across platforms. So delete it.
                     for (const queryName of Object.keys(results.results)) {
                         for (const queryResults of results.results[queryName]) {
@@ -33,7 +41,7 @@ describe('FlowTestCommandWrapper implementations', () => {
 
                 it('Correctly reads and parses results', async () => {
                     const goldfileName: string = 'results.goldfile.json';
-                    const goldFileContents: string = (await fs.readFile(path.join(PATH_TO_GOLDFILES, goldfileName), {encoding: 'utf-8'}))
+                    const goldFileContents: string = (await fs.promises.readFile(path.join(PATH_TO_GOLDFILES, goldfileName), {encoding: 'utf-8'}))
                         .replaceAll('"__PATH_TO_EXAMPLE1__"', JSON.stringify(PATH_TO_EXAMPLE1))
                         .replaceAll('"__PATH_TO_EXAMPLE2__"', JSON.stringify(PATH_TO_EXAMPLE2));
 
@@ -51,16 +59,23 @@ describe('FlowTestCommandWrapper implementations', () => {
                         expect(results.results[key]).toHaveLength(expectedValue.length);
                         expect(results.results[key]).toEqual(expectedValue);
                     }
+
+
                 });
 
                 it('Correctly parses status updates from stdout', () => {
                     expect(completionPercentages).toEqual([0, 50]);
                 });
 
-                it('Generates no log file', async () => {
+                it('Generates no local log file', async () => {
                     const logFileMatcher = /\.flowtest_log_.+\.log/;
-                    const logFiles = (await fs.readdir('.')).filter(f => f.match(logFileMatcher));
+                    const logFiles = (await fs.promises.readdir('.')).filter(f => f.match(logFileMatcher));
                     expect(logFiles).toHaveLength(0);
+                });
+
+                it('Generates log file in designated location', async() => {
+                    const contents: string = await fs.promises.readFile(tempLogFile, 'utf-8');
+                    expect(contents.length).toBeGreaterThan(0);
                 });
             });
 
@@ -80,12 +95,12 @@ describe('FlowTestCommandWrapper implementations', () => {
                     });
 
                     // Stub out the underlying ReadFile method to return the specified invalid results
-                    jest.spyOn(fs, 'readFile').mockImplementation(async (_file) => {
+                    jest.spyOn(fs.promises, 'readFile').mockImplementation(async (_file) => {
                         return fakeResults;
                     });
 
                     const wrapper: RunTimeFlowTestCommandWrapper = new RunTimeFlowTestCommandWrapper(PYTHON_COMMAND);
-                    await expect(wrapper.runFlowTestRules([PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2], (_num) => {}))
+                    await expect(wrapper.runFlowTestRules([PATH_TO_EXAMPLE1, PATH_TO_EXAMPLE2], tempLogFile, (_num: number) => {}))
                         .rejects
                         .toThrow(expectedMessage);
                 });

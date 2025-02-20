@@ -46,6 +46,9 @@ const MESSAGE_CATALOG: {[key: string]: string} = {
     SubsequentNodeComment:
         `%s influences %s: %s`,
 
+    WritingFlowtestLogToFile:
+        `The separate flowtest log file, used for debugging purposes only, will be written to: %s`,
+
     PythonCommandError:
         `The following call to python exited with non-zero exit code.\n` +
         `  Command: %s\n` +
