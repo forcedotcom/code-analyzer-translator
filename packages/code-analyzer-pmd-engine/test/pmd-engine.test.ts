@@ -169,6 +169,11 @@ describe('Tests for the describeRules method of PmdEngine', () => {
         expectContainsRuleWithName(ruleDescriptions, 'fakerule12'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule13'); // From somecat4.xml
         expectContainsRuleWithName(ruleDescriptions, 'fakerule14'); // From somecat4.xml
+
+        // Also test that when a bundled PMD rule is referenced inside a custom ruleset, that we update the rule
+        // with the tag associated with the custom ruleset's name.
+        const overriddenRuleDescription: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'DebugsShouldUseLoggingLevel'); // From somecat3.xml
+        expect(overriddenRuleDescription.tags).toEqual(['Recommended', 'BestPractices', 'Apex', 'SomeCat3']);
     });
 
     it('When referencing our example custom ruleset that is prebundled in our sfca-pmd-rules jar file, then the custom rules are added to the rule descriptions', async () => {
@@ -206,7 +211,7 @@ describe('Tests for the describeRules method of PmdEngine', () => {
 
         const fakeRule1Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule1'); // From rulesets_apex_rules1.jar
         expect(fakeRule1Description.severityLevel).toEqual(SeverityLevel.Moderate);
-        expect(fakeRule1Description.tags).toEqual(['Recommended', 'Categories1', 'Apex', 'Custom']);
+        expect(fakeRule1Description.tags).toEqual(['Recommended', 'Rulesets1', 'Apex', 'Custom']);
         expectContainsRuleWithName(ruleDescriptions, 'fakerule2'); // From rulesets_apex_rules1.jar
         expectContainsRuleWithName(ruleDescriptions, 'fakerule3'); // From rulesets_apex_rules1.jar
         const fakeRule4Description: RuleDescription = expectContainsRuleWithName(ruleDescriptions, 'fakerule4'); // From category_joshapex_somecat2.jar

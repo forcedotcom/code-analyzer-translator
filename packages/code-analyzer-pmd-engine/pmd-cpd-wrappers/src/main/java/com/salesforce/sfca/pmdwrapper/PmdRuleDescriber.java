@@ -61,7 +61,7 @@ class PmdRuleDescriber {
     );
 
     List<PmdRuleInfo> describeRulesFor(List<String> customRulesets, Set<String> languages) {
-        List<PmdRuleInfo> ruleInfoList = new ArrayList<>();
+        Map<String, PmdRuleInfo> ruleInfoMap = new HashMap<>();
         PMDConfiguration config = new PMDConfiguration();
 
         // Set Reported which will throw error during PmdAnalysis.create if a custom ruleset cannot be found
@@ -80,9 +80,6 @@ class PmdRuleDescriber {
             }
         }
 
-        // Keep track of "<language>::<ruleName>" so that we don't have duplicates
-        Map<String, String> alreadySeen = new HashMap<>();
-
         try (PmdAnalysis pmd = PmdAnalysis.create(config)) {
             for (RuleSet ruleSet : pmd.getRulesets()) {
                 for (Rule rule : ruleSet.getRules()) {
@@ -93,15 +90,19 @@ class PmdRuleDescriber {
                         continue;
                     }
 
+                    String ruleSetFile = ruleSet.getFileName();
+
                     // Filter out any rules that we have already seen (duplicates) which can happen if user specifies a
                     // ruleset that references an existing rule
                     String langPlusName = language + "::" + rule.getName();
-                    if(alreadySeen.containsKey(langPlusName)) {
-                        System.out.println("Skipping rule \"" + rule.getName() + "\" for language \"" + language + "\" from ruleset \"" + ruleSet.getFileName() + "\"" +
-                        " because we already added a rule with the same name and language from ruleset \"" + alreadySeen.get(langPlusName) + "\".");
+                    if(ruleInfoMap.containsKey(langPlusName)) {
+                        System.out.println("Skipping rule \"" + rule.getName() + "\" for language \"" + language + "\" from ruleset \"" + ruleSetFile + "\"" +
+                        " because we already added a rule with the same name and language from ruleset \"" + ruleInfoMap.get(langPlusName).ruleSetFile + "\".");
+
+                        // Update the existing ruleInfo so that it contains all ruleSets
+                        ruleInfoMap.get(langPlusName).ruleSets.add(ruleSet.getName());
                         continue;
                     }
-                    alreadySeen.put(langPlusName, ruleSet.getFileName());
 
                     // Add rule info
                     PmdRuleInfo pmdRuleInfo = new PmdRuleInfo();
@@ -109,15 +110,15 @@ class PmdRuleDescriber {
                     pmdRuleInfo.languageId = language;
                     pmdRuleInfo.description = getLimitedDescription(rule);
                     pmdRuleInfo.externalInfoUrl = rule.getExternalInfoUrl();
-                    pmdRuleInfo.ruleSet = rule.getRuleSetName();
+                    pmdRuleInfo.ruleSets.add(ruleSet.getName());
                     pmdRuleInfo.priority = rule.getPriority().toString(); // If priority isn't set in ruleset file, then PMD uses "Low" by default. So no need for null check here.
-                    pmdRuleInfo.ruleSetFile = ruleSet.getFileName();
-                    ruleInfoList.add(pmdRuleInfo);
+                    pmdRuleInfo.ruleSetFile = ruleSetFile;
+                    ruleInfoMap.put(langPlusName, pmdRuleInfo);
                 }
             }
         }
 
-        return ruleInfoList;
+        return new ArrayList<>(ruleInfoMap.values());
     }
 
     private static String getLimitedDescription(Rule rule) {

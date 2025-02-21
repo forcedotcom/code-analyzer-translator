@@ -162,14 +162,19 @@ function toRuleDescription(pmdRuleInfo: PmdRuleInfo): RuleDescription {
     let severityLevel: SeverityLevel;
     let tags: string[];
 
+    const customRulesetNameTags: string[] = pmdRuleInfo.ruleSets.map(rs => rs.replaceAll(' ', '')).filter(
+        tag => !Object.values(COMMON_TAGS.CATEGORIES).includes(tag) && !tag.startsWith("AppExchange_"));
+
     if (uniqueRuleName in RULE_MAPPINGS) {
         severityLevel = RULE_MAPPINGS[uniqueRuleName].severity;
-        tags = RULE_MAPPINGS[uniqueRuleName].tags;
+        // For the tags, we start with the overridden tags from the RULE_MAPPINGS and add in the customRulesetNameTags
+        // since we want to allow users to reference the existing standard rules in their custom ruleset
+        // files and still get the benefit of us adding in a tag for the name of their custom ruleset.
+        tags = [...RULE_MAPPINGS[uniqueRuleName].tags, ...customRulesetNameTags];
     } else { // Any rule we don't know about from our RULE_MAPPINGS must be a custom rule. Unit tests prevent otherwise.
         severityLevel = toSeverityLevel(pmdRuleInfo.priority);
-        const categoryTag: string = pmdRuleInfo.ruleSet.replaceAll(' ', '');
         const languageTag: string = language.charAt(0).toUpperCase() + language.slice(1);
-        tags = [COMMON_TAGS.RECOMMENDED, categoryTag, languageTag, COMMON_TAGS.CUSTOM];
+        tags = [COMMON_TAGS.RECOMMENDED, ...customRulesetNameTags, languageTag, COMMON_TAGS.CUSTOM];
     }
 
     return {
@@ -213,13 +218,23 @@ function getCacheKey(workspace?: Workspace) {
 
 function fetchRuleInfoByRuleName(ruleInfoList: PmdRuleInfo[], uniqueRuleName: string) : PmdRuleInfo|null {
     // Note that some pmd rule names that were shared among languages were converted to contain a "-<language>" suffix.
-    // So we need to map these names (like "TooManyFields-java") back into "TooManyFields" for the "java" language.
+    // So we need to map these names (like "WhileLoopsMustUseBraces-javascript") back into "WhileLoopsMustUseBraces" for the "javascript" language.
     const langSeparator: number = uniqueRuleName.indexOf('-');
-    const specificLanguage: Language|undefined = langSeparator > 0 ?
-        uniqueRuleName.substring(langSeparator+1) as Language: undefined;
-    const pmdRuleName: string = langSeparator > 0 ? uniqueRuleName.substring(0, langSeparator) : uniqueRuleName;
+    let pmdRuleLanguage: Language | undefined = undefined;
+    let pmdRuleName: string = uniqueRuleName;
+    if (langSeparator > 0) {
+        pmdRuleName = uniqueRuleName.substring(0, langSeparator);
+        pmdRuleLanguage = uniqueRuleName.substring(langSeparator + 1) as Language;
+    } else if (pmdRuleName in SHARED_RULE_NAMES) {
+        // It is also important that if a shared name is given like "WhileLoopsMustUseBraces" that we explicitly look
+        // for its default language (the first in the array) so we don't pick up the rules for the other shared languages
+        // by mistake. That is, if "WhileLoopsMustUseBraces" is for java but "WhileLoopsMustUseBraces-javascript" is for
+        // javascript, so we don't want to select the javascript rule here.
+        pmdRuleLanguage = SHARED_RULE_NAMES[pmdRuleName][0];
+    }
+
     return ruleInfoList.find(ruleInfo =>
-        ruleInfo.name === pmdRuleName && (specificLanguage === undefined || toLanguageEnum(ruleInfo.languageId) === specificLanguage)
+        ruleInfo.name === pmdRuleName && (pmdRuleLanguage === undefined || toLanguageEnum(ruleInfo.languageId) === pmdRuleLanguage)
     ) || null;
 }
 
@@ -229,6 +244,6 @@ function toPmdLanguageId(language: Language): string {
 }
 
 function toLanguageEnum(pmdRuleLanguage: string): Language {
-    // We must convert 'ecmascript' back to 'javascrijpt'
+    // We must convert 'ecmascript' back to 'javascript'
     return pmdRuleLanguage == 'ecmascript' ? Language.JAVASCRIPT : pmdRuleLanguage as Language;
 }

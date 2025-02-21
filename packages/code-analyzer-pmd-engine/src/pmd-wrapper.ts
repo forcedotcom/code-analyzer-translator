@@ -12,10 +12,9 @@ export type PmdRuleInfo = {
     languageId: string,
     description: string,
     externalInfoUrl: string,
-    ruleSet: string,
+    ruleSets: string[],
     priority: string,
-    ruleSetFile: string,
-    class: string
+    ruleSetFile: string
 }
 
 export type PmdRunInputData = {
