@@ -562,6 +562,38 @@ describe("Tests for the run method of CodeAnalyzer", () => {
         expect(violations[0].getMessage()).toContain('SomeErrorMessageFromThrowingEngine');
     });
 
+    it.each([
+        {plugin: new stubs.ThrowingPlugin2() as engApi.EnginePluginV1, msg: 'SomeErrorFromDescribeEngineConfig', case: 'error in #describeEngineConfig'},
+        {plugin: new stubs.ThrowingPlugin3() as engApi.EnginePluginV1, msg: 'SomeErrorFromCreateEngineConfig', case: 'error in #createEngineConfig'},
+        {plugin: new stubs.ThrowingPlugin4() as engApi.EnginePluginV1, msg: 'SomeErrorFromCreateEngine', case: 'error in #createEngine'}
+    ])(`When an engine could not be added, running that engine produces a Critical violation of type UninstantiableEngineError. Case: $case`, async ({plugin, msg}) => {
+        codeAnalyzer = new CodeAnalyzer(CodeAnalyzerConfig.withDefaults());
+        await codeAnalyzer.addEnginePlugin(plugin);
+        selection = await codeAnalyzer.selectRules([]);
+        const overallResults: RunResults = await codeAnalyzer.run(selection, sampleRunOptions);
+        expect(overallResults.getRunDirectory()).toEqual(process.cwd() + path.sep);
+        expect(overallResults.getViolationCount()).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.Critical)).toEqual(1);
+        expect(overallResults.getViolationCountOfSeverity(SeverityLevel.High)).toEqual(0);
+        expect(overallResults.getEngineNames()).toEqual(['someEngine']);
+        const violations: Violation[] = overallResults.getViolations();
+        expect(violations).toHaveLength(1);
+        const engineRunResults: EngineRunResults = overallResults.getEngineRunResults('someEngine');
+        expect(engineRunResults.getEngineVersion()).toEqual('unknown');
+        expect(engineRunResults.getViolations()).toEqual(violations);
+        expect(violations[0].getRule()).toEqual(new UnexpectedEngineErrorRule('someEngine'));
+        expect(violations[0].getRule().getDescription()).toEqual(getMessage('UninstantiableEngineErrorRuleDescription', 'someEngine'));
+        expect(violations[0].getRule().getEngineName()).toEqual('someEngine');
+        expect(violations[0].getRule().getName()).toEqual('UninstantiableEngineError');
+        expect(violations[0].getRule().getResourceUrls()).toEqual([]);
+        expect(violations[0].getRule().getSeverityLevel()).toEqual(SeverityLevel.Critical);
+        expect(violations[0].getRule().getTags()).toEqual([]);
+        expect(violations[0].getPrimaryLocation()).toEqual(UndefinedCodeLocation.INSTANCE);
+        expect(violations[0].getPrimaryLocationIndex()).toEqual(0);
+        expect(violations[0].getCodeLocations()).toEqual([UndefinedCodeLocation.INSTANCE]);
+        expect(violations[0].getMessage()).toContain(msg);
+    })
+
     it("When running engines, then the log events should include the start and end of each engine run", async () => {
         const logEvents: LogEvent[] = [];
         codeAnalyzer.onEvent(EventType.LogEvent, (event: LogEvent) => logEvents.push(event));

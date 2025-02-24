@@ -63,6 +63,12 @@ const MESSAGE_CATALOG : MessageCatalog = {
     UnexpectedEngineErrorViolationMessage:
         `The engine with name '%s' threw an unexpected error: %s`,
 
+    UninstantiableEngineErrorRuleDescription:
+        `This rule reports a violation when engine '%s' cannot be instantiated.`,
+
+    UninstantiableEngineErrorViolationMessage:
+        `The engine with name '%s' could not be instantiated. Error: %s`,
+
     PluginErrorFromGetAvailableEngineNames:
         `Failed to add engine plugin. The plugin's getAvailableNames method threw an error:\n%s`,
 

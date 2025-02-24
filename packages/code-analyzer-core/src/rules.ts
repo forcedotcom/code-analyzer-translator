@@ -116,35 +116,59 @@ export class RuleImpl implements Rule {
     }
 }
 
-export class UnexpectedEngineErrorRule implements Rule {
-    private readonly engineName: string;
+abstract class AbstractEngineErrorRule implements Rule {
+    protected readonly engineName: string;
 
-    constructor(engineName: string) {
+    protected constructor(engineName: string) {
         this.engineName = engineName;
     }
 
-    getDescription(): string {
-        return getMessage('UnexpectedEngineErrorRuleDescription', this.engineName);
-    }
+    public abstract getDescription(): string;
 
-    getEngineName(): string {
+    public getEngineName(): string {
         return this.engineName;
     }
 
-    getName(): string {
-        return "UnexpectedEngineError";
-    }
+    public abstract getName(): string;
 
-    getResourceUrls(): string[] {
+    public getResourceUrls(): string[] {
         return [];
     }
 
-    getSeverityLevel(): SeverityLevel {
+    public getSeverityLevel(): SeverityLevel {
         return SeverityLevel.Critical;
     }
 
-    getTags(): string[] {
+    public getTags(): string[] {
         return [];
+    }
+}
+
+export class UnexpectedEngineErrorRule extends AbstractEngineErrorRule {
+    constructor(engineName: string) {
+        super(engineName);
+    }
+
+    override getDescription(): string {
+        return getMessage('UnexpectedEngineErrorRuleDescription', this.engineName);
+    }
+
+    override getName(): string {
+        return "UnexpectedEngineError";
+    }
+}
+
+export class UninstantiableEngineErrorRule extends  AbstractEngineErrorRule {
+    constructor(engineName: string) {
+        super(engineName);
+    }
+
+    public override getDescription(): string {
+        return getMessage('UninstantiableEngineErrorRuleDescription', this.engineName);
+    }
+
+    public override getName(): string {
+        return 'UninstantiableEngineError';
     }
 }
 

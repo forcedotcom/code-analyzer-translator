@@ -120,24 +120,35 @@ describe("Tests for adding engines to Code Analyzer", () => {
         );
     })
 
-    it('When plugin throws error during describeEngineConfig, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromDescribeEngineConfig')
-        );
+    it('When plugin throws error during describeEngineConfig, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2());
+
+        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
+        expect(errorEvents.length).toEqual(1);
+        expect(errorEvents[0].message).toEqual(getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromDescribeEngineConfig'));
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual([]);
     });
 
-    it('When plugin throws error during createEngineConfig, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin3())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngineConfig') + '\n\n' +
+    it('When plugin throws error during createEngineConfig, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin3());
+
+        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
+        expect(errorEvents.length).toEqual(1);
+        expect(errorEvents[0].message).toEqual(getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngineConfig') + '\n\n' +
             getMessage('InstructionsToIgnoreErrorAndDisableEngine', 'someEngine')
         );
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual([]);
     });
 
-    it('When plugin throws error during createEngine, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin4())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngine') + '\n\n' +
+    it('When plugin throws error during createEngine, then we emit error log line and skip that engine', async () => {
+        await codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin4());
+
+        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
+        expect(errorEvents.length).toEqual(1);
+        expect(errorEvents[0].message).toEqual(getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngine') + '\n\n' +
             getMessage('InstructionsToIgnoreErrorAndDisableEngine', 'someEngine')
         );
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual([]);
     });
 
     it('When calling dynamicallyAddEnginePlugin on a module that has a createEnginePlugin function, then it is used to add create the plugin and then added', async () => {

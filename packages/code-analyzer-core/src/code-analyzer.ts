@@ -4,7 +4,7 @@ import {
     EngineRunResultsImpl,
     RunResults,
     RunResultsImpl,
-    UnexpectedErrorEngineRunResults
+    UnexpectedErrorEngineRunResults, UninstantiableEngineRunResults
 } from "./results"
 import {SemVer} from 'semver';
 import {EngineLogEvent, EngineResultsEvent, EngineRunProgressEvent, Event, EventType, LogLevel} from "./events"
@@ -73,6 +73,7 @@ export class CodeAnalyzer {
     private uniqueIdGenerator: UniqueIdGenerator = new SimpleUniqueIdGenerator();
     private readonly eventEmitter: EventEmitter = new EventEmitter();
     private readonly engines: Map<string, engApi.Engine> = new Map();
+    private readonly uninstantiableEnginesMap: Map<string, Error> = new Map();
     private readonly engineConfigs: Map<string, EngineConfig> = new Map();
     private readonly engineConfigDescriptions: Map<string, ConfigDescription> = new Map();
     private readonly rulesCache: Map<string, RuleImpl[]> = new Map();
@@ -258,6 +259,9 @@ export class CodeAnalyzer {
         for (const engineRunResults of engineRunResultsList) {
             runResults.addEngineRunResults(engineRunResults);
         }
+        for (const [uninstantiableEngine, error] of this.uninstantiableEnginesMap.entries()) {
+            runResults.addEngineRunResults(new UninstantiableEngineRunResults(uninstantiableEngine, error));
+        }
         return runResults;
     }
 
@@ -357,7 +361,9 @@ export class CodeAnalyzer {
             const configDescription: ConfigDescription = toConfigDescription(engineConfigDescription, engineName, engineOverrides);
             this.engineConfigDescriptions.set(engineName, configDescription);
         } catch (err) {
-            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
+            this.uninstantiableEnginesMap.set(engineName, err as Error);
+            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
+            return;
         }
 
         if (engApi.getValueUsingCaseInsensitiveKey(engineOverrides, FIELDS.DISABLE_ENGINE)) {
@@ -387,8 +393,10 @@ export class CodeAnalyzer {
             this.listenToEngineEvents(engine);
 
         } catch (err) {
-            throw new Error(getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message) + '\n\n' +
-                getMessage('InstructionsToIgnoreErrorAndDisableEngine', engineName));
+            this.uninstantiableEnginesMap.set(engineName, err as Error);
+            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message + '\n\n' +
+                getMessage('InstructionsToIgnoreErrorAndDisableEngine', engineName)));
+            return;
         }
 
         this.emitLogEvent(LogLevel.Debug, getMessage('EngineAdded', engineName));
