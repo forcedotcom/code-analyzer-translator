@@ -362,7 +362,8 @@ export class CodeAnalyzer {
             this.engineConfigDescriptions.set(engineName, configDescription);
         } catch (err) {
             this.uninstantiableEnginesMap.set(engineName, err as Error);
-            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message));
+            this.emitLogEvent(LogLevel.Error, getMessage('PluginErrorWhenCreatingEngine', engineName, (err as Error).message + '\n\n' +
+                getMessage('InstructionsToIgnoreErrorAndDisableEngine', engineName)));
             return;
         }
 
