@@ -3,7 +3,7 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import path from "node:path";
-import {StubEngine1, StubEngine2, StubEngine3} from "./stubs";
+import {StubEngine1, StubEngine2, StubEngine3, ThrowingPlugin2} from "./stubs";
 import {ConfigDescription, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
@@ -213,6 +213,14 @@ describe("Tests for adding engines to Code Analyzer", () => {
             getMessage('FailedToGetEngineConfig', 'stubEngine1'));
         expect(() => codeAnalyzer.getEngineConfigDescription('stubEngine1')).toThrow(
             getMessage('FailedToGetEngineConfigDescription', 'stubEngine1'));
+    });
+
+    it('If engine cannot be successfully added, then getEngineConfig and getEngineConfigDescription should error', async () => {
+        await codeAnalyzer.addEnginePlugin(new ThrowingPlugin2());
+        expect(() => codeAnalyzer.getEngineConfig('someEngine')).toThrow(
+            getMessage('FailedToGetEngineConfig', 'someEngine'));
+        expect(() => codeAnalyzer.getEngineConfigDescription('someEngine')).toThrow(
+            getMessage('FailedToGetEngineConfigDescription', 'someEngine'));
     });
 
     it('When engine is disabled, we can still access its unresolved user provided properties', async () => {

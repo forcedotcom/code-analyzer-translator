@@ -4,7 +4,8 @@ import {
     EngineRunResultsImpl,
     RunResults,
     RunResultsImpl,
-    UnexpectedErrorEngineRunResults, UninstantiableEngineRunResults
+    UnexpectedErrorEngineRunResults,
+    UninstantiableEngineRunResults
 } from "./results"
 import {SemVer} from 'semver';
 import {EngineLogEvent, EngineResultsEvent, EngineRunProgressEvent, Event, EventType, LogLevel} from "./events"
