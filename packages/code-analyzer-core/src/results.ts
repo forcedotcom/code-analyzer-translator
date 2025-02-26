@@ -1,4 +1,4 @@
-import {Rule, RuleSelection, SeverityLevel, UnexpectedEngineErrorRule} from "./rules"
+import {Rule, RuleSelection, SeverityLevel, UnexpectedEngineErrorRule, UninstantiableEngineErrorRule} from "./rules"
 import * as engApi from "@salesforce/code-analyzer-engine-api";
 import {getMessage} from "./messages";
 import {Clock, RealClock, toAbsolutePath} from "./utils";
@@ -213,26 +213,22 @@ export class ViolationImpl implements Violation {
     }
 }
 
-export class UnexpectedEngineErrorViolation implements Violation {
-    private readonly engineName: string;
-    private readonly error: Error;
-    private readonly rule: Rule;
+abstract class AbstractLocationlessViolation implements Violation {
+    protected readonly engineName: string;
+    protected readonly error: Error;
+    protected readonly rule: Rule;
 
-    constructor(engineName: string, error: Error) {
+    protected constructor(engineName: string, error: Error, rule: Rule) {
         this.engineName = engineName;
         this.error = error;
-        this.rule = new UnexpectedEngineErrorRule(engineName);
+        this.rule = rule;
     }
 
     getRule(): Rule {
         return this.rule;
     }
 
-    getMessage(): string {
-        return getMessage('UnexpectedEngineErrorViolationMessage', this.engineName,
-            this.error.stack ? this.error.stack :  // Prefer to get the whole stack when possible
-                /* istanbul ignore next */ this.error.message);
-    }
+    abstract getMessage(): string;
 
     getCodeLocations(): CodeLocation[] {
         return [UndefinedCodeLocation.INSTANCE];
@@ -248,6 +244,30 @@ export class UnexpectedEngineErrorViolation implements Violation {
 
     getResourceUrls(): string[] {
         return [];
+    }
+}
+
+export class UninstantiableEngineErrorViolation extends AbstractLocationlessViolation {
+    constructor(engineName: string, error: Error) {
+        super(engineName, error, new UninstantiableEngineErrorRule(engineName));
+    }
+
+    override getMessage(): string {
+        return getMessage('UninstantiableEngineErrorViolationMessage', this.engineName,
+            this.error.stack ? this.error.stack :  // Prefer to get the whole stack when possible
+                /* istanbul ignore next */ this.error.message);
+    }
+}
+
+export class UnexpectedEngineErrorViolation extends AbstractLocationlessViolation {
+    constructor(engineName: string, error: Error) {
+        super(engineName, error, new UnexpectedEngineErrorRule(engineName));
+    }
+
+    override getMessage(): string {
+        return getMessage('UnexpectedEngineErrorViolationMessage', this.engineName,
+            this.error.stack ? this.error.stack :  // Prefer to get the whole stack when possible
+                /* istanbul ignore next */ this.error.message);
     }
 }
 
@@ -286,35 +306,47 @@ export class EngineRunResultsImpl implements EngineRunResults {
     }
 }
 
-export class UnexpectedErrorEngineRunResults implements EngineRunResults {
+abstract class AbstractErroneousEngineRunResults implements EngineRunResults {
     private readonly engineName: string;
     private readonly engineVersion: string;
     private readonly violation: Violation;
 
-    constructor(engineName: string, engineVersion: string,  error: Error) {
+    protected constructor(engineName: string, engineVersion: string, violation: Violation) {
         this.engineName = engineName;
         this.engineVersion = engineVersion;
-        this.violation = new UnexpectedEngineErrorViolation(engineName, error);
+        this.violation = violation;
     }
 
-    getEngineName(): string {
+    public getEngineName(): string {
         return this.engineName;
     }
 
-    getEngineVersion(): string {
+    public getEngineVersion(): string {
         return this.engineVersion;
     }
 
-    getViolationCount(): number {
+    public getViolationCount(): number {
         return 1;
     }
 
-    getViolationCountOfSeverity(severity: SeverityLevel): number {
+    public getViolationCountOfSeverity(severity: SeverityLevel): number {
         return severity == SeverityLevel.Critical ? 1 : 0;
     }
 
-    getViolations(): Violation[] {
+    public getViolations(): Violation[] {
         return [this.violation];
+    }
+}
+
+export class UninstantiableEngineRunResults extends AbstractErroneousEngineRunResults {
+    constructor(engineName: string, error: Error) {
+        super(engineName, 'unknown', new UninstantiableEngineErrorViolation(engineName, error));
+    }
+}
+
+export class UnexpectedErrorEngineRunResults extends AbstractErroneousEngineRunResults {
+    constructor(engineName: string, engineVersion: string, error: Error) {
+        super(engineName, engineVersion, new UnexpectedEngineErrorViolation(engineName, error));
     }
 }
 

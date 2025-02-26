@@ -3,8 +3,8 @@ import * as stubs from "./stubs";
 import {getMessage} from "../src/messages";
 import {changeWorkingDirectoryToPackageRoot, FixedClock} from "./test-helpers";
 import path from "node:path";
-import {StubEngine1, StubEngine2, StubEngine3} from "./stubs";
-import {ConfigDescription} from "@salesforce/code-analyzer-engine-api";
+import {StubEngine1, StubEngine2, StubEngine3, ThrowingPlugin2} from "./stubs";
+import {ConfigDescription, EnginePluginV1} from "@salesforce/code-analyzer-engine-api";
 
 changeWorkingDirectoryToPackageRoot();
 
@@ -120,25 +120,20 @@ describe("Tests for adding engines to Code Analyzer", () => {
         );
     })
 
-    it('When plugin throws error during describeEngineConfig, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin2())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromDescribeEngineConfig')
-        );
-    });
+    it.each([
+        {plugin: new stubs.ThrowingPlugin2() as EnginePluginV1, msg: 'SomeErrorFromDescribeEngineConfig', case: 'describeEngineConfig'},
+        {plugin: new stubs.ThrowingPlugin3() as EnginePluginV1, msg: 'SomeErrorFromCreateEngineConfig', case: 'createEngineConfig'},
+        {plugin: new stubs.ThrowingPlugin4() as EnginePluginV1, msg: 'SomeErrorFromCreateEngine', case: 'createEngine'}
+    ])('When plugin throws error during $case, then we emit error log line and skip that engine', async ({plugin, msg}) => {
+        await codeAnalyzer.addEnginePlugin(plugin);
 
-    it('When plugin throws error during createEngineConfig, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin3())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngineConfig') + '\n\n' +
+        const errorEvents: LogEvent[] = getLogEventsOfLevel(LogLevel.Error, logEvents);
+        expect(errorEvents.length).toEqual(1);
+        expect(errorEvents[0].message).toEqual(getMessage('PluginErrorWhenCreatingEngine', 'someEngine', msg) + '\n\n' +
             getMessage('InstructionsToIgnoreErrorAndDisableEngine', 'someEngine')
         );
-    });
-
-    it('When plugin throws error during createEngine, then we throw error', async () => {
-        await expect(codeAnalyzer.addEnginePlugin(new stubs.ThrowingPlugin4())).rejects.toThrow(
-            getMessage('PluginErrorWhenCreatingEngine', 'someEngine', 'SomeErrorFromCreateEngine') + '\n\n' +
-            getMessage('InstructionsToIgnoreErrorAndDisableEngine', 'someEngine')
-        );
-    });
+        expect(codeAnalyzer.getEngineNames().sort()).toEqual([]);
+    })
 
     it('When calling dynamicallyAddEnginePlugin on a module that has a createEnginePlugin function, then it is used to add create the plugin and then added', async () => {
         const pluginModulePath: string = require.resolve('./stubs');
@@ -218,6 +213,14 @@ describe("Tests for adding engines to Code Analyzer", () => {
             getMessage('FailedToGetEngineConfig', 'stubEngine1'));
         expect(() => codeAnalyzer.getEngineConfigDescription('stubEngine1')).toThrow(
             getMessage('FailedToGetEngineConfigDescription', 'stubEngine1'));
+    });
+
+    it('If engine cannot be successfully added, then getEngineConfig and getEngineConfigDescription should error', async () => {
+        await codeAnalyzer.addEnginePlugin(new ThrowingPlugin2());
+        expect(() => codeAnalyzer.getEngineConfig('someEngine')).toThrow(
+            getMessage('FailedToGetEngineConfig', 'someEngine'));
+        expect(() => codeAnalyzer.getEngineConfigDescription('someEngine')).toThrow(
+            getMessage('FailedToGetEngineConfigDescription', 'someEngine'));
     });
 
     it('When engine is disabled, we can still access its unresolved user provided properties', async () => {
