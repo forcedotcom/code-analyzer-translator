@@ -35,19 +35,23 @@
     "package.json"
   ],
   "scripts": {
+    "build-java": "sh ./gradlew build -x test",
     "build-typescript": "tsc --build tsconfig.build.json --verbose",
-    "build": "npm run build-typescript",
+    "build": "npm run build-java && npm run build-typescript",
+    "test-java": "sh ./gradlew test jacocoTestReport jacocoTestCoverageVerification",
     "test-typescript": "jest --coverage",
-    "test": "npm run test-typescript",
+    "test": "npm run test-java && npm run test-typescript",
     "lint": "eslint src/**/*.ts",
     "package": "npm pack",
     "all": "npm run build && npm run test && npm run lint && npm run package",
+    "clean-java": "sh ./gradlew clean",
     "clean-typescript": "tsc --build tsconfig.build.json --clean",
-    "clean": "npm run clean-typescript",
+    "clean": "npm run clean-java && npm run clean-typescript",
     "postclean": "rimraf dist && rimraf coverage && rimraf ./*.tgz && rimraf vulnerabilities",
     "scrub": "npm run clean && rimraf node_modules",
+    "showcoverage-java": "sh ./gradlew showCoverageReport",
     "showcoverage-typescript": "open ./coverage/lcov-report/index.html",
-    "showcoverage": "npm run showcoverage-typescript"
+    "showcoverage": "npm run showcoverage-java && npm run showcoverage-typescript"
   },
   "jest": {
     "testTimeout": 60000,
