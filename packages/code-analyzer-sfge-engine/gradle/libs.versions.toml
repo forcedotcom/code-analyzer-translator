@@ -8,26 +8,8 @@
 [versions]
 hamcrest = "3.0"
 junit-jupiter = "5.11.4"
-pmd = "7.10.0" # !!! IMPORTANT !!! KEEP THIS IN SYNC WITH PMD_VERSION INSIDE OF: src/constants.ts
-
-# For the following: Keep in sync with whatever pmd-core pulls in. Basically, we don't want duplicates in our java-lib folder.
-# To see pmd-core's dependencies, go to https://mvnrepository.com/artifact/net.sourceforge.pmd/pmd-core
-slf4j-nop = "1.7.36" # (Keep in sync with pmd-core > slf4j-api version). For now, we throw slf4j logs away (using this no-op module). We might use an actual logger in the future.
-gson = "2.11.0" # (Keep in sync with pmd-core > gson version).
 
 
 [libraries]
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-pmd-apex = { module = "net.sourceforge.pmd:pmd-apex", version.ref = "pmd" }
-pmd-core = { module = "net.sourceforge.pmd:pmd-core", version.ref = "pmd" }
-pmd-html = { module = "net.sourceforge.pmd:pmd-html", version.ref = "pmd" }
-pmd-javascript = { module = "net.sourceforge.pmd:pmd-javascript", version.ref = "pmd" }
-pmd-test = { module = "net.sourceforge.pmd:pmd-test", version.ref = "pmd" }
-pmd-visualforce = { module = "net.sourceforge.pmd:pmd-visualforce", version.ref = "pmd" }
-pmd-xml = { module = "net.sourceforge.pmd:pmd-xml", version.ref = "pmd" }
-slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-nop" }
-
-[bundles]
-pmd7 = ["pmd-apex", "pmd-core", "pmd-html", "pmd-javascript", "pmd-visualforce", "pmd-xml"]
